@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "soulbot/cache/node_cache",
+  "title": "Per-node cache schema",
+  "description": "Cache file written per node execution: {AIAP_NAME}.{NodeName}.json. Aligned with agent_engine.aisop.json::writeCache.step1 protocol contract.",
+  "type": "object",
+  "required": [
+    "status",
+    "completed",
+    "output",
+    "tool_calls",
+    "modifications",
+    "user_summary",
+    "execute_mode",
+    "cache_schema_version",
+    "steps_done",
+    "steps_remaining",
+    "trace_id",
+    "user_messages"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "PARTIAL",
+        "WAITING_USER",
+        "MESSAGE_PENDING",
+        "DEGRADED",
+        "ABORTED"
+      ]
+    },
+    "completed": {
+      "type": "boolean"
+    },
+    "output": {
+      "type": "string",
+      "description": "Key findings summary for the next Agent."
+    },
+    "tool_calls": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of tool calls during node execution."
+    },
+    "modifications": {
+      "type": "array",
+      "items": {
+        "type": ["string", "object"],
+        "description": "File path string OR structured modification record."
+      }
+    },
+    "user_summary": {
+      "type": "string",
+      "description": "Human-readable description of what this node accomplished."
+    },
+    "execute_mode": {
+      "type": "string",
+      "enum": ["agent", "inline"]
+    },
+    "agent_id": {
+      "type": "string",
+      "description": "Sub Agent ID assigned by orchestrator (or 'inline_deep' for inline)."
+    },
+    "cache_schema_version": {
+      "type": "string"
+    },
+    "steps_done": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Step keys completed (e.g. ['step1','step2'])."
+    },
+    "steps_remaining": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "trace_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "span_id": {
+      "type": "string"
+    },
+    "user_messages": {
+      "type": "array",
+      "items": {"type": ["string", "object"]}
+    },
+    "l10_audit": {
+      "type": ["string", "object"],
+      "description": "L10 audit trail: 'NODE[step1:✓,step2:✓,...]' or structured."
+    },
+    "waiting_user": {
+      "type": "boolean"
+    },
+    "question": {
+      "type": ["string", "null"]
+    },
+    "user_answer": {
+      "type": ["string", "null"]
+    },
+    "route": {
+      "type": ["string", "null"],
+      "description": "Decision node routing branch (per node_engine.aisop.json::N2)."
+    },
+    "retry_count": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "soulbot/cache/_index",
+  "title": "Engine _index.json schema",
+  "description": "Per-turn execution index written by prepare_execution_context() and updated by AI Sub Agents.",
+  "type": "object",
+  "required": [
+    "engine_version",
+    "user_message",
+    "status",
+    "started_at",
+    "cache_schema_version",
+    "trace_id"
+  ],
+  "properties": {
+    "engine_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Engine library version (semver)."
+    },
+    "user_message": {
+      "type": "string",
+      "maxLength": 50000,
+      "description": "Original user message text. Empty string allowed for heartbeat or backfill turns."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "completed",
+        "abandoned",
+        "failed",
+        "waiting_user"
+      ]
+    },
+    "started_at": {
+      "type": "string",
+      "description": "ISO 8601 datetime (e.g. 2026-05-12T19:45:00)."
+    },
+    "cache_schema_version": {
+      "type": "string"
+    },
+    "trace_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target": {
+      "type": "string"
+    },
+    "workspace": {
+      "type": "string"
+    },
+    "aiap_name": {
+      "type": ["string", "null"]
+    },
+    "loading_mode": {
+      "type": ["string", "null"],
+      "enum": ["node", "normal", "lite", null]
+    },
+    "total_nodes": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "current_node": {
+      "type": ["string", "null"]
+    },
+    "last_completed_node": {
+      "type": ["string", "null"]
+    },
+    "nodes_in_path": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "dispatch_plan": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "string",
+            "enum": ["agent", "inline"],
+            "description": "Per AISOP protocol node_engine.aisop.json step2: 'agent'|'inline'."
+          },
+          {
+            "type": "object",
+            "required": ["execute_mode"],
+            "properties": {
+              "execute_mode": {
+                "type": "string",
+                "enum": ["agent", "inline"]
+              }
+            },
+            "description": "Extended form with metadata (future-proofing for per-node model override)."
+          }
+        ]
+      }
+    },
+    "nodes_status": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          {"type": "string"},
+          {
+            "type": "object",
+            "properties": {
+              "status": {"type": "string"},
+              "tool_calls": {"type": "integer", "minimum": 0}
+            }
+          }
+        ]
+      }
+    },
+    "target_aiap_dir": {"type": "string"},
+    "parallel_waves": {"type": ["array", "null"]},
+    "circuit_breaker_state": {
+      "type": ["string", "null"],
+      "enum": ["closed", "open", "half-open", null]
+    },
+    "ai_response": {"type": "string"}
+  },
+  "additionalProperties": true
+}

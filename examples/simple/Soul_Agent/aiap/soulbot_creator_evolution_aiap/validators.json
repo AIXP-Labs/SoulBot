@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.9",
+  "pattern": "A",
+  "node_count": 21,
+  "enabled_validators": {
+    "audit_coverage":     {"severity_floor": "CRITICAL", "status_tolerant": true},
+    "artifact_lockdown":  {},
+    "content_hash":       {"min_bytes_delta": 50, "canonical_hash": true},
+    "aiap_schema":        {"strict": true},
+    "governance_consistency": {
+      "fields": ["version", "trust_level", "governance_hash"],
+      "multi_file_check": false,
+      "canonical_form_version": "1.0"
+    },
+    "three_dim_test_math": {"tolerance": 0.005},
+    "tool_calls_triangulation": {
+      "span_source_mode": "invoke_agent",
+      "metric_quality": "approximate",
+      "concealment_spans_threshold": 3,
+      "tolerance_pct_approximate": 1.0,
+      "tolerance_pct_precise": 0.30,
+      "min_tolerance": 2,
+      "merge_strategy": "union_by_span_id",
+      "spans_paths": [
+        "{workspace_dir}/data/_spans.jsonl",
+        "{agent_dir}/soulbot_execute_engine_aiap/data/_spans.jsonl"
+      ]
+    },
+    "validator_self_audit": {"grace_implementation_cycle": 170}
+  },
+  "runner_hook": {
+    "mode": "one_shot",
+    "token_cap": 1500,
+    "inject_system_message_on_fail": true
+  }
+}

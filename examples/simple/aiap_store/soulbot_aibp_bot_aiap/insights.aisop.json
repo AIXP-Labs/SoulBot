@@ -1,0 +1,191 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "type": "aisop",
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "id": "soulbot_aibp_bot.insights",
+      "name": "soulbot_aibp_bot_insights v2.1.0",
+      "version": "2.1.0",
+      "output_mode": {
+        "L0": "Output JSON in ENGLISH: {findings, buffer_size, flush_status}",
+        "L1": "Output helpfully in User's exact language and script variant",
+        "output": "L1"
+      },
+      "summary": "AI Social self-observation module. Receives action/pipeline execution context in parallel, analyzes for structural deficiencies (8 categories: BUG/FUNC/ARCH/PERF/DEBT/USER/SEC/COMP), buffers findings in memory, flushes to insights.json on session end or explicit trigger. Fingerprint dedup, anti-bloat controls, content array format.",
+      "description": "Real-time parallel self-observation for AI Social runtime. Each action completion triggers ReceiveContext with execution results. Analyze applies soulbot_aibp_bot-specific observation rules (privacy classification accuracy, trust judgment reasonability, send pipeline efficiency, ContentAudit false positive rate, cross-module call latency, web governance compliance, prompt injection detection accuracy, message signing verification, Art.50 compliance monitoring, GDPR data minimization adherence). Classify assigns category/severity/fingerprint per Protocol Appendix E. Buffer accumulates in memory. FlushToFile writes buffered insights to insights.json with fingerprint dedup and anti-bloat controls. v1.9.0: Format migration to content array. v1.7.0: Art.50 + GDPR compliance observation rules.",
+      "loading_mode": "normal",
+      "tools": [
+        {
+          "name": "file_system",
+          "annotations": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": false
+          }
+        }
+      ],
+      "parameters": {
+        "execution_context": {
+          "type": "object",
+          "description": "Current action execution results: action_name, inputs, outputs, errors, timing, quality_indicators.",
+          "required": true,
+          "agentic_prompt": "Passed by main orchestrator parallel self-observation code after each action completes."
+        },
+        "insight_buffer": {
+          "type": "array",
+          "description": "Accumulated insight findings from prior actions in this session. In-memory only.",
+          "required": false,
+          "agentic_prompt": "Accumulated across actions. Empty at session start."
+        },
+        "workspace_dir": {
+          "type": "string",
+          "description": "Target directory for insights.json output.",
+          "required": true,
+          "agentic_prompt": "Same workspace_dir as main orchestrator."
+        },
+        "flush_trigger": {
+          "type": "boolean",
+          "description": "When true, flush insight_buffer to insights.json.",
+          "required": false,
+          "agentic_prompt": "Only true at session end or explicit flush."
+        }
+      },
+      "json_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "insight_output": {
+            "type": "object",
+            "properties": {
+              "findings_count": {
+                "type": "integer"
+              },
+              "buffer_size": {
+                "type": "integer"
+              },
+              "flush_status": {
+                "type": "string",
+                "enum": [
+                  "flushed",
+                  "buffered",
+                  "skipped"
+                ]
+              },
+              "findings": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": [
+              "findings_count",
+              "flush_status"
+            ]
+          }
+        }
+      },
+      "system_prompt": "AI Social self-observation engine. Observe runtime execution for structural deficiencies — only record findings that match the 8-category admission threshold (BUG/FUNC/ARCH/PERF/DEBT/USER/SEC/COMP). Do NOT record cosmetic issues or minor adjustments. Focus on patterns requiring human decision to resolve. Mirror User's exact language and script variant.\nAlign Axiom 0: Human Sovereignty and Wellbeing."
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "aisop": {
+        "main": "graph TD\n    Start([Start]) --> DetermineAction[DetermineAction]\n    DetermineAction -->|analyze| Analyze[Analyze]\n    DetermineAction -->|flush| FlushToFile[FlushToFile]\n    Analyze -->|finding| Classify[Classify]\n    Analyze -->|no_finding| End((End))\n    Classify --> CheckFingerprint[CheckFingerprint]\n    CheckFingerprint -->|duplicate| AppendOccurrence[AppendOccurrence]\n    CheckFingerprint -->|new| Buffer[Buffer]\n    AppendOccurrence --> End\n    Buffer --> End\n    FlushToFile --> End"
+      },
+      "functions": {
+        "DetermineAction": {
+          "description": "Route to analyze or flush based on trigger",
+          "steps": [
+            "step1: [ASSERT] Valid execution_context received. Required: execution_context, workspace_dir. | Receive execution_context from main orchestrator. Extract: action_name, inputs summary, outputs summary, errors, timing, quality_indicators.",
+            "step2: Check flush_trigger. If true → route to FlushToFile. If false → route to Analyze."
+          ],
+          "constraints": [
+            "Accept context from any main action. Do not block. Validate action_name is a known soulbot_aibp_bot action."
+          ]
+        },
+        "Analyze": {
+          "description": "Analyze execution context for structural deficiencies",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: execution_context with action_name. | AI_SOCIAL-SPECIFIC OBSERVATION RULES: (a) PRIVACY CLASSIFICATION ACCURACY: PrivacyGate misclassification → SEC. (b) TRUST JUDGMENT REASONABILITY: trust gate bypass or inconsistent progression → BUG. (c) SEND PIPELINE EFFICIENCY: abnormal timing or redundant checks → PERF. (d) CONTENTAUDIT FALSE POSITIVE: flagged rate > 15% → FUNC. (e) CROSS-MODULE CALL LATENCY: missing returns or format mismatches → BUG. (f) WEB GOVERNANCE COMPLIANCE: missing AI disclosure or approval → COMP. (g) GROUP TRUST JUDGMENT: creation without T2+, moderator without T3, cross-group spam false positive > 10% → BUG/FUNC. (h) COMMERCIAL FRAUD DETECTION: legitimate proposals flagged → FUNC, state machine violations → BUG, approval bypass → SEC. (i) PROMPT INJECTION DETECTION (v1.6.0): false positives in browse pipeline → FUNC, missed injections → SEC. (j) MESSAGE SIGNING (v1.6.0): signing failures → BUG, verification key management issues → SEC.",
+            "step2: Verify findings meet 8-category admission threshold. Reject cosmetic issues."
+          ],
+          "constraints": [
+            "Only structural findings pass. Max 3 per action. No finding → endNode."
+          ]
+        },
+        "Classify": {
+          "description": "Classify findings by category and severity",
+          "steps": [
+            "step1: [ASSERT] Analyze found findings. Required: candidate_findings. | For each: assign category (BUG/FUNC/ARCH/PERF/DEBT/USER/SEC/COMP), severity (HIGH/MEDIUM/LOW), generate fingerprint, set source='runtime:{action_name}'."
+          ],
+          "constraints": [
+            "Deterministic fingerprint. Exactly one category per finding."
+          ]
+        },
+        "CheckFingerprint": {
+          "description": "Check for duplicate findings in buffer",
+          "steps": [
+            "step1: [ASSERT] Classify executed. Required: classified_findings. | Search insight_buffer for matching fingerprint. Found → AppendOccurrence. New → Buffer."
+          ],
+          "constraints": [
+            "Exact string match after normalization."
+          ]
+        },
+        "AppendOccurrence": {
+          "description": "Append occurrence to existing finding",
+          "steps": [
+            "step1: [ASSERT] CheckFingerprint found duplicate. | Append occurrence record to existing entry."
+          ],
+          "constraints": [
+            "Only modify occurrences array."
+          ]
+        },
+        "Buffer": {
+          "description": "Buffer new finding in memory",
+          "steps": [
+            "step1: [ASSERT] CheckFingerprint found new entry. | Create new insight entry in insight_buffer with ID='PENDING'.",
+            "step2: Check buffer size. OPEN >= 20 → set buffer_warning."
+          ],
+          "constraints": [
+            "In-memory only. ID deferred to FlushToFile."
+          ]
+        },
+        "FlushToFile": {
+          "description": "Flush buffered insights to insights.json",
+          "steps": [
+            "step1: [ASSERT] flush_trigger=true. Required: insight_buffer, workspace_dir. | Read existing insights.json. Determine next sequential ID.",
+            "step2: For each buffered entry: duplicate → append occurrence; new → assign ID, append.",
+            "step3: Anti-bloat: L1 truncate, L2 warning, L3 archive.",
+            "step4: Write via file_system. Atomic write (.tmp then rename)."
+          ],
+          "constraints": [
+            "Append-only. insights.json NOT in governance_hash. Source='runtime:{action_name}'."
+          ]
+        }
+      },
+      "Error": {
+        "DetermineAction": "Invalid context → skip observation, log WARNING. retry(1) -> circuit-breaker -> fallback(endNode with empty findings) -> inform.",
+        "Analyze": "Analysis fails → skip with WARNING. retry(1) -> circuit-breaker -> fallback(endNode with no findings) -> inform.",
+        "Classify": "Classification fails → default ARCH/MEDIUM. retry(1) -> circuit-breaker -> fallback(default ARCH/MEDIUM classification) -> inform.",
+        "CheckFingerprint": "Lookup fails → treat as new entry. retry(1) -> circuit-breaker -> fallback(treat as new entry) -> inform.",
+        "AppendOccurrence": "Append fails → skip, continue. retry(1) -> circuit-breaker -> fallback(skip append, continue) -> inform.",
+        "Buffer": "Buffer fails → accept with warning. retry(1) -> circuit-breaker -> fallback(accept with buffer_warning) -> inform.",
+        "FlushToFile": "Write fails → output in session log. retry(2) -> circuit-breaker -> fallback(output in session log) -> inform."
+      },
+      "endNode": {
+        "output": "Return insight observation result: findings_count, buffer_size, flush_status.",
+        "constraints": [
+          "Non-blocking — insights must never delay main action flow.",
+          "Findings are structural observations, not cosmetic suggestions."
+        ]
+      }
+    }
+  }
+]

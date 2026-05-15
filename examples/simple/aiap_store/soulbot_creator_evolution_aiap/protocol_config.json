@@ -1,0 +1,629 @@
+{
+  "version": "2.23.0",
+  "split_metadata": {
+    "source": "main.aisop.json",
+    "split_version": "2.4.0",
+    "split_date": "2026-04-18",
+    "blocks": [
+      "execution",
+      "density_metrics",
+      "self_evolution_verification",
+      "token_efficiency",
+      "protocol_interaction_map",
+      "protocol_volume_monitor",
+      "node_gate"
+    ],
+    "resolution": "PipelineStart reads + resolves $ref → merged content object.",
+    "density_calculation_basis": "combined — merged content (main + protocol_config) for continuity."
+  },
+  "execution": {
+    "mode": "assert",
+    "trace": "stage",
+    "on_violation": "report_and_degrade",
+    "trace_max": 30,
+    "trace_budget": 2000,
+    "mandate": "Topological order. Every stage. Violation: trace + penalty -0.10.",
+    "trace_rule": "Internal pipeline_metadata only. User output: never (unless verbose).",
+    "trace_overflow": "exceeded→keep stage+result, drop verbose.",
+    "dynamic_trace_budget": {
+      "enabled": true,
+      "formula": "max(2000, floor(target_chars/1000)*20).",
+      "trigger": "PipelineStart→downstream."
+    },
+    "step_completion_attestation": {
+      "description": "Each pipeline stage MUST emit typed attestation token before successor can begin. Sub-functions: attestation_token_emitter, attestation_chain_validator, attestation_skip_authorizer.",
+      "token_schema": "{stage_name:string, status:'COMPLETE'|'SKIPPED_AUTHORIZED', evidence_hash:SHA-256(stage_output_summary+prev_hash), ts:ISO-8601}.",
+      "enforcement": "Successor entry_check: verify predecessor attestation exists+valid. Missing→BLOCK+penalty(-0.20). SKIPPED_AUTHORIZED requires: token_efficiency shortcut OR user '--skip'.",
+      "init": "PipelineStart: attestation_chain=[], chain_seed=SHA-256(pipeline_run_id).",
+      "verification": "ReviewFinalize: verify len(attestation_chain)==completed_stages, recompute chain hashes, emit attestation_integrity_report:{chain_length,expected,hash_valid:bool,broken_links:[]}.",
+      "attestation_token_emitter": {
+        "description": "Generates and emits typed attestation token per pipeline stage completion.",
+        "trigger": "Stage function final step, BEFORE returning control to pipeline orchestrator.",
+        "emit_action": "Construct token per token_schema→compute evidence_hash→append to attestation_chain→log to pipeline_metadata.",
+        "per_stage_instruction": "Each pipeline stage function (DependencyCheck through ReviewFinalize) MUST invoke attestation_token_emitter as final action."
+      },
+      "attestation_chain_validator": {
+        "description": "Validates attestation chain integrity at pipeline checkpoints.",
+        "checkpoints": "QualityGate(mid-pipeline)+ReviewFinalize(final). Validates: chain_length==completed_stages, hash_recomputation matches, no broken_links.",
+        "on_failure": "broken_link→WARNING+trace. length_mismatch→BLOCK+abort if self_evolution_mode."
+      },
+      "attestation_skip_authorizer": {
+        "description": "Authorizes and records legitimate stage skips with SKIPPED_AUTHORIZED status.",
+        "authorization_sources": "token_efficiency.self_evolution_shortcuts|user '--skip' flag|early_termination.condition.",
+        "emit_action": "Construct token with status='SKIPPED_AUTHORIZED', evidence_hash=SHA-256('SKIP:'+stage_name+reason+prev_hash), append to attestation_chain.",
+        "audit": "All SKIPPED_AUTHORIZED tokens logged with reason in attestation_integrity_report."
+      }
+    },
+    "pipeline_integrity_chain": {
+      "description": "Hash-chained audit trail across pipeline stages for tamper-evident execution proof.",
+      "mechanism": "evidence_hash[n]=SHA-256(stage_output_summary[n]+evidence_hash[n-1]). evidence_hash[0]=chain_seed.",
+      "broken_chain_action": "WARNING+trace anomaly. ReviewFinalize flags in attestation_integrity_report.",
+      "storage": "pipeline_metadata.attestation_chain[]. Persisted per stage completion."
+    },
+    "strict_semantics": {
+      "zero_skip": "Every node MUST execute in topological order. No skip/merge/reorder. EXCEPTION: token_efficiency.self_evolution_shortcuts defines controlled optimization paths (ABBREVIATED/REDUCED/SKIP) that are legal under self_evolution_mode=true AND protocol-metadata-only scope. These are not violations of zero_skip — they are pre-declared, auditable optimizations with explicit scope constraints. Any shortcut outside the declared scope IS a zero_skip violation.",
+      "violation_penalty": "-0.10/node + trace.",
+      "self_evolution_rule": "target=self→-0.20/node (double penalty).",
+      "degradation_policy": "No silent degradation. retry→circuit-breaker→user-inform.",
+      "attestation_rule": "Each stage MUST emit attestation before successor. Missing→-0.20+BLOCK. SKIPPED_AUTHORIZED exempt.",
+      "attestation_verification": "Successor validates predecessor attestation hash. Mismatch→WARNING+trace.",
+      "penalty_accumulation": {
+        "base": "quality_baseline.weighted_score.",
+        "per_violation": "-0.10 (std), -0.20 (self).",
+        "cap": "-1.0 max/pipeline. Beyond: traced only.",
+        "reset": "Pipeline start.",
+        "grade_mapping": {
+          "S_to_A": -0.4,
+          "A_to_B": -0.8,
+          "B_to_C": -1.0,
+          "note": "S-grade(4.899): C(<2.7) unreachable.",
+          "display": "ReviewPresent: 'Penalty: {acc}. Grade: {base}→{eff}.'"
+        }
+      }
+    }
+  },
+  "density_metrics": {
+    "enabled": true,
+    "dimensions": {
+      "logic_density": "logic_units/Kchars. Units: conditions,actions,formulas,constraints,error_handlers,type_checks,traces,routes,assignments=1; data_fields=0.5.",
+      "info_density_macro": "named_features/Kchars. Features=user-perceivable independently nameable capabilities.",
+      "info_density_micro": "capabilities/Kchars. Capabilities=independently verifiable mechanisms."
+    },
+    "reporting": "ReviewPresent: calculate→compare previous→emit density_report.",
+    "regression_rule": "new < old*0.95→WARNING.",
+    "density_auto_merge": "$ref→auto-read→merge. Concat chars, count LU/NF/SC across files. Validate:JSON+log. Fallback:file_missing→WARNING(partial)|parse_error→BLOCK|ref_mismatch→WARNING(available).",
+    "pattern_benchmarks": "Format:[logic_min,max,macro_min,max,micro_min,max]. A:[20,35,3,6,7,12] B:[12,25,1.5,4,4,8] C:[10,20,1,3,3,7] D:[5,15,0.3,1.5,1,4] E:[8,18,1,3,3,6] F:[5,12,0.3,1,1,3] G:[5,15,0.3,1.5,1,4] DG:[5,15,0.3,1.5,1,4]",
+    "review_benchmark_integration": "ReviewPresent: pattern→normalize→lookup benchmarks→3D→<min:YELLOW|>max:INFO|in-range:PASS→emit benchmark_comparison. BEFORE final_adjusted_score. Resilience:missing→WARNING+skip|compound→union(min/max)|unknown→exact→compound→nearest→D."
+  },
+  "self_evolution_verification": {
+    "enabled": true,
+    "scope": "Target=soulbot_creator_evolution_aiap→self-evolution mode.",
+    "auto_detection": "PipelineStart: normalize paths(symlinks,lowercase/win32,strip sep)→target==creator_dir→self_evolution_mode=true→pre_checks+double_penalty. false→standard.",
+    "pre_checks": [
+      "Snapshot .aisop.json+AIAP.md (PL26).",
+      "Verify protocol-metadata-only (no functional node changes).",
+      "Compute pre-evolution density baseline."
+    ],
+    "post_checks": [
+      "JSON validity: parse all modified files.",
+      "Version consistency: all modules=AIAP.md version.",
+      "Density regression: regression_rule (<0.95→WARNING).",
+      "Semantic diff: changed fields [{path,old,new}].",
+      "Backward compat: no fields removed/renamed.",
+      "$ref validation: all targets exist+resolve.",
+      "Version sync: protocol_config=main=AIAP.md."
+    ],
+    "verification_report": "Emit self_evolution_audit: {target:'self', pre/post_density, fields_changed, regression_pass, backward_compatible}.",
+    "self_evolution_density_policy": {
+      "mode": "monotonic",
+      "rule": "Self: all 3D MUST >=previous. Standard: 0.95 threshold.",
+      "enforcement": "new<old→FAIL→abort(restore snapshot).",
+      "density_calculation_basis": "Merged(main+protocol_config).",
+      "plateau_detection": {
+        "rule": "Δ=0 for >=2 consecutive→ADVISORY. Consider enrichment/compression.",
+        "severity": "ADVISORY. density_report.plateau_warnings.",
+        "history_source": ".version_history/ quality_baseline prior 2 versions."
+      }
+    },
+    "evolution_fitness": {
+      "description": "Composite health score [0,1].",
+      "dimensions": "density_trend(0.30):3vΔ all+→1|mix→0.6|plateau→0.3|regress→0 | volume_health(0.25):<adv→1|adv-warn→0.6|warn-crit→0.3|>crit→0 | compression_viability(0.20):yield>0.7→1|0.5-0.7→0.7|0.3-0.5→0.4|<0.3→0.1|none→0.5|phase_d_neg→0.8 | architecture_readiness(0.15):met/total | nf_growth(0.10):growth→1|stable(1v)→0.6|stagnant(2+v)→0.2|decline→0",
+      "composite": "Sum(score×weight). healthy≥0.7, caution≥0.5, critical<0.3.",
+      "actions": {
+        "healthy": "Continue.",
+        "caution": "ADVISORY: review strategy.",
+        "critical": "WARNING: MUST address lowest dimension."
+      },
+      "reporting": "ReviewPresent→emit evolution_fitness_report.",
+      "fitness_trend": {
+        "rule": "history_summary 6th field→3-ver trend. EMA: smoothed=0.7×current+0.3×prev (<2ver→raw).",
+        "thresholds": "improving:3×Δ>+0.02 | stable:|Δ|≤0.05 | declining:Δ<-0.02→WARNING | critical:Δ<-0.10 OR fitness<0.50→BLOCK."
+      },
+      "fitness_backtest": "ReviewPresent: weight change→parse history_summary→recompute fitness with current weights→compare variance→emit backtest_report:{versions_tested,old/new_variance,discrimination_improved}. new_variance<old×0.8→ADVISORY."
+    },
+    "evolution_health_check": {
+      "description": "Unified health: fitness+ratio+density→single score.",
+      "trigger": "ReviewPresent.step2 post fitness computation.",
+      "formula": "fitness×0.4 + stepped_ratio_term×0.3 + density_growth_rate×0.3. Clamped [0,1].",
+      "stepped_ratio_term": "ratio<advisory(0.20)→1.0|ratio==advisory→0.7|advisory<ratio<warning(0.25)→0.4|ratio>=warning→0.0. Replaces linear (1-ratio/0.30) to reduce penalty for near-advisory ratios.",
+      "output": "health_status GREEN(>=0.7)|YELLOW(>=0.4)|RED(<0.4), health_score, top_concern, recommendation.",
+      "integration": "ReviewPresent.step2→invoke→emit evolution_health_report→display in final summary."
+    },
+    "dsm_edge_balance_check": "Post_checks: behavioral<15%→ADVISORY. Emit edge_balance_report:{total,per_type_count,per_type_pct,advisories}.",
+    "abort_conditions": "Density regression(monotonic/self, 0.95/external) OR backward compat broken→ABORT, restore snapshot."
+  },
+  "token_efficiency": {
+    "enabled": true,
+    "description": "Shortcuts+measurement+compression+early termination.",
+    "self_evolution_shortcuts": {
+      "scope": "self_evolution_mode=true AND protocol-metadata-only:",
+      "stages": "Research1:ABBREVIATED(cached,~3K)|ProtocolAlign:SKIP(no tools/pattern,~1K)|DependencyCheck:ABBREVIATED(skip integrity,~2K)|SimulateStep:REDUCED(R only,~5K). Total:~11K(~27.5%).",
+      "zero_skip_relationship": "These shortcuts are declared exceptions to strict_semantics.zero_skip per v2.4.0 A1 clarification. Each shortcut node still executes (topological order preserved) but with reduced scope. ABBREVIATED = executes with cached/reduced input. REDUCED = executes subset of scenarios. SKIP = node executes but immediately returns cached/default result. All shortcuts are auditable via pipeline_metadata.shortcut_applied[]."
+    },
+    "measurement": {
+      "enabled": true,
+      "instrumentation": "Per stage→{estimated,actual,delta,utilization}.",
+      "calibration": "3 runs→mean→|delta|>20%→ADVISORY. Output:{runs,accuracy,savings,adjustments}. Persist:.version_history/.token_calibration/calibration_{ver}.json. Tag:structural_change→reset|non_structural→preserve.",
+      "accuracy_target": "Overall +-15%. Per-stage +-25%."
+    },
+    "context_compression": "Completed→summary(name+status+metrics), drop verbose. >50% budget→compress oldest. Never drop: inputs/scores/errors/user_decisions.",
+    "early_termination": {
+      "condition": "QualityGate pass AND no LEVEL_A AND quality>threshold→skip Research3.",
+      "dynamic_threshold": {
+        "strict": 4.8,
+        "standard": 4.5,
+        "relaxed": 4.0
+      },
+      "savings": "~2000 tokens.",
+      "guard": "static:never skip trust_level/tools/pattern change|dynamic:never skip strict+LEVEL_B|override:'--skip-compliance'→force+logged."
+    }
+  },
+  "protocol_interaction_map": {
+    "description": "DSM. Types: data_flow|behavioral|conditional|activation|data_source. Paths: protocol_config.json root.",
+    "edges": [
+      {
+        "from": "execution.strict_semantics",
+        "to": "execution.dynamic_trace_budget",
+        "type": "behavioral"
+      },
+      {
+        "from": "execution.strict_semantics.penalty_accumulation",
+        "to": "density_metrics.review_benchmark_integration",
+        "type": "data_flow"
+      },
+      {
+        "from": "density_metrics.pattern_benchmarks",
+        "to": "density_metrics.review_benchmark_integration",
+        "type": "data_source"
+      },
+      {
+        "from": "density_metrics.review_benchmark_integration",
+        "to": "self_evolution_verification.self_evolution_density_policy",
+        "type": "conditional"
+      },
+      {
+        "from": "self_evolution_verification.auto_detection",
+        "to": "self_evolution_verification.self_evolution_density_policy",
+        "type": "activation"
+      },
+      {
+        "from": "self_evolution_verification.auto_detection",
+        "to": "execution.strict_semantics.self_evolution_rule",
+        "type": "activation"
+      },
+      {
+        "from": "self_evolution_verification.auto_detection",
+        "to": "token_efficiency.self_evolution_shortcuts",
+        "type": "activation"
+      },
+      {
+        "from": "token_efficiency.context_compression",
+        "to": "execution.dynamic_trace_budget",
+        "type": "behavioral"
+      },
+      {
+        "from": "token_efficiency.early_termination.dynamic_threshold",
+        "to": "execution.strict_semantics.penalty_accumulation",
+        "type": "conditional"
+      },
+      {
+        "from": "token_efficiency.measurement",
+        "to": "token_efficiency.self_evolution_shortcuts",
+        "type": "data_flow"
+      },
+      {
+        "from": "protocol_volume_monitor",
+        "to": "self_evolution_verification.self_evolution_density_policy",
+        "type": "conditional"
+      },
+      {
+        "from": "token_efficiency.measurement.calibration.structure_change_definition",
+        "to": "token_efficiency.measurement.calibration.version_tag",
+        "type": "data_flow"
+      },
+      {
+        "from": "protocol_volume_monitor.compression_tracking",
+        "to": "protocol_volume_monitor.split_readiness.split_trigger",
+        "type": "conditional"
+      },
+      {
+        "from": "protocol_volume_monitor.evolution_state",
+        "to": "protocol_volume_monitor.split_readiness.split_trigger",
+        "type": "data_flow"
+      },
+      {
+        "from": "self_evolution_verification.evolution_fitness",
+        "to": "protocol_volume_monitor.evolution_state",
+        "type": "data_flow"
+      },
+      {
+        "from": "protocol_volume_monitor.compression_tracking.entry_schema",
+        "to": "protocol_volume_monitor.compression_tracking",
+        "type": "data_source"
+      },
+      {
+        "from": "density_metrics.density_auto_merge",
+        "to": "self_evolution_verification.self_evolution_density_policy.density_calculation_basis",
+        "type": "data_flow"
+      },
+      {
+        "from": "self_evolution_verification.evolution_fitness.fitness_trend",
+        "to": "protocol_volume_monitor.evolution_state.history_summary",
+        "type": "data_source"
+      },
+      {
+        "from": "density_metrics.density_auto_merge.fallback",
+        "to": "execution.strict_semantics.degradation_policy",
+        "type": "behavioral"
+      },
+      {
+        "from": "self_evolution_verification.evolution_fitness",
+        "to": "protocol_volume_monitor.evolution_state.history_summary",
+        "type": "activation"
+      },
+      {
+        "from": "protocol_volume_monitor.compression_tracking",
+        "to": "self_evolution_verification.evolution_fitness",
+        "type": "data_flow"
+      },
+      {
+        "from": "self_evolution_verification.evolution_fitness.fitness_trend",
+        "to": "protocol_volume_monitor.evolution_state",
+        "type": "activation"
+      },
+      {
+        "from": "self_evolution_verification.evolution_health_check",
+        "to": "protocol_volume_monitor.evolution_state",
+        "type": "activation"
+      },
+      {
+        "from": "protocol_volume_monitor.compression_tracking",
+        "to": "protocol_volume_monitor.compression_strategy_advisor",
+        "type": "data_flow"
+      },
+      {
+        "from": "self_evolution_verification.evolution_fitness",
+        "to": "self_evolution_verification.evolution_health_check",
+        "type": "data_flow"
+      },
+      {
+        "from": "self_evolution_verification.dsm_edge_balance_check",
+        "to": "protocol_interaction_map.edges",
+        "type": "data_source"
+      },
+      {
+        "from": "self_evolution_verification.evolution_fitness.dimensions.nf_growth",
+        "to": "protocol_volume_monitor.evolution_state.history_summary",
+        "type": "data_source"
+      },
+      {
+        "from": "self_evolution_verification.evolution_health_check",
+        "to": "self_evolution_verification.abort_conditions",
+        "type": "behavioral"
+      },
+      {
+        "from": "protocol_volume_monitor.compression_strategy_advisor",
+        "to": "protocol_volume_monitor.compression_tracking",
+        "type": "behavioral"
+      },
+      {
+        "from": "execution.step_completion_attestation",
+        "to": "execution.strict_semantics",
+        "type": "behavioral"
+      },
+      {
+        "from": "execution.pipeline_integrity_chain",
+        "to": "self_evolution_verification.post_checks",
+        "type": "data_flow"
+      },
+      {
+        "from": "execution.step_completion_attestation.attestation_token_emitter",
+        "to": "execution.pipeline_integrity_chain",
+        "type": "data_flow"
+      },
+      {
+        "from": "execution.step_completion_attestation.attestation_chain_validator",
+        "to": "self_evolution_verification.evolution_health_check",
+        "type": "data_flow"
+      },
+      {
+        "from": "node_gate",
+        "to": "execution.strict_semantics",
+        "type": "behavioral"
+      },
+      {
+        "from": "node_gate.auto_inject",
+        "to": "node_gate",
+        "type": "activation"
+      },
+      {
+        "from": "node_gate.predecessor_derivation",
+        "to": "aisop.main.mermaid",
+        "type": "structural"
+      },
+      {
+        "from": "PipelineStart.step_language",
+        "to": "GenerateAISOP.step9",
+        "type": "data_flow",
+        "field": "pipeline_context.target_language"
+      },
+      {
+        "from": "PipelineStart.step_language",
+        "to": "GenerateAISOP.step9_5",
+        "type": "data_flow",
+        "field": "pipeline_context.target_language"
+      },
+      {
+        "from": "ThreeDimTest.step1_5",
+        "to": "ThreeDimTest.step2",
+        "type": "data_flow",
+        "field": "target_format"
+      },
+      {
+        "from": "ThreeDimTest.step1_5",
+        "to": "ThreeDimTest.step6",
+        "type": "data_flow",
+        "field": "target_format"
+      },
+      {
+        "from": "ThreeDimTest.step1_5",
+        "to": "ThreeDimTest.step6_5",
+        "type": "data_flow",
+        "field": "target_format"
+      },
+      {
+        "from": "TraceSimulation.step0_5",
+        "to": "TraceSimulation.step1",
+        "type": "conditional",
+        "field": "target_format"
+      },
+      {
+        "from": "main.ReviewPresent",
+        "to": "main.ReviewFinalize",
+        "type": "data_flow"
+      },
+      {
+        "from": "nihil_density_metrics",
+        "to": "self_evolution_verification.post_checks",
+        "type": "data_flow"
+      },
+      {
+        "from": "nihil_density_metrics.generation_hygiene",
+        "to": "density_metrics",
+        "type": "behavioral"
+      }
+    ],
+    "usage": "Consult before modifying. Self-evolution: verify edges post-modification.",
+    "auto_validation": {
+      "trigger": "Post_checks MUST validate.",
+      "procedure": "Verify from/to paths. Scan for untracked refs. Verify edge types against allowed_edge_types. Report: {validated,stale,missing,type_violations}.",
+      "cross_file_resolution": "$ref merge→transparent path resolution.",
+      "on_stale": "WARNING: flag for next evolution.",
+      "on_missing": "ADVISORY: informational.",
+      "on_type_violation": "YELLOW: edge type not in allowed_edge_types set."
+    },
+    "allowed_edge_types": [
+      "data_flow",
+      "behavioral",
+      "conditional",
+      "activation",
+      "data_source",
+      "structural"
+    ],
+    "edge_type_definitions": {
+      "data_flow": "Data passes from source to destination node/field.",
+      "behavioral": "Source behavior influences or constrains destination behavior.",
+      "conditional": "Destination activation depends on source condition.",
+      "activation": "Source triggers destination execution.",
+      "data_source": "Destination reads from source as data provider.",
+      "structural": "Source and destination share structural dependency (e.g., node_gate derives from mermaid topology)."
+    }
+  },
+  "protocol_volume_monitor": {
+    "enabled": true,
+    "description": "Post-split ratio tracking on merged content.",
+    "metrics": {
+      "protocol_chars": "protocol_config.json chars (excl split_metadata).",
+      "functional_chars": "Total(main+protocol) minus protocol_chars.",
+      "protocol_ratio": "protocol_chars/functional_chars (%)"
+    },
+    "thresholds": {
+      "advisory": 0.2,
+      "warning": 0.25,
+      "critical": 0.3
+    },
+    "trigger": "Post_checks: compute ratio after changes.",
+    "actions": {
+      "below_advisory": "PASS.",
+      "advisory_to_warning": "ADVISORY: {ratio}%. Compress/consolidate.",
+      "warning_to_critical": "WARNING: {ratio}%>warning. Compress mandatory.",
+      "above_critical": "BLOCK: {ratio}%>critical. Reduce."
+    },
+    "evolution_state": {
+      "advisory_consecutive_count": {
+        "current": 0,
+        "rule": ">adv→increment. <=adv→reset 0. Persisted.",
+        "trigger_check": "count>=2→split_trigger.advisory."
+      },
+      "history_summary": "",
+      "history_format": "ver:chars/growth%/logic/macro/micro/fitness. Pipe-delimited. '-'=not computed. Post_checks MUST append+update advisory_consecutive_count."
+    },
+    "compression_tracking": {
+      "enabled": true,
+      "metrics": {
+        "chars_removed": "Removed by compression.",
+        "chars_added": "Added by features.",
+        "net_change": "added-removed. Negative=net compression.",
+        "yield_ratio": "removed/(removed+added). [0,1]."
+      },
+      "strategy_switch_threshold": 0.5,
+      "strategy_switch_rule": "yield<0.5 2x→ADVISORY: switch strategy.",
+      "history": "Append to pipeline_metadata.",
+      "entry_schema": "required:[version,chars_removed,chars_added,net_change,yield_ratio,timestamp]. Types: ver:SemVer,removed/added:int≥0,net:int,yield:[0,1],ts:ISO-8601. Invalid→WARNING+skip."
+    },
+    "compression_strategy_advisor": "ReviewFinalize.step2: 3-ver yield trend→phase escalation(C<0.3→D<0.3→E<0.3→accept/feature-focus). ROI=avg_yield*remaining. Output:recommended_strategy,yield_forecast,rationale,priority(H|M|L)→compression_strategy_report.",
+    "split_readiness": {
+      "status": "completed",
+      "ref_format": "{\"$ref\": \"protocol_config.json#/block_name\"}",
+      "resolution": "PipelineStart→read→resolve→merge. $ref missing=BLOCK.",
+      "split_trigger": "automatic:ratio>25%→MANDATORY(v2.0→v2.1)|advisory:>20% 2x→RECOMMENDED|manual:user request."
+    }
+  },
+  "node_gate": {
+    "enabled": true,
+    "version": "1.41.0",
+    "template_single": "[ASSERT] {prev_node} executed. If false → go back to {prev_node}. | ",
+    "template_multi": "[ASSERT] {nodeA}∨{nodeB}∨{nodeC} executed. If false → go back to {primary_predecessor}. | ",
+    "predecessor_derivation": "Parse Mermaid graph TD edges. Single incoming edge→use directly. Multiple incoming edges→join with ∨, primary_predecessor = main forward path node (first in topological order, excluding loop-back/error-recovery edges). Cross-sub-graph delegation: assert references delegating node, not local Start.",
+    "backtrack_mode": "natural_recursive_bounded",
+    "max_backtrack_depth": "min(3, node_count / 4)",
+    "backtrack_exceeded": "halt_with_diagnostic",
+    "backtrack_reference": "ABC k-bounded recovery (arXiv 2602.22302)",
+    "placement": "S1 opening (or first listed step if step_insights precedes step1), merged with step work, no extra step",
+    "pattern": "AgentSpec three-tuple: trigger(node_entry) → predicate(prev_executed OR any_of_prevs_executed) → enforcement(backtrack_to_primary). ProgPrompt: assert as pre-condition + recovery action.",
+    "auto_inject": {
+      "enabled": true,
+      "trigger": "EvolveStep: target nodes≥6 OR node_gate_required",
+      "action": "Scan non-Start nodes for missing [ASSERT]. Auto-inject gate at step1 opening. Multi-predecessor→list with ∨. POST-INJECT: verify every 'go back to' has concrete node name; auto-fix if empty. K-BOUNDED: inject max_backtrack_depth + backtrack_exceeded into target execution if absent. ENDNODE: normalize End→endNode((End)).",
+      "since": "3.4.0"
+    },
+    "applicability": {
+      "required_above_nodes": 6,
+      "recommended_above_nodes": 3,
+      "force_required_triggers": [
+        "QualityGate",
+        "self_evolution",
+        "trust_T3_plus"
+      ]
+    },
+    "compliance_check": "MF28: every non-start node S1 contains [ASSERT] referencing correct predecessor(s) from Mermaid edges. Multi-predecessor nodes MUST use ∨ syntax listing ALL incoming edge sources. Backtrack target after 'go back to' MUST be concrete non-empty node name. Terminal node MUST use endNode((End)) format."
+  },
+  "lightweight_policy": {
+    "principle": "Remove meaningless content, retain meaningful content",
+    "max_summary_chars": 500,
+    "rules": [
+      "CLOSED/DEPRECATED lifecycle tracking -> archive, keep 1-line status summary",
+      "Subsystem that only does mechanical increment -> retire",
+      "Subsystem duplicated by another -> merge",
+      "History entries with no future reference value -> archive",
+      "summary field: current capabilities only, <=500 chars (AIAP protocol alignment)"
+    ],
+    "history_retention": 5,
+    "archive_target": "quality_archive.json",
+    "enforcement": "advisory + max_summary_chars enforced"
+  },
+  "nihil_density_metrics": {
+    "enabled": true,
+    "description": "Nihil density tracking for generation hygiene. Measures meaningless content ratio in generated AISOP files.",
+    "thresholds": {
+      "green": 0.15,
+      "red": 0.3,
+      "ideal": 0.1
+    },
+    "categories": [
+      "GH1",
+      "GH2",
+      "GH3",
+      "GH4",
+      "GH5",
+      "GH6",
+      "GH7"
+    ],
+    "pipeline_stage": "NihilDensityStep (between Research3 and ValidateStep)",
+    "enforcement": "advisory — WARNING/CRITICAL logged but non-blocking. Backup created for affected files.",
+    "reporting": "ReviewPresent: display nihil_density_summary. ReviewFinalize: persist to quality_baseline.",
+    "generation_hygiene": {
+      "description": "Pre-generation and post-generation content hygiene checks. Full spec: AIAP_Standard.core.generation_hygiene.",
+      "spec_references": {
+        "execution_content": "AIAP_Standard.core.generation_hygiene.execution_content — what to write.",
+        "non_execution_content_prohibited": "AIAP_Standard.core.generation_hygiene.non_execution_content.prohibited — GH1-GH7 what NOT to write.",
+        "structural_protection": "AIAP_Standard.core.generation_hygiene.structural_protection — what not to touch.",
+        "examples": "AIAP_Standard.core.generation_hygiene.examples — good/bad step examples."
+      },
+      "pre_generation": "GenerateAISOP: before writing output, scan for filler patterns (GH1-GH7). Remove before write.",
+      "post_generation": "NihilDensityStep: full analysis after generation complete.",
+      "feedback_loop": "nihil_density_report feeds into ModifyStep quality fix directives for future iterations."
+    },
+    "trend_tracking": {
+      "enabled": true,
+      "history_field": "quality_baseline.nihil_data.history",
+      "regression_rule": "new_ratio > old_ratio * 1.05 → NIHIL_REGRESSION WARNING (5% regression tolerance)."
+    }
+  },
+  "self_evolution_nihil_policy": {
+    "mode": "monotonic_decreasing",
+    "rule": "Self: nihil_density MUST <= previous. Standard: 1.05 threshold.",
+    "enforcement": "new > old → WARNING → flag for review.",
+    "note": "Complements self_evolution_density_policy (monotonic_increasing for logic/info density)."
+  },
+  "monitoring": {
+    "description": "Monitoring and alerting thresholds for pipeline health observability. Consumed by ObservabilityStep and ReviewPresent.",
+    "alerting_thresholds": {
+      "pipeline_duration_warning_ms": 300000,
+      "pipeline_duration_critical_ms": 600000,
+      "stage_duration_anomaly_factor": 2.0,
+      "token_budget_warning_pct": 80,
+      "token_budget_critical_pct": 95,
+      "error_rate_warning_pct": 30,
+      "error_rate_critical_pct": 50,
+      "score_drop_warning": 0.3,
+      "score_drop_critical": 0.5
+    },
+    "health_check_interval": "per_pipeline_run",
+    "alert_channels": ["pipeline_metadata", "telemetry_report"],
+    "suppression_rules": {
+      "duplicate_window_ms": 60000,
+      "max_alerts_per_stage": 5
+    }
+  },
+  "execution_config_defaults": {
+    "description": "Documented defaults for execution configuration parameters. Provides rationale for each default value to support informed override decisions.",
+    "defaults": {
+      "quality_threshold": {
+        "value": "standard",
+        "rationale": "standard (weighted>=2.7) balances quality assurance with development velocity. strict (>=3.6) for production-critical programs. relaxed (>=2.0) for prototyping.",
+        "override": "CLI --quality-threshold or pipeline param"
+      },
+      "trace_budget": {
+        "value": 2000,
+        "rationale": "2000 trace entries sufficient for 18-stage pipeline with 30 trace_max per stage. Dynamic formula scales for larger targets.",
+        "override": "execution.trace_budget field"
+      },
+      "max_backtrack_depth": {
+        "value": "min(3, node_count / 4)",
+        "rationale": "Bounded backtracking prevents infinite loops while allowing recovery from transient failures. 3 is empirically sufficient for 21-node pipelines.",
+        "override": "node_gate.max_backtrack_depth field"
+      },
+      "self_evolution_penalty_multiplier": {
+        "value": 2.0,
+        "rationale": "Double penalty for self-evolution violations ensures stricter compliance when modifying own code, preventing degradation feedback loops.",
+        "override": "Not overridable — safety constraint"
+      },
+      "nihil_density_green_threshold": {
+        "value": 0.15,
+        "rationale": "15% meaningless content ratio is acceptable for generated AISOP files. Below 10% is ideal. Above 30% indicates generation quality issues.",
+        "override": "nihil_density_metrics.thresholds"
+      }
+    }
+  }
+}

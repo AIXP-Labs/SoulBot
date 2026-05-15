@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "MCP Server Configuration for soulbot_stock_analyzer_aiap v2.0.0",
+  "version": "2.0.0",
+  "mcp_protocol_version": "2025-03-26",
+  "servers": [
+    {
+      "name": "alpha_vantage",
+      "uri": "mcp://alpha-vantage.financial-data.mcp.dev",
+      "transport": "streamable-http",
+      "capabilities": [
+        "market_data",
+        "technical_indicators",
+        "fundamental_data",
+        "real_time_quotes",
+        "time_series",
+        "sector_performance"
+      ],
+      "auth": {
+        "type": "api_key",
+        "env_var": "ALPHA_VANTAGE_API_KEY",
+        "required": true
+      },
+      "rate_limits": {
+        "requests_per_minute": 75,
+        "requests_per_day": 500,
+        "note": "Free tier limits. Premium tier available."
+      },
+      "health_check": {
+        "endpoint": "/health",
+        "interval_seconds": 60,
+        "timeout_seconds": 5
+      },
+      "fallback": {
+        "strategy": "degrade_to_search",
+        "fallback_tool": "google_search",
+        "note": "If MCP server unavailable, fall back to google_search with financial data queries"
+      }
+    },
+    {
+      "name": "sec_edgar",
+      "uri": "mcp://sec-edgar.financial-data.mcp.dev",
+      "transport": "streamable-http",
+      "capabilities": [
+        "xbrl_financials",
+        "form_4_insider",
+        "company_filings",
+        "financial_statements",
+        "10k_10q_reports",
+        "company_facts"
+      ],
+      "auth": {
+        "type": "none",
+        "note": "SEC EDGAR API is public. Requires User-Agent header per SEC guidelines."
+      },
+      "rate_limits": {
+        "requests_per_second": 10,
+        "note": "SEC EDGAR fair access policy: max 10 requests/second with User-Agent identifying requester"
+      },
+      "headers": {
+        "User-Agent": "SoulBot-StockAnalyzer/2.0.0 (contact@soulbot.dev)"
+      },
+      "health_check": {
+        "endpoint": "/health",
+        "interval_seconds": 120,
+        "timeout_seconds": 10
+      },
+      "fallback": {
+        "strategy": "degrade_to_search",
+        "fallback_tool": "google_search",
+        "fallback_query_pattern": "{symbol} SEC EDGAR {filing_type} site:sec.gov",
+        "note": "If MCP server unavailable, fall back to google_search targeting sec.gov"
+      }
+    }
+  ],
+  "discovery": {
+    "server_card_path": ".well-known/mcp/server-card.json",
+    "manifest_path": ".well-known/mcp",
+    "sep_1649_compliance": true,
+    "note": "Server Card discovery per SEP-1649 MCP specification"
+  },
+  "global_settings": {
+    "timeout_seconds": 30,
+    "retry_policy": {
+      "max_retries": 3,
+      "backoff": "exponential",
+      "initial_delay_ms": 1000,
+      "max_delay_ms": 8000,
+      "jitter": "0-50%"
+    },
+    "circuit_breaker": {
+      "failure_threshold": 5,
+      "recovery_timeout_seconds": 60,
+      "half_open_requests": 1
+    }
+  },
+  "dora_compliance": {
+    "ict_third_party_monitoring": true,
+    "resilience_testing_tracked": true,
+    "incident_reporting_format": "DORA_ICT_REF",
+    "note": "DORA Digital Operational Resilience Act alignment for MCP third-party service providers"
+  }
+}

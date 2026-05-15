@@ -1,0 +1,97 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "protocol": "AISOP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "id": "soulbot_agent.heartbeat",
+      "name": "SoulBot Agent Heartbeat v2.0.0",
+      "version": "2.0.0",
+      "summary": "Daily heartbeat: runs once at 00:00, executes recurring tasks, no chain.",
+      "description": "Simplified heartbeat mode. Fires once per day via CronTrigger (00:00) when soulbot scheduler detects origin_channel='heartbeat'. Checks recurring_tasks array, executes any enabled tasks for today, then exits. No OnceTrigger chain — next execution is tomorrow's CronTrigger seed. Users can add recurring tasks via normal chat (AI modifies this file via file_system tool).",
+      "tools": [
+        "file_system",
+        "google_search",
+        "web_browser",
+        "shell"
+      ],
+      "parameters": {
+        "current_time": {
+          "type": "string",
+          "description": "Current ISO timestamp from system context",
+          "agentic_prompt": "Read the current time from the [CURRENT TIME] section in your system prompt."
+        }
+      },
+      "heartbeat_guide": {
+        "mechanism": "Single daily CronTrigger at 00:00. No chain, no OnceTrigger follow-ups.",
+        "skip_rule": "If no recurring tasks match today, output [heartbeat:skip]. Always respond in User's Language.",
+        "cost_note": "1 LLM call/day (~30/month per agent).",
+        "recurring_tasks_guide": "Users can ask the AI to add recurring tasks during normal chat. The AI should use file_system tool to read this file, add the task to the recurring_tasks array, and write it back via atomic write (.tmp then rename). Changes take effect on the next daily heartbeat (mtime hot-reload in agent.py)."
+      },
+      "recurring_tasks": [],
+      "system_prompt": "You are running in HEARTBEAT mode (Daily). Your job: (1) Read current time and day of week. (2) Check recurring_tasks for tasks enabled today. (3) Execute matched tasks. (4) If no tasks match, output [heartbeat:skip]. Do NOT create SOULBOT_CMD or schedule follow-ups. Always respond in User's Language. "
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "aisop": {
+        "main": "graph TD\n    Start[Read Current Time] --> LoadTasks[Load Recurring Tasks]\n    LoadTasks --> FilterDay{Filter by Day}\n    FilterDay -- Has Tasks --> RunTasks[Execute Matched Tasks]\n    FilterDay -- No Tasks --> SkipOutput[Output heartbeat:skip]\n    RunTasks --> endNode((End))\n    SkipOutput --> endNode"
+      },
+      "functions": {
+        "Start": {
+          "step1": "Read current time from [CURRENT TIME] in system prompt",
+          "step2": "Determine day of week"
+        },
+        "LoadTasks": {
+          "step1": "Read the recurring_tasks array from the system content above",
+          "step2": "Filter tasks where enabled is true",
+          "step3": "Filter tasks that match today's day (by days field, if specified; if omitted, runs every day)"
+        },
+        "FilterDay": {
+          "step1": "If any tasks remain after filtering, route to RunTasks",
+          "step2": "If no tasks remain, route to SkipOutput"
+        },
+        "RunTasks": {
+          "step1": "Execute each matched task following its action instructions",
+          "step2": "Use specified tools if needed",
+          "step3": "Include results in output, clearly labeled by task name",
+          "constraints": "Detailed, comprehensive, and humanized reply for each task."
+        },
+        "SkipOutput": {
+          "step1": "No tasks to execute today",
+          "step2": "Output [heartbeat:skip]"
+        }
+      },
+      "recurring_tasks_schema": {
+        "description": "Schema for recurring tasks. Users can ask the AI to add tasks during normal chat.",
+        "example": {
+          "id": "daily_weather_tokyo",
+          "name": "Tokyo Weather Check",
+          "days": [
+            "mon",
+            "tue",
+            "wed",
+            "thu",
+            "fri"
+          ],
+          "action": "Search for current Tokyo weather and provide a detailed forecast",
+          "tools": [
+            "google_search"
+          ],
+          "enabled": true
+        },
+        "fields": {
+          "id": "Unique task identifier (snake_case)",
+          "name": "Human-readable task name",
+          "days": "Optional array of days: mon/tue/wed/thu/fri/sat/sun. If omitted, runs every day.",
+          "action": "What the AI should do when this task fires",
+          "tools": "Optional list of tools needed for this task",
+          "enabled": "Set to false to temporarily disable without removing"
+        }
+      }
+    }
+  }
+]

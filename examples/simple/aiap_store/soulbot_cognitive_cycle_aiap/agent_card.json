@@ -1,0 +1,148 @@
+{
+  "name": "soulbot_cognitive_cycle",
+  "description": "Biologically-inspired cognitive cycle: Perceive-Reason-Feel-Decide-Act loop with metacognitive self-monitoring, memory consolidation, EU AI Act/NIST compliance. Metacognitive state vector framework, GWT adaptive broadcast frequency, EWC catastrophic forgetting prevention, COGITATE dual-pathway ignition, emotion regulation RL integration. 71 nodes across 8 modules, 22 scenarios. ThreeDimTest 4.70 (S). Pattern E architecture. Protocol: AIAP V1.0.0.",
+  "version": "2.35.0",
+  "provider": "AIXP Labs AIXP.dev | SoulBot.dev",
+  "pattern": "E",
+  "tags": [
+    "cognitive-cycle",
+    "perception",
+    "reasoning",
+    "emotion",
+    "decision",
+    "metacognition",
+    "consolidation",
+    "memory",
+    "attention",
+    "biologically-inspired"
+  ],
+  "skills": [
+    {
+      "id": "start_cognitive_cycle",
+      "name": "Start Cognitive Cycle",
+      "description": "Initialize and begin continuous cognitive processing loop with optional stimulus injection.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "pause_cycle",
+      "name": "Pause Cycle",
+      "description": "Pause cognitive processing, save current state, and report status.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "inspect_state",
+      "name": "Inspect State",
+      "description": "Report current cognitive state including fatigue, mood, goals, working memory, and cognitive health.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "trigger_sleep",
+      "name": "Trigger Sleep",
+      "description": "Force deep consolidation phase: full schema restructuring, aggressive decay, and memory reorganization.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "configure",
+      "name": "Configure",
+      "description": "Modify cognitive cycle parameters: fatigue threshold, cycle mode, burst count, and other runtime settings.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "inject_stimulus",
+      "name": "Inject Stimulus",
+      "description": "Inject a new external stimulus into the cognitive cycle for processing through the full perception-to-action pipeline.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": true
+  },
+  "trust_level": {
+    "level": "T3",
+    "authentication": "oauth2"
+  },
+  "tools": [
+    {
+      "name": "file_system",
+      "annotations": {
+        "read_only": false,
+        "destructive": false,
+        "idempotent": false,
+        "open_world": false
+      }
+    },
+    {
+      "name": "google_search",
+      "annotations": {
+        "read_only": true,
+        "destructive": false,
+        "idempotent": true,
+        "open_world": true
+      }
+    },
+    {
+      "name": "web_browser",
+      "annotations": {
+        "read_only": true,
+        "destructive": false,
+        "idempotent": true,
+        "open_world": true
+      }
+    }
+  ],
+  "modules": [
+    "soulbot_cognitive_cycle.main",
+    "soulbot_cognitive_cycle.perception",
+    "soulbot_cognitive_cycle.reasoning",
+    "soulbot_cognitive_cycle.emotion",
+    "soulbot_cognitive_cycle.decision",
+    "soulbot_cognitive_cycle.metacognition",
+    "soulbot_cognitive_cycle.compliance",
+    "soulbot_cognitive_cycle.consolidation"
+  ],
+  "tool_dirs": ["tool_dirs/"],
+  "status": "active",
+  "safety_card": {
+    "risk_level": "moderate",
+    "risk_justification": "T3 trust level with file_system write access limited to memory_dir (./memory/). No user-facing data modification -- writes are internal cognitive state (schema, context). Axiom 0 safety veto in decision module prevents harmful actions. Cycle count hard limit (10000) prevents runaway loops. No crisis-handling intents.",
+    "data_handling": "Cognitive state persisted to local file_system under memory_dir (./memory/). Three config files: schema.json (long-term knowledge), decay_config.json (decay parameters), context_manager.json (runtime state). No external data sharing. No user PII storage -- cognitive state models internal processing, not user profiles.",
+    "limitations": "Text-only input and output. No real-time sensory processing. Cognitive cycle is a model, not a simulation of consciousness. No autonomous destructive operations. Network access limited to reasoning-driven search queries."
+  },
+  "_generated": {
+    "generator": "AIAP Creator v1.0.0",
+    "timestamp": "2026-03-29T00:00:00Z"
+  },
+  "governance_hash": "519e6c2731a76571dc8a352a4b8f01db2d1cf1a87e746f1334264b1e457ad48c"
+}

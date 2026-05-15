@@ -1,0 +1,49 @@
+{
+  "_doc": "AIBP Bot 静态配置 — 服务器映射 + 消息类型 + 信任级别",
+  "_server_detection": "优先使用 myl-discovery 自动发现（DNS SRV），以下为 fallback 映射",
+
+  "server_fallback": {
+    "gmail.com": {"imap": "imap.gmail.com:993", "smtp": "smtp.gmail.com:465"},
+    "googlemail.com": {"imap": "imap.gmail.com:993", "smtp": "smtp.gmail.com:465"},
+    "outlook.com": {"imap": "outlook.office365.com:993", "smtp": "smtp.office365.com:587"},
+    "hotmail.com": {"imap": "outlook.office365.com:993", "smtp": "smtp.office365.com:587"},
+    "live.com": {"imap": "outlook.office365.com:993", "smtp": "smtp.office365.com:587"},
+    "yahoo.com": {"imap": "imap.mail.yahoo.com:993", "smtp": "smtp.mail.yahoo.com:465"},
+    "qq.com": {"imap": "imap.qq.com:993", "smtp": "smtp.qq.com:465"},
+    "foxmail.com": {"imap": "imap.qq.com:993", "smtp": "smtp.qq.com:465"},
+    "163.com": {"imap": "imap.163.com:993", "smtp": "smtp.163.com:465"},
+    "126.com": {"imap": "imap.126.com:993", "smtp": "smtp.126.com:465"},
+    "protonmail.com": {"imap": "127.0.0.1:1143", "smtp": "127.0.0.1:1025", "_note": "requires ProtonMail Bridge"}
+  },
+
+  "_server_detection_logic": "Step 1: .env AIBP_IMAP_HOST/SMTP_HOST（最高优先级）→ Step 2: myl-discovery DNS SRV → Step 3: server_fallback → Step 4: 报错 CONFIG_MISSING",
+
+  "aibp_message_types": [
+    "INTRODUCE", "WELCOME", "CHAT", "UPDATE",
+    "ASK", "SHARE", "REQUEST", "OFFER", "DELIVER",
+    "FEEDBACK", "THANK", "APOLOGIZE", "DECLINE",
+    "BLOCK", "UNBLOCK", "FAREWELL",
+    "PAUSE", "RESUME", "REPORT",
+    "WEB_BOOKMARK", "DISCOVER"
+  ],
+
+  "trust_levels": {
+    "T0": 0,
+    "T1": 1,
+    "T2": 2,
+    "T3": 3,
+    "T4": 4
+  },
+
+  "timeouts": {
+    "imap_connect": 10,
+    "smtp_connect": 10,
+    "dns_query": 5,
+    "sqlite_query": 5,
+    "subprocess_inbox": 30,
+    "subprocess_send": 30,
+    "subprocess_parse": 5,
+    "subprocess_validate": 15,
+    "subprocess_health": 15
+  }
+}

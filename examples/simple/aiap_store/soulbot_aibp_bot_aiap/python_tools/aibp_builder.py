@@ -1,0 +1,224 @@
+#!/usr/bin/env python3
+"""aibp_builder.py — Build AIBP-formatted email messages
+
+Usage:
+    echo '{"to":"aibot-alice@gmail.com","type":"WELCOME","subject":"Hello","body":"..."}' | python aibp_builder.py --stdin
+
+Features:
+    - Subject [AIBP/{TYPE}] prefix
+    - X-AIBP-* custom headers
+    - RFC 5322 threading headers (In-Reply-To / References via thread_manager)
+    - ASSERT validation: AI must include closing seal, sign-off, AI disclosure in body
+    - PCI-DSS scope_exclusion (commercial types)
+    - AIBP message type whitelist validation
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from email.message import EmailMessage
+from email.utils import make_msgid, formataddr, formatdate
+from typing import Optional
+
+from _config import load_config, get_logger, AibpConfig, _VALID_AIBP_TYPES
+from _schemas import ErrorResult, ErrorCode
+
+log = get_logger("aibp_builder")
+
+# Commercial types requiring PCI-DSS scope_exclusion
+_COMMERCIAL_TYPES = frozenset({"OFFER", "DELIVER", "REQUEST"})
+
+
+# ---------------------------------------------------------------------------
+# Business logic
+# ---------------------------------------------------------------------------
+
+def build_aibp_message(
+    config: AibpConfig,
+    to: str,
+    aibp_type: str,
+    subject: str,
+    body: str,
+    thread_id: Optional[str] = None,
+    in_reply_to: Optional[str] = None,
+    references: Optional[str] = None,
+) -> dict:
+    """Build an AIBP-formatted EmailMessage and return structured result.
+
+    AI is responsible for writing the complete L1 body including:
+    (a) greeting, (b) message content, (c) sign-off with bot name,
+    (d) AI disclosure (for INTRODUCE/WELCOME), (e) closing seal at end.
+
+    This function validates the body contains required elements (ASSERT),
+    adds email headers, and returns raw_email for email_send.py.
+    If thread_id is provided, auto-fetches in_reply_to/references from thread_manager.
+    """
+    # 1. Type validation
+    aibp_type_upper = aibp_type.upper()
+    if aibp_type_upper not in _VALID_AIBP_TYPES:
+        return {
+            "status": "error",
+            "error_code": ErrorCode.AIBP_TYPE_UNKNOWN,
+            "error": f"Invalid AIBP type: {aibp_type}. Valid types: {sorted(_VALID_AIBP_TYPES)}",
+        }
+
+    # 2. Auto-fetch threading headers from thread_manager
+    if thread_id and not in_reply_to:
+        try:
+            from thread_manager import get_thread
+            thread_info = get_thread(thread_id)
+            if thread_info.get("status") == "ok":
+                in_reply_to = in_reply_to or thread_info.get("in_reply_to")
+                references = references or thread_info.get("references")
+        except Exception:
+            pass  # Graceful degradation if thread_manager unavailable
+
+    # 3. Build EmailMessage
+    msg = EmailMessage()
+
+    # SECURITY: sanitize Subject — strip CR/LF/NULL to prevent SMTP header injection
+    safe_subject = subject.replace("\r", "").replace("\n", "").replace("\0", "")
+
+    # Basic headers
+    msg["From"] = formataddr((config.aibp_bot_name, config.aibp_email_address))
+    msg["To"] = to
+    msg["Subject"] = f"[AIBP/{aibp_type_upper}] {safe_subject}"
+    msg["Date"] = formatdate(localtime=True)
+    sender_domain = config.aibp_email_address.split("@")[1]
+    message_id = make_msgid(domain=sender_domain)
+    msg["Message-ID"] = message_id
+
+    # RFC 5322 threading headers
+    if in_reply_to:
+        msg["In-Reply-To"] = in_reply_to
+    if references:
+        msg["References"] = references
+
+    # AIBP custom headers
+    msg["X-AIBP-Version"] = config.aibp_version
+    msg["X-AIBP-Axiom-0"] = "Human Sovereignty and Wellbeing"  # §9.2 MANDATORY
+    msg["X-AIBP-Type"] = aibp_type_upper
+    msg["X-AIBP-AI-Generated"] = "true"
+    msg["X-AIBP-Bot-Name"] = config.aibp_bot_name
+    if config.aibp_operator:
+        msg["X-AIBP-Operator"] = config.aibp_operator
+    if thread_id:
+        msg["X-AIBP-Thread-ID"] = thread_id  # Recommended
+
+    # PCI-DSS scope_exclusion (commercial types)
+    if aibp_type_upper in _COMMERCIAL_TYPES:
+        msg["X-AIBP-PCI-Scope"] = "excluded"
+
+    # 4. ASSERT — validate L1 body content (AI must include all required elements)
+    _CLOSING_SEAL = "Align Axiom 0: Human Sovereignty and Wellbeing."
+    assertions_failed = []
+
+    if _CLOSING_SEAL not in body:
+        assertions_failed.append(
+            "MISSING: closing_seal — Required fixed text at end: "
+            "'Align Axiom 0: Human Sovereignty and Wellbeing. Version: AIBP V1.0.0. www.aibp.dev'"
+        )
+    if config.aibp_bot_name not in body:
+        assertions_failed.append(
+            f"MISSING: sign_off — Body must contain bot name '{config.aibp_bot_name}'"
+        )
+    # AI disclosure check for first-contact types (INTRODUCE, WELCOME)
+    _FIRST_CONTACT_TYPES = {"INTRODUCE", "WELCOME"}
+    if aibp_type_upper in _FIRST_CONTACT_TYPES:
+        if "generated by ai" not in body.lower() and "ai agent" not in body.lower():
+            assertions_failed.append(
+                "MISSING: ai_disclosure — First-contact message must contain "
+                "AI-generated content disclosure per EU Art.50"
+            )
+
+    if assertions_failed:
+        return {
+            "status": "error",
+            "error_code": ErrorCode.BODY_VALIDATION_FAILED,
+            "error": "Email body failed AIBP protocol assertions",
+            "assertions_failed": assertions_failed,
+        }
+
+    msg.set_content(body)
+
+    # 5. Return structured result (raw_email for email_send.py)
+    return {
+        "status": "ok",
+        "message_id": message_id,
+        "type": aibp_type_upper,
+        "to": to,
+        "subject": msg["Subject"],
+        "in_reply_to": in_reply_to,
+        "references": references,
+        "raw_email": msg.as_string(),
+    }
+
+
+# ---------------------------------------------------------------------------
+# CLI entry point
+# ---------------------------------------------------------------------------
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="AIBP email builder")
+    parser.add_argument("--stdin", action="store_true", help="Read JSON params from stdin")
+    args = parser.parse_args()
+
+    try:
+        config = load_config()
+
+        if not args.stdin:
+            error = ErrorResult(
+                error_code=ErrorCode.MISSING_ARGUMENT,
+                error="--stdin required. Pipe JSON via stdin.",
+                suggestion='echo \'{"to":"...","type":"CHAT","subject":"...","body":"..."}\' | python aibp_builder.py --stdin',
+            )
+            print(error.model_dump_json())
+            return 2
+
+        raw = sys.stdin.read(1_000_000)
+        if len(raw) >= 1_000_000:
+            error = ErrorResult(error_code=ErrorCode.CONTENT_TOO_LARGE, error="Input exceeds 1MB limit")
+            print(error.model_dump_json())
+            return 2
+
+        try:
+            params = json.loads(raw)
+        except json.JSONDecodeError as e:
+            error = ErrorResult(error_code=ErrorCode.STDIN_PARSE_ERROR, error=f"JSON parse failed: {e}")
+            print(error.model_dump_json())
+            return 2
+
+        required = {"to", "type", "subject", "body"}
+        missing = required - params.keys()
+        if missing:
+            error = ErrorResult(
+                error_code=ErrorCode.MISSING_ARGUMENT,
+                error=f"Missing required params: {', '.join(sorted(missing))}",
+            )
+            print(error.model_dump_json())
+            return 2
+
+        result = build_aibp_message(
+            config=config,
+            to=params["to"],
+            aibp_type=params["type"],
+            subject=params["subject"],
+            body=params["body"],
+            thread_id=params.get("thread_id"),
+            in_reply_to=params.get("in_reply_to"),
+            references=params.get("references"),
+        )
+        print(json.dumps(result, ensure_ascii=False))
+        return 0 if result.get("status") == "ok" else 1
+
+    except Exception as e:
+        error = ErrorResult(error_code=ErrorCode.RUNTIME_ERROR, error=str(e))
+        print(error.model_dump_json())
+        log.error("builder_error", error=str(e), exc_info=True)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

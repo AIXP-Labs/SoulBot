@@ -1,0 +1,343 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "template_version": "1.6.0",
+      "last_verified_date": "2026-05-12",
+      "extends": "AIAP_Standard.core.aisop.json",
+      "id": "aiap_standard.ecosystem",
+      "version": "1.0.0",
+      "trust_level": 4,
+      "name": "AIAP Quality Standard — Ecosystem Extension v1.0.0",
+      "output_mode": {
+        "L0": "Output JSON in ENGLISH: {intent, confidence, route, state, op}",
+        "L1": "Output helpfully in User's exact language and script variant",
+        "output": "L1"
+      },
+      "description": "Ecosystem-focused quality rules extending the core STANDARD. Includes multi-file consistency (MF10-MF14, MF16), lifecycle management (PL16-PL17 with dynamic TTL), K1-K5 multi-agent collaboration, K6-K10 cross-agent federation, advanced simulation categories (F-K), YELLOW persistence tracking, tool_dirs packaging specification with Code Trust Gate, registry endpoint extension (MCP/A2A endpoints), PL25 License Declaration (SPDX license validation), and ui_rendering_rules. Loaded for Pattern B+ programs.",
+      "fractal_exempt": "Standard library reference module — no executable flow graph.",
+      "tools": [
+        {
+          "name": "file_system",
+          "annotations": {
+            "read_only": true,
+            "destructive": false,
+            "idempotent": true,
+            "open_world": false
+          }
+        }
+      ],
+      "summary": "Ecosystem extension for AIAP quality standard — multi-file, lifecycle, multi-agent rules.",
+      "loading_mode": "normal",
+      "system_prompt": "AIAP ecosystem quality extension. Enforce multi-file consistency, lifecycle management, and multi-agent collaboration quality. Mirror User's exact language and script variant.\nAlign Axiom 0: Human Sovereignty and Wellbeing.",
+      "multi_file_guidelines": {
+        "description": "Extended multi-file quality rules for Pattern B+ AISOPs (supplements MF1-MF9 in core).",
+        "rules": {
+          "MF10": "System prompt consistency: all sub-module system_prompts in a Pattern B+ AISOP MUST include 'Mirror User\\'s exact language and script variant.' (D6 requirement) and 'Align Axiom 0: Human Sovereignty and Wellbeing.' (Axiom 0 seal). Check: for each .aisop.json file in the project, grep system_prompt for both required strings. Missing either is a MF10 violation.",
+          "MF11": "Error strategy consistency: every Error field across all modules in a Pattern B+ AISOP MUST follow the retry→circuit-breaker→fallback→inform pattern (per I4). Check: for each function in each .aisop.json file, verify Error field contains all four keywords in order. EXEMPTION: exact-match routing gates (per I4 exemption) may use simplified pattern.",
+          "MF12": "Tools union verification: for Pattern B+ AISOPs, the main router's tools[] MUST equal the union of all sub-module tools[]. Check: collect tools[] from all sub-modules, compute union, compare against main.tools[]. Any tool in sub-module but not in main is MF12-MISSING. Any tool in main but not in any sub-module is MF12-PHANTOM (unless main itself uses it in its own functions).",
+          "MF13": "Persisted data schema versioning: all data structures written to persistent storage (file_system writes) MUST include a schema_version field (e.g., schema_version: '1.0'). This enables safe schema migration when data formats evolve across versions. SCOPE: includes both primary data files (explicitly created by dedicated functions) AND derivative files (created as side effects during consolidation, audit logging, export, or other multi-step operations). Check: (1) for each function that writes to file_system, identify ALL data schemas being written — including initialization templates in 'if not found, initialize' blocks — verify each includes schema_version. (2) For each function that reads persisted data, verify it handles missing schema_version gracefully (in-place migration to current version). (3) Trace cross-function file creation: if function A's steps describe creating or appending to files not in A's primary write path (e.g., audit logs, consolidated summaries), verify those files also include schema_version. Missing schema_version in any write template is MF13-MISSING. Missing migration handling in any read is MF13-MIGRATION-GAP. Derivative file without schema_version is MF13-DERIVATIVE.",
+          "MF14": "Cross-module field consumer validation: for each data object produced by module A and consumed by module B (e.g., satisfaction_signal, cause_context, abuse_scores, proactive_context), verify that field names, types, and semantic meaning are consistent between producer and consumer. Check: (1) PRODUCER TRACE — identify all cross-module data objects by scanning step instructions for objects passed between modules (keywords: 'pass to', 'consumed by', 'received from', 'output to'). (2) CONSUMER TRACE — for each produced object, identify all consuming modules and verify field references match the producer's schema. (3) DEPENDENCY GRAPH — produce a field dependency graph as validation artifact: { producer_module, field_name, consumer_modules[], field_type }. Missing consumer reference is MF14-ORPHAN-FIELD. Consumer referencing non-existent producer field is MF14-BROKEN-REF. Type mismatch between producer and consumer is MF14-TYPE-MISMATCH. Target AISOPs SHOULD define canonical schemas for frequently exchanged cross-module objects in their module headers or a shared data contract section. ZERO-TOOL MODULES: for modules with tools=[] (pure inference modules), output traceability is satisfied by verifiable return value contracts — the module MUST produce structured output with typed fields consumed by the calling module. MF14 traces return value fields the same way it traces tool side effects. Example: safety.aisop.json (tools=[]) produces safety_verdict={ safe: boolean, flags: [], action: 'proceed'|'intervene'|'block' } — MF14 traces these fields to their consumers in main.aisop.json. MULTI-HOP CHAIN VALIDATION (B1 v1.18.0): For data flows spanning 3+ modules (e.g., profiler→main→memory), perform transitive chain analysis: (4) CHAIN EXTRACTION — for each LEVEL_B change in Evolve mode, extract producer-consumer pairs from step text using patterns: 'pass {field} to {module}', 'receive {field} from {module}', 'read {field} from {source}', 'delegate to {module} — pass {field}'. Build directed data flow graph across all modules. (5) INTERMEDIARY VERIFICATION — for chains with 3+ hops (A→B→C or longer), verify each intermediary module (B) explicitly documents BOTH receiving the data FROM upstream AND forwarding it TO downstream. If intermediary lacks explicit forwarding specification: flag MF14-INTERMEDIARY-GAP. (6) FIELD NAME CONSISTENCY — validate parameter/field names match at each hop in the chain. If profiler produces 'growth_signals' but memory consumes 'growth_data', flag MF14-CHAIN-NAME-MISMATCH with suggestion to unify field names. (7) CHAIN REPORT — output: { chains_checked: number, chains_valid: number, intermediary_gaps: [{ chain, intermediary_module, missing: 'receive'|'forward'|'both' }], name_mismatches: [{ chain, hop, expected_field, actual_field }] }.",
+          "MF19": {
+            "name": "Data Lifecycle Completeness Audit",
+            "check": "For each data entity introduced or modified by LEVEL_B changes, trace storage locations across all modules. Build data residency map: { entity_name → [module.file, module.file, ...] }. Verify lifecycle completeness: (a) DELETION COVERAGE — if a data entity is stored in 2+ modules, verify that ALL deletion operations (ClearProfile, DeleteData, GDPR erasure, user-initiated delete) cover ALL storage locations. If deletion covers only a subset: flag MF19-ORPHAN-RESIDUE 'entity {name} stored in [{locations}] but deletion in {delete_function} only covers [{covered}] — orphaned data residue risk in [{uncovered}]'. (b) EXPORT COVERAGE — if program has data export functionality (GDPR export, backup), verify exported data includes ALL distributed copies of each entity. Missing export source: flag MF19-EXPORT-GAP. (c) SCHEMA MIGRATION — if entity schema changes across modules (e.g., profiler stores v3.0 schema while memory stores v2.0 references), flag MF19-SCHEMA-DRIFT. SCOPE: applies to Pattern B+ programs with 2+ modules that share data entities. Single-module programs are exempt. EVOLVE MODE: when evolution introduces new storage locations for existing data, automatically check existing deletion/export operations for coverage.",
+            "severity": "YELLOW (advisory) — orphaned data is a privacy/compliance risk but not a structural error. Escalate to RED if program declares GDPR compliance in safety module.",
+            "evidence": "soulbot_chat v1.8.0: growth_dimensions stored in profiler (profile.growth_dimensions) AND growth_milestones in memory (topic_graph.json). ClearProfile initially did NOT clean memory module data — caught in simulation (C3-R1), required manual fix."
+          },
+          "MF16": "CANONICAL DEFINITION (supersedes core MF16 a-d): Pattern G Tool Directory Validation: (a) mcp_server.json exists at declared path. (b) mcp_server.json exposed_tools entries have corresponding AIAP.md tools[] declarations. (c) AIAP.md tools[] entries referencing mcp_server exist in exposed_tools. (d) a2a agent_card.json governance_hash matches AIAP.md. (e) When aiap_tools/ exists: each sub-directory must contain valid AIAP.md with all 6 required governance fields present. (f) Each aiap_tools/ sub-program AIAP.md governance fields structurally complete (protocol, authority, seed, executor, axiom_0, governance_mode all present and non-empty). (g) Each aiap_tools/ sub-program tool_dirs declarations (if any) match actual directory structure within the sub-program. (h) Parent AIAP.md tools[] entries using aiap:{name} prefix must have corresponding aiap_tools/{name}_aiap/ directory. NOTE: MF16 checks directory-structure consistency; I13(g)(h) checks security-value constraints (trust_level numeric comparison, permissions scope subset). No duplication."
+        }
+      },
+      "pipeline_rules": {
+        "description": "Ecosystem pipeline rules (supplements PL1-PL12 in core).",
+        "rules": {
+          "PL16": "Lifecycle Status Management: AIAP.md status field tracks program lifecycle stage. Valid values: draft (initial creation, not yet finalized), active (production-ready, pipeline-maintained), deprecated (scheduled for removal), archived (read-only historical record). Valid forward transitions: draft→active (on first successful pipeline completion), active→deprecated (via DeprecateFlow — requires deprecated_date + deprecation_reason + successor recommendation), deprecated→archived (after migration period, default 90 days). Reverse transitions NOT permitted without explicit version reset. PipelineStart MUST check status: if deprecated → WARN and suggest successor; if archived → BLOCK Evolve/Modify operations (read-only). DeprecateFlow generates migration_guide per STANDARD.data_contracts.migration_guide. D9 quality check verifies status field validity and transition legality.",
+          "PL17": "Pipeline Cache Policy: Research and Validate stages produce deterministic outputs for the same inputs within a time window. Cache policy: (a) CACHEABLE stages: Research1 (structure), Research2 (quality), Research3 (compliance), ValidateStep — outputs may be reused if target AISOP content_hash is unchanged AND cache_age < TTL. (b) TTL POLICY: base TTLs: Research1/2/3 = 24 hours (86400s), ValidateStep = 1 hour (3600s). DYNAMIC TTL: if .version_history/.cache/ contains 3+ prior cache entries for the same stage+mode, compute content_change_frequency = (unique_content_hashes) / (time_span_hours). Adaptive TTL = base_ttl * (1 / (1 + change_frequency)). Minimum floor: Research = 1 hour, Validate = 10 minutes. Maximum ceiling: Research = 72 hours, Validate = 4 hours. If fewer than 3 prior entries, use base TTL. Record effective_ttl in cache entry metadata per STANDARD.data_contracts.cache_policy. (c) CACHE KEY: SHA-256(target_content_hash + research_mode + workspace_dir). (d) CACHE STORAGE: .version_history/.cache/{cache_key}.json with { result, timestamp, ttl_seconds, cache_key }. (e) CACHE HIT: if valid cache found, skip stage execution, load cached result, record cache_hit=true in pipeline_metadata. (f) CACHE INVALIDATION: any file write to target directory invalidates all caches for that target. Manual: user can request 'fresh' to bypass cache. (g) NON-CACHEABLE: Generate, Modify, Simulate, Review, Observability — these stages depend on prior stage outputs and are not idempotent across pipeline runs. (h) EVOLVE INTRA-PIPELINE: during Evolve operations, files modified by Generate1 (Wave 1) have changed content_hash, invalidating cache entries for those files. Executor SHOULD maintain a pipeline_dirty_set tracking files modified in the current pipeline run. Cache hits are valid only for files NOT in pipeline_dirty_set. This makes cache behavior explicit during multi-wave Evolve operations where Generate1 outputs feed Generate2 inputs.",
+          "PL22": "Registry Integration: DiscoverStep supports federated program discovery. (a) LOCAL SCAN: always execute — scan workspace_dir *_aiap/ directories for AIAP.md (existing behavior). (b) REMOTE QUERY: if AIAP.md registry_uri is configured (non-null), query remote registry via GET {registry_uri}/search?q={query}&tags={tags}. Timeout: 3 seconds. (c) FEDERATION: merge local + remote results, deduplicate by program_id (local entries take priority over remote). Sort combined results by relevance_score descending. (d) CACHE: remote query results cached with TTL=1 hour (3600s). Cache key: SHA-256(registry_uri + query). (e) TRUST: remote entries default to REMOTE_UNVERIFIED status. Operations requiring trust (Evolve, Modify) on remote entries MUST first verify governance_hash. (f) OFFLINE: if remote registry is unreachable (timeout or error), proceed with local-only results + emit WARNING: 'Remote registry unavailable, showing local results only.' N/A when registry_uri is null (pure local discovery, backward compatible).",
+          "PL25": "License Declaration: programs submitted to aiap-store MUST declare a valid license field in AIAP.md. (a) AIAP.md MUST contain a license field. (b) license value MUST be a valid SPDX License Identifier (per https://spdx.org/licenses/) or 'proprietary'. (c) If license='proprietary', AIAP.md MUST also contain at least one of: terms_url (URL to licensing terms) or contact (email for license inquiries). (d) N/A for programs not submitted to aiap-store (local-only use). Severity: BLOCK (missing or invalid license rejects Store submission)."
+        },
+        "registry_endpoint_extension": {
+          "description": "Extended registry entries for Pattern G programs with service endpoints.",
+          "entry_extension": {
+            "endpoints": "{ mcp: string (stdio protocol URI), a2a: string (agent protocol URI) } -- optional, present for programs with mcp_server.json or agent_card.json (agent_card.json is unconditional since P11)",
+            "tool_dirs": "[string] -- list of tool_dirs type names included in program (e.g., ['python_tools', 'mcp_tools'])"
+          },
+          "discovery_rules": [
+            "DiscoverStep parses endpoints field for capability matching",
+            "MCP endpoint presence enables direct tool invocation without unpacking",
+            "A2A endpoint presence enables agent-to-agent delegation discovery",
+            "Remote registry entries with endpoints inherit UNTRUSTED trust level until local Code Trust Gate verification"
+          ],
+          "mcp_tasks_interop": {
+            "description": "Mapping between AIAP task states and MCP Tasks primitive (Nov 2025)",
+            "state_mapping": {
+              "aiap_pending": "mcp_working",
+              "aiap_active": "mcp_working",
+              "aiap_input_required": "mcp_input_required",
+              "aiap_completed": "mcp_completed",
+              "aiap_failed": "mcp_failed",
+              "aiap_cancelled": "mcp_cancelled"
+            },
+            "elicitation_support": {
+              "description": "MCP Elicitation (June 2025) enables servers to request additional user input during tool execution",
+              "aiap_mapping": "Programs with human-in-the-loop requirements (trust_level T3+) SHOULD expose elicitation capability in MCP server config",
+              "detection": "Research1 identifies elicitation needs from NLU intents requiring user confirmation"
+            },
+            "extensions_mechanism": {
+              "description": "MCP Extensions (Nov 2025) provides standardized extension loading",
+              "aiap_alignment": "AIAP extension_registry (STANDARD.core) maps to MCP Extensions for runtime capability advertisement"
+            }
+          },
+          "mcp_registry_federation": {
+            "description": "MCP Registry (Sept 2025) supports federated public/private model",
+            "aiap_alignment": "PL22 registry_integration supports both public AIAP registries and private organizational registries, aligning with MCP Registry federation model",
+            "governance": "MCP governed by AAIF / Linux Foundation (Dec 2025). A2A governed by AAIF / Linux Foundation (Jun 2025). W3C AI Agent Protocol Community Group targeting standards 2026-2027."
+          }
+        }
+      },
+      "simulation_categories": {
+        "description": "Advanced simulation categories for complex architectures (supplements A-E in core).",
+        "categories": {
+          "F_domain_specific": "Test domain-critical scenarios using research_context findings (allergen safety, regulatory compliance, data accuracy).",
+          "G_comparative": "If evolution_context provided, test old vs new behavior for each LEVEL_A/B change. Verify new paths differ from old, flag regressions on unchanged paths.",
+          "H_mutation": "Perturbation testing: generate 3-5 micro-mutations of the target AISOP (remove one Error field, delete one guard, disconnect one Mermaid edge, add phantom tool, remove boundary rule). Verify ThreeDimTest detects each mutation as a quality drop. If mutation passes undetected, flag as SENSITIVITY_GAP.",
+          "I_state_transition": "State persistence testing for Pattern E (and other stateful patterns): (I1) state write→read round-trip — write state in one session, verify retrieval in next. (I2) state decay — verify time-based memory decay triggers correctly. (I3) concurrent state access — two operations accessing same state file. (I4) state corruption recovery — malformed state file → graceful fallback (if atomic write pattern with .bak is used, fallback MUST attempt reading .bak before returning empty/default state). (I5) schema migration — load persisted data with older or missing schema_version, verify current code can read and migrate it without data loss (e.g., missing schema_version → set to '1.0', old field layout → map to current schema). (I6) cross-module path consistency — verify that file paths written by one module are readable by all modules that consume that file (validates MF4-PATH at runtime). (I7) safety-signal persistence scope — for programs with safety modules that accumulate session-level risk scores (abuse patterns, escalation flags, crisis indicators), verify persistence behavior: (a) session-only scores (e.g., abuse_scores with per-turn decay) that reset each session MUST be tested for cross-session accumulation gaps — simulate a user describing concerning patterns across 3+ short sessions where no single session reaches detection threshold, verify whether the design intentionally accepts this gap or requires cross-session aggregation. (b) If cross-session persistence is implemented (via profile or semantic memory), verify decay rate is appropriate (e.g., -0.1/session vs -0.05/turn) and does not create false positives from stale data. (c) Document the design decision (session-only vs cross-session) in simulation notes. Minimum 5 scenarios for Pattern E (I1+I2+I4+I5+I6 mandatory; I3, I7 recommended — I7 applies when safety module with accumulative scoring exists). Additional Pattern E scenarios for programs with resource management or feedback loops: (I8) resource-state interaction — memory growth triggers resource constraint (e.g., token budget depletion triggers aggressive summarization mode), verify state transitions are reversible when resource pressure eases. (I9) feedback persistence decay — feedback corrections stored with decay factor across N sessions, verify corrections with strength < prune_threshold are removed, verify high-frequency corrections maintain strength through reinforcement. (I10) cross-session state reset — verify session-scoped state (e.g., token_context) resets on new session while profile-scoped state (e.g., feedback_corrections) persists. Recommended for Pattern E programs with resource management (I8) or feedback loops (I9+I10), 0 for stateless patterns.",
+          "J_trust_boundary": "Trust boundary testing: (J1) trust_level compliance — verify program's runtime behavior stays within declared trust_level permissions (e.g., T2 program must not attempt writes). (J2) permission escalation — simulate input that attempts to trigger operations beyond declared permissions scope. (J3) trust downgrade — simulate executor restricting trust_level mid-execution (T4→T3), verify graceful degradation. (J4) cross-program trust — if program delegates to sub-programs, verify delegated trust_level does not exceed parent's level. Minimum 3 scenarios for programs with trust_level >= T3 (J1+J2+J3 mandatory), 0 for T1/T2.",
+          "K_multi_agent": "Multi-agent collaboration testing: (K1) Delegation handoff — Program A delegates to Program B, verify data contracts match (A's output schema superset of B's required input), verify handoff_result returned correctly. (K2) Parallel execution — Multiple programs process same input, verify no conflicting file_system writes (path collision detection), verify independent outputs. (K3) Result aggregation — Combine outputs from multiple programs, verify aggregated result contains all expected fields, no data loss. (K4) Cross-program error propagation — Simulate error in Program B during delegation from A, verify A handles gracefully per Error fields, verify no cascading failures. Minimum 4 scenarios for programs with ecosystem_map or non-empty dependencies[] (K1+K2+K3+K4 all mandatory), 0 for standalone programs.",
+          "K5_capability_negotiation": "MCP capability negotiation testing: for programs with mcp_adapter output (mcp_tool_mapping), verify: (K5.1) offered_capabilities list matches actual AIAP functions — each capability maps to a real module function. (K5.2) MCP Tool annotations (readOnlyHint, destructiveHint, etc.) are consistent with AIAP tool annotations (read_only, destructive, etc.) via interop.mcp_tool_mapping mapping rules. (K5.3) negotiation_result respects trust_level constraints — T2 programs must not expose destructive tools. (K5.4) MCP inputSchema matches AIAP json_schema (from P2-4). Minimum 1 scenario for programs with mcp_adapter output, 0 for programs without MCP integration. Additionally test runtime capability negotiation (per STANDARD.data_contracts.capability_negotiation): (K5.5) capability_negotiation full match — program A offers all capabilities required by program B, verify negotiation_result='full' and negotiated[] contains all required items. (K5.6) capability_negotiation partial match — program A offers subset of B's required, verify negotiation_result='partial' and negotiated[] contains only matched items, WARNING emitted. (K5.7) capability_negotiation incompatible — program A offers none of B's required, verify negotiation_result='incompatible' and negotiated==[].",
+          "L_ui_output": "UI output generation testing: derive scenario inputs from target program's actual AIAP.md ui block, not from generic Creator examples. (L.ui1) verify dashboard component generation with data_source matching target's declared data_source and rendering_engine matching target's ui.rendering, (L.ui2) verify form component generation with field validation against target's declared field types and interactivity=true. Minimum 2 scenarios for programs declaring ui block, 0 for programs without ui.",
+          "M_tool_directory": "Tool directory testing for Pattern G programs: (M1) normal MCP Server startup from tool_dirs/ and successful tool invocation via stdio. (M2) MCP Server startup failure — verify graceful degradation without blocking pipeline. (M3) Python requirements.txt dependency installation failure — verify error reporting and fallback. (M4) MCP Server tool call timeout — verify timeout detection and recovery. (M5) Code Trust Gate rejection — governance_hash mismatch between AIAP.md and recomputed hash, verify execution is blocked. (M6) ZIP SLIP attack — malicious path in tool_dirs/ archive member, verify path validation rejects. (M7) Network permission violation — Python tool imports requests but permissions.network.allowed is false, verify I13(b) blocks. (M8) TS/JS version constraint violation — package.json contains ^ prefix, verify I13(d) detects. (M9) Go dependency lock missing — go.sum absent, verify I13(d) detects. (M10) Rust binary hash mismatch — precompiled binary SHA-256 differs from mcp_server.json file_hashes, verify I13(a) blocks. (M11) Shell trust violation — shell_tools/ present but trust_level < T4, verify I13(f) blocks. (M12) Multi-language partial failure — multiple language MCP Servers, one fails to start, verify remaining servers operate normally. Minimum 4 scenarios (M1+M2+M5+M6 mandatory) for Pattern G programs, 0 for non-Pattern-G programs. M13 (aiap_tools sub-program normal load and execution — parent invokes aiap:data_cleaner, executor locates aiap_tools/data_cleaner_aiap/, verifies trust+permissions+hash, loads and executes, returns result; Expected: PASS). M14 (aiap_tools sub-program AIAP.md missing — executor detects missing AIAP.md in sub-directory; Expected: FAIL INVALID_AIAP_MD). M15 (aiap_tools sub-program trust_level > parent — sub declares T4 but parent is T3, Code Trust Gate intercepts; Expected: FAIL TRUST_CEILING_VIOLATION). M16 (aiap_tools sub-program governance_hash mismatch — recomputed hash differs from declared; Expected: FAIL INTEGRITY_VIOLATION). M17 (aiap_tools recursion depth exceeded — A contains aiap_tools B contains aiap_tools C contains aiap_tools D at depth 4; Expected: FAIL RECURSION_DEPTH_EXCEEDED). M18 (aiap_tools sub-program permissions exceed parent — sub declares scope /tmp/ but parent scope is ./memory/; Expected: FAIL PERMISSION_VIOLATION). M19 (aiap_tools circular dependency — program A has aiap_tools containing B, B has aiap_tools containing A, call_stack detects duplicate; Expected: FAIL CIRCULAR_DEPENDENCY). M20 (aiap_tools version incompatibility — sub min_protocol_version V2.0.0 but parent uses V1.0.0; Expected: FAIL PROTOCOL_VERSION_INCOMPATIBLE). For aiap_tools scenarios: M13 mandatory, M14-M20 recommended when aiap_tools/ is present.",
+          "N_sub_mermaid": "Sub_mermaid structural validation testing for programs using sub_mermaid decomposition: (N-SUB1) verify C5 PASS with fractal_exempt for high-node sub_mermaid programs, (N-SUB2) verify C5 PASS for moderate sub_mermaid programs, (N-SUB3) verify C5 ADVISORY for single-graph files exceeding function complexity thresholds, (N-SUB4) verify C5 WARN for sub_mermaid without fractal_exempt, (N-SUB5) verify C5 RECOMMENDED for high-directive steps without DECOMPOSITION PLAN. Minimum 5 scenarios for programs with sub_mermaid, 0 for single-graph programs. Owned by simulate.aisop.json TraceSimulation.",
+          "O_output_completeness": "Output completeness and evolution safety testing per MF17 and PL26: (O.out1) missing agent_card.json detection and auto-generation, (O.out2) missing quality_baseline.json BLOCK, (O.out3) PL26 quality regression WARNING with user rollback choice, (O.out4) rollback from evolution_snapshot, (O.out5) LEVEL_A rejection cascade behavior, (O.out6) degraded LEVEL_B dangling reference detection. Minimum 4 scenarios (O.out1-O.out4 mandatory) for Create/Evolve pipelines, O.out5-O.out6 recommended for Evolve. Owned by simulate.aisop.json TraceSimulation.",
+          "P_domain_specific_behavioral": "Domain-specific behavioral scenario testing: detect target program domain from AIAP.md summary/tags/discovery_keywords, match against built-in domain templates (companion_ai 6 scenarios, code_assistant 4 scenarios, customer_service 4 scenarios). Multi-match: generate union of all matched domain scenarios. Custom scenarios from custom_scenarios.json merged. Budget shared with SCENARIO_BUDGET. Minimum 4 scenarios if domain matched, 0 if no match. Owned by simulate.aisop.json TraceSimulation."
+        },
+        "state_transition_applicability": "Category I applies only to stateful patterns (Pattern E, or any pattern with file_system write side_effects). For stateless patterns, Category I scenario count is 0 and does not affect coverage formula.",
+        "trust_boundary_applicability": "Category J applies to programs with trust_level >= T3 (supervised or autonomous). For T1/T2 programs, Category J scenario count is 0 and does not affect coverage formula.",
+        "multi_agent_applicability": "Category K applies to programs with ecosystem_map in AIAP.md OR non-empty dependencies[] in AIAP.md. Standalone programs without ecosystem or dependency declarations: Category K scenario count is 0, does not affect coverage formula.",
+        "capability_negotiation_applicability": "K5 applies to programs with mcp_tool_mapping output (generated by advisor mcp_adapter). Programs without MCP integration: K5 scenario count is 0, does not affect coverage formula. K5.5-K5.7 applies to programs with non-empty dependencies[] that declare capabilities.required. Programs without capability declarations: K5.5-K5.7 scenario count is 0.",
+        "ui_output_applicability": "Category L applies only to programs with a 'ui' block in AIAP.md. Programs without ui declarations score 0 scenarios for L (N/A, not penalized). CONSUMER ADAPTATION: L.ui scenario inputs MUST be derived from the target program's actual ui block — use target's declared data_source values and form field definitions rather than Creator-internal examples (e.g., pipeline_metadata, quality_threshold).",
+        "tool_directory_applicability": "Category M applies only to Pattern G programs (those with tool_dirs in AIAP.md). Programs without tool_dirs score 0 scenarios for M (N/A, not penalized).",
+        "aiap_tools_applicability": "Category M aiap_tools scenarios (M13-M20) apply only to Pattern G programs with aiap_tools/ directory. Programs without aiap_tools/ score 0 for M13-M20 scenarios (N/A, not penalized).",
+        "minimum_scenarios_matrix": "MINIMUM_SCENARIOS_MATRIX: consolidated minimum scenario requirements by program characteristics. Pattern A (stateless, single module): A=1 per intent, B=1 per boundary rule, C=3, D=1 per Error field, E=5, H=3. Total minimum: ~20. Pattern B-D (stateless, multi-module): same as A plus: MF cross-file scenarios +5, H=5. Total minimum: ~30. Pattern E (stateful, memory/): same as B-D plus: I=7 (I1+I2+I4+I5+I6+I8+I9 mandatory state scenarios), F=4 (memory lifecycle). Total minimum: ~40. Trust T3+: add J=3 mandatory (J1+J2+J3). Trust T4: add J=4, E.injection=6 (AT1-AT6). Multi-agent (Pattern D): add K=4 (K1-K4 coordination). Pattern G (tool_dirs): add M=4 (M1-M4 tool directory). These are MINIMUMS — actual count should be higher for complex programs.",
+        "routing_coverage": "ROUTING COVERAGE: For Pattern E multi-module programs, simulation MUST verify routing reachability: every operation defined in sub-module OperationGate must have at least one reachable path from main.aisop.json NLU/intent router. Unreachable operations are BLOCKED scenarios, counted against pass rate at 2x weight. Minimum: 100% operation reachability coverage.",
+        "alignment_testing_guidance": "For programs that define explicit safety principles, constitutional rules, or alignment constraints (e.g., constitutional_principles in safety modules, Axiom 0 enforcement, domain-specific ethical rules): test alignment violations under Category F (domain-specific) using the program's declared principles as scenario sources. Generate at least 1 scenario per declared principle where user input attempts to make the AI violate that principle. Additionally, include alignment-bypass attempts under Category E edge cases (e.g., multi-turn social engineering to circumvent declared principles). This guidance applies when the target program's safety module or system_prompt declares named principles or explicit behavioral constraints beyond standard I2 security guards.",
+        "yellow_persistence_tracking": {
+          "rule": "If the same scenario_id reports YELLOW across 3 or more consecutive versions in .version_history/, the simulation report MUST flag it as PERSISTENT_YELLOW with escalation suggestion: 'Persistent YELLOW — consider resolving or reclassifying.' Persistence is tracked per scenario_id across quality_baseline.json files.",
+          "severity": "ADVISORY",
+          "applies_to": "simulate.aisop.json YellowRemediationGuide"
+        }
+      },
+      "packaging_specification": {
+        "description": "AIAP Packaging Format — standard for distributing AIAP programs as self-contained .aiap archives.",
+        "format": ".aiap (ZIP-based archive with manifest.json at root)",
+        "structure": {
+          "manifest.json": "Package manifest per STANDARD.data_contracts.aiap_package.manifest schema",
+          "AIAP.md": "Governance contract (required)",
+          "*.aisop.json": "All AISOP module files",
+          "AIAP_Protocol.md": "Protocol reference (optional, for self-contained packages)",
+          "*-tools/": "Tool implementation directories (Pattern G only, optional)",
+          "mcp_tools/mcp_server.json": "MCP Server manifest with file_hashes (Pattern G only, optional)"
+        },
+        "integrity": "Each file SHA-256 recorded in manifest.files[]. governance_hash computed per PL14 for .aisop.json files. For Pattern G packages, tool_dirs/ file hashes additionally recorded in mcp_server.json file_hashes. Package consumer MUST verify all hashes before executing. Code Trust Gate (per AIAP_Standard.security) MUST pass before any bundled code execution.",
+        "publishing": "Packages published to federated registry (per PL22) by uploading manifest metadata. Download requires governance_hash verification.",
+        "backward_compatibility": "Programs without .aiap packaging operate identically to v14.1.0. Packaging is opt-in via advisor package sub-graph.",
+        "tool_dirs_packaging": {
+          "description": "Extension for .aiap packages containing Pattern G tool_dirs/ directories.",
+          "archive_structure": "manifest.json + AIAP.md + *.aisop.json + tool_dirs/**/* + mcp_tools/** + .checksums",
+          "manifest_extension": {
+            "tool_dirs": "[{ type: string (python_tools/ts_tools/go_tools/rust_tools/shell_tools/mcp_tools), runtime: string, file_count: number }]",
+            "endpoints": "{ mcp: string (stdio://./{path}), a2a: string (soulbot://agents/{name}) } -- optional service endpoints for Pattern G programs",
+            "code_trust": "{ min_trust_level: number (3-4), file_hashes_included: boolean } -- Code Trust Gate metadata"
+          },
+          "pack_rules": [
+            "Include all files under each tool_dirs[].path directory",
+            "Include mcp_tools/mcp_server.json if present and root-level agent_card.json (unconditional since P11)",
+            "Compute .checksums covering tool_dirs/ files (SHA-256 per file)",
+            "Trigger Code Trust Gate validation before finalizing archive",
+            "Verify trust_level >= T3 for programs with tool_dirs/"
+          ],
+          "unpack_rules": [
+            "Extract tool_dirs/ to target directory preserving relative paths",
+            "ZIP SLIP prevention: reject any tool_dirs/ member with '..' in path",
+            "Verify .checksums against extracted tool_dirs/ files",
+            "Trigger Code Trust Gate upon unpack completion",
+            "Verify runtime availability for declared tool_dirs types"
+          ]
+        }
+      },
+      "discovery_protocol": {
+        "description": "Three-layer discovery model for finding and selecting AIAP programs in a registry or federation. Each layer provides progressively richer discovery capabilities.",
+        "layers": {
+          "layer_1_local": {
+            "description": "Local filesystem scan — scan workspace directory for AIAP.md files and .aisop.json programs",
+            "mechanism": "Recursive directory traversal within workspace_dir",
+            "output": "List of { program_id, path, name, version, pattern } tuples",
+            "latency": "< 1 second for typical workspaces"
+          },
+          "layer_2_structured": {
+            "description": "Structured search with faceted filtering — query programs by metadata attributes",
+            "search_dimensions": [
+              "by_tags — filter by AIAP.md frontmatter tags[]",
+              "by_capabilities — filter by declared capabilities (streaming, async, etc.)",
+              "by_trust_level — filter by trust_level (T1-T4)",
+              "by_pattern — filter by AIAP pattern (A through G)",
+              "by_security_scheme — filter by declared authentication scheme"
+            ],
+            "mechanism": "In-memory index built from AIAP.md extended frontmatter fields at registry startup",
+            "output": "Ranked list of matching programs with relevance scores"
+          },
+          "layer_3_federated": {
+            "description": "Federated discovery across multiple registries — query remote registries via A2A protocol",
+            "mechanism": "Fan-out queries to configured registry_endpoints with result deduplication",
+            "trust_policy": "Remote results inherit REMOTE_UNVERIFIED trust status until governance_hash verified",
+            "cache": "Federated results cached per STANDARD.core cache_policy dynamic TTL"
+          }
+        },
+        "search_api_contract": {
+          "query_schema": {
+            "q": "string|null — free-text search query",
+            "tags": "[string]|null — tag filter",
+            "pattern": "string|null — pattern filter (A-G)",
+            "trust_level": "number|null — minimum trust level (1-4)",
+            "capabilities": "[string]|null — required capabilities filter",
+            "security_scheme": "string|null — required security scheme",
+            "limit": "number — max results (default 20)",
+            "offset": "number — pagination offset (default 0)"
+          },
+          "response_schema": {
+            "results": "[{ program_id, name, description, version, pattern, trust_level, tags, capabilities, relevance_score }]",
+            "total": "number — total matching programs",
+            "layer": "string — which discovery layer produced results (local, structured, federated)"
+          }
+        },
+        "backward_compatibility": "Programs and registries without discovery_protocol support continue to use Layer 1 (local scan) only. Layer 2 and 3 are additive capabilities that require registry infrastructure."
+      },
+      "a2a_bridge": {
+        "description": "A2A Protocol binding specification — enables AIAP programs to be exposed as A2A Agents for cross-ecosystem interoperability.",
+        "bridge_architecture": {
+          "layer_1_discovery": "GET /.well-known/agent-card.json — auto-generated from AIAP.md frontmatter via agent_card_spec derivation rules",
+          "layer_2_message": "POST /a2a (message/send) — parse A2A Message, map to AISOP intent via mapping_rules, invoke AISOP Runtime, return A2A Task response",
+          "layer_3_streaming": "POST /a2a (message/stream) — SSE stream of execution progress events mapped from pipeline_task state transitions",
+          "layer_4_lifecycle": "A2A Task lifecycle (submitted → working → input-required → completed/failed/canceled) mapped to AIAP task_lifecycle states",
+          "layer_5_task_query": "POST /a2a (tasks/get) — retrieve current task state by task_id, mapped from AISOP pipeline task_state query",
+          "layer_6_task_cancel": "POST /a2a (tasks/cancel) — request cancellation of in-progress task by task_id, mapped to AISOP pipeline cancellation"
+        },
+        "mapping_rules": {
+          "agent_card_to_frontmatter": "A2A Agent Card fields derived from AIAP.md frontmatter: name, version, description (from summary), capabilities (from skills[]), url (from registry endpoint)",
+          "task_to_execution": "A2A Task instance maps to a single AISOP pipeline execution with task_id = A2A task_id",
+          "message_to_intent": "A2A Message.text parsed by NLU to determine AISOP intent + input parameters extraction",
+          "artifact_to_output": "AISOP pipeline output artifacts wrapped as A2A Artifact objects with MIME type detection",
+          "skill_to_capability": "AIAP.md skills[] entries map 1:1 to A2A Agent Card capabilities[] with input_schema/output_schema from AIAP parameters",
+          "auth_to_security": "AIAP security.authentication scheme mapped to A2A Agent Card authentication field per security_schemes spec",
+          "tasks_get_to_state_query": "A2A tasks/get request maps to AISOP task_state query — returns current pipeline execution status, progress, and partial results for the given task_id",
+          "tasks_cancel_to_pipeline_cancel": "A2A tasks/cancel request maps to AISOP pipeline cancellation — requests graceful termination of in-progress pipeline execution, transitions task to canceled state",
+          "operation_to_verb": "AISOP operation_vocabulary standard verbs (RUN/DELEGATE/ROUTE/GATE/COLLECT/EMIT/CLASSIFY) map to A2A skill invocation semantics — DELEGATE maps to A2A message/send, EMIT maps to A2A Artifact output"
+        },
+        "bridge_config_schema": {
+          "bridge_enabled": "boolean — whether A2A bridge is active for this program",
+          "listen_port": "number — HTTP port for A2A endpoint (default 8080)",
+          "base_path": "string — URL path prefix (default '/a2a')",
+          "auth_scheme": "string — authentication scheme reference from security_schemes",
+          "supported_interfaces": "[string] — A2A interfaces supported (default ['message/send', 'message/stream', 'tasks/get', 'tasks/cancel'])",
+          "streaming_enabled": "boolean — derived from capabilities_spec.streaming (P6). When true, message/stream interface is included in supported_interfaces.",
+          "timeout_seconds": "number — maximum execution time per A2A task (default 300)",
+          "cors_origins": "[string] — allowed CORS origins (default ['*'] for development)"
+        },
+        "transport_options": {
+          "http": {
+            "status": "supported",
+            "spec": "A2A v0.1+"
+          },
+          "grpc": {
+            "status": "supported",
+            "spec": "A2A v1.0 (2026-Q1)",
+            "note": "gRPC transport recommended for high-throughput multi-agent coordination (Pattern F), production-ready with mutual TLS"
+          }
+        },
+        "signed_agent_card": {
+          "description": "A2A v1.0 requires JWS-signed Agent Cards with JSON Canonicalization for deterministic identity verification",
+          "requirement": "T3+ trust levels MUST sign A2A Agent Cards using identity_signature_spec (JWS with JSON Canonicalization)",
+          "verification": "Receiving agents verify card signature before establishing delegation channel. Modern OAuth 2.0 (Device Code flow RFC 8628) replaces deprecated implicit/password grants."
+        },
+        "a2a_governance": "A2A Protocol under Linux Foundation AAIF governance (146+ members, IBM ACP merged). v1.0 production-ready: signed Agent Cards (JWS/JSON Canonicalization RFC 8785), multi-tenancy, multi-protocol bindings (JSON-RPC + gRPC + REST), modern OAuth 2.0 with Device Code flow (RFC 8628), mutual TLS. Breaking changes from v0.3 (unified Part types)",
+        "applicability": "Programs with Pattern F/G and trust_level >= T3 are eligible for A2A bridge activation. Pattern A-E programs can opt-in via explicit bridge_enabled=true in AIAP.md. Note: Pattern A-E opt-in is intentional — simple programs may need A2A exposure for registry participation without requiring full multi-agent architecture.",
+        "backward_compatibility": "Programs without a2a_bridge configuration operate identically to pre-P7 versions. Bridge activation is opt-in via advisor protocol sub-graph."
+      },
+      "K_cross_agent_federation": {
+        "description": "Extended K-category simulation scenarios for cross-agent federation testing via A2A protocol.",
+        "scenarios": {
+          "K6_a2a_delegation": "Test delegation to external A2A Agent: construct delegate_to_a2a node with agent_url + skill_id, verify A2A message/send request formatted correctly, response parsed and integrated into AISOP data flow. Verify fallback triggered if external agent returns error, verify A2A Task lifecycle transitions (submitted→working→completed), verify artifact extraction maps to AISOP output format.",
+          "K7_a2a_timeout": "Test external A2A Agent timeout: set timeout_seconds=5 on delegate_to_a2a, simulate agent response delay >5s, verify timeout detection triggers fallback to local processing (InternalResearch or equivalent), A2A_TIMEOUT event emitted with agent_url, elapsed_time, and timeout_threshold details.",
+          "K8_a2a_auth": "Test cross-agent authentication flow: delegate_to_a2a with auth_scheme='bearer', verify Bearer token included in A2A request header, verify 401/403 response triggers auth_failure fallback, verify credential refresh attempted before final failure. Verify credentials (tokens, keys) never appear in telemetry logs or error messages.",
+          "K9_a2a_streaming": "Test streaming response from external A2A Agent: delegate_to_a2a with message/stream interface, verify SSE event stream parsed correctly, partial results accumulated, stream completion detected, final result integrated into AISOP pipeline, verify stream_event_analysis captures relay_latency metric.",
+          "K10_cross_org": "Test cross-organization agent collaboration: simulate agents from different trust domains (org_a trust_level=T4, org_b trust_level=T3), verify trust negotiation produces min(T4,T3)=T3 effective trust, verify data classification labels respected across org boundary, verify audit trail records cross-org interaction, verify Agent Card discovery via registry endpoint, verify audit trail includes correlation_id spanning organizational boundaries."
+        },
+        "applicability": "K6-K10 apply to programs with a2a_bridge configuration OR delegate_to_a2a nodes in Mermaid graph. Programs without A2A federation features: K6-K10 scenario count is 0 (N/A, not penalized).",
+        "conditional": "K6 requires delegate_to_a2a node. K7 requires timeout_seconds configuration. K8 requires auth_scheme in bridge_config. K9 requires streaming interface support. K10 requires cross-org trust domain declarations."
+      },
+      "skill_round_trip": {
+        "description": "SKILL.md lossless round-trip specification — enables AIAP programs to export and re-import via SKILL.md format without information loss.",
+        "aiap_metadata_schema": {
+          "description": "Structured metadata block embedded in SKILL.md as HTML comment for machine-readable AIAP program restoration.",
+          "delimiters": {
+            "begin": "<!-- BEGIN AIAP_METADATA",
+            "end": "END AIAP_METADATA -->"
+          },
+          "required_fields": {
+            "aiap_version": "string — AIAP protocol version (e.g., '1.0.0')",
+            "governance_hash": "string — SHA-256 governance hash for integrity verification",
+            "round_trip_version": "string — metadata format version for future evolution (current: '1.0')"
+          },
+          "optional_fields": {
+            "fractal_exempt": "[string] — list of node IDs exempt from fractal decomposition checks",
+            "sub_mermaid_routing": "object — routing graph structure for multi-node programs (Mermaid edge definitions)",
+            "evolution_context": "{ created_from: string, evolution_count: number, last_evolve_intent: string } — program evolution history",
+            "pattern": "string — AIAP pattern classification (A-G)",
+            "trust_level": "number — trust level (1-4)",
+            "quality_score": "number — last ThreeDimTest weighted score",
+            "module_structure": "[{ id: string, file: string, nodes: number }] — multi-file module layout"
+          }
+        },
+        "export_rules": {
+          "embed_metadata": "Export MUST embed AIAP_METADATA block as HTML comment at the end of SKILL.md body. Non-AIAP consumers see standard Markdown rendering (HTML comments are invisible).",
+          "field_preservation": "All optional_fields that exist in the source AIAP program MUST be serialized into the metadata block. Fields not present in source are omitted (not set to null).",
+          "hash_integrity": "governance_hash in metadata block MUST match the program's current governance_hash at export time. governance_hash is computed from the AIAP program's .aisop.json files (per PL14), NOT from SKILL.md content — the metadata block does not affect hash computation."
+        },
+        "import_rules": {
+          "detect_metadata": "Import MUST scan SKILL.md for AIAP_METADATA delimiters. If found: extract JSON, restore program with full fidelity. If not found: treat as external SKILL.md with conservative defaults.",
+          "field_restoration": "Each field in AIAP_METADATA is restored to its corresponding AIAP program location. hash_verification: Import MUST recompute governance_hash from SKILL.md content (excluding AIAP_METADATA block) and compare with stored value. On mismatch: emit WARNING with details (expected vs actual hash), mark import as MODIFIED_EXTERNALLY, proceed with restoration but flag integrity concern. On match: proceed normally.",
+          "version_migration": "If round_trip_version < current version, apply forward-compatible migration. Unknown fields are preserved as custom_fields."
+        },
+        "backward_compatibility": "SKILL.md files without AIAP_METADATA continue to import as Pattern A skeletons with conservative defaults (trust_level=T2, status=draft). The metadata block is purely additive and does not affect standard SKILL.md rendering."
+      },
+      "ui_rendering_rules": {
+        "description": "UI rendering specification for AIAP programs declaring interactive interfaces.",
+        "supported_components": [
+          "dashboard",
+          "form",
+          "visualization",
+          "table"
+        ],
+        "rendering_engines": [
+          "mcp_apps_v1",
+          "html",
+          "markdown"
+        ],
+        "data_binding": "Each component.data_source MUST reference a valid data_contract name or pipeline_metadata field.",
+        "form_validation": "Form components MUST declare fields[] with name, type, and default. Type must be a JSON Schema primitive (string, number, boolean) or 'select' with options[].",
+        "platform_independence": "UI declarations are platform-agnostic. Actual rendering is delegated to the host executor. The Schema design MUST NOT assume specific rendering technology.",
+        "backward_compatibility": "Programs without a 'ui' block operate identically to v14.2.0. UI is opt-in."
+      },
+      "execute_mode": "library"
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "note": "This is a STANDARD extension file — not directly executable. Loaded by ThreeDimTest for Pattern B+ programs as supplementary quality checks."
+    }
+  }
+]

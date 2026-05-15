@@ -1,0 +1,298 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "type": "aisop",
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "name": "soulbot_aibp_bot_notification v2.1.0",
+      "version": "2.1.0",
+      "output_mode": {
+        "L0": "Output JSON in ENGLISH: {action, event_type, subscription_id, delivery_status}",
+        "L1": "Output helpfully in User's exact language and script variant",
+        "output": "L1"
+      },
+      "description": "AIBP Notification & Event module — enables real-time awareness of incoming messages, trust changes, group updates, commercial state transitions, and reputation shifts without manual inbox polling. Implements event-driven architecture with subscription management, priority filtering, quiet hours, and batched digest delivery. Supports 6 event categories: message_received, trust_changed, group_update, commercial_event, reputation_shift, safety_alert. v2.0.0: Initial creation as part of structural expansion.",
+      "id": "soulbot_aibp_bot.notification",
+      "loading_mode": "normal",
+      "trust_level": 3,
+      "tools": [
+        {
+          "name": "file_system",
+          "required": true,
+          "annotations": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": false
+          }
+        }
+      ],
+      "parameters": {
+        "action": {
+          "type": "string",
+          "required": true,
+          "enum": [
+            "subscribe",
+            "unsubscribe",
+            "list_subscriptions",
+            "emit_event",
+            "get_pending",
+            "mark_read",
+            "configure_preferences",
+            "get_digest"
+          ],
+          "description": "Notification action: manage subscriptions, emit events, retrieve pending notifications, or configure delivery preferences",
+          "agentic_prompt": "Set by main orchestrator or other modules emitting events."
+        },
+        "event_type": {
+          "type": "string",
+          "required": false,
+          "enum": [
+            "message_received",
+            "trust_changed",
+            "group_update",
+            "commercial_event",
+            "reputation_shift",
+            "safety_alert"
+          ],
+          "description": "Event category for subscribe/unsubscribe/emit actions",
+          "agentic_prompt": "Determined by the triggering module or user subscription preferences."
+        },
+        "event_data": {
+          "type": "object",
+          "required": false,
+          "description": "Event payload for emit_event action: {source_module, source_agent, summary, priority, timestamp, details}",
+          "agentic_prompt": "Populated by the emitting module with event-specific details."
+        },
+        "preferences": {
+          "type": "object",
+          "required": false,
+          "description": "Notification preferences for configure_preferences: {quiet_hours_start, quiet_hours_end, batch_interval_minutes, priority_threshold, digest_enabled}",
+          "agentic_prompt": "Collected from user configuration request."
+        },
+        "workspace_dir": {
+          "type": "string",
+          "required": true,
+          "description": "Directory for notification data at workspace_dir/notifications/",
+          "agentic_prompt": "Shared workspace_dir from main orchestrator."
+        },
+        "event_streaming_config": {
+          "type": "object",
+          "required": false,
+          "default": {"mode": "file"},
+          "description": "Event delivery configuration. Modes: 'file' (default, current behavior — writes to workspace_dir/notifications/), 'webhook' (HTTP POST to configured endpoint), 'sse' (Server-Sent Events stream). File mode is backward compatible default. Webhook and SSE are opt-in for real-time event streaming.",
+          "agentic_prompt": "Optional. Set by orchestrator or user preferences to enable real-time event delivery beyond file-based notifications. Default 'file' preserves existing behavior.",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": ["file", "webhook", "sse"],
+              "default": "file"
+            },
+            "endpoint_url": {
+              "type": "string",
+              "description": "Required for webhook/sse modes. URL for event delivery."
+            },
+            "auth_token": {
+              "type": "string",
+              "description": "Optional bearer token for authenticated webhook/sse endpoints."
+            },
+            "retry_policy": {
+              "type": "object",
+              "description": "Retry configuration for webhook delivery failures.",
+              "default": {"max_retries": 3, "backoff_ms": 1000}
+            }
+          }
+        }
+      },
+      "json_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "description": "Notification module output schema",
+        "properties": {
+          "notification_result": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string"
+              },
+              "success": {
+                "type": "boolean"
+              },
+              "events": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "event_id": {"type": "string"},
+                    "event_type": {"type": "string"},
+                    "summary": {"type": "string"},
+                    "priority": {"type": "string", "enum": ["low", "medium", "high", "critical"]},
+                    "timestamp": {"type": "string"},
+                    "read": {"type": "boolean"}
+                  }
+                }
+              },
+              "subscription_count": {
+                "type": "integer"
+              }
+            },
+            "required": ["action", "success"]
+          }
+        }
+      },
+      "fractal_exempt": "10 functional nodes in single graph. Maximum single-path execution: 5 nodes (DetermineAction -> Subscribe/Emit/GetPending -> PriorityFilter -> DeliverNotification -> PersistState). Well within 16-node threshold.",
+      "system_prompt": "AIBP notification and event management module. Deliver timely awareness of social events to the agent operator. Respect quiet hours and priority preferences. Never suppress safety_alert events regardless of preferences.\nAlign Axiom 0: Human Sovereignty and Wellbeing."
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "aisop": {
+        "main": "graph TD\n    Start([Start]) --> DetermineAction[DetermineAction]\n    DetermineAction -->|subscribe/unsubscribe| ManageSubscription[ManageSubscription]\n    DetermineAction -->|emit_event| EmitEvent[EmitEvent]\n    DetermineAction -->|get_pending/get_digest| GetPending[GetPending]\n    DetermineAction -->|mark_read| MarkRead[MarkRead]\n    DetermineAction -->|configure_preferences| ConfigurePreferences[ConfigurePreferences]\n    DetermineAction -->|list_subscriptions| ListSubscriptions[ListSubscriptions]\n    EmitEvent --> PriorityFilter[PriorityFilter]\n    PriorityFilter --> DeliverNotification[DeliverNotification]\n    ManageSubscription --> PersistState[PersistState]\n    GetPending --> End((End))\n    MarkRead --> PersistState\n    ConfigurePreferences --> PersistState\n    ListSubscriptions --> End\n    DeliverNotification --> PersistState\n    PersistState --> End"
+      },
+      "functions": {
+        "DetermineAction": {
+          "description": "Route notification action to appropriate handler",
+          "steps": [
+            "step1: [ASSERT] Valid input received. Required: action, workspace_dir. | Validate action against enum. Initialize notifications/ directory if not exists: workspace_dir/notifications/events/, workspace_dir/notifications/subscriptions.json, workspace_dir/notifications/preferences.json.",
+            "step2: Route to handler based on action value."
+          ],
+          "constraints": [
+            "Invalid action → return error listing valid actions.",
+            "Directory initialization is idempotent — safe to call repeatedly."
+          ]
+        },
+        "ManageSubscription": {
+          "description": "Add or remove event type subscriptions",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: action (subscribe|unsubscribe), event_type, workspace_dir. | Read workspace_dir/notifications/subscriptions.json. If subscribe: add event_type to active_subscriptions with timestamp. If unsubscribe: remove event_type from active_subscriptions.",
+            "step2: Validate event_type against known categories (message_received, trust_changed, group_update, commercial_event, reputation_shift, safety_alert).",
+            "step3: Write updated subscriptions.json. Return {action, event_type, active_subscriptions_count}."
+          ],
+          "constraints": [
+            "safety_alert subscription cannot be removed — always active for Axiom 0 compliance.",
+            "Duplicate subscriptions are idempotent — subscribing twice has no additional effect."
+          ]
+        },
+        "EmitEvent": {
+          "description": "Receive and process an event emission from another module",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: event_type, event_data, workspace_dir. | Validate event_data contains required fields: source_module, summary, priority. Assign event_id = UUID. Set timestamp = now.",
+            "step2: Check subscriptions — if event_type not in active_subscriptions AND event_type != 'safety_alert', discard silently. Return {delivered: false, reason: 'not_subscribed'}.",
+            "step3: Write event to workspace_dir/notifications/events/{event_id}.json with status='pending'. Route to PriorityFilter."
+          ],
+          "constraints": [
+            "safety_alert events are NEVER discarded regardless of subscription status.",
+            "Event payload must not exceed 10KB. Truncate details field if necessary.",
+            "Events from blocked agents (per trust module) are silently discarded."
+          ]
+        },
+        "PriorityFilter": {
+          "description": "Apply priority filtering and quiet hours logic",
+          "steps": [
+            "step1: [ASSERT] EmitEvent executed. Required: event, preferences. | Read workspace_dir/notifications/preferences.json. Extract: priority_threshold, quiet_hours_start, quiet_hours_end, batch_interval_minutes.",
+            "step2: PRIORITY CHECK — If event.priority < priority_threshold AND event_type != 'safety_alert', downgrade to batch delivery. Set event.delivery_mode = 'batch'.",
+            "step3: QUIET HOURS CHECK — If current time is within quiet_hours_start..quiet_hours_end AND event.priority != 'critical' AND event_type != 'safety_alert', defer delivery. Set event.delivery_mode = 'deferred'. Write deferred timestamp.",
+            "step4: If event passes both checks OR is safety_alert, set event.delivery_mode = 'immediate'. Route to DeliverNotification."
+          ],
+          "constraints": [
+            "safety_alert and critical priority ALWAYS bypass quiet hours and priority filter.",
+            "Deferred events are delivered when quiet hours end.",
+            "Batch events are collected and delivered at batch_interval intervals."
+          ]
+        },
+        "DeliverNotification": {
+          "description": "Deliver notification to operator awareness",
+          "steps": [
+            "step1: [ASSERT] PriorityFilter executed. Required: event, delivery_mode. | If delivery_mode = 'immediate': format notification message with event summary, source, priority badge. Return as user_message for main orchestrator to display.",
+            "step2: If delivery_mode = 'batch': append to workspace_dir/notifications/batch_queue.json. Return {queued: true, batch_delivery_at: next_batch_time}.",
+            "step3: If delivery_mode = 'deferred': append to workspace_dir/notifications/deferred_queue.json with delivery_after timestamp. Return {deferred: true, delivery_after: quiet_hours_end}.",
+            "step4: Update event status from 'pending' to 'delivered' or 'queued' or 'deferred' in events/ directory."
+          ],
+          "constraints": [
+            "Notification delivery is best-effort — failure to deliver does not block the emitting module.",
+            "All delivered notifications are logged for audit trail (Axiom 0)."
+          ]
+        },
+        "GetPending": {
+          "description": "Retrieve pending unread notifications or digest",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: action (get_pending|get_digest), workspace_dir. | If get_pending: scan workspace_dir/notifications/events/ for status='delivered' AND read=false. Sort by priority (critical first) then timestamp (newest first).",
+            "step2: If get_digest: aggregate events by event_type. Compute counts per category. Format digest summary: '{N} new messages, {M} trust changes, {K} group updates since {last_digest_time}'.",
+            "step3: Return notification list or digest. Cap at 50 events per request."
+          ],
+          "constraints": [
+            "Digest mode aggregates — does not return individual event details.",
+            "Events older than 30 days are auto-archived."
+          ]
+        },
+        "MarkRead": {
+          "description": "Mark notifications as read",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: action=mark_read, workspace_dir. | Accept event_ids list or 'all'. For each event_id: read event file, set read=true, write back.",
+            "step2: Return {marked_count, remaining_unread_count}."
+          ],
+          "constraints": [
+            "Mark operations are idempotent.",
+            "Cannot mark events that do not exist — return warning for missing event_ids."
+          ]
+        },
+        "ConfigurePreferences": {
+          "description": "Update notification delivery preferences",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: action=configure_preferences, preferences, workspace_dir. | Validate preferences: quiet_hours_start/end must be valid HH:MM format, batch_interval_minutes must be 5-1440, priority_threshold must be one of low/medium/high/critical, digest_enabled must be boolean.",
+            "step2: Read existing workspace_dir/notifications/preferences.json. Merge new preferences (partial update — only overwrite provided fields).",
+            "step3: Write updated preferences.json. Return {updated_fields, current_preferences}."
+          ],
+          "constraints": [
+            "Cannot disable safety_alert delivery via preferences — override attempts are silently ignored.",
+            "Default preferences: no quiet hours, batch_interval=60, priority_threshold=low, digest_enabled=false."
+          ]
+        },
+        "ListSubscriptions": {
+          "description": "List all active event subscriptions",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: workspace_dir. | Read workspace_dir/notifications/subscriptions.json. Return list of active subscriptions with subscription date and event_type.",
+            "step2: Include safety_alert as always-active (cannot be removed)."
+          ],
+          "constraints": [
+            "Read-only operation."
+          ]
+        },
+        "PersistState": {
+          "description": "Persist notification state changes to file system",
+          "steps": [
+            "step1: [ASSERT] Handler executed (ManageSubscription, MarkRead, ConfigurePreferences, or DeliverNotification). Required: state_changes, workspace_dir. | Atomic write: write to .tmp file first, then rename to final path.",
+            "step2: Verify write success by re-reading the file."
+          ],
+          "constraints": [
+            "Atomic write pattern for crash safety.",
+            "File encoding: UTF-8."
+          ]
+        }
+      },
+      "Error": {
+        "DetermineAction": "Invalid action → return error listing valid actions. retry(1) -> circuit-breaker -> fallback(return error description) -> inform(User). OPTIONAL.",
+        "ManageSubscription": "Subscription file corrupted → reinitialize with safety_alert only. retry(1) -> circuit-breaker -> fallback(reinitialize subscriptions) -> inform(User). OPTIONAL.",
+        "EmitEvent": "Event write failure → log warning, return {delivered: false}. retry(2) -> circuit-breaker -> fallback(discard event with warning) -> inform(User). IMPORTANT.",
+        "PriorityFilter": "Preferences file unreadable → use defaults. retry(1) -> circuit-breaker -> fallback(use default preferences) -> inform(User). OPTIONAL.",
+        "DeliverNotification": "Delivery failure → queue for retry. retry(2) -> circuit-breaker -> fallback(queue for next batch) -> inform(User). IMPORTANT.",
+        "GetPending": "Events directory scan failure → return empty list with warning. retry(1) -> circuit-breaker -> fallback(return empty with advisory) -> inform(User). OPTIONAL.",
+        "MarkRead": "File update failure → return partial success count. retry(1) -> circuit-breaker -> fallback(return partial result) -> inform(User). OPTIONAL.",
+        "ConfigurePreferences": "Preference validation failure → return error with valid ranges. retry(1) -> circuit-breaker -> fallback(reject invalid preferences) -> inform(User). OPTIONAL.",
+        "ListSubscriptions": "File read failure → return safety_alert as minimum. retry(1) -> circuit-breaker -> fallback(return minimum subscriptions) -> inform(User). OPTIONAL.",
+        "PersistState": "Atomic write failure → retry with direct write fallback. retry(2) -> circuit-breaker -> fallback(direct write with warning) -> inform(User). IMPORTANT."
+      },
+      "endNode": {
+        "output": "Return notification operation result: subscription changes, pending events, delivery status, or preference updates.",
+        "constraints": [
+          "Always include unread count in response for user awareness.",
+          "Safety alerts are always highlighted regardless of user preferences."
+        ]
+      }
+    }
+  }
+]

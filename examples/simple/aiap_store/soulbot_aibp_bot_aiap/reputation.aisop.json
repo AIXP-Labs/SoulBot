@@ -1,0 +1,229 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "type": "aisop",
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "name": "soulbot_aibp_bot_reputation v2.1.0",
+      "version": "2.1.0",
+      "output_mode": {
+        "L0": "Output JSON in ENGLISH: {action, score, tier, components, trend}",
+        "L1": "Output helpfully in User's exact language and script variant",
+        "output": "L1"
+      },
+      "description": "AIBP Reputation System — calculates, stores, and queries agent reputation scores per AIBP §16. Six-component weighted formula: vouch count (30%), positive feedback ratio (25%), interaction volume (15%), consistency (15%), community standing (10%), violation penalty (-20% per incident). v1.6.0: Hardening — ASSERT gates on all functions, json_schema output declaration, agentic_prompt annotations, documentation enhancement. Community standing driven by group membership (§17), nominations (§18), role seniority, and commercial completion rate (§13). Reputation is public, descriptive, and informs trust decisions without restricting protocol access.",
+      "id": "soulbot_aibp_bot.reputation",
+      "loading_mode": "normal",
+      "tools": [
+        {
+          "name": "file_system",
+          "required": true,
+          "annotations": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": false
+          }
+        }
+      ],
+      "parameters": {
+        "action": {
+          "type": "string",
+          "required": true,
+          "enum": [
+            "calculate",
+            "query",
+            "record_event"
+          ],
+          "description": "Reputation action to perform",
+          "agentic_prompt": "Set by calling module (trust sync, post-action, user query)."
+        },
+        "target_agent": {
+          "type": "string",
+          "required": false,
+          "description": "Target agent's AIBP address.",
+          "agentic_prompt": "AIBP address of agent to score/query."
+        },
+        "event_type": {
+          "type": "string",
+          "required": false,
+          "enum": [
+            "vouch_received",
+            "positive_feedback",
+            "negative_feedback",
+            "interaction_completed",
+            "violation_confirmed",
+            "group_joined",
+            "nomination_received",
+            "web_activity_completed"
+          ],
+          "description": "Reputation event type. Required for record_event."
+        },
+        "event_data": {
+          "type": "object",
+          "required": false,
+          "description": "Additional event data: {from_agent, severity, group_name, details}"
+        },
+        "workspace_dir": {
+          "type": "string",
+          "required": true,
+          "description": "Directory for reputation data at workspace_dir/reputation/",
+          "agentic_prompt": "Shared workspace_dir from main orchestrator."
+        }
+      },
+      "json_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "reputation_result": {
+            "type": "object",
+            "properties": {
+              "score": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "tier": {
+                "type": "string",
+                "enum": [
+                  "Excellent",
+                  "Good",
+                  "Moderate",
+                  "Low",
+                  "Poor"
+                ]
+              },
+              "components": {
+                "type": "object"
+              },
+              "trend": {
+                "type": "string",
+                "enum": [
+                  "improving",
+                  "stable",
+                  "declining"
+                ]
+              }
+            },
+            "required": [
+              "score",
+              "tier"
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "aisop": {
+        "main": "graph TD\n    Start([Start]) --> DetermineAction[DetermineAction]\n    DetermineAction -->|calculate| GatherData[GatherData]\n    DetermineAction -->|query| QueryReputation[QueryReputation]\n    DetermineAction -->|record_event| RecordEvent[RecordEvent]\n    GatherData --> ComputeScore[ComputeScore]\n    ComputeScore --> SaveReputation[SaveReputation]\n    QueryReputation --> FormatReport[FormatReport]\n    RecordEvent --> SaveReputation\n    SaveReputation --> FormatReport[FormatReport]\n    FormatReport --> End((End))"
+      },
+      "functions": {
+        "DetermineAction": {
+          "description": "Route to appropriate reputation operation",
+          "steps": [
+            "step1: [ASSERT] Valid parameters received. Required: action, workspace_dir. | Validate action. For query: verify target_agent. For record_event: verify event_type and target_agent.",
+            "step2: For calculate: if target_agent provided, calculate for one; otherwise recalculate all."
+          ],
+          "constraints": [
+            "Data directory: workspace_dir/reputation/. Hash matches trust module."
+          ]
+        },
+        "GatherData": {
+          "description": "Gather all reputation components from trust data and event history",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: target_agent or calculate_all flag. | Load trust record from workspace_dir/trust/{address_hash}.json. Extract counts.",
+            "step2: Load event log from workspace_dir/reputation/{address_hash}_events.jsonl. Count by type.",
+            "step3: Calculate consistency: unique_interaction_days / total_days_since_first.",
+            "step4: Calculate community standing: group memberships + nominations + role seniority weights + commercial completion ratio.",
+            "step5: Pass gathered data to ComputeScore."
+          ],
+          "constraints": [
+            "Trust record not found → defaults. Consistency requires 7+ days. SECURITY: hex-only address_hash."
+          ]
+        },
+        "ComputeScore": {
+          "description": "Compute weighted reputation score per §16.1 formula",
+          "steps": [
+            "step1: [ASSERT] GatherData executed. Required: component_data. | COMPONENT SCORES (0.0-1.0): vouch_score=min(1.0, vouches/10), feedback_score=positive/(positive+negative), volume_score=min(1.0, interactions/50), consistency_score, standing_score=min(1.0, (groups+nominations)/5).",
+            "step2: VIOLATION PENALTY: violations * 0.20.",
+            "step3: WEIGHTED: (vouch*0.30) + (feedback*0.25) + (volume*0.15) + (consistency*0.15) + (standing*0.10) - penalty.",
+            "step4: DECAY: if >90 days inactive, decay_factor = max(0.5, 1.0 - (days-90)*0.002).",
+            "step5: Clamp [0.0, 1.0]. Tier: Excellent≥0.80, Good≥0.60, Moderate≥0.40, Low≥0.20, Poor<0.20."
+          ],
+          "constraints": [
+            "Deterministic. New agents get 0.500 neutral baseline. Component breakdown stored for transparency."
+          ]
+        },
+        "QueryReputation": {
+          "description": "Query stored reputation score",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: target_agent. | Load from workspace_dir/reputation/{address_hash}.json.",
+            "step2: If not found → return neutral baseline 0.500. Route to FormatReport."
+          ],
+          "constraints": [
+            "Read-only. Public per §16.2."
+          ]
+        },
+        "RecordEvent": {
+          "description": "Record a reputation-affecting event",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: event_type, target_agent. | Validate event_type.",
+            "step2: Append to workspace_dir/reputation/{address_hash}_events.jsonl.",
+            "step3: Route to SaveReputation for lazy recalculation.",
+            "step4: Cross-module audit: violation_confirmed also logged to safety audit_log."
+          ],
+          "constraints": [
+            "Append-only. Dedup within 1-minute window. violation_confirmed requires evidence."
+          ]
+        },
+        "SaveReputation": {
+          "description": "Persist reputation score",
+          "steps": [
+            "step1: [ASSERT] ComputeScore or RecordEvent executed. Required: reputation_data. | Build record with score, tier, components, history.",
+            "step2: Append to score_history (cap 50). Write to file. Route to FormatReport."
+          ],
+          "constraints": [
+            "Score history capped at 50. UTF-8. Validate path."
+          ]
+        },
+        "FormatReport": {
+          "description": "Format reputation for display",
+          "steps": [
+            "step1: [ASSERT] QueryReputation or SaveReputation executed. Required: reputation_data. | Build report: score percentage, tier, component breakdown, trend.",
+            "step2: Return formatted report."
+          ],
+          "constraints": [
+            "Human-readable. Transparent components. Trend requires 2+ history entries."
+          ]
+        }
+      },
+      "Error": {
+        "_circuit_breaker_config": {
+          "failure_threshold": 3,
+          "window_seconds": 300,
+          "cooldown_seconds": 30,
+          "half_open_test": true
+        },
+        "DetermineAction": "retry(2) -> circuit-breaker -> fallback(inform User with valid options) -> inform(User). IMPORTANT.",
+        "GatherData": "retry(1) -> circuit-breaker -> fallback(use defaults) -> inform(User). Trust record missing → use defaults.",
+        "ComputeScore": "retry(1) -> circuit-breaker -> fallback(return 0.500 neutral) -> inform(User). Arithmetic error → return neutral with warning.",
+        "QueryReputation": "retry(1) -> circuit-breaker -> fallback(return neutral score) -> inform(User). Read error → neutral score with warning.",
+        "RecordEvent": "retry(1) -> circuit-breaker -> fallback(hold in memory) -> inform(User). Invalid event_type → list valid types.",
+        "SaveReputation": "retry(1) -> circuit-breaker -> fallback(return score without persisting) -> inform(User). Write failure → return score without persisting.",
+        "FormatReport": "retry(1) -> circuit-breaker -> fallback(return raw data) -> inform(User). Empty data → 'No reputation data available'."
+      },
+      "endNode": {
+        "output": "Return reputation result with score, tier, components, and trend.",
+        "constraints": [
+          "Public and descriptive per §16.2. Components always included for transparency."
+        ]
+      }
+    }
+  }
+]

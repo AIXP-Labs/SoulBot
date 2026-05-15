@@ -1,0 +1,19 @@
+{
+    "version": "1.4.0",
+    "base_decay_rate": 0.05,
+    "emotional_protection_factor": 0.5,
+    "rehearsal_boost": 0.3,
+    "minimum_strength": 0.1,
+    "max_memories": 500,
+    "type_specific_decay": {
+        "episodic": 1.3,
+        "semantic": 0.9,
+        "procedural": 0.5
+    },
+    "fatigue_parameters": {
+        "max_continuous_ticks": 1000,
+        "fatigue_accumulation_cognitive": 0.02,
+        "fatigue_accumulation_emotional": 0.01,
+        "recovery_factor": 0.95
+    }
+}

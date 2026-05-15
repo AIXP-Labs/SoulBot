@@ -1,0 +1,118 @@
+{
+  "name": "soulbot_execute_engine",
+  "version": "5.3.0",
+  "program_id": "dev.soulbot.execute_engine",
+  "protocol": "AIAP V1.0.0",
+  "pattern": "B+",
+  "description": "SoulBot Execute Engine v5.3.0 — Router + dual Engine orchestration (node/normal) + Sub Agent contract + OpenTelemetry SDK integration + OWASP ASI threat mapping. 4 modules, 14 nodes. v5.3.0: A1 OpenTelemetry SDK (opentelemetry-sdk capability dependency, trace_id/span_id wired to OTel context propagation), A2 events[] + SpanEvent dispatcher (5 events in node_engine), B1 OWASP ASI01-ASI10 threat mapping (goal_hash drift, cache HMAC, IPC signatures, runtime drift), C1-C5 maintenance (version sync, ASSERT refresh, orphan cleanup, snapshot scope, Error->on_error dual-key). v5.2: prepare_cache.py dual-use. v5.1: interrupt relay. v5.0: NodeVerify, Decision gate, sys.* 24 calls, crash recovery, circuit breaker, parallel dispatch, trace_id.",
+  "capabilities": {
+    "offered": [
+      "intent_matching",
+      "engine_routing",
+      "node_dispatch",
+      "sub_agent_orchestration",
+      "crash_recovery",
+      "circuit_breaker",
+      "parallel_dispatch",
+      "execution_observability",
+      "sys_call_handling",
+      "node_verify_audit",
+      "decision_node_routing",
+      "interrupt_relay",
+      "on_error_routing",
+      "steps_tracking",
+      "opentelemetry_sdk_integration",
+      "owasp_asi_threat_mapping",
+      "trace_id_propagation",
+      "bootstrap_validation"
+    ],
+    "required": [
+      "file_system"
+    ]
+  },
+  "modules": [
+    {
+      "id": "soulbot_execute_engine.main",
+      "file": "main.aisop.json",
+      "nodes": 5,
+      "execution_mode": "sequential",
+      "role": "Engine Router — intent matching, engine selection, execution orchestration, WAITING_USER/MESSAGE_PENDING interrupt relay"
+    },
+    {
+      "id": "soulbot_execute_engine.node",
+      "file": "node_engine.aisop.json",
+      "nodes": 2,
+      "execution_mode": "hybrid",
+      "role": "Node Engine — node-by-node execution with Sub Agent dispatch, crash recovery, circuit breaker, NodeVerify, Decision Node gate routing"
+    },
+    {
+      "id": "soulbot_execute_engine.normal",
+      "file": "normal_engine.aisop.json",
+      "nodes": 2,
+      "execution_mode": "sequential",
+      "role": "Normal Engine — node-by-node inline execution for loading_mode=normal packages, sys.* inline handling, NodeVerify"
+    },
+    {
+      "id": "soulbot_execute_engine.agent",
+      "file": "agent_engine.aisop.json",
+      "nodes": 5,
+      "execution_mode": "sequential",
+      "role": "Agent Engine — Sub Agent execution contract (init, execute with sys.* RULES, review, writeCache with steps_done tracking)"
+    }
+  ],
+  "limitations": [
+    "Router does not read target AIAP content — only passes path to Engine",
+    "Normal Engine crash recovery (NM4) is simplified compared to Node Engine — no parallel dispatch (half-open circuit breaker added in v5.2.0, orphan functions cleaned in v5.3.0 C3)",
+    "Parallel dispatch only available in Node Engine for independent mermaid branches",
+    "sys.io.confirm/input/select are forced-blocking — user sovereignty preserved (Axiom 0)",
+    "Decision Node gate routing requires both mermaid diamond syntax AND cache route field"
+  ],
+  "safety_card": {
+    "axiom_0": "Human_Sovereignty_and_Wellbeing",
+    "governance_mode": "NORMAL",
+    "trust_level": "internal",
+    "user_input_points": "All sys.io.confirm/input/select calls are forced_blocking — user sovereignty preserved. Natural language USER_INPUT trigger words also force blocking.",
+    "data_access": "file_system only, non-destructive, workspace-scoped",
+    "error_handling": "retry with exponential backoff -> circuit breaker -> fallback -> inform user. on_error routing for typed errors (assertion_error, command_error, confirm_rejected, etc.)",
+    "eu_ai_act_art50": {
+      "applicability": "Potentially applicable — SoulBot Execute Engine orchestrates AI agent interactions with users",
+      "disclosure_status": "PENDING — analysis deferred from v5.3.0",
+      "enforcement_date": "2026-08-02",
+      "action_required": "Applicability analysis before enforcement date",
+      "current_mitigations": "Axiom 0 forced-blocking, output_mode prefix, trust_level=3"
+    },
+    "threat_mapping": {
+      "framework": "OWASP ASI (Agentic Security Initiative) 2026",
+      "coverage": "ASI01-ASI10 fully mapped",
+      "mitigations": {
+        "ASI01_goal_drift": "governance_hash comparison at execution start",
+        "ASI06_cache_integrity": "cache HMAC verification on _index.json and node caches",
+        "ASI07_ipc_signatures": "inter-agent cache IPC signatures via span_id correlation",
+        "ASI10_runtime_drift": "version field comparison across modules at bootstrap"
+      },
+      "status_summary": "6 GREEN + 4 YELLOW->GREEN (ASI01, ASI06, ASI07, ASI10 addressed in v5.3.0 B1)"
+    }
+  },
+  "tools": [
+    {
+      "name": "file_system",
+      "annotations": {
+        "read_only": false,
+        "destructive": false,
+        "idempotent": false,
+        "open_world": false
+      }
+    }
+  ],
+  "quality_summary": {
+    "three_dim_test_weighted": 4.95,
+    "grade": "S",
+    "dimensions": {
+      "cognitive": 4.93,
+      "intrinsic": 4.92,
+      "detail": 5.00
+    },
+    "note": "v5.3.0 ReviewFinalize final_adjusted_score 4.95 (Grade S). C=4.93 I=4.92 D=5.00 (D6/D8/D10 reconciled to 5.0 post-Finalize: version sync, agent_card completeness, quality_baseline governance). Previous baseline v5.0.0: 4.72 (A). Validation 112/113. Simulation 18/18 GREEN. Nihil PASS. ASSERT 22/22. M-score 0.32 LOW."
+  },
+  "governance_hash": "sha256:90bc4a0a8a0acbf8de06cd5b0b3d4c4d1b76191342d7ad99875147ff192015c9"
+}

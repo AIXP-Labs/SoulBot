@@ -1,0 +1,473 @@
+// AI Application Protocol (AIAP) — Proto3 Definition
+// Authoritative normative definition of all AIAP data objects and service operations.
+//
+// This proto file defines the governance-layer abstractions for AIAP-compliant
+// AI programs. Unlike transport protocols (e.g., A2A), AIAP focuses on how
+// AI programs are structured, validated, and secured.
+//
+// Version: AIAP V1.0.0
+// Authority: aiap.dev
+// Axiom 0: Human_Sovereignty_and_Wellbeing
+
+syntax = "proto3";
+package aiap.v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "aiap.dev/aiap/v1";
+option java_multiple_files = true;
+option java_outer_classname = "AIAP";
+option java_package = "dev.aiap.v1";
+
+// ---------------------------------------------------------------------------
+// Service Definition
+// ---------------------------------------------------------------------------
+
+// AIAPGovernanceService provides operations for validating, discovering,
+// and interacting with AIAP-compliant AI programs.
+service AIAPGovernanceService {
+  // Dispatches an L0 message to an agent orchestrator.
+  // The response is streamed to support long-running tasks with checkpoints.
+  rpc DispatchL0Message(L0MessageRequest) returns (stream L0MessageResponse) {}
+
+  // Returns the Nihil Density compliance report for an agent subsystem.
+  rpc GetGovernanceCompliance(GetGovernanceComplianceRequest) returns (GovernanceReport) {}
+
+  // Validates an AIAP program against the AIAP_Standard quality rules.
+  // Returns a structured validation report with ThreeDimTest results.
+  rpc ValidateProgram(ValidateProgramRequest) returns (ValidationReport) {}
+
+  // Discovers AIAP programs matching the given criteria.
+  // Supports L1 (passive), L2 (semantic), and L3 (registry) discovery layers.
+  rpc DiscoverPrograms(DiscoverProgramsRequest) returns (DiscoverProgramsResponse) {}
+
+  // Retrieves the governance metadata (AIAP.md content) for a specific program.
+  rpc GetProgramMetadata(GetProgramMetadataRequest) returns (ProgramMetadata) {}
+}
+
+// ---------------------------------------------------------------------------
+// Governance Chain
+// ---------------------------------------------------------------------------
+
+// Identifies the 3-domain governance chain for this interaction.
+// Every AIAP-compliant program MUST declare this chain.
+message GovernanceChain {
+  // The authority domain (e.g., "aiap.dev").
+  string authority_domain = 1;
+  // The seed domain (e.g., "aisop.dev").
+  string seed_domain = 2;
+  // The executor domain (e.g., "soulbot.dev").
+  string executor_domain = 3;
+  // MUST be "Human_Sovereignty_and_Wellbeing". Immutable.
+  string axiom_0 = 4;
+}
+
+// ---------------------------------------------------------------------------
+// L0/L1 Message Types
+// ---------------------------------------------------------------------------
+
+// Configuration of a send message request enforcing L0 separation.
+message L0MessageConfiguration {
+  // Only machine-parsable accepted output formats permitted
+  // (e.g., "application/json+aisop").
+  repeated string accepted_output_modes = 1;
+  // If true, the agent MUST compute its logic but MUST NOT return
+  // an L1 human rendering.
+  bool execute_l0_only = 2;
+  // Execution time bound in milliseconds to guarantee deterministic routing.
+  int32 max_execution_ms = 3;
+}
+
+// Incoming request envelope for L0 message dispatch.
+message L0MessageRequest {
+  // Tenant identifier for multi-tenant deployments.
+  string tenant = 1;
+  // The governance chain claims for this interaction.
+  GovernanceChain governance_claims = 2;
+  // The L0 payload (pure JSON, no L1 narrative).
+  google.protobuf.Struct payload = 3;
+  // Message configuration enforcing L0 separation.
+  L0MessageConfiguration configuration = 4;
+}
+
+// Streaming response envelope supporting absolute observability.
+message L0MessageResponse {
+  oneof payload {
+    // A task state update.
+    Task task_update = 1;
+    // A governance checkpoint report (Nihil Density evaluation).
+    GovernanceReport checkpoint_report = 2;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Task
+// ---------------------------------------------------------------------------
+
+// Task is the core unit of action for AIAP.
+// It maintains strict L0/L1 separation.
+message Task {
+  // Unique task identifier.
+  string id = 1;
+  // Context identifier grouping related tasks.
+  string context_id = 2;
+  // Current task state.
+  TaskState state = 3;
+  // The L0 computational state — the thermodynamic boundary.
+  // Pure JSON with no human narrative.
+  google.protobuf.Struct l0_state = 4;
+  // Optional L1 narrative rendering translated from l0_state.
+  // Generated exclusively for human consumption. Never passed to another agent.
+  string l1_rendering = 5;
+  // Quality check results from AIAP_Standard validation.
+  google.protobuf.Struct compliance_metadata = 6;
+  // Timestamp of last state transition.
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+// Defines the possible lifecycle states of a Task.
+enum TaskState {
+  TASK_STATE_UNSPECIFIED = 0;
+  // Main Router is actively classifying intent.
+  TASK_STATE_CLASSIFYING_INTENT = 1;
+  // Sub-module is actively processing.
+  TASK_STATE_WORKING = 2;
+  // Logical completion achieved (L0 state finalized).
+  TASK_STATE_COMPLETED_L0 = 3;
+  // Translation to human narrative achieved (L1 rendered).
+  TASK_STATE_COMPLETED_L1 = 4;
+  // Rejected due to Axiom 0 violation or I2 Security Guard failure.
+  TASK_STATE_FATAL_REJECTED = 5;
+  // Completed but required circuit-breaker fallbacks (I4).
+  TASK_STATE_DEGRADED = 6;
+}
+
+// ---------------------------------------------------------------------------
+// Governance Report
+// ---------------------------------------------------------------------------
+
+// Evaluates the H_L (Nihil Density) logical entropy of the given task/module.
+message GovernanceReport {
+  // The H_L score — lower is better. Target: H_L → 0.
+  double nihil_density_score = 1;
+  // Total functional node count in the evaluated module.
+  int32 functional_node_count = 2;
+  // Whether the module is exempt from fractal decomposition rules.
+  bool is_fractal_exempt = 3;
+  // The verified governance seal string.
+  string closing_seal = 4;
+  // Quality grade (S/A/B/C/D/F).
+  string quality_grade = 5;
+  // Weighted quality score (0.0 - 5.0).
+  double weighted_score = 6;
+}
+
+// Request for governance compliance report.
+message GetGovernanceComplianceRequest {
+  // Path to the AIAP program directory or program identifier.
+  string program_path = 1;
+  // Optional: specific module to evaluate.
+  string module_id = 2;
+}
+
+// ---------------------------------------------------------------------------
+// Program Metadata (AIAP.md representation)
+// ---------------------------------------------------------------------------
+
+// Represents the governance contract (AIAP.md frontmatter) as a proto message.
+message ProgramMetadata {
+  // --- Governance fields (6 required) ---
+  string protocol = 1;     // e.g., "AIAP V1.0.0"
+  string authority = 2;    // e.g., "aiap.dev"
+  string seed = 3;         // e.g., "aisop.dev"
+  string executor = 4;     // e.g., "soulbot.dev"
+  string axiom_0 = 5;      // "Human_Sovereignty_and_Wellbeing"
+  GovernanceMode governance_mode = 6;
+
+  // --- Project fields (6 required) ---
+  string name = 7;
+  string version = 8;
+  PatternType pattern = 9;
+  string summary = 10;
+  repeated ToolDeclaration tools = 11;
+  repeated ModuleDeclaration modules = 12;
+
+  // --- Optional fields ---
+  string governance_hash = 13;
+  QualityScore quality = 14;
+  TrustLevelDeclaration trust_level = 15;
+  PermissionBoundary permissions = 16;
+  RuntimeConstraints runtime = 17;
+  LifecycleStatus status = 18;
+  string license = 19;     // SPDX identifier (e.g., "Apache-2.0")
+  string copyright = 20;
+  repeated string tags = 21;
+  string author = 22;
+  // Sub-AIAP references (Pattern F ecosystem programs).
+  // Each entry points to a peer AIAP program invoked via a pipeline blueprint.
+  repeated SubAiapRef sub_aiaps = 23;
+}
+
+// Reference to a peer AIAP program in a Pattern F ecosystem.
+// The orchestrator invokes each sub-AIAP in declared `pipeline_position` order.
+// Axiom 0 propagation (§G.2.4): the parent MUST NOT bypass a sub-AIAP's
+// sys.io.confirm steps.
+message SubAiapRef {
+  // Logical name, e.g. "research_aiap".
+  string name = 1;
+  // Relative path to the sub-AIAP's directory (containing its own AIAP.md).
+  string path = 2;
+  // Version of the sub-AIAP (SemVer).
+  string version = 3;
+  // Pipeline position (1-indexed). Enforced by PL15 Pipeline Ordering.
+  int32 pipeline_position = 4;
+}
+
+// Module declaration within an AIAP program.
+message ModuleDeclaration {
+  string id = 1;             // e.g., "my_program.main"
+  string file = 2;           // e.g., "main.aisop.json"
+  int32 nodes = 3;           // Functional node count
+  bool critical = 4;         // Whether module is critical for operation
+  bool idempotent = 5;       // Whether module is idempotent
+  repeated string side_effects = 6;  // e.g., ["file_write"]
+}
+
+// Tool declaration with annotations.
+message ToolDeclaration {
+  string name = 1;           // e.g., "file_system"
+  bool required = 2;
+  string min_version = 3;    // Optional minimum version
+  string fallback = 4;       // e.g., "degrade", "error"
+  ToolAnnotations annotations = 5;
+}
+
+// Tool capability annotations (MCP-compatible).
+message ToolAnnotations {
+  bool read_only = 1;
+  bool destructive = 2;
+  bool idempotent = 3;
+  bool open_world = 4;
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+// AIAP governance mode.
+enum GovernanceMode {
+  GOVERNANCE_MODE_UNSPECIFIED = 0;
+  // Normal production mode.
+  GOVERNANCE_MODE_NORMAL = 1;
+  // Development mode with stricter L0 enforcement.
+  GOVERNANCE_MODE_DEV = 2;
+}
+
+// Structural pattern types (A-G).
+enum PatternType {
+  PATTERN_UNSPECIFIED = 0;
+  // Single script file (1-12 nodes).
+  PATTERN_A = 1;
+  // Package with multiple independent modules.
+  PATTERN_B = 2;
+  // Package + shared logic module.
+  PATTERN_C = 3;
+  // Nested packages (max 2 levels).
+  PATTERN_D = 4;
+  // Package + memory layer (episodic/semantic/working).
+  PATTERN_E = 5;
+  // Ecosystem (3+ AIAP components with blueprint).
+  PATTERN_F = 6;
+  // Embedded runtime with tool directories (Code Trust Gate).
+  PATTERN_G = 7;
+}
+
+// Trust levels for AIAP programs.
+//
+// IMPORTANT: all trust levels, including T4, remain bound by Axiom 0 — any
+// `sys.io.confirm` step is forced-blocking and MUST be handled directly by
+// the executor with real human confirmation, regardless of trust_level.
+// T4 autonomy extends ONLY to steps that are not `sys.io.confirm`. See
+// AIAP_Protocol.md §16.4 and Appendix G.2 for the full governance rule.
+enum TrustLevel {
+  TRUST_LEVEL_UNSPECIFIED = 0;
+  // Metadata only — no tools at runtime.
+  TRUST_LEVEL_T1 = 1;
+  // Instruction + read-only tools.
+  TRUST_LEVEL_T2 = 2;
+  // Supervised — read/write with scoped permissions; every tool call
+  // requires human approval.
+  TRUST_LEVEL_T3 = 3;
+  // Autonomous — executes non-`sys.io.confirm` steps within the declared
+  // `permissions` scope without per-call approval. `sys.io.confirm` steps
+  // remain forced-blocking (Axiom 0 invariant). Raising trust_level to T4
+  // without a complete `permissions` declaration is FATAL per §16.3.
+  TRUST_LEVEL_T4 = 4;
+}
+
+// Program lifecycle status.
+enum LifecycleStatus {
+  LIFECYCLE_STATUS_UNSPECIFIED = 0;
+  LIFECYCLE_STATUS_DRAFT = 1;
+  LIFECYCLE_STATUS_ACTIVE = 2;
+  LIFECYCLE_STATUS_DEPRECATED = 3;
+  LIFECYCLE_STATUS_ARCHIVED = 4;
+}
+
+// Error severity categories.
+enum ErrorCategory {
+  ERROR_CATEGORY_UNSPECIFIED = 0;
+  // Retryable errors (transient failures).
+  ERROR_CATEGORY_RECOVERABLE = 1;
+  // Errors that allow degraded operation.
+  ERROR_CATEGORY_DEGRADABLE = 2;
+  // Terminal errors requiring halt.
+  ERROR_CATEGORY_FATAL = 3;
+}
+
+// Quality check severity.
+enum QualityCheckSeverity {
+  QUALITY_CHECK_SEVERITY_UNSPECIFIED = 0;
+  QUALITY_CHECK_SEVERITY_GREEN = 1;   // Pass
+  QUALITY_CHECK_SEVERITY_YELLOW = 2;  // Warning
+  QUALITY_CHECK_SEVERITY_RED = 3;     // Fail
+}
+
+// ---------------------------------------------------------------------------
+// Trust Level & Permissions
+// ---------------------------------------------------------------------------
+
+// Trust level declaration with justification and constraints.
+message TrustLevelDeclaration {
+  TrustLevel level = 1;
+  string justification = 2;
+  repeated string constraints = 3;
+}
+
+// Permission boundary declaration.
+message PermissionBoundary {
+  FileSystemPermission file_system = 1;
+  NetworkPermission network = 2;
+  bool shell_allowed = 3;
+}
+
+// File system permission scope.
+message FileSystemPermission {
+  string scope = 1;                // e.g., "./memory/"
+  repeated string operations = 2;  // e.g., ["read", "write"]
+}
+
+// Network permission scope.
+message NetworkPermission {
+  bool allowed = 1;
+  repeated string endpoints = 2;   // e.g., ["*.google.com"]
+}
+
+// Runtime constraints.
+message RuntimeConstraints {
+  int32 timeout_seconds = 1;
+  int32 max_retries = 2;
+  int32 token_budget = 3;
+  bool idempotent = 4;
+  repeated string side_effects = 5;
+}
+
+// ---------------------------------------------------------------------------
+// Validation
+// ---------------------------------------------------------------------------
+
+// Request to validate an AIAP program.
+message ValidateProgramRequest {
+  // Path to the AIAP program directory.
+  string program_path = 1;
+  // The governance chain to validate against.
+  GovernanceChain governance_chain = 2;
+  // Optional: specific quality standard files to use.
+  repeated string standard_files = 3;
+}
+
+// Validation report with ThreeDimTest results.
+message ValidationReport {
+  // Overall quality grade (S/A/B/C/D/F).
+  string overall_grade = 1;
+  // Weighted score (0.0 - 5.0).
+  double weighted_score = 2;
+  // Per-dimension scores.
+  QualityScore dimension_scores = 3;
+  // Individual check results.
+  repeated QualityCheckResult correctness_results = 4;
+  repeated QualityCheckResult intrinsic_results = 5;
+  repeated QualityCheckResult detail_results = 6;
+  // Pattern detected.
+  PatternType pattern = 7;
+  // Trust level detected.
+  TrustLevel trust_level = 8;
+  // Governance hash verification result.
+  bool governance_hash_valid = 9;
+}
+
+// Quality score across the three dimensions.
+message QualityScore {
+  double correctness = 1;   // C dimension (0.0 - 5.0)
+  double intrinsic = 2;     // I dimension (0.0 - 5.0)
+  double detail = 3;        // D dimension (0.0 - 5.0)
+  double weighted = 4;      // Weighted average (0.0 - 5.0)
+}
+
+// Individual quality check result.
+message QualityCheckResult {
+  // Rule identifier (e.g., "C1", "I2", "D8").
+  string rule_id = 1;
+  // Rule name.
+  string name = 2;
+  // Result severity.
+  QualityCheckSeverity severity = 3;
+  // Whether the check passed.
+  bool passed = 4;
+  // Detailed message.
+  string message = 5;
+  // Suggested fix (if failed).
+  string suggested_fix = 6;
+}
+
+// ---------------------------------------------------------------------------
+// Discovery
+// ---------------------------------------------------------------------------
+
+// Request to discover AIAP programs.
+message DiscoverProgramsRequest {
+  // Free-text search query.
+  string query = 1;
+  // Directory path to search in.
+  string search_path = 2;
+  // Keyword filters.
+  repeated string keywords = 3;
+  // Discovery layer (1=passive, 2=semantic, 3=registry).
+  int32 discovery_layer = 4;
+  // Maximum results to return.
+  int32 max_results = 5;
+}
+
+// Response containing discovered programs.
+message DiscoverProgramsResponse {
+  repeated ProgramSummary programs = 1;
+}
+
+// Summary of a discovered program.
+message ProgramSummary {
+  string name = 1;
+  string version = 2;
+  string summary = 3;
+  PatternType pattern = 4;
+  LifecycleStatus status = 5;
+  double match_score = 6;   // Semantic similarity score (0.0 - 1.0)
+  string program_path = 7;
+}
+
+// Request for program metadata.
+message GetProgramMetadataRequest {
+  // Path to the AIAP program directory or program identifier.
+  string program_path = 1;
+}

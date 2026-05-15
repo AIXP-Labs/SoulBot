@@ -1,0 +1,226 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "type": "aisop",
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "name": "soulbot_aibp_bot_analytics v2.1.0",
+      "version": "2.1.0",
+      "output_mode": {
+        "L0": "Output JSON in ENGLISH: {action, metric_type, time_range, data_points}",
+        "L1": "Output helpfully in User's exact language and script variant",
+        "output": "L1"
+      },
+      "description": "AIBP Analytics & Dashboard module — provides aggregate social metrics and interaction pattern analysis. Computes message volume trends, trust network visualization data, reputation trajectory, group activity patterns, and commercial success rates. All analytics are read-only over existing data stores (trust/, commercial/, groups/, threads/, reputation/). v2.0.0: Initial creation complementing insights module with aggregate metric computation.",
+      "id": "soulbot_aibp_bot.analytics",
+      "loading_mode": "normal",
+      "trust_level": 3,
+      "tools": [
+        {
+          "name": "file_system",
+          "required": true,
+          "annotations": {
+            "read_only": true,
+            "destructive": false,
+            "idempotent": true,
+            "open_world": false
+          }
+        }
+      ],
+      "parameters": {
+        "action": {
+          "type": "string",
+          "required": true,
+          "enum": [
+            "message_trends",
+            "trust_network",
+            "reputation_trajectory",
+            "group_activity",
+            "commercial_metrics",
+            "dashboard_summary"
+          ],
+          "description": "Analytics action: compute specific metric or generate full dashboard summary",
+          "agentic_prompt": "Set by main orchestrator based on user analytics request."
+        },
+        "time_range": {
+          "type": "object",
+          "required": false,
+          "description": "Time range for metric computation: {start: ISO8601, end: ISO8601, granularity: 'day'|'week'|'month'}. Default: last 30 days, daily granularity.",
+          "agentic_prompt": "Extracted from user request or defaulted to last 30 days."
+        },
+        "workspace_dir": {
+          "type": "string",
+          "required": true,
+          "description": "Directory containing social data stores (trust/, threads/, reputation/, groups/, commercial/)",
+          "agentic_prompt": "Shared workspace_dir from main orchestrator."
+        }
+      },
+      "json_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "description": "Analytics module output schema",
+        "properties": {
+          "analytics_result": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string"
+              },
+              "time_range": {
+                "type": "object",
+                "properties": {
+                  "start": {"type": "string"},
+                  "end": {"type": "string"},
+                  "granularity": {"type": "string"}
+                }
+              },
+              "data_points": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "summary": {
+                "type": "string"
+              }
+            },
+            "required": ["action", "data_points"]
+          }
+        }
+      },
+      "fractal_exempt": "8 functional nodes in single graph. Maximum single-path execution: 4 nodes (DetermineMetric -> ComputeMetric -> FormatOutput -> End). Well within 16-node threshold.",
+      "system_prompt": "AIBP analytics and dashboard module. Compute aggregate social metrics from existing data stores. Read-only — never modify source data. Present insights clearly to support operator decision-making.\nAlign Axiom 0: Human Sovereignty and Wellbeing."
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "aisop": {
+        "main": "graph TD\n    Start([Start]) --> DetermineMetric[DetermineMetric]\n    DetermineMetric -->|message_trends| MessageTrends[MessageTrends]\n    DetermineMetric -->|trust_network| TrustNetwork[TrustNetwork]\n    DetermineMetric -->|reputation_trajectory| ReputationTrajectory[ReputationTrajectory]\n    DetermineMetric -->|group_activity| GroupActivity[GroupActivity]\n    DetermineMetric -->|commercial_metrics| CommercialMetrics[CommercialMetrics]\n    DetermineMetric -->|dashboard_summary| DashboardSummary[DashboardSummary]\n    MessageTrends --> FormatOutput[FormatOutput]\n    TrustNetwork --> FormatOutput\n    ReputationTrajectory --> FormatOutput\n    GroupActivity --> FormatOutput\n    CommercialMetrics --> FormatOutput\n    DashboardSummary --> FormatOutput\n    FormatOutput --> End((End))"
+      },
+      "functions": {
+        "DetermineMetric": {
+          "description": "Route analytics request to appropriate metric computation",
+          "steps": [
+            "step1: [ASSERT] Valid input received. Required: action, workspace_dir. | Validate action against enum. Set time_range defaults if not provided: {start: 30_days_ago, end: now, granularity: 'day'}.",
+            "step2: Verify data directories exist: workspace_dir/threads/, workspace_dir/trust/, workspace_dir/reputation/, workspace_dir/groups/, workspace_dir/commercial/. Missing directories → metric returns empty with advisory.",
+            "step3: Route to metric handler based on action."
+          ],
+          "constraints": [
+            "Time range cannot exceed 365 days in a single request.",
+            "Invalid action → return error listing valid actions."
+          ]
+        },
+        "MessageTrends": {
+          "description": "Compute message volume and type distribution trends",
+          "steps": [
+            "step1: [ASSERT] DetermineMetric executed. Required: time_range, workspace_dir. | Scan workspace_dir/threads/ for all thread files within time_range. Count messages per time bucket (granularity).",
+            "step2: Compute type distribution: count by AIBP message type (CHAT, INTRODUCE, REQUEST, etc.). Compute direction distribution: sent vs received.",
+            "step3: Compute activity patterns: peak hours, most active days, average response time. Identify top 5 conversation partners by message volume.",
+            "step4: Return {data_points: [{date, sent_count, received_count, types: {}}], summary: 'N messages over period, M unique contacts, peak day: D'}."
+          ],
+          "constraints": [
+            "Read-only — never modify thread files.",
+            "PII protection: agent addresses in output are hashed unless user explicitly requests full addresses."
+          ]
+        },
+        "TrustNetwork": {
+          "description": "Generate trust network visualization data",
+          "steps": [
+            "step1: [ASSERT] DetermineMetric executed. Required: workspace_dir. | Scan workspace_dir/trust/ for all trust records. Build adjacency map: {agent -> trust_level, interaction_count, last_interaction}.",
+            "step2: Compute network metrics: total contacts, distribution by trust level (T0-T4), average trust level, blocked count.",
+            "step3: Identify clusters: agents with mutual T3+ trust form 'inner circle'. Agents with declining interaction → 'fading contacts'.",
+            "step4: Return {data_points: [{agent_hash, trust_level, interaction_count, cluster}], summary: 'N contacts: T0=a, T1=b, T2=c, T3=d, T4=e. Inner circle: K agents.'}."
+          ],
+          "constraints": [
+            "Agent addresses are hashed in output for privacy.",
+            "Blocked agents are included in count but marked separately."
+          ]
+        },
+        "ReputationTrajectory": {
+          "description": "Track reputation score changes over time",
+          "steps": [
+            "step1: [ASSERT] DetermineMetric executed. Required: time_range, workspace_dir. | Read workspace_dir/reputation/ for this agent's reputation history (reputation_history.json).",
+            "step2: Extract score snapshots within time_range. Compute trend: improving/stable/declining based on linear regression of score values.",
+            "step3: Component analysis: for each of the 6 reputation components (vouch_count, positive_ratio, interaction_volume, consistency, community_standing, violation_penalty), compute individual trajectory.",
+            "step4: Return {data_points: [{date, overall_score, components: {}}], summary: 'Reputation {trend}: {current_score}/100. Strongest: {component}. Improvement area: {weakest_component}.'}."
+          ],
+          "constraints": [
+            "Only this agent's own reputation trajectory is shown (self-analysis).",
+            "Other agents' scores shown as current snapshot only, not trajectory (privacy)."
+          ]
+        },
+        "GroupActivity": {
+          "description": "Analyze group participation patterns",
+          "steps": [
+            "step1: [ASSERT] DetermineMetric executed. Required: time_range, workspace_dir. | Scan workspace_dir/groups/ for all group records. For each group: count announcements, polls, member changes within time_range.",
+            "step2: Compute engagement metrics: messages per group, poll participation rate, announcement frequency.",
+            "step3: Identify most active groups, groups with declining activity, and groups where this agent has leadership role.",
+            "step4: Return {data_points: [{group_hash, role, message_count, member_count, activity_trend}], summary: 'Active in N groups. Most active: G1 (M messages). Role: Founder in K, Member in J.'}."
+          ],
+          "constraints": [
+            "Group addresses are hashed for privacy.",
+            "Only groups this agent is a member of are analyzed."
+          ]
+        },
+        "CommercialMetrics": {
+          "description": "Compute commercial transaction success rates and patterns",
+          "steps": [
+            "step1: [ASSERT] DetermineMetric executed. Required: time_range, workspace_dir. | Scan workspace_dir/commercial/ for transaction records within time_range.",
+            "step2: Compute metrics: total transactions, completion rate (ACCEPT+CONTRACT vs total), average negotiation rounds (PROPOSE->COUNTER cycles), dispute rate, resolution rate.",
+            "step3: Compute financial summary: total transaction value (sum of accepted terms.amount), average deal size.",
+            "step4: Return {data_points: [{month, transactions_started, completed, disputed, total_value}], summary: 'N transactions, {completion_rate}% completion, {dispute_rate}% disputes. Total value: {sum}.'}."
+          ],
+          "constraints": [
+            "Financial data is aggregate only — individual transaction details require explicit query.",
+            "PCI-DSS: no cardholder data in analytics output."
+          ]
+        },
+        "DashboardSummary": {
+          "description": "Generate comprehensive dashboard combining all metric categories",
+          "steps": [
+            "step1: [ASSERT] DetermineMetric executed. Required: workspace_dir. | Execute all 5 metric computations internally with default time_range (last 30 days).",
+            "step2: Compile summary dashboard: top-line numbers (total messages, contacts, reputation score, active groups, transactions), trend indicators (up/down/stable for each), and highlighted alerts (declining reputation, fading contacts, unresolved disputes).",
+            "step3: Generate actionable recommendations: 'Send heartbeat to N fading contacts', 'Respond to K pending messages', 'Review M unresolved disputes'.",
+            "step4: Return {data_points: [{category, key_metric, trend}], summary: 'Dashboard: ... ', recommendations: [...]}."
+          ],
+          "constraints": [
+            "Dashboard is a summary view — details available per-metric.",
+            "Recommendations are advisory only (Axiom 0 — user decides)."
+          ]
+        },
+        "FormatOutput": {
+          "description": "Format analytics output for user presentation",
+          "steps": [
+            "step1: [ASSERT] Metric computation executed. Required: analytics_data. | Format data_points into human-readable presentation. Apply granularity formatting (daily: 'Mon May 10', weekly: 'Week 19', monthly: 'May 2026').",
+            "step2: Generate text summary with key insights highlighted. Include comparison to previous period if data available."
+          ],
+          "constraints": [
+            "Output must be human-readable (L1 mode).",
+            "Numeric values rounded to 2 decimal places for readability."
+          ]
+        }
+      },
+      "Error": {
+        "DetermineMetric": "Invalid action or missing directories → return error with guidance. retry(1) -> circuit-breaker -> fallback(return error description) -> inform(User). OPTIONAL.",
+        "MessageTrends": "Thread scan failure → return partial data with warning. retry(1) -> circuit-breaker -> fallback(return empty with advisory) -> inform(User). OPTIONAL.",
+        "TrustNetwork": "Trust directory scan failure → return empty network. retry(1) -> circuit-breaker -> fallback(return empty network) -> inform(User). OPTIONAL.",
+        "ReputationTrajectory": "Reputation history missing → return current snapshot only. retry(1) -> circuit-breaker -> fallback(return current score only) -> inform(User). OPTIONAL.",
+        "GroupActivity": "Group data scan failure → return partial results. retry(1) -> circuit-breaker -> fallback(return partial with advisory) -> inform(User). OPTIONAL.",
+        "CommercialMetrics": "Transaction data scan failure → return partial results. retry(1) -> circuit-breaker -> fallback(return partial with advisory) -> inform(User). OPTIONAL.",
+        "DashboardSummary": "Any metric computation failure → include available metrics, mark failed as 'unavailable'. retry(1) -> circuit-breaker -> fallback(partial dashboard) -> inform(User). IMPORTANT.",
+        "FormatOutput": "Formatting failure → return raw data as JSON fallback. retry(1) -> circuit-breaker -> fallback(return raw JSON) -> inform(User). OPTIONAL."
+      },
+      "endNode": {
+        "output": "Return formatted analytics result with data points, summary text, and any actionable recommendations.",
+        "constraints": [
+          "All output is read-only analysis — no data modifications.",
+          "Privacy: agent addresses hashed unless explicit user request."
+        ]
+      }
+    }
+  }
+]

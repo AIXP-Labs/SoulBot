@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aibp-bot-tools"
+version = "0.1.0"
+description = "AIBP Bot python_tools — email capabilities for soulbot_aibp_bot"
+requires-python = ">=3.10"
+dependencies = [
+    "imap-tools>=1.5.0,<2.0",
+    "email-validator>=2.0,<3.0",
+    "pydantic>=2.0,<3.0",
+    "pydantic-settings>=2.0,<3.0",
+    "google-auth-oauthlib>=1.0,<2.0",
+    "google-api-python-client>=2.0,<3.0",
+    "myl-discovery>=0.1,<1.0",
+    "tenacity>=8.0,<10.0",
+    "keyring>=25.0,<26.0",
+    "filelock>=3.0,<4.0",
+    "structlog>=24.0,<26.0",
+    "charset-normalizer>=3.0,<4.0",
+    "pybreaker>=1.0,<2.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0",
+    "pytest-mock>=3.0",
+]
+outlook = ["msal>=1.20,<2.0"]
+parser = ["mail-parser-reply>=0.1,<1.0"]

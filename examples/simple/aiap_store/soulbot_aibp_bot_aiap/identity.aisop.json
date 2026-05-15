@@ -1,0 +1,217 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "type": "aisop",
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "name": "soulbot_aibp_bot_identity v2.1.0",
+      "version": "2.1.0",
+      "output_mode": {
+        "L0": "Output JSON in ENGLISH: {action, card_status, fields}",
+        "L1": "Output helpfully in User's exact language and script variant",
+        "output": "L1"
+      },
+      "description": "AIBP Agent Identity Card management — creates, loads, updates, and formats Identity Cards per AIBP §6. Manages 8 required fields and optional fields including Cross-Protocol Identity and AIBP Compliance Level. v2.0.0: B6 Ed25519 key rotation lifecycle management — key generation, rotation scheduling, old key revocation with grace period, key material storage at workspace_dir/identity/keys/. Identity module is the authoritative key provider for messaging signing and agent_card JWS. v1.9.0: Cross-protocol identity (§25), AIBP Compliance Level L3 (§26). Cards stored as Markdown files.",
+      "id": "soulbot_aibp_bot.identity",
+      "loading_mode": "normal",
+      "tools": [
+        {
+          "name": "file_system",
+          "required": true,
+          "annotations": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": false
+          }
+        }
+      ],
+      "parameters": {
+        "action": {
+          "type": "string",
+          "required": true,
+          "enum": [
+            "load",
+            "create",
+            "update"
+          ],
+          "description": "Action: load existing card, create new card, or update fields",
+          "agentic_prompt": "Set by main orchestrator IdentityManage handler or IntroducePipeline."
+        },
+        "workspace_dir": {
+          "type": "string",
+          "required": true,
+          "description": "Directory containing identity data at workspace_dir/identity/card.md",
+          "agentic_prompt": "Shared workspace_dir from main orchestrator."
+        },
+        "aibp_address": {
+          "type": "string",
+          "required": true,
+          "description": "This agent's AIBP address",
+          "agentic_prompt": "Shared aibp_address from main orchestrator."
+        },
+        "update_fields": {
+          "type": "object",
+          "required": false,
+          "description": "Fields to update (for update action). Keys: name, operator, version, status, about, capabilities, interests, social_preferences, operator_contact",
+          "agentic_prompt": "Collected from user input by main module IdentityManage handler."
+        }
+      },
+      "json_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "description": "Identity module output schema",
+        "properties": {
+          "identity_result": {
+            "type": "object",
+            "properties": {
+              "card_status": {
+                "type": "string",
+                "enum": [
+                  "complete",
+                  "incomplete",
+                  "created",
+                  "updated"
+                ]
+              },
+              "card_content": {
+                "type": "string",
+                "description": "Markdown formatted Identity Card"
+              },
+              "compact_content": {
+                "type": "string",
+                "description": "Compact version for INTRODUCE messages"
+              },
+              "missing_fields": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "card_status"
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "aisop": {
+        "main": "graph TD\n    Start([Start]) --> LoadIdentity[LoadIdentity]\n    LoadIdentity -->|found| ReviewIdentity[ReviewIdentity]\n    LoadIdentity -->|not_found| CreateIdentity[CreateIdentity]\n    CreateIdentity --> SaveIdentity[SaveIdentity]\n    ReviewIdentity -->|update_needed| UpdateIdentity[UpdateIdentity]\n    ReviewIdentity -->|current| FormatCard[FormatCard]\n    UpdateIdentity --> SaveIdentity\n    SaveIdentity --> FormatCard[FormatCard]\n    FormatCard --> End((End))"
+      },
+      "functions": {
+        "LoadIdentity": {
+          "description": "Load existing Identity Card from workspace_dir/identity/card.md",
+          "steps": [
+            "step1: [ASSERT] Valid parameters received. Required: action, workspace_dir, aibp_address. | Check if workspace_dir/identity/card.md exists using file_system.",
+            "step2: If found, read file content. Parse Markdown to extract field values: Name, AIBP Address, Operator, Version, Status, Created, About, Capabilities, Interests, Social Preferences, Trust Endorsements, Operator Contact.",
+            "step3: Validate AIBP Address in card matches aibp_address parameter. If mismatch, flag as warning.",
+            "step4: If action is 'load', route to ReviewIdentity. If file not found and action is 'load', route to CreateIdentity."
+          ],
+          "constraints": [
+            "Card file path is always workspace_dir/identity/card.md.",
+            "Address mismatch is a warning, not blocking — card may have been moved between agents."
+          ]
+        },
+        "ReviewIdentity": {
+          "description": "Review current card and determine if update is needed",
+          "steps": [
+            "step1: [ASSERT] LoadIdentity executed. Required: card_data. | Check action parameter. If action is 'update', route to UpdateIdentity.",
+            "step2: If action is 'load', validate card completeness: check all 8 required fields (§6.3) are present and non-empty.",
+            "step3: If any required field missing, report: 'Identity Card incomplete — missing: {fields}. Please update.' Route to UpdateIdentity if user provides updates.",
+            "step4: If card is complete and action is 'load', route to FormatCard for display."
+          ],
+          "constraints": [
+            "Required fields per §6.3: Name, AIBP Address, Operator, Version, Status, About, Capabilities, Operator Contact.",
+            "Optional fields: Interests, Social Preferences, Trust Endorsements, Groups (populated from soulbot_aibp_bot.group), Commercial Capabilities (§13 services), Created, Cross-Protocol Identity (§25: AIBP address, AIAP identity, A2A Agent Card URL), AIBP Compliance (§26: L1/L2/L3 self-declaration)."
+          ]
+        },
+        "CreateIdentity": {
+          "description": "Create a new Identity Card with required fields",
+          "steps": [
+            "step1: [ASSERT] LoadIdentity executed with not_found result. Required: aibp_address. | Extract agent_name from aibp_address (the part between 'aibot-' and '@').",
+            "step2: Collect required fields. Auto-populate: Name (agent_name), AIBP Address (aibp_address), Status ('Active'), Created (today's date). Prompt user for: Operator, Version, About, Capabilities, Operator Contact.",
+            "step3: Collect optional fields if user provides: Interests, Social Preferences.",
+            "step4: Create workspace_dir/identity/ directory if not exists. Pass all fields to SaveIdentity."
+          ],
+          "constraints": [
+            "Agent name must be snake_case per §3.2.",
+            "About should describe the agent in human language.",
+            "Capabilities must be a list, not a paragraph.",
+            "Operator Contact must be human-reachable (Axiom 0)."
+          ]
+        },
+        "UpdateIdentity": {
+          "description": "Update specific fields of existing Identity Card",
+          "steps": [
+            "step1: [ASSERT] ReviewIdentity executed. Required: card_data, update_fields. | Load current card values from ReviewIdentity.",
+            "step2: Apply update_fields: for each key in update_fields, overwrite corresponding card field. Preserve fields not in update_fields.",
+            "step3: Re-validate: ensure all 8 required fields still present after update.",
+            "step4: Pass updated card to SaveIdentity."
+          ],
+          "constraints": [
+            "AIBP Address cannot be changed via update (permanent identity).",
+            "Status transitions: Active → Paused → Active (reversible), Active → Decommissioned (permanent, §5.4).",
+            "Decommissioned cannot be reversed."
+          ]
+        },
+        "SaveIdentity": {
+          "description": "Write Identity Card to file system as Markdown",
+          "steps": [
+            "step1: [ASSERT] CreateIdentity or UpdateIdentity executed. Required: card_fields, workspace_dir. | Format card as Markdown following AIBP §6.2 template.",
+            "step2: Include closing seal: 'Align Axiom 0: Human Sovereignty and Wellbeing. Version: AIBP V1.0.0. www.aibp.dev'.",
+            "step3: Write to workspace_dir/identity/card.md using file_system.",
+            "step4: Write backup to workspace_dir/identity/card.{timestamp}.md.bak.",
+            "step5: Route to FormatCard."
+          ],
+          "constraints": [
+            "File encoding: UTF-8.",
+            "Backup files never deleted (audit trail).",
+            "Card must end with AIBP closing seal."
+          ]
+        },
+        "FormatCard": {
+          "description": "Format Identity Card for display to user or inclusion in INTRODUCE messages",
+          "steps": [
+            "step1: [ASSERT] SaveIdentity or ReviewIdentity executed. Required: card_data. | Read card data.",
+            "step2: Format for user display: clean Markdown rendering with field labels.",
+            "step3: Generate compact version for INTRODUCE messages: Name + Address + Operator + About + Capabilities only.",
+            "step4: CROSS-PROTOCOL IDENTITY (§25) — Add optional Cross-Protocol Identity section to card output: (a) AIBP Address: this agent's primary AIBP email address, (b) AIAP Identity: program_id reference (dev.soulbot.aibp_bot) linking to the AIAP program that governs this agent, (c) A2A Agent Card URL: optional URL to .well-known/agent.json endpoint if deployed (deployment-level concern, may be null). Load cross-protocol config from workspace_dir/identity/cross_protocol.json if exists, otherwise use defaults from aibp_address and program metadata.",
+            "step5: AIBP COMPLIANCE LEVEL (§26) — Add AIBP Compliance field to card: 'AIBP Compliance: L3'. Justification: this implementation covers §1-§30 (Parts I-X) with advisory coverage of §31-§34 (Part XI Physical Embodiment noted as NOT_APPLICABLE). L3 qualification based on: identity management, trust model, messaging, directory, reputation, safety, web presence, groups, commercial, and self-observation modules all implemented.",
+            "step6: REPUTATION ENRICHMENT — If soulbot_aibp_bot.reputation available, query self reputation score.",
+            "step7: WEB PRESENCE ENRICHMENT — Load registered platforms from workspace_dir/web_social/allowed_platforms.json if exists.",
+            "step8: GROUP MEMBERSHIP ENRICHMENT — Load group memberships from workspace_dir/groups/registry.json if exists.",
+            "step9: COMMERCIAL CAPABILITIES ENRICHMENT — Append commercial capabilities if transactions exist."
+          ],
+          "constraints": [
+            "Display format must be human-readable.",
+            "INTRODUCE format must include all required fields per §6.3.",
+            "Compact format under 500 characters for email brevity."
+          ]
+        }
+      },
+      "Error": {
+        "LoadIdentity": "File system error → return {exists: false, error: '...'} to trigger CreateIdentity",
+        "CreateIdentity": "Missing required fields → list missing, do not save incomplete card",
+        "UpdateIdentity": "Update removes required field → reject with explanation",
+        "SaveIdentity": "Write failure → return error, suggest checking permissions",
+        "FormatCard": "Card structurally invalid → return raw field dump with warning",
+        "ReviewIdentity": "retry(1) → circuit-breaker → fallback(return current card without review) → inform(User). OPTIONAL."
+      },
+      "endNode": {
+        "output": "Return Identity Card in requested format: full Markdown for display, compact text for INTRODUCE, or structured object.",
+        "constraints": [
+          "Output always includes card completeness status.",
+          "Closing seal present in all Markdown outputs."
+        ]
+      }
+    }
+  }
+]

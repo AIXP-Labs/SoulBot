@@ -1,0 +1,229 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "type": "aisop",
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "name": "soulbot_aibp_bot_directory v2.1.0",
+      "version": "2.1.0",
+      "output_mode": {
+        "L0": "Output JSON in ENGLISH: {action, results_count, source, entries}",
+        "L1": "Output helpfully in User's exact language and script variant",
+        "output": "L1"
+      },
+      "description": "AIBP Directory Service client — registers agent in public/federated directories, searches agents by capability/interest/domain, browses directory listings, and parses directory responses. Implements AIBP §7 with aibot-directory@aibp.dev as well-known address. v1.6.0: Hardening — ASSERT gates on all functions, json_schema output declaration, agentic_prompt annotations, documentation enhancement. Local cache for offline discovery.",
+      "id": "soulbot_aibp_bot.directory",
+      "loading_mode": "normal",
+      "tools": [
+        {
+          "name": "file_system",
+          "required": true,
+          "annotations": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": false
+          }
+        }
+      ],
+      "parameters": {
+        "action": {
+          "type": "string",
+          "required": true,
+          "enum": [
+            "register",
+            "search",
+            "browse",
+            "parse_response"
+          ],
+          "description": "Directory action per §7",
+          "agentic_prompt": "Set by main orchestrator DiscoverPipeline or RegisterPipeline."
+        },
+        "directory_address": {
+          "type": "string",
+          "required": false,
+          "description": "Directory service AIBP address. Default: aibot-directory@aibp.dev.",
+          "agentic_prompt": "Default or user-specified federated directory."
+        },
+        "search_query": {
+          "type": "object",
+          "required": false,
+          "description": "Search parameters: {capability, interest, domain, keyword}.",
+          "agentic_prompt": "Extracted from user message by DiscoverPipeline."
+        },
+        "identity_card": {
+          "type": "string",
+          "required": false,
+          "description": "Identity Card content for registration. Required for register.",
+          "agentic_prompt": "Loaded from soulbot_aibp_bot.identity."
+        },
+        "raw_response": {
+          "type": "string",
+          "required": false,
+          "description": "Raw directory response email content. Required for parse_response."
+        },
+        "aibp_address": {
+          "type": "string",
+          "required": true,
+          "description": "This agent's AIBP address",
+          "agentic_prompt": "Shared from main orchestrator."
+        },
+        "workspace_dir": {
+          "type": "string",
+          "required": true,
+          "description": "Directory for cache storage at workspace_dir/directory/",
+          "agentic_prompt": "Shared workspace_dir from main orchestrator."
+        }
+      },
+      "json_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "directory_result": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string"
+              },
+              "results_count": {
+                "type": "integer"
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "cache",
+                  "pending_network_response",
+                  "parsed_response"
+                ]
+              },
+              "entries": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": [
+              "action",
+              "source"
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "aisop": {
+        "main": "graph TD\n    Start([Start]) --> DetermineAction[DetermineAction]\n    DetermineAction -->|register| PrepareRegister[PrepareRegister]\n    DetermineAction -->|search| CheckCache[CheckCache]\n    DetermineAction -->|browse| CheckCache\n    DetermineAction -->|parse_response| ParseDirectoryResponse[ParseDirectoryResponse]\n    CheckCache -->|cache_hit| FormatResults[FormatResults]\n    CheckCache -->|cache_miss| PrepareSearch[PrepareSearch]\n    PrepareRegister --> End((End))\n    PrepareSearch --> End\n    ParseDirectoryResponse --> UpdateCache[UpdateCache]\n    UpdateCache --> FormatResults[FormatResults]\n    FormatResults --> End((End))"
+      },
+      "functions": {
+        "DetermineAction": {
+          "description": "Route to appropriate directory operation",
+          "steps": [
+            "step1: [ASSERT] Valid parameters received. Required: action, aibp_address, workspace_dir. | Validate action parameter: register, search, browse, parse_response.",
+            "step2: For register: verify identity_card provided. For search: verify search_query has at least one field. For parse_response: verify raw_response provided.",
+            "step3: Set directory_address to default 'aibot-directory@aibp.dev' if not provided."
+          ],
+          "constraints": [
+            "Directory address must be valid AIBP format: aibot-directory@{domain}.",
+            "SECURITY: Validate directory_address format. Reject addresses not starting with 'aibot-directory@'."
+          ]
+        },
+        "PrepareRegister": {
+          "description": "Compose INTRODUCE message to directory service for registration per §7.1",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: identity_card, directory_address. | Build registration message: type=INTRODUCE, recipient=directory_address, content=identity_card summary.",
+            "step2: Add L0 metadata: {type: 'INTRODUCE', purpose: 'directory_registration', capabilities, interests, domain}.",
+            "step3: Add X-AIBP-Directory-Action: register header.",
+            "step4: Return composed email for main module to send."
+          ],
+          "constraints": [
+            "Registration is idempotent. Identity Card must include all 8 required fields.",
+            "SECURITY: Do not include private fields in directory registration unless opted in."
+          ]
+        },
+        "CheckCache": {
+          "description": "Check local directory cache before sending network request",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: action in [search,browse], workspace_dir. | Load cache from workspace_dir/directory/cache_index.json.",
+            "step2: Filter cache entries matching search_query. Match: capability=substring, interest=substring, domain=exact, keyword=any field.",
+            "step3: If matches found and cache < 24h → route to FormatResults.",
+            "step4: If no matches or expired → route to PrepareSearch."
+          ],
+          "constraints": [
+            "Cache TTL: 24h default, 48h for federated. Empty cache on first run expected."
+          ]
+        },
+        "PrepareSearch": {
+          "description": "Compose DISCOVER message to directory service per §7.2",
+          "steps": [
+            "step1: [ASSERT] CheckCache executed with cache_miss. Required: search_query or browse action. | Build search message: type=DISCOVER, recipient=directory_address.",
+            "step2: Set L1 content to natural language query. Set L0 metadata with search parameters. Support entity_type 'agent'|'group'.",
+            "step3: Return composed email for main module to send asynchronously."
+          ],
+          "constraints": [
+            "DISCOVER uses T0 trust. Rate limit: max 10/hour per directory."
+          ]
+        },
+        "ParseDirectoryResponse": {
+          "description": "Parse incoming directory response and extract agent listings",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: raw_response. | Validate response from directory address (aibot-directory@*).",
+            "step2: Extract L1 and L0 content. Validate agent_address format per entry.",
+            "step3: Route to UpdateCache with parsed results."
+          ],
+          "constraints": [
+            "SECURITY: Only parse responses from verified directory addresses.",
+            "Discard duplicates. L0 failure falls back to L1 extraction."
+          ]
+        },
+        "UpdateCache": {
+          "description": "Update local directory cache with fresh results",
+          "steps": [
+            "step1: [ASSERT] ParseDirectoryResponse executed. Required: parsed_results, workspace_dir. | Load/create cache. Merge new results. Remove entries older than 7 days.",
+            "step2: Save updated cache. Route to FormatResults."
+          ],
+          "constraints": [
+            "Max cache size: 1000 entries. SECURITY: No path traversal."
+          ]
+        },
+        "FormatResults": {
+          "description": "Format directory results for user display",
+          "steps": [
+            "step1: [ASSERT] CheckCache or UpdateCache executed. Required: result_entries. | Sort: exact matches first, then partial, then alphabetical. Max 20 per page.",
+            "step2: Format each entry with agent name, address, capabilities. Add cache indicator if applicable."
+          ],
+          "constraints": [
+            "Human-readable display (§1.5). Include full AIBP address (Axiom 0 traceability)."
+          ]
+        }
+      },
+      "Error": {
+        "_circuit_breaker_config": {
+          "failure_threshold": 3,
+          "window_seconds": 300,
+          "cooldown_seconds": 30,
+          "half_open_test": true
+        },
+        "DetermineAction": "retry(2) -> circuit-breaker -> fallback(inform User with valid options) -> inform(User). IMPORTANT.",
+        "PrepareRegister": "retry(1) -> circuit-breaker -> fallback(inform User) -> inform(User). Identity card incomplete → list missing fields.",
+        "CheckCache": "retry(1) -> circuit-breaker -> fallback(treat as cache miss) -> inform(User). Cache corrupted → treat as miss.",
+        "PrepareSearch": "retry(1) -> circuit-breaker -> fallback(inform User) -> inform(User). Empty query → request at least one criterion.",
+        "ParseDirectoryResponse": "retry(1) -> circuit-breaker -> fallback(inform User) -> inform(User). Not from directory → reject with warning.",
+        "UpdateCache": "retry(1) -> circuit-breaker -> fallback(return results without caching) -> inform(User). Write failure → return results without caching.",
+        "FormatResults": "retry(1) -> circuit-breaker -> fallback(return raw entries) -> inform(User). Empty results → suggest broader search."
+      },
+      "endNode": {
+        "output": "Return directory operation result with source indication (cache/pending/parsed).",
+        "constraints": [
+          "Register output is composed email. Search may be immediate (cache) or async (email)."
+        ]
+      }
+    }
+  }
+]

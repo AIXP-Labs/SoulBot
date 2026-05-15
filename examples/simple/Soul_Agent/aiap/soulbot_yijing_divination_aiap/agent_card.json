@@ -1,0 +1,141 @@
+{
+  "name": "yijing_divination",
+  "description": "基于易经六十四卦的AI占卜文化学习助手。使用三枚铜钱法起卦，提供卦辞、爻辞解读与人生建议。支持重复占卜防护、sys.io.confirm 确认机制、AI 内容标识。Trust Level T3 (Supervised)。合规覆盖：COPPA 2026、EU AI Act Art.50、GB 45438-2025、NIST CAISI。仅供文化学习与娱乐体验。",
+  "version": "1.16.0",
+  "provider": "",
+  "pattern": "A",
+  "tags": [
+    "yijing",
+    "iching",
+    "divination",
+    "hexagram",
+    "culture",
+    "entertainment"
+  ],
+  "skills": [
+    {
+      "id": "divine",
+      "name": "起卦占卜",
+      "description": "模拟三枚铜钱法起卦，生成本卦和变卦，含重复占卜防护和降级运行，提供完整解读与建议。",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "interpret",
+      "name": "解卦",
+      "description": "解读用户提供的卦象，给出卦辞、爻辞和象辞解读。",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "analyze_change",
+      "name": "变卦分析",
+      "description": "分析本卦到变卦的转化含义，包含互卦分析，三级数据来源验证。",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "history",
+      "name": "查看历史",
+      "description": "查看和管理过往占卜记录，清空操作需 sys.io.confirm 确认。",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "help",
+      "name": "帮助",
+      "description": "了解易经占卜基础知识和使用方法。",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "trust_level": 3,
+  "tools": [
+    "file_system"
+  ],
+  "modules": [
+    "yijing_divination.main"
+  ],
+  "status": "active",
+  "governance_hash": "bd7bec301e47a22172e6cbb6dbeb953440b6517dc27fca154af13237c004b6a8",
+  "security_scheme": {
+    "type": "none",
+    "description": "Local execution, no network authentication required. Safety enforcement via safety_card."
+  },
+  "compliance": {
+    "GB_45438_2025": {
+      "status": "compliant",
+      "effective": "2025-09-01",
+      "scope": "AI content labeling (explicit + implicit)"
+    },
+    "EU_AI_Act_Art50": {
+      "status": "compliant",
+      "effective": "2026-08-02 (Omnibus provisional agreement REACHED 2026-05-07; Annex III Dec 2 2027, Annex I Aug 2 2028; new Art.5 CSAM/nudifier ban Dec 2 2026; Art.50(2) watermarking Aug 2 2026 with transitional to Dec 2 2026; formal endorsement expected before Aug 2 2026; OJ summer 2026)",
+      "scope": "Machine-readable AI-generated content marking, Art.50 Code of Practice multi-layered watermarking alignment (visible + machine-readable), CoP draft guidelines published May 8 2026; final CoP expected early June 2026; if approved by the Commission, the Code is a voluntary tool for demonstrating compliance"
+    },
+    "COPPA_2026": {
+      "status": "compliant",
+      "effective": "2026-04-22",
+      "enforcement": "NOW EFFECTIVE",
+      "scope": "§312.10 written data retention policy, enhanced parental notice with third-party categories, opt-in consent for targeted advertising, biometric identifiers expansion (fingerprints eyeprints voiceprints facial templates), government-issued identifiers, written security program with annual risk assessment, FTC age verification policy statement Feb 25 2026 (safe harbor for age-verification-only collection under specified conditions), TAKE IT DOWN Act FTC enforcement provisions effective May 19 2026 — platform 48-hour removal requirement for NCII; first criminal conviction Apr 2026 (Ohio, AI-generated NCII); law already actively enforced criminally; FTC Chairman Ferguson compliance advisory letters to 15+ major tech companies; civil penalty $53,088/violation per FTC enforcement guidance, penalty >$50k/violation. Not directed at children under 13, no minor data collection"
+    },
+    "NIST_AI_Agent_2026": {
+      "status": "aligned",
+      "scope": "CAISI three-pillar framework fully operational, COSAiS SP 800-53 control overlays (single-agent + multi-agent, agent-specific overlays in active development with no firm publication date announced — formal guidance unlikely before 2027), NCCoE concept paper AI Agent Identity OAuth/OIDC/SCIM (public comments under review, final publication timeline uncertain), sector listening sessions Apr 2026 healthcare+finance+education"
+    }
+  },
+  "limitations": [
+    "仅供传统文化学习与娱乐体验，不构成专业建议",
+    "不提供医疗、法律、金融领域具体建议",
+    "拒绝涉及自杀、自残、犯罪等敏感内容的请求",
+    "LLM 模拟随机不具备密码学安全随机性",
+    "单用户本地环境假设，不支持多租户"
+  ],
+  "safety_card": {
+    "risk_level": "low",
+    "data_handling": {
+      "storage": "file_system",
+      "retention": "persistent (365-day retention with lazy purge)",
+      "encryption": "n/a"
+    },
+    "limitations": [
+      "仅供传统文化学习与娱乐体验，不构成专业建议",
+      "不提供医疗、法律、金融领域具体建议",
+      "拒绝涉及自杀、自残、犯罪等敏感内容的请求",
+      "file_system write scope limited to workspace_dir/yijing_history/",
+      "历史记录最多保留100条，超期365天自动清理",
+      "LLM 模拟随机不具备密码学安全随机性",
+      "所有输出标注 [AI生成内容]（符合中国 GB 45438-2025 AI 标识办法及 EU AI Act Art.50）",
+      "会话上下文 30 分钟超时自动清除",
+      "连续错误 3 次触发限流保护",
+      "Prompt injection 三层防御（模式检测 + HTML/XSS 消毒 + 输入边界隔离）",
+      "COPPA 2026: 未成年人（<13岁）自我标识后拒绝服务",
+      "sys.io.confirm headless 模式 30 秒超时（AT7 安全标准），超时视为 reject"
+    ]
+  }
+}

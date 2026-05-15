@@ -1,0 +1,235 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "protocol": "AISOP V1.0.0",
+      "template_version": "3.0.0",
+      "id": "your.domain.project.task",
+      "version": "1.0.0",
+      "name": "Standard AISOP Template",
+      "description": "A detailed explanation of what this AISOP does, its context, and its goals. NOTE: The Mermaid graph and functions below are illustrative syntax examples — they demonstrate AISOP structural patterns (sub-flows, multi-step, LLM ops), not a complete executable flow. Executable AISOPs must have strict Mermaid→function mapping.",
+      "verified_on": [],
+      "tools": [
+        "shell",
+        "file_system"
+      ],
+      "parameters": {
+        "input_variable": {
+          "type": "string",
+          "description": "Description of the input variable."
+        }
+      },
+      "summary": "Short description of what this AISOP does.",
+      "system_prompt": "# Role: AISOP Virtual Runtime\nRun aisop.main",
+      "quality_checklist": {
+        "cognitive": {
+          "C1": {
+            "name": "Problem Modeling",
+            "check": "The AISOP's Mermaid graph structure should match the domain problem archetype: Pipeline for linear data processing, Router for intent-based branching, Loop for iterative convergence, Hybrid for combinations. Mismatches indicate design drift.",
+            "severity": "WARNING",
+            "scope": "creator_modify ThreeDimAssess"
+          },
+          "C2": {
+            "name": "Node Load",
+            "check": "No single function should exceed 6 steps. If it does, extract into an L1 internal sub-flow (aisop['sub_task'] within the same file) to reduce cognitive load per node.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest + creator_modify ThreeDimAssess"
+          },
+          "C3": {
+            "name": "Abstraction Consistency",
+            "check": "All nodes in the Mermaid graph should operate at a similar abstraction level. Mixing high-level routing (e.g., NLU intent classification) with low-level formatting (e.g., date string formatting) in the same graph layer indicates inconsistent abstraction — extract the low-level detail into a sub-step or sub-flow.",
+            "severity": "WARNING",
+            "scope": "creator_modify ThreeDimAssess"
+          },
+          "C4": {
+            "name": "Information Flow",
+            "check": "Every parameter in system.parameters must be referenced in at least one function step. Every function Output must be consumed by a downstream function Input. No orphan parameters, no broken data chains. Entity completeness: each ProblemModel entity has at least one NLU intent or function operating on it.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest + creator_modify ThreeDimAssess"
+          },
+          "C5": {
+            "name": "User Model",
+            "check": "NLU intent categories should be discoverable from the AISOP's name, summary, and system_prompt. A user reading these fields should be able to guess what commands/requests are supported.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest (Detailed/Professional only, skip for Simple/Standard)"
+          },
+          "C6": {
+            "name": "Fractal Decomposition",
+            "check": "If the AISOP exceeds 12 nodes, review for L1 internal sub-flow extraction (aisop['sub_task']). Functionally cohesive flows may exceed 12 nodes without splitting. L2 separate files only when sub-workflows have independent tools/parameters and are independently testable. Fractal decisions driven by functional independence, never by node count or file size.",
+            "severity": "WARNING",
+            "scope": "creator_research Propose"
+          },
+          "C7": {
+            "name": "Brain Principle",
+            "check": "Classify each function: LLM-native (classification, summarization, generation, reasoning — no tool needed) vs Tool-required (file I/O, API calls, precise calculations — must specify tool). Hybrid tasks: LLM step first, then tool step. Do not call tools for tasks the LLM handles well (intent classification, text generation, common-sense reasoning). Cross-verify with I5.",
+            "severity": "WARNING",
+            "scope": "creator_research Propose + creator_generate Generate"
+          }
+        },
+        "intrinsic": {
+          "I1": {
+            "name": "Tool Honesty",
+            "check": "Two-way verification: (a) Phantom check — every tool in system.tools must appear in at least one function step. (b) Undeclared check — every tool referenced in function steps must be listed in system.tools. For fractal shells (L1 or L2), tools may include the union of sub-AISOP tools — document this in description.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest"
+          },
+          "I2": {
+            "name": "Security",
+            "check": "Start.constraints must validate input type and format. File operations must validate paths do not escape the workspace (no ../). Shell commands must not pass unsanitized user input. System_prompt must not leak API keys or internal schemas. SEVERITY RULES: Simple=WARNING. Standard and above=FAIL if Start has no input validation. DOMAIN OVERRIDE: finance/health/legal keywords → FAIL regardless of tier.",
+            "severity": "FAIL (see rules)",
+            "scope": "creator_generate ThreeDimTest",
+            "domain_specific": {
+              "finance": "Validate amounts (positive, domain-reasonable range), validate dates (not far future), currency awareness, no external data exposure.",
+              "health": "Anonymize PII in outputs, data access controls, consent awareness.",
+              "legal": "Audit trail for data changes, compliance references, confidentiality markers."
+            }
+          },
+          "I3": {
+            "name": "Data Integrity",
+            "check": "Persistent data operations (read/write files, databases) must specify field-level schema in the step description (e.g., 'schema: {id, title, date, status}'). Data should not be silently lost on error. FAIL if writes without schema.",
+            "severity": "FAIL",
+            "scope": "creator_generate ThreeDimTest"
+          },
+          "I4": {
+            "name": "Edge Cases",
+            "check": "Error fields must handle: (a) empty/null input from upstream, (b) tool failure (network, permission, timeout), (c) malformed data. Never use vague 'report error' — specify what to tell the user and what fallback action to take. FAIL if Error is vague or empty.",
+            "severity": "FAIL",
+            "scope": "creator_generate ThreeDimTest"
+          },
+          "I5": {
+            "name": "Tool Suitability",
+            "check": "Each tool in system.tools should be the optimal choice for its task. Prefer Level 1 (built-in: file_system, shell) over Level 2 (MCP) when both suffice. Never use Level 3 (custom API) when Level 1/2 works. Verify tool selection aligns with the Brain Principle (C7): LLM-native tasks should not require tools.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest"
+          },
+          "I6": {
+            "name": "Resilience",
+            "check": "Error recovery strategy must follow: retry once → fallback to alternative (cached data, AI knowledge, simpler method) → inform user with actionable suggestion. Never silently fail or swallow errors. Write operations: retry→fallback→inform pattern. Read-only operations: inform with specific guidance is acceptable.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest"
+          },
+          "I7": {
+            "name": "Parameter Completeness",
+            "check": "All parameters have type and description. agentic_prompt recommended for AI-facing parameters. Default values provided when sensible.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest"
+          }
+        },
+        "detail": {
+          "D1": {
+            "name": "Step Clarity",
+            "check": "Every step must contain a concrete action verb (extract, classify, calculate, generate, read, write, validate, present). Avoid vague verbs like 'process', 'handle', 'deal with'. Each step should be unambiguous enough that two different LLMs would produce similar outputs.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest"
+          },
+          "D2": {
+            "name": "Step Format",
+            "check": "Tool-call steps use Input/Process/Output/Error format. LLM-native steps use clear action description (no I/P/O/E needed). Hybrid: LLM step = description, tool step = I/P/O/E.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest"
+          },
+          "D3": {
+            "name": "Null Propagation",
+            "check": "Two levels: (i) Inter-node — for each node receiving input from a node with Error field, verify downstream handles empty/null input. (ii) Intra-node — within each function, every tool-call step must have its own Error handling or be guarded by a conditional check (if/exists). WARNING if tool-call step has no Error and is not conditional.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest"
+          },
+          "D4": {
+            "name": "Format Consistency",
+            "check": "CamelCase node names in Mermaid, snake_case for ids and file names, consistent JSON indentation, proper Mermaid graph TD syntax.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest"
+          },
+          "D5": {
+            "name": "Boundary Rules",
+            "check": "Every subjective Decision node (where classification is not black-and-white) must have an explicit BOUNDARY RULE or tiebreaker in its constraints. For N intents, systematically consider C(N,2) pairwise combinations — write rules for all pairs with realistic ambiguity.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest"
+          },
+          "D6": {
+            "name": "Multilingual",
+            "check": "system_prompt contains 'Mirror User's exact language and script variant.' NLU includes multilingual triggers for target audiences.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest"
+          },
+          "D7": {
+            "name": "Metabolism",
+            "check": "No phantom tools (tools declared in system.tools but never referenced in any function). No dead-end nodes (every path must reach endNode or loop back). No vestigial steps (steps describing features that were removed or replaced). During upgrade cycles: identify outdated content, obsolete parameters, dead code paths, and superseded logic. Clean or annotate appropriately.",
+            "severity": "WARNING",
+            "scope": "creator_modify ThreeDimAssess (upgrade cycles only)"
+          },
+          "Budget": {
+            "name": "Token Efficiency",
+            "check": "Scan for token optimization opportunities that do not affect performance or functionality: redundant declarations across functions (extract to shared constraints), verbose descriptions for LLM-native tasks (C7 — concise intent is sufficient), accumulated description bloat from upgrade history (compress old lineage to summary), unnecessary Error fields for impossible scenarios, duplicate logic that could reference a single source. Fractal decisions driven by C6 (functional independence), never by file size.",
+            "severity": "WARNING",
+            "scope": "creator_generate ThreeDimTest"
+          }
+        }
+      },
+      "tier_rules": {
+        "Simple": {
+          "C2": "relaxed (up to 8 steps acceptable)",
+          "C4": "relaxed (basic flow check only)",
+          "C5": "SKIP",
+          "I2": "WARNING (input validation recommended but not required)"
+        },
+        "Standard": {
+          "C5": "SKIP",
+          "I2": "FAIL if Start has no input validation on user-facing AISOP"
+        },
+        "Detailed": {
+          "C5": "full check",
+          "I2": "FAIL if Start has no input validation"
+        },
+        "Professional": {
+          "C5": "full check",
+          "I2": "FAIL if Start has no input validation"
+        }
+      },
+      "stateful_patterns": {
+        "data_dir_parameter": {
+          "type": "string",
+          "description": "Directory for persistent data files. Include path validation in Start.constraints.",
+          "default": "data",
+          "agentic_prompt": "Resolve relative to AISOP working directory. Create if not exists."
+        },
+        "file_access": {
+          "primary_file": "Core data file (e.g., expenses.json). Error = retry→fallback→inform. MUST have Error handling.",
+          "secondary_file": "Enrichment data file (e.g., budgets.json). Error = graceful skip with note. Guard with conditional.",
+          "schema_requirement": "Every file write step must specify field-level schema: { field_name: type, ... } (I3 compliance)."
+        },
+        "entity_to_file_mapping": "Each ProblemModel entity maps to one data file. Document mapping in description (e.g., 'Expense → expenses.json, Budget → budgets.json')."
+      }
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "Run aisop['main'].",
+      "aisop": {
+        "main": "graph TD\n  start[Start Node] --> check{Decision?}\n  check -->|Yes| sub_task[Call Sub-Graph]\n  check -->|No| atomic_tool[Call Function]\n  sub_task --> endNode((End))\n  atomic_tool --> endNode",
+        "sub_task": "graph TD\n  sub_start --> sub_end --> endNode((End))"
+      },
+      "functions": {
+        "simple_tool": {
+          "step1": "echo 'Hello World'"
+        },
+        "multi_step_tool": {
+          "step1": "echo 'Starting...'",
+          "step2": "aisop['sub_task']",
+          "step3": "functions['simple_tool']",
+          "step4": "echo 'Finished'"
+        },
+        "llm_tool": {
+          "step1": {
+            "op": "sys.llm",
+            "prompt": "Analyze this..."
+          }
+        },
+        "sub_task": {
+          "step1": "aisop['sub_task']"
+        }
+      }
+    }
+  }
+]

@@ -1,0 +1,11 @@
+# Secrets — never commit
+.env
+credentials.json
+token.json
+
+# Runtime data
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Execution data (created at runtime)

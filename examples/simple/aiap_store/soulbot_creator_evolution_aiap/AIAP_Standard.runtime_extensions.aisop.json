@@ -1,0 +1,442 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "template_version": "1.6.0",
+      "last_verified_date": "2026-05-12",
+      "extends": "AIAP_Standard.core.aisop.json",
+      "id": "aiap_standard.runtime_extensions",
+      "version": "1.0.0",
+      "trust_level": 4,
+      "name": "AIAP Quality Standard — Runtime Extensions v1.0.0",
+      "output_mode": {
+        "L0": "Output JSON in ENGLISH: {intent, confidence, route, state, op}",
+        "L1": "Output helpfully in User's exact language and script variant",
+        "output": "L1"
+      },
+      "description": "Defines the 7 RESERVED_KEYS at the AISOP functions layer. These keys are parsed by Runtime before step execution.",
+      "fractal_exempt": "Standard library reference module — no executable flow graph.",
+      "tools": [
+        {
+          "name": "file_system",
+          "annotations": {
+            "read_only": true,
+            "destructive": false,
+            "idempotent": true,
+            "open_world": false
+          }
+        }
+      ],
+      "summary": "Runtime extension fields specification — 7 RESERVED_KEYS for error handling, retry, context filtering, output mapping, batch processing, parallel join, and constraints.",
+      "loading_mode": "normal",
+      "params": {
+        "target_aisop_path": "string, REQUIRED: Path to the target AISOP file to validate for runtime extension compliance. [agentic_prompt: Target AISOP file path for runtime extension validation — the validator checks this file's function-layer keys against the RESERVED_KEYS schema.]",
+        "validation_mode": "string, default: strict, Validation strictness for runtime extension compliance. strict=all 7 RESERVED_KEYS must conform to schema, lenient=advisory only for optional keys (context_filter, output_map, batch, parallel_join). [agentic_prompt: Controls validation strictness — 'strict' enforces all 7 RESERVED_KEYS schema compliance, 'lenient' only enforces mandatory keys (on_error, retry_policy, constraints).]",
+        "error_routing_fallback": "string|null, default: null, Fallback node name for unmatched error types when on_error.default is not specified. Null means abort execution on unmatched error. [agentic_prompt: Default fallback node for unhandled error types — provides a safety net when on_error routing lacks a matching error type handler.]"
+      },
+      "system_prompt": "AIAP runtime extensions standard. Defines function-layer extension keys for AISOP.\nMirror User's exact language and script variant.\nAlign Axiom 0: Human Sovereignty and Wellbeing. Error classification per AISOP section 6.12: forced_blocking errors (confirm_rejected, confirm_timeout, assertion_error) are FATAL - no retry. Recoverable errors (command_error, command_timeout, io_error, tool_error) respect retry_policy. Unmatched errors route to on_error.default or error_routing_fallback.",
+      "reserved_keys_spec": {
+        "total_count": 7,
+        "declaration_layer": "functions",
+        "declaration_position": "function body, sibling to step keys",
+        "protocol_compatibility": "AISOP — Mermaid and JSON flow share identical extension syntax",
+        "keys": {
+          "on_error": {
+            "description": "Fallback routing on node execution failure.",
+            "type": "object",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "timeout": {
+                  "type": "string",
+                  "description": "Target node on timeout error"
+                },
+                "model_refusal": {
+                  "type": "string",
+                  "description": "Target node when AI model refuses"
+                },
+                "tool_error": {
+                  "type": "string",
+                  "description": "Target node on tool execution error"
+                },
+                "default": {
+                  "type": "string",
+                  "description": "Fallback target for unmatched error types"
+                },
+                "confirm_rejected": {
+                  "type": "string",
+                  "description": "Target node when user rejects sys.io.confirm (AISOP §6.12)"
+                },
+                "confirm_timeout": {
+                  "type": "string",
+                  "description": "Target node when sys.io.confirm times out (AISOP §6.12)"
+                },
+                "assertion_error": {
+                  "type": "string",
+                  "description": "Target node when sys.assert condition is false (AISOP §6.12)"
+                },
+                "command_error": {
+                  "type": "string",
+                  "description": "Target node when sys.run fails with non-zero exit (AISOP §6.12)"
+                },
+                "command_timeout": {
+                  "type": "string",
+                  "description": "Target node when sys.run.timeout expires (AISOP §6.12)"
+                },
+                "io_error": {
+                  "type": "string",
+                  "description": "Target node when sys.io.read/write fails (AISOP §6.12)"
+                }
+              },
+              "additionalProperties": {
+                "type": "string",
+                "description": "Custom error type → target node"
+              }
+            },
+            "example": {
+              "timeout": "ErrorHandler",
+              "model_refusal": "FallbackNode",
+              "confirm_rejected": "UserRejectedHandler",
+              "assertion_error": "ValidationErrorHandler",
+              "default": "ErrorHandler"
+            },
+            "runtime_behavior": "When a node execution produces an error result, Runtime matches the error type against on_error keys and routes to the specified target node. Falls back to 'default' if no specific match. Error routing priority (per AISOP §6.12): exact type match → on_error.default → Mermaid -.-> error edge → abort execution."
+          },
+          "retry_policy": {
+            "description": "Declarative retry configuration for node re-execution.",
+            "type": "object",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "max_attempts": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "default": 2,
+                  "description": "Maximum number of execution attempts"
+                },
+                "correction_prompt": {
+                  "type": "string",
+                  "description": "Additional prompt appended on retry to guide correction"
+                }
+              },
+              "required": [
+                "max_attempts"
+              ]
+            },
+            "example": {
+              "max_attempts": 3,
+              "correction_prompt": "Previous attempt failed. Please re-examine and try again."
+            },
+            "runtime_behavior": "Runtime tracks attempt count per node. If attempt < max_attempts, re-execute with correction_prompt appended. If max_attempts reached, proceed to on_error routing or next node."
+          },
+          "context_filter": {
+            "description": "I/O isolation — trim context before entering a node.",
+            "type": "object",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "include": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Allowlist — only these context keys are visible to the node"
+                },
+                "exclude": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Denylist — these context keys are hidden from the node"
+                }
+              }
+            },
+            "example": {
+              "include": [
+                "current_item",
+                "config"
+              ]
+            },
+            "runtime_behavior": "Before node execution, Runtime creates a filtered context view. 'include' is an allowlist (only listed keys visible). 'exclude' is a denylist (listed keys hidden). If both present, 'include' takes precedence."
+          },
+          "output_mapping": {
+            "description": "Mount node output to a specific context key (pairs with context_filter).",
+            "type": "string",
+            "schema": {
+              "type": "string",
+              "description": "Context key where node output will be stored"
+            },
+            "example": "processed_results",
+            "runtime_behavior": "After node execution, Runtime stores the result under the specified key in the execution context, rather than the default node-name key."
+          },
+          "map": {
+            "description": "Batch processing — iterate a sub-node over a list of items.",
+            "type": "object",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items_path": {
+                  "type": "string",
+                  "description": "Dot-separated path to the items array in state (e.g. 'state.data_items')"
+                },
+                "iterator": {
+                  "type": "string",
+                  "description": "Node name to execute for each item"
+                },
+                "concurrency": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "default": 1,
+                  "description": "Maximum parallel executions"
+                }
+              },
+              "required": [
+                "items_path",
+                "iterator"
+              ]
+            },
+            "example": {
+              "items_path": "state.data_items",
+              "iterator": "ProcessItem",
+              "concurrency": 2
+            },
+            "runtime_behavior": "Runtime resolves items_path to get an array, then executes the iterator node for each item. Concurrency controls max parallel executions. Results are collected into an array."
+          },
+          "join": {
+            "description": "Parallel convergence — wait for specified nodes to complete before proceeding.",
+            "type": "object",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "wait_for": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Node names that must complete before this node executes"
+                }
+              },
+              "required": [
+                "wait_for"
+              ]
+            },
+            "example": {
+              "wait_for": [
+                "ProcessItem"
+              ]
+            },
+            "runtime_behavior": "Runtime tracks completion of all listed nodes. Node execution is deferred until all wait_for nodes have completed. Results from all waited nodes are available in context."
+          },
+          "constraints": {
+            "description": "Validation conditions that must hold true for the node.",
+            "type": "array",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Human-readable constraint descriptions verified by AI or Runtime"
+            },
+            "example": [
+              "Data source must be available",
+              "Return data must not be empty"
+            ],
+            "runtime_behavior": "Constraints are presented to the AI executor as validation requirements. The AI should verify these conditions are met before reporting node completion. Runtime may also perform automated constraint checking where possible."
+          }
+        }
+      },
+      "sys_call_spec": {
+        "description": "AISOP V1.0.0 sys.* system call specification for AIAP runtime governance. sys.* calls are written inline in step values, not as RESERVED_KEYS.",
+        "total_namespaces": 8,
+        "total_calls": 24,
+        "declaration_layer": "step text",
+        "declaration_position": "step value string, starts with sys.*",
+        "protocol_reference": "AISOP V1.0.0 §6",
+        "blocking_classification": {
+          "description": "Blocking behavior classification per AISOP §6.1.",
+          "forced_blocking": [
+            "sys.io.confirm",
+            "sys.io.input",
+            "sys.io.select"
+          ],
+          "blocking": [
+            "sys.run",
+            "sys.run.timeout",
+            "sys.io.read",
+            "sys.io.write",
+            "sys.code.exec",
+            "sys.code.eval",
+            "sys.llm",
+            "sys.llm.json",
+            "sys.llm.classify",
+            "sys.event.wait"
+          ],
+          "non_blocking": [
+            "sys.io.notify",
+            "sys.io.print",
+            "sys.run.bg",
+            "sys.event.emit",
+            "sys.security.audit",
+            "sys.security.redact"
+          ]
+        },
+        "executor_hard_rule": "sys.io.confirm / sys.io.input / sys.io.select MUST be handled directly by the executor, not delegated to AI Agent. This is an Axiom 0 enforcement requirement per AISOP §6.2. All other sys.* execution dispatch is determined by the executor implementation (see plan10/01).",
+        "aiap_governance_reference": "AIAP Protocol Appendix G"
+      },
+      "node_type_inference": {
+        "description": "JSON flow nodes do NOT have a 'type' field. Type is inferred from node structure. This is the canonical inference ruleset.",
+        "applies_to": "AISOP JSON flow format — Mermaid nodes are identified by graph shape",
+        "rules": [
+          {
+            "condition": "node is empty or {}",
+            "inferred_type": "end",
+            "priority": 1
+          },
+          {
+            "condition": "'branches' key present",
+            "inferred_type": "decision",
+            "priority": 2
+          },
+          {
+            "condition": "'wait_for' key present",
+            "inferred_type": "join",
+            "priority": 3
+          },
+          {
+            "condition": "'delegate_to' key present",
+            "inferred_type": "delegate",
+            "priority": 4
+          },
+          {
+            "condition": "'next' key with 2+ targets",
+            "inferred_type": "fork",
+            "priority": 5
+          },
+          {
+            "condition": "'next' key with 1 target",
+            "inferred_type": "process",
+            "priority": 6
+          },
+          {
+            "condition": "fallback",
+            "inferred_type": "end",
+            "priority": 7
+          }
+        ],
+        "implementation": "infer_node_type(node: dict) -> str"
+      },
+      "quality_checklist": {
+        "intrinsic": {
+          "RE1": {
+            "name": "Reserved Key Count",
+            "check": "RESERVED_KEYS must contain exactly 7 keys: on_error, retry_policy, context_filter, output_mapping, map, join, constraints.",
+            "severity": "ERROR",
+            "how_to_verify": "Count keys in RESERVED_KEYS set. Must be 7. Must include 'constraints' (was missing in earlier versions with only 6 keys)."
+          },
+          "RE2": {
+            "name": "Extension Layer Consistency",
+            "check": "All 7 RESERVED_KEYS must be declared at functions layer (sibling to steps), never at flow/node layer.",
+            "severity": "ERROR",
+            "how_to_verify": "For each function body in 'functions' dict: check that RESERVED_KEYS appear as direct keys of the function body dict, not inside flow nodes."
+          },
+          "RE3": {
+            "name": "Protocol Symmetry",
+            "check": "Mermaid and JSON flow must parse extensions identically — same extract() call, same RESERVED_KEYS set.",
+            "severity": "ERROR",
+            "how_to_verify": "AisopExtensions.extract() is called with the same function body dict regardless of protocol type. No protocol-specific branching in extension parsing."
+          },
+          "RE4": {
+            "name": "Type Inference Completeness",
+            "check": "infer_node_type() must handle all 6 node types (end, decision, join, delegate, fork, process) with correct priority ordering.",
+            "severity": "ERROR",
+            "how_to_verify": "Verify inference function covers: empty→end, branches→decision, wait_for→join, delegate_to→delegate, next 2+→fork, next 1→process. Order matters for correctness."
+          },
+          "RE5": {
+            "name": "Step Classification Consistency",
+            "check": "Step text is correctly classified as exactly one of: sys.* call, RUN aisop.* invocation, or natural language instruction. No mixing allowed.",
+            "severity": "ERROR",
+            "how_to_verify": "For each step: apply three-mode classification (sys.* prefix → system call, RUN aisop.* prefix → sub-task, other → natural language). Verify each step matches exactly one classification. Mixed-mode steps are a protocol violation.",
+            "relationship": "Supplements MF33 at runtime layer. MF33 checks at static quality audit time (YELLOW); RE5 checks at runtime parsing time (ERROR).",
+            "reference": "AISOP V1.0.0 §5.3, AIAP Protocol Appendix G.9"
+          }
+        },
+        "detail": {
+          "RD1": {
+            "name": "on_error Coverage",
+            "check": "Functions with side effects should declare on_error with at least a 'default' target.",
+            "severity": "WARNING",
+            "how_to_verify": "For functions that use tools or external APIs: verify on_error is present with at minimum a 'default' key."
+          },
+          "RD2": {
+            "name": "context_filter Data Minimization",
+            "check": "Functions processing sensitive data should use context_filter to limit visible context.",
+            "severity": "WARNING",
+            "how_to_verify": "For functions handling PII or credentials: verify context_filter is present with 'include' allowlist."
+          }
+        }
+      },
+      "execute_mode": "library"
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "aisop": {
+        "main": "graph TD\n  Start[Start] --> ValidateKeys[Validate RESERVED_KEYS]\n  ValidateKeys --> CheckCount{Count == 7?}\n  CheckCount -->|yes| CheckLayer[Check Declaration Layer]\n  CheckCount -->|no| Fail[Report Error]\n  CheckLayer --> CheckSymmetry[Check Protocol Symmetry]\n  CheckSymmetry --> CheckInference[Check Type Inference]\n  CheckInference --> Pass[All Checks Pass]\n  Fail --> End((End))\n  Pass --> End"
+      },
+      "functions": {
+        "Start": {
+          "step1": "Load the target AISOP program for validation.",
+          "Error": "retry(1) -> circuit-breaker -> fallback(Fail) -> inform(User). OPTIONAL."
+        },
+        "ValidateKeys": {
+          "step1": "Extract RESERVED_KEYS from AisopExtensions class.",
+          "step2": "Verify the set contains exactly: on_error, retry_policy, context_filter, output_mapping, map, join, constraints.",
+          "constraints": [
+            "RESERVED_KEYS count must be exactly 7",
+            "constraints key must be included"
+          ],
+          "Error": "retry(1) -> circuit-breaker -> fallback(Fail) -> inform(User). IMPORTANT."
+        },
+        "CheckCount": {
+          "step1": "Count the number of RESERVED_KEYS.",
+          "step2": "If count != 7, route to Fail.",
+          "Error": "retry(1) -> circuit-breaker -> fallback(Fail) -> inform(User). OPTIONAL."
+        },
+        "CheckLayer": {
+          "step1": "For each function in the program, verify RESERVED_KEYS appear at function body level.",
+          "step2": "Verify no RESERVED_KEYS appear inside flow nodes.",
+          "constraints": [
+            "Extensions must be at functions layer, not flow layer"
+          ],
+          "Error": "retry(1) -> circuit-breaker -> fallback(Fail) -> inform(User). IMPORTANT."
+        },
+        "CheckSymmetry": {
+          "step1": "Verify AisopExtensions.extract() is protocol-agnostic.",
+          "step2": "Confirm no protocol-specific branching in extension parsing.",
+          "Error": "retry(1) -> circuit-breaker -> fallback(Fail) -> inform(User). IMPORTANT."
+        },
+        "CheckInference": {
+          "step1": "Test infer_node_type() with each node structure variant.",
+          "step2": "Verify priority ordering: end > decision > join > delegate > fork > process.",
+          "Error": "retry(1) -> circuit-breaker -> fallback(Fail) -> inform(User). IMPORTANT."
+        },
+        "Pass": {
+          "step1": "Report all runtime extension checks passed.",
+          "Error": "retry(1) -> circuit-breaker -> fallback(End) -> inform(User). OPTIONAL."
+        },
+        "Fail": {
+          "step1": "Report which checks failed with details.",
+          "on_error": {
+            "default": "End"
+          },
+          "Error": "retry(1) -> circuit-breaker -> fallback(End) -> inform(User). OPTIONAL."
+        },
+        "End": {}
+      }
+    }
+  }
+]

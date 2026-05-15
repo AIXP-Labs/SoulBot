@@ -1,0 +1,44 @@
+{
+  "schema_version": "mcp-1.0-prep",
+  "manifest_type": "aiap_tool_directory",
+  "aiap_id": "aiap_creator",
+  "aiap_version": "2.23.0",
+  "aiap_pattern": "D",
+  "trust_level": 4,
+  "governance": {
+    "protocol": "AIAP V1.0.0",
+    "governance_hash": "pending - recomputed in ReviewFinalize",
+    "governance_hash_canonical_version": "1.0"
+  },
+  "mcp_server": {
+    "enabled": false,
+    "note": "MCP Server support is prepared but not yet implemented. This manifest serves as schema definition for future activation.",
+    "server_id": "aiap_creator_tools",
+    "transport": "stdio",
+    "runtime": "tbd",
+    "entry_point": "tbd"
+  },
+  "tools": [],
+  "tool_metadata": {
+    "total_tools": 0,
+    "languages": [],
+    "dependencies": []
+  },
+  "security": {
+    "file_scope": "tool_dirs/",
+    "network_access": "none",
+    "dependency_pinning": "strict",
+    "audit_triggers": ["dependency_change", "network_declaration", "permission_escalation"]
+  },
+  "compatibility": {
+    "min_aiap_version": "1.0.0",
+    "mcp_version_target": "1.0",
+    "runtime_requirements": "none"
+  },
+  "notes": [
+    "Pattern G preparation - directory structure and manifest created in v2.23.0",
+    "Tool implementations will be added in future versions based on ecosystem adoption",
+    "MCP integration will be activated when MCP Server support is fully specified",
+    "This manifest follows I13 compliance requirements for future tool security"
+  ]
+}

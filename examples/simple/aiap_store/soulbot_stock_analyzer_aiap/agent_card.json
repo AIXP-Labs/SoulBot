@@ -1,0 +1,197 @@
+{
+  "name": "stock_analyzer",
+  "description": "美股股票分析助手 v2.0.0。MCP金融数据服务器集成(Alpha Vantage/SEC EDGAR)、Pattern C三模块架构、SSE/WebSocket实时流数据、SEC EDGAR XBRL API直连、置信度校准、宏观经济指标、DORA+AI Act双合规。技术指标(MA/RSI/MACD/BB/VWAP)、基本面(PE/EPS/Revenue)、风险(Sharpe/VaR)、情绪(Twitter/Reddit/StockTwits)、同行对比、回测、ETF、期权、趋势对比、分析师评级、内幕交易、财务健康、AI综合评估与智能追问建议、自选股管理、组合概览。",
+  "version": "2.0.0",
+  "provider": "",
+  "pattern": "C",
+  "tags": [
+    "stock",
+    "analysis",
+    "technical",
+    "fundamental",
+    "risk",
+    "sentiment",
+    "peer",
+    "backtest",
+    "ETF",
+    "options",
+    "implied-volatility",
+    "max-pain",
+    "social-sentiment",
+    "smart-followup",
+    "sector-rotation",
+    "trend-comparison",
+    "analyst-ratings",
+    "insider-trading",
+    "financial-health",
+    "finance",
+    "investment",
+    "mcp",
+    "streaming",
+    "sec-edgar",
+    "macro-economics",
+    "confidence-calibration",
+    "dora-compliance"
+  ],
+  "skills": [
+    {
+      "id": "analyze",
+      "name": "股票分析",
+      "description": "技术+基本面+AI综合分析(MA/RSI/MACD/BB/VWAP，MCP数据源+置信度校准)",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "risk",
+      "name": "风险分析",
+      "description": "Sharpe Ratio/VaR/分散化评分(含宏观经济指标背景)",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "sentiment",
+      "name": "情绪分析",
+      "description": "新闻+社交媒体(Twitter/Reddit/StockTwits)情绪分析(加权综合评分)",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "peer",
+      "name": "同行对比",
+      "description": "同行业竞争对手对比分析(GICS分类)",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "backtest",
+      "name": "历史回测",
+      "description": "买入持有策略 vs S&P 500基准回测",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "etf",
+      "name": "ETF分析",
+      "description": "ETF持仓透视/费率/追踪误差/资金流入流出",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "options",
+      "name": "期权概览",
+      "description": "Put/Call Ratio/隐含波动率/期权链/Max Pain/异常活动",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "trend",
+      "name": "趋势对比",
+      "description": "多股趋势时序对比/涨跌幅排名/波动率/相关性",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "analyst",
+      "name": "分析师评级",
+      "description": "华尔街分析师共识评级(Buy/Hold/Sell)/目标价/近期升降级",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "insider",
+      "name": "内幕交易",
+      "description": "SEC Form 4/EDGAR XBRL 内幕人交易追踪/C-suite聚焦/集群检测",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "health",
+      "name": "财务健康",
+      "description": "Altman Z-Score + Piotroski F-Score 财务健康评分(SEC EDGAR XBRL数据源)",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "watchlist",
+      "name": "自选股管理",
+      "description": "管理股票关注列表",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "overview",
+      "name": "市场概览",
+      "description": "三大指数、VIX、热门板块、行业轮动追踪",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "help",
+      "name": "帮助",
+      "description": "功能说明和金融术语解释",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "trust_level": 2,
+  "securitySchemes": {
+    "bearer": {
+      "type": "http",
+      "scheme": "bearer"
+    }
+  },
+  "tools": [
+    "google_search",
+    "web_browser",
+    "file_system",
+    "mcp_alpha_vantage",
+    "mcp_sec_edgar"
+  ],
+  "modules": [
+    "stock_analyzer.main",
+    "stock_analyzer.analysis",
+    "stock_analyzer.features"
+  ],
+  "status": "active",
+  "safety_card": {
+    "risk_level": "high",
+    "data_handling": {
+      "storage": "file_system",
+      "retention": "persistent",
+      "encryption": "n/a"
+    },
+    "limitations": [
+      "仅供参考学习，不构成投资建议",
+      "不提供具体买入/卖出价格建议",
+      "不承诺或暗示收益率",
+      "不执行交易操作",
+      "数据可能存在15-20分钟延迟（MCP实时数据源缩短至<1分钟）",
+      "仅支持美股市场",
+      "期权数据可能存在延迟，部分股票无活跃期权市场",
+      "ETF持仓数据通常每日更新",
+      "行业轮动分析为趋势描述，不构成投资建议",
+      "社交媒体情绪易受操纵，不应作为主要决策依据",
+      "分析师评级反映机构观点，预测准确率有限",
+      "内幕交易数据来自SEC公开披露，可能有2-5天延迟",
+      "Z-Score适用性限于制造业/工业企业，科技/金融公司准确性降低",
+      "file_system write scope limited to workspace_dir",
+      "MCP服务器不可用时自动降级到google_search/web_browser",
+      "置信度校准依赖历史预测数据积累，新股票首次分析无校准数据",
+      "宏观经济数据获取频率受限于公开数据发布周期"
+    ],
+    "compliance": {
+      "finra_2026_genai": true,
+      "sec_2026_examination": true,
+      "nist_caisi_2026": true,
+      "owasp_agentic_ai": true,
+      "dora_ict_resilience": true,
+      "eu_ai_act_omnibus": true
+    }
+  },
+  "governance_hash": "82f7de5cf97b23a99be5428a27026de7f35fad121e630085a872b5488f9bbe1e"
+}

@@ -1,0 +1,151 @@
+{
+    "program": "soulbot_intent_classifier_aiap",
+    "version": "1.2.0",
+    "pipeline": "creator_v1.14.0_evolve",
+    "timestamp": "2026-03-15T00:00:00Z",
+    "three_dim_test": {
+        "tier": "Standard",
+        "weights": {
+            "C": 0.25,
+            "I": 0.45,
+            "D": 0.3
+        },
+        "cognitive": {
+            "score": 4.86,
+            "grade": "A",
+            "items": {
+                "C1": 5,
+                "C2": 5,
+                "C3": 5,
+                "C4": 5,
+                "C5": 5,
+                "C6": 5,
+                "C7": 4
+            }
+        },
+        "intrinsic": {
+            "score": 4.88,
+            "grade": "A",
+            "items": {
+                "I1": 5,
+                "I2": 4,
+                "I3": 5,
+                "I4": 5,
+                "I5": 5,
+                "I6": 5,
+                "I7": 5,
+                "I12": 5
+            },
+            "na_items": [
+                "I8",
+                "I9",
+                "I10",
+                "I11",
+                "I13"
+            ]
+        },
+        "detail": {
+            "score": 5.0,
+            "grade": "A",
+            "items": {
+                "D1": 5,
+                "D2": 5,
+                "D3": 5,
+                "D4": 5,
+                "D5": 5,
+                "D6": 5,
+                "D7": 5,
+                "D8": 5,
+                "D9": 5,
+                "D10": 5
+            }
+        },
+        "weighted_score": 4.908,
+        "grade": "S"
+    },
+    "regression_check": {
+        "old_weighted_score": 5.0,
+        "new_weighted_score": 4.908,
+        "delta": -0.092,
+        "status": "yellow_pass",
+        "note": "C7=4 (token approximation chars/4 not precise), I2=4 (compressed guard text uses semantic compression symbols, literal keyword check ambiguous). Methodological strictness, not functional regression."
+    },
+    "simulation": {
+        "scenarios_total": 61,
+        "scenarios_passed": 61,
+        "pass_rate": 1.0,
+        "categories": [
+            "normal_path",
+            "context_anaphora",
+            "context_continuity",
+            "context_switch",
+            "context_preference",
+            "cache_invalidation",
+            "clarification_loop",
+            "error_degradation",
+            "security",
+            "data_management",
+            "session_management",
+            "learning_metadata",
+            "multi_intent_detection",
+            "multi_intent_same_domain",
+            "out_of_scope_rejection",
+            "adaptive_threshold",
+            "session_ttl_expiry",
+            "adaptive_threshold_cold_start",
+            "parallel_solve_multi_intent",
+            "incremental_taxonomy_insert",
+            "incremental_taxonomy_fail_fallback",
+            "confidence_calibration_ambiguous",
+            "correction_weighted_taxonomy",
+            "graduated_degradation_medium_tier",
+            "semantic_cache_exact_hit",
+            "semantic_cache_similarity_hit",
+            "semantic_cache_context_guard",
+            "multilingual_code_switching",
+            "active_learning_needs_review",
+            "oos_near_domain_suggestion",
+            "strict_execution_trace",
+            "violation_report_degrade",
+            "cascading_fast_path",
+            "cascading_ambiguous_fallback",
+            "output_schema_contract_single",
+            "output_schema_fallback_minimum",
+            "hard_negative_oos_penalty",
+            "execution_failure_feedback_decay",
+            "early_exit_fast_reject",
+            "early_exit_safety_margin",
+            "postprocess_merged_session_learn",
+            "postprocess_step_independence",
+            "circuit_breaker_open_datasync",
+            "circuit_breaker_half_open_recovery",
+            "circuit_breaker_open_postprocess",
+            "confidence_attribution_weights",
+            "trace_summary_single",
+            "trace_summary_multi",
+            "drift_detection_trigger",
+            "degradation_score_warn",
+            "tiered_ttl_high_extended",
+            "adaptive_cb_first_failure",
+            "input_safety_injection_flag",
+            "smart_invalidation_retain_high",
+            "metrics_window_adaptive",
+            "complexity_simple_threshold_boost",
+            "signal_conflict_diverge_fallback",
+            "dual_format_aisop_priority",
+            "dual_format_aisip_fallback",
+            "safety_escalation_flagged_rate",
+            "adaptive_degrade_threshold_dynamic"
+        ]
+    },
+    "multi_file": {
+        "total": 4,
+        "passed": 4,
+        "checks": {
+            "MF1_version_consistency": "PASS — 1.2.0 across main.aisop.json, AIAP.md, agent_card.json, quality_baseline.json",
+            "MF2_module_file_exist": "PASS — main.aisop.json exists",
+            "MF3_governance_hash": "PASS — AIAP.md hash matches computed",
+            "MF35_flow_format_consistency": "PASS — AIAP.md flow_format:AISOP, files are *.aisop.json, seed:aisop.dev"
+        }
+    }
+}

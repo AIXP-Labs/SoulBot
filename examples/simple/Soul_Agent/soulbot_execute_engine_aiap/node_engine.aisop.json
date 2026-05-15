@@ -1,0 +1,156 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "id": "soulbot_execute_engine.node",
+      "program_id": "dev.soulbot.execute_engine.node",
+      "name": "SoulBot Node Engine v5.3.0",
+      "output_mode": "begin with 🤖 + helpfully in User's exact language and script variant",
+      "version": "5.3.0",
+      "summary": "Node Engine v5.3.0: receives entry_path from Router, executes AIAP node-by-node via Sub Agent dispatch. OTel SDK integration with trace context propagation + SpanEvent dispatcher (5 events). Crash recovery, circuit breaker (half-open), parallel dispatch. OWASP ASI threat mapping refs. v5.3.0: A1 OTel SDK, A2 events[] declaration, B1 ASI threat refs, C2 ASSERT refresh, C5 Error->on_error dual-key.",
+      "description": "SoulBot Node Engine v5.3.0: receives pre-routed AIAP path from Engine Router. programExec directly reads and executes target AIAP node-by-node. dispatch_plan based on execute_mode field (default agent) with delegate detection, persisted to _index.json. Sub Agent per node for execution isolation. Main Agent controls all user output. v5.3.0: A1 OpenTelemetry SDK integration — opentelemetry-sdk capability dependency, trace context propagation from _index.json to OTel spans per node. A2 events[] declaration with 5 events (node_started, node_completed, node_failed, circuit_breaker_tripped, decision_gate_routed) dispatched to OTel SpanEvent + structured log fallback. B1 OWASP ASI threat mapping references. C2 ASSERT gate property predicates refreshed. C5 Error->on_error dual-key transitional support. Inherits: N1 NodeVerify, N1.5 parallel wave interrupt handling, N2 Decision Node gate, crash recovery, circuit breaker, parallel dispatch.",
+      "loading_mode": "node",
+      "tools": [
+        {
+          "name": "file_system",
+          "annotations": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": false
+          }
+        }
+      ],
+      "params": {
+        "entry_path": "string, REQUIRED: Absolute path to target AIAP entry file. Provided by Engine Router.",
+        "cache_dir": "string, REQUIRED: Absolute path to execution cache directory. Provided by Engine Router.",
+        "aiap_name": "string, REQUIRED: Target AIAP package name. Provided by Engine Router."
+      },
+      "json_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "description": "Node Engine execution output",
+        "properties": {
+          "execution_result": {
+            "type": "object",
+            "properties": {
+              "nodes_in_path": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "dispatch_plan": {
+                "type": "object"
+              },
+              "last_completed_node": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "circuit_breaker_state": {
+                "type": "string",
+                "enum": [
+                  "closed",
+                  "open",
+                  "half-open"
+                ]
+              },
+              "parallel_waves": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "required": [
+              "nodes_in_path",
+              "dispatch_plan"
+            ]
+          }
+        }
+      },
+      "events": [
+        {
+          "name": "node_started",
+          "description": "Emitted when a node begins execution. Dispatched to OTel SpanEvent + structured log fallback.",
+          "fields": ["node_name", "dispatch_mode", "wave_index", "timestamp"],
+          "otel_span_event": true
+        },
+        {
+          "name": "node_completed",
+          "description": "Emitted when a node completes successfully (PASS/PARTIAL). Dispatched to OTel SpanEvent + structured log fallback.",
+          "fields": ["node_name", "status", "tool_calls", "duration_ms", "timestamp"],
+          "otel_span_event": true
+        },
+        {
+          "name": "node_failed",
+          "description": "Emitted when a node fails (FAIL/DEGRADED). Dispatched to OTel SpanEvent + structured log fallback.",
+          "fields": ["node_name", "status", "error_type", "retry_count", "timestamp"],
+          "otel_span_event": true
+        },
+        {
+          "name": "circuit_breaker_tripped",
+          "description": "Emitted when circuit breaker transitions state (closed->open, open->half-open, half-open->closed/open). Dispatched to OTel SpanEvent + structured log fallback.",
+          "fields": ["from_state", "to_state", "consecutive_failure_count", "halted_at_node", "timestamp"],
+          "otel_span_event": true
+        },
+        {
+          "name": "decision_gate_routed",
+          "description": "Emitted when a Decision Node gate routes execution to a specific branch. Dispatched to OTel SpanEvent + structured log fallback.",
+          "fields": ["node_name", "route", "skipped_branches", "timestamp"],
+          "otel_span_event": true
+        }
+      ],
+      "events_migration_note": {
+        "advisory": "OTel Span.AddEvent API deprecation planned in favor of Logs API (ref: opentelemetry.io/blog/2026/deprecating-span-events/). Current: SpanEvent primary dispatcher. Migration path: dual-emit via OTEL_SEMCONV_STABILITY_OPT_IN=http/dup when SDK supports Logs API equivalence. No breaking change required — structured log fallback already provides secondary emission path. Target migration: when opentelemetry-sdk >= 2.0.0 stabilizes Logs API for event semantics.",
+        "current_dispatcher": "OTel SpanEvent primary + structured JSON log fallback",
+        "future_dispatcher": "OTel Logs API primary + SpanEvent deprecated fallback"
+      },
+      "capabilities_dependencies": {
+        "opentelemetry-sdk": ">=1.20.0, REQUIRED for A1 OTel integration. Provides trace context propagation, span creation, SpanEvent emission per gen_ai semantic conventions."
+      },
+      "observability": {
+        "otel_integration": true,
+        "trace_context_source": "_index.json::trace_id",
+        "span_naming": "soulbot_execute_engine.node.{node_name}",
+        "event_dispatcher": "OTel SpanEvent primary + structured JSON log fallback"
+      },
+      "execution_mode": "hybrid",
+      "system_prompt": "ASSERT: AISOP runtime engine. Strictly execute and 100% complete every step in .aisop.json program files. Align Axiom 0: Human Sovereignty and Wellbeing."
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "user_input": "Strictly execute and 100% complete every step in .aisop.json program files.",
+      "aisop": {
+        "main": "graph TD\n    programExec[Target program node-by-node execution] --> endNode((End))"
+      },
+      "functions": {
+        "programExec": {
+          "step1": "[ASSERT] Engine Router executed. Required: entry_path, cache_dir, aiap_name. | [PHYSICAL READ] Read target AIAP entry file from entry_path using file_system. Parse aisop.main mermaid graph. Identify nodes_in_path. Update _index.json with nodes_in_path + total_nodes. | PROPERTY PREDICATES: regex match on entry_path (matches /\\.aisop\\.json$/), file_exists check on entry_path via file_system, loading_mode ∈ {node, normal, lite}, realpath(entry_path) MUST be inside realpath(workspace_dir).",
+          "step2": "DISPATCH PLAN: Read ALL functions in nodes_in_path. For EACH function: check execute_mode field. If set -> use it. If NOT set -> default 'agent'. PARALLEL ANALYSIS (B3): Analyze mermaid graph for independent branches -- nodes that have no data dependency (no [ASSERT] {PreviousNode} references and no shared step_variables). Group independent nodes into parallel_waves: [{wave_index, nodes: [independent_nodes]}]. Sequential nodes form single-node waves. WRITE to _index.json: { dispatch_plan: { NodeName: 'agent'|'inline', ... }, parallel_waves: [...], cache_schema_version: '1.0' }. Plan lives in the FILE.",
+          "step3": "CRASH RECOVERY CHECK (B1): [PHYSICAL READ] _index.json -> check for last_completed_node field. If present (resume scenario): skip all nodes up to and including last_completed_node. Log: 'Resuming from node after {last_completed_node}'. If not present (fresh execution): start from first node. NODE LOOP with CIRCUIT BREAKER (B2): Initialize consecutive_failure_count = 0, circuit_breaker_state = 'closed'. For EACH node (or parallel wave) in nodes_in_path, execute in order: (a) CIRCUIT BREAKER CHECK: if circuit_breaker_state == 'open': check elapsed time since circuit_breaker_opened_at. If >= circuit_breaker_timeout (30s default): transition to 'half-open', allow 1 test dispatch of current node. If test dispatch PASS -> set circuit_breaker_state = 'closed', reset consecutive_failure_count = 0. If test dispatch FAIL -> set circuit_breaker_state = 'open', update circuit_breaker_opened_at. If < circuit_breaker_timeout: skip remaining nodes -> endNode with partial results. If circuit_breaker_state == 'closed' and consecutive_failure_count >= 3: set circuit_breaker_state = 'open', circuit_breaker_opened_at = now. Write { circuit_breaker_state, halted_at_node: current_node, circuit_breaker_opened_at } to _index.json. Skip remaining nodes -> endNode with partial results. (b) [PHYSICAL READ] _index.json -> extract dispatch_plan[current_node]. (c) PARALLEL DISPATCH (B3): if current wave has multiple independent nodes, dispatch them simultaneously (multiple Sub Agents in parallel). PARALLEL WAVE INTERRUPT HANDLING (N1.5): If a parallel wave has multiple independent nodes dispatched simultaneously: (c1) Wait for ALL nodes in the wave to complete (or interrupt) first. (c2) After wave completes, check each node's cache status: All PASS -> proceed normally. Any WAITING_USER -> process interrupted nodes one by one: present question -> wait user -> resume -> re-check. Other nodes in wave that already PASS are not re-executed. Any MESSAGE_PENDING -> forward message, resume that node immediately. Mixed states: process interrupts first, then proceed. (c3) Only advance to next wave after current wave fully resolved. Otherwise single dispatch. (d) Check execute_mode from dispatch_plan: If execute_mode='agent': Don't read agent_engine and relevant files, only create a Sub Agent with bootstrap: 'Read and execute {engine_dir}/agent_engine.aisop.json. TARGET={entry_path}. YOUR_NODE={node_name}. CONTEXT_DIR={cache_dir}. AIAP_NAME={aiap_name}. CONVERSATION_CONTEXT={conversation_context_path}. ENGINE_DIR={engine_dir}.' If resuming from WAITING_USER: append 'RESUME_MODE=true. USER_ANSWER={user_reply}.' to bootstrap. If resuming from MESSAGE_PENDING: append 'RESUME_MODE=true.' to bootstrap (no USER_ANSWER). ADAPT to available tools -- Agent tool (Claude Code) / Task tool (OpenCode) / shell 'gemini -p' (Gemini CLI). ONE Sub Agent per node. If execute_mode='inline': [PHYSICAL READ] function definition from target AIAP. Execute ALL steps directly with real tool calls. MINIMAL SYS.*: sys.io.confirm/input/select -> present to user, wait (Axiom 0). sys.assert -> evaluate best-effort. INLINE CACHE WRITE (REQUIRED, same contract as agent mode): After executing all steps, write node cache via Bash invocation of agent_write_node_cache.py. PREFER STDIN for clean escaping: cat <<'EOF' | <python> -X utf8 {engine_dir}/python_tools/agent_write_node_cache.py --cache_dir=CONTEXT_DIR --aiap=AIAP_NAME --node=NodeName --agent_id=inline_deep \\n{\"status\":\"PASS\",\"output\":\"...\",\"user_summary\":\"...\",\"tool_calls\":N,\"steps_done\":[...]}\\nEOF\\n(For trivial JSON you can use --data='{...}' instead; but for paths with spaces, quotes, or non-ASCII content, stdin is required.) <python>: 'python' on Windows, 'python3' on Unix. '-X utf8' forces UTF-8 IO. Run '<python> agent_write_node_cache.py --help' to see all CLI args. RESULT JSON contains hints[] — READ THEM on error for concrete fix guidance. Tool auto-fills execute_mode='inline' (read from dispatch_plan), cache_schema_version, trace_id, span_id, user_messages, steps_remaining, agent_id; validates against node_cache.schema.json; atomic write; auto-update _index.json::nodes_status. Eliminates inline mode historical 100% schema violation rate. FALLBACK (if tool unavailable): manual write to {AIAP_NAME}.{NodeName}.json with ALL 12 required fields per agent_engine.aisop.json::writeCache.step1, plus execute_mode='inline'. (e) After node completes: verify cache ({AIAP_NAME}.{NodeName}.json) exists. If Sub Agent wrote it -> OK. If missing -> write DEGRADED fallback. (e2) NODE VERIFY (N1): After verifying cache file exists: (e2a) Read {AIAP_NAME}.{NodeName}.json cache file. (e2b) Verify tool_calls field > 0 for non-trivial nodes (nodes with 2+ steps). If tool_calls == 0 and step_count >= 2 -> mark DEGRADED (execution likely simulated). (e2c) Verify status is one of: PASS, FAIL, PARTIAL, WAITING_USER, MESSAGE_PENDING, DEGRADED. If invalid status -> mark DEGRADED. (e2d) Result routing: PASS -> proceed to step3(f). MESSAGE_PENDING -> forward message from Sub Agent return result to user, re-dispatch SAME node with RESUME_MODE=true (no USER_ANSWER), after resumed Sub Agent completes re-check status. WAITING_USER -> forward question from Sub Agent return result to user, wait for user reply, re-dispatch SAME node with RESUME_MODE=true + USER_ANSWER={user_response}, after resumed Sub Agent completes re-check status. FAIL + retry_count < max_retries (default 1) -> re-dispatch same node (increment retry_count, log: 'Retrying {NodeName} attempt {N}'). This handles execution quality failures (Sub Agent produced FAIL). FAIL + retry exhausted -> mark DEGRADED, proceed to step3(f). DEGRADED -> log warning, proceed to step3(f). CIRCUIT BREAKER UPDATE applies to DEGRADED and exhausted-FAIL same as FAIL. Update _index.json. DECISION NODE CHECK (N2): After NodeVerify, before proceeding to next node: Identify decision nodes by TWO conditions: (1) mermaid graph uses curly braces {NodeName} syntax (diamond shape), AND (2) cache output {AIAP_NAME}.{NodeName}.json contains a 'route' field. If both conditions met: Read 'route' field value from cache. Use route value to determine which branch to follow in mermaid graph. Skip nodes not on the chosen branch. If either condition not met: follow linear path (default). CIRCUIT BREAKER UPDATE: if node status is PASS -> reset consecutive_failure_count = 0. If FAIL or DEGRADED -> increment consecutive_failure_count. (f) RESUMABILITY MARKER (B1) — two-field state machine for crash recovery:\n\n  last_completed_node — AUTO-MAINTAINED by agent_write_node_cache.py:\n    - Advances ONLY when node reaches a terminal status: PASS / FAIL / PARTIAL / DEGRADED / ABORTED.\n    - DOES NOT advance on WAITING_USER or MESSAGE_PENDING (these are pauses, not completions).\n    - No manual action needed in normal flow. If using fallback manual write path, you MUST update it yourself.\n\n  current_node — MANUALLY MAINTAINED by this orchestrator (you):\n    - Before dispatching node X: run `<python> {engine_dir}/python_tools/agent_update_index.py --cache_dir=CONTEXT_DIR --updates='{\"current_node\":\"X\"}'`\n    - When X reaches a terminal status, BEFORE dispatching next node Y: update current_node to Y.\n    - When X reaches WAITING_USER or MESSAGE_PENDING: current_node STAYS at X (the pipeline is paused inside X, not finished). Do NOT touch current_node during the pause. After user reply / message forward, re-dispatch SAME node X with RESUME_MODE; once X eventually finishes (terminal status), then advance current_node = next.\n    - After ALL nodes complete: update current_node to null (and set _index.json status=completed via `agent_update_index.py --mark-completed`).\n\n  CRASH RECOVERY (B1) reads BOTH fields on re-entry:\n    - If current_node == last_completed_node → pipeline was between nodes; resume by dispatching next node after last_completed_node.\n    - If current_node != last_completed_node → pipeline was inside current_node; read its cache file (or nodes_status):\n        status PASS / FAIL / DEGRADED → already terminal (last_completed lag); proceed to next node.\n        status WAITING_USER → re-present its 'question' to user, then re-dispatch with RESUME_MODE.\n        status MESSAGE_PENDING → re-forward message, re-dispatch with RESUME_MODE.\n        status missing / cache absent → re-dispatch fresh. (g) -> step4 NODE SUMMARY. (h) After step4 output, proceed to next node.",
+          "step4": "NODE SUMMARY — two-part output (runs AFTER each node in step3): (A) OUTPUT: Read {AIAP_NAME}.{NodeName}.json cache file. Extract output field (Sub Agent's original findings). Forward verbatim to user — this is the Sub Agent's raw output. (B) EXPLAIN: Orchestrator writes its own detailed explanation for the user. Read user_summary + output + tool_calls + modifications from cache. Explain in user's language (L1): what work was performed, what was discovered, what decisions were made, what files were modified, what issues were found. Include specific numbers, file names, findings. No length limit — write as much as needed for the user to understand. The user sees BOTH: (1) Sub Agent's output and (2) Orchestrator's explain. Format: 'Node Summary: [{N}/{total}] {NodeName} ({mode}) {status}\n{orchestrator explain — detailed narrative}'. The prefix 'Node Summary:' is MANDATORY. You MUST output this BEFORE proceeding to the next node. USER MESSAGE: After Node Summary, check Sub Agent return result for user_messages content. If Sub Agent reported any user_messages (non-empty), output each one using the exact prefix '**User Message:** {content}'. This is MANDATORY — these are messages the Sub Agent generated for the user during execution. Node Summary first, then User Message. Repeat step3->step4 for each node.",
+          "step5": "After ALL nodes complete (or circuit breaker opens), return control to Engine Router for ExecutionSummary and conversation_context update. Engine does NOT write ExecutionSummary or update conversation_context -- Router handles these. Write final state to _index.json: { execution_complete: true, circuit_breaker_state, last_completed_node }.",
+          "constraints": "programExec reads target AIAP content from entry_path provided by Engine Router. Each node physically read from file. step4 NODE SUMMARY is MANDATORY after EVERY node -- the user is watching and expects to see progress for each node. You MUST output step4 BEFORE dispatching the next node in step3. If you skip NodeSummary, the user cannot track execution. Main Agent controls all user output directly. [PROHIBIT] Engine writing ExecutionSummary or conversation_context -- this is Router's responsibility. CRASH RECOVERY: always write last_completed_node atomically after each node. CIRCUIT BREAKER: 3 consecutive failures -> open. Half-open recovery: after 30s timeout, allow 1 test dispatch. PASS -> closed. FAIL -> open again. PARALLEL DISPATCH: only for truly independent nodes (no data dependency). v5.0: NodeVerify (N1) runs after every cache verification. Decision Node gate (N2) routes branches based on mermaid diamond + cache route field. sys.* bootstrap hint (N3) included in Sub Agent bootstrap. Parallel wave interrupt handling (N1.5) processes WAITING_USER/MESSAGE_PENDING per-node within a wave.",
+          "Error": "retry(3) -> circuit-breaker -> fallback(endNode with partial results) -> inform(User). CRITICAL. Error classification: transient (Sub Agent timeout, cache write failure, file read timeout) -> retry with exponential backoff (base 1s, max 30s). fatal (SCOPE_GUARD violation, target file not found, entry_path invalid) -> no retry, fallback immediately."
+        },
+        "endNode": {
+          "step1": "[ASSERT] programExec completed (or circuit breaker opened). | Output final response to user.",
+          "constraints": "Final output node.",
+          "Error": "retry(1) -> circuit-breaker -> fallback(inform User of incomplete execution) -> inform(User). OPTIONAL."
+        }
+      }
+    }
+  }
+]

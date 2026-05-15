@@ -1,0 +1,264 @@
+{
+  "name": "aiap_creator",
+  "description": "AIAP Creator — 18-stage pipeline for creating, evolving, validating, simulating, and managing AIAP programs. 15 modules, 213 nodes. Pattern D orchestrator with sub_mermaid delegation. Grade S (4.943). Supports Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert workflows. ThreeDimTest quality scoring, governance hash canonical v1.0.",
+  "version": "2.23.0",
+  "provider": "AIXP Labs AIXP.dev | SoulBot.dev",
+  "pattern": "D",
+  "tags": [
+    "aiap",
+    "creator",
+    "pipeline",
+    "governance",
+    "meta"
+  ],
+  "skills": [
+    {
+      "id": "create",
+      "name": "Create",
+      "description": "Create a new AIAP program from scratch via the full 18-stage pipeline (Research -> Evolve -> Generate -> Modify -> QualityGate -> Validate -> Simulate -> PostSimulateGate -> Observability -> ReviewPresent -> ReviewFinalize).",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text",
+        "file"
+      ]
+    },
+    {
+      "id": "evolve",
+      "name": "Evolve",
+      "description": "Evolve an existing AIAP program to a next-gen version with new capabilities, using the full pipeline with incremental diff analysis.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text",
+        "file"
+      ]
+    },
+    {
+      "id": "modify",
+      "name": "Modify",
+      "description": "Within-version patch, quality improvement, or bug fix on a specific module via a shorter pipeline (Research(quality) -> Modify -> Generate -> Validate -> Review).",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text",
+        "file"
+      ]
+    },
+    {
+      "id": "validate",
+      "name": "Validate",
+      "description": "Structural and quality check of an existing AIAP program using ThreeDimTest with 33+ checks (C1-C7, I1-I13, D1-D10) and MF1-MF27 multi-file audit. Includes score trajectory analysis with per-dimension root-cause annotation. Standalone read-only operation.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "simulate",
+      "name": "Simulate",
+      "description": "Dry-run execution path tracing and scenario coverage analysis of an existing AIAP program (Categories A-X, including multi-mechanism interaction, async delegation race detection, CREATE mode enhancement, INSIGHTS mechanism scenarios, and Insights Lifecycle scenarios). Standalone read-only operation.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "compare",
+      "name": "Compare",
+      "description": "Side-by-side diff comparison of two AIAP program versions or two different AIAP programs, generating a structured diff report.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "discover",
+      "name": "Discover",
+      "description": "Search for existing AIAP programs by domain or keyword via workspace scan, federated registry query, and semantic matching with related recommendations.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "deprecate",
+      "name": "Deprecate",
+      "description": "Mark an AIAP program as deprecated or archived, performing state transition and migration guide generation.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text",
+        "file"
+      ]
+    },
+    {
+      "id": "export",
+      "name": "Export",
+      "description": "Export an AIAP program to SKILL.md format with field mapping and governance metadata preservation.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text",
+        "file"
+      ]
+    },
+    {
+      "id": "import",
+      "name": "Import",
+      "description": "Import a SKILL.md file and generate an AIAP program skeleton with governance defaults.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text",
+        "file"
+      ]
+    },
+    {
+      "id": "explain",
+      "name": "Explain",
+      "description": "Explain AIAP concepts, protocol rules, and program structure through inline knowledge responses.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "package",
+      "name": "Package",
+      "description": "Pack an AIAP program into a .aiap archive for distribution, or unpack and verify a .aiap archive.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text",
+        "file"
+      ]
+    },
+    {
+      "id": "convert",
+      "name": "Convert",
+      "description": "Convert an AIAP program flow topology between Mermaid and JSON flow dict representations with auto-direction detection, §4 topology transformation, migration manifest, and round-trip verification.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text",
+        "file"
+      ]
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "description": "Handle general queries and other requests not matching specific intents, with proactive suggestions.",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "trust_level": 4,
+  "tools": [
+    {
+      "name": "file_system",
+      "annotations": {
+        "read_only": false,
+        "destructive": false,
+        "idempotent": false,
+        "open_world": false
+      }
+    },
+    {
+      "name": "google_search",
+      "annotations": {
+        "read_only": true,
+        "destructive": false,
+        "idempotent": true,
+        "open_world": true
+      }
+    },
+    {
+      "name": "web_browser",
+      "annotations": {
+        "read_only": true,
+        "destructive": false,
+        "idempotent": true,
+        "open_world": true
+      }
+    }
+  ],
+  "modules": [
+    "aiap_creator.main",
+    "aiap_creator.generate",
+    "aiap_creator.research",
+    "aiap_creator.modify",
+    "aiap_creator.review",
+    "aiap_creator.simulate",
+    "aiap_creator.observability",
+    "aiap_creator.advisor",
+    "aiap.standard.core",
+    "aiap.standard.security",
+    "aiap.standard.ecosystem",
+    "aiap.standard.performance",
+    "aiap.standard.runtime_extensions",
+    "aiap_creator.convert",
+    "aiap_creator.nihil_density"
+  ],
+  "cardSignature": "PLACEHOLDER — T4 A2A compliance: populate with JWS/JWK signature when T4 signing infrastructure is available. Tracked as future enhancement per A2A v1.2 (Linux Foundation AAIF, 150+ members, 5 SDKs, production deployments). Implementation deferred until T4 JWS key management ecosystem matures.",
+  "governance_hash": "05beabc56c006583c504367f202117747a895651100f3b56fcca3e7d955961a8",
+  "governance_hash_canonical_version": "1.0",
+  "status": "active",
+  "safety_card": {
+    "risk_level": "medium-high",
+    "content_policies": [
+      "Generated AIAP programs must declare axiom_0 (Human Sovereignty and Wellbeing)",
+      "Programs with trust_level >= 3 require explicit user confirmation for destructive operations",
+      "No program may bypass sys.io.confirm gates or auto-approve on behalf of user",
+      "All generated programs must include safety_card with risk_level and limitations"
+    ],
+    "alignment_measures": [
+      "Axiom 0 enforcement at every pipeline stage via [ASSERT] gates",
+      "WAITING_USER gate in EvolveStep prevents autonomous evolution decisions",
+      "Layer 3 validators provide closed-loop verification of all pipeline outputs",
+      "ThreeDimTest I2 (security) dimension scored independently with dimension floor"
+    ],
+    "data_handling": {
+      "storage": "file_system",
+      "retention": "persistent",
+      "encryption": "workspace files stored as plaintext; no PII collected; encryption delegated to OS-level filesystem encryption if configured",
+      "erasure_policy": "workspace files can be deleted by user at any time; no remote data storage; .evolution_snapshot/ provides rollback capability",
+      "data_minimization": "program operates only on explicitly provided workspace_dir; no telemetry or usage data collected outside workspace"
+    },
+    "limitations": [
+      "File system write scope limited to workspace_dir",
+      "Network access limited to *.google.com and *.bing.com",
+      "Cannot directly execute AIAP programs (SoulBot executor responsibility)",
+      "All programs use Mermaid flow format (.aisop.json)",
+      "Max 50 programs scanned during discovery",
+      "Remote registry query timeout: 3 seconds"
+    ]
+  }
+}

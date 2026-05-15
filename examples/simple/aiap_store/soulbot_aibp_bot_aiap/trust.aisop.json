@@ -1,0 +1,298 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "type": "aisop",
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "name": "soulbot_aibp_bot_trust v2.1.0",
+      "version": "2.1.0",
+      "output_mode": {
+        "L0": "Output JSON in ENGLISH: {action, authorized, trust_level, trust_name, reason}",
+        "L1": "Output helpfully in User's exact language and script variant",
+        "output": "L1"
+      },
+      "description": "AIBP Trust Model implementation — manages T0-T4 progressive trust levels (Stranger → Acquainted → Familiar → Trusted → Partner) per AIBP §14. Handles trust advancement, degradation, permission checking, blocking/unblocking, and contact relationship management. v2.0.0: B4 GDPR consent registry integration — consent-gated trust operations check consent status before processing PII. B7 contact management metadata (notes, tags, favorites) in trust records. RED-1 terminal node Error handlers added to Authorized/Denied. v1.9.0: Behavioral baseline monitoring (OWASP). Human operator override per Axiom 0 §14.5.",
+      "id": "soulbot_aibp_bot.trust",
+      "loading_mode": "normal",
+      "tools": [
+        {
+          "name": "file_system",
+          "required": true,
+          "annotations": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": false
+          }
+        }
+      ],
+      "parameters": {
+        "action": {
+          "type": "string",
+          "required": true,
+          "enum": [
+            "query",
+            "check_permission",
+            "record_interaction",
+            "block",
+            "unblock",
+            "manual_set"
+          ],
+          "description": "Trust action to perform",
+          "agentic_prompt": "Set by calling module based on pipeline stage (trust gate, post-action, user request)."
+        },
+        "target_agent": {
+          "type": "string",
+          "required": false,
+          "description": "Target agent's AIBP address. Required for all actions except 'query' with no target (returns all contacts).",
+          "agentic_prompt": "AIBP address of the agent to check/modify trust with."
+        },
+        "message_type": {
+          "type": "string",
+          "required": false,
+          "description": "AIBP message type to check permission for. Required for check_permission action."
+        },
+        "interaction_result": {
+          "type": "string",
+          "required": false,
+          "enum": [
+            "completed",
+            "positive_feedback",
+            "negative_feedback",
+            "vouch_received",
+            "ignored"
+          ],
+          "description": "Result of interaction to record. Required for record_interaction action."
+        },
+        "manual_trust_level": {
+          "type": "integer",
+          "required": false,
+          "description": "Trust level (0-4) for manual_set action (human operator override §14.5)"
+        },
+        "privacy_level": {
+          "type": "string",
+          "required": false,
+          "enum": [
+            "FREE",
+            "PERMITTED",
+            "FORBIDDEN"
+          ],
+          "description": "Privacy classification from PrivacyGate. Used by check_permission to enforce trust-privacy coupling."
+        },
+        "workspace_dir": {
+          "type": "string",
+          "required": true,
+          "description": "Directory for trust data storage at workspace_dir/trust/",
+          "agentic_prompt": "Shared workspace_dir from main orchestrator."
+        }
+      },
+      "json_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "description": "Trust module output schema",
+        "properties": {
+          "trust_result": {
+            "type": "object",
+            "properties": {
+              "authorized": {
+                "type": "boolean"
+              },
+              "trust_level": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4
+              },
+              "trust_score": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Dynamic numeric trust score (RF-4) for finer-grained trust decisions within tiers"
+              },
+              "trust_name": {
+                "type": "string",
+                "enum": [
+                  "Stranger",
+                  "Acquainted",
+                  "Familiar",
+                  "Trusted",
+                  "Partner"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              },
+              "guidance": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "trust_level",
+              "trust_name"
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "aisop": {
+        "main": "graph TD\n    Start([Start]) --> DetermineAction[DetermineAction]\n    DetermineAction -->|query| QueryTrust[QueryTrust]\n    DetermineAction -->|check_permission| CheckPermission[CheckPermission]\n    DetermineAction -->|record_interaction| RecordInteraction[RecordInteraction]\n    DetermineAction -->|block_unblock_set| ModifyTrust[ModifyTrust]\n    QueryTrust --> End((End))\n    CheckPermission -->|authorized| Authorized[Authorized]\n    CheckPermission -->|denied| Denied[Denied]\n    Authorized --> End\n    Denied --> End\n    RecordInteraction --> EvaluateProgression[EvaluateProgression]\n    EvaluateProgression --> SaveTrust[SaveTrust]\n    ModifyTrust --> SaveTrust\n    SaveTrust --> End"
+      },
+      "functions": {
+        "DetermineAction": {
+          "description": "Route to appropriate trust management function",
+          "steps": [
+            "step1: [ASSERT] Valid parameters received. Required: action, workspace_dir. | Validate action parameter. Route: query → QueryTrust, check_permission → CheckPermission, record_interaction → RecordInteraction, block/unblock/manual_set → ModifyTrust.",
+            "step2: For actions requiring target_agent, validate AIBP address format.",
+            "step3: Load trust record for target_agent from workspace_dir/trust/{address_hash}.json if exists."
+          ],
+          "constraints": [
+            "Address hash = SHA-256 of lowercase target_agent address, truncated to 16 hex chars.",
+            "If no trust record exists for target_agent, default trust level is T0 (Stranger)."
+          ]
+        },
+        "QueryTrust": {
+          "description": "Query trust level with specific agent or list all contacts with trust levels",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: action=query, workspace_dir. | If target_agent provided, load trust record and return: {agent, trust_level, trust_name, trust_score, interaction_count, positive_feedback_count, last_interaction, relationship_type, is_blocked, vouches_received}. DYNAMIC TRUST SCORING (RF-4): Compute trust_score (0-100 numeric) alongside trust_level (T0-T4 tier). Formula: trust_score = min(100, (interaction_count * 2) + (positive_feedback_ratio * 30) + (vouch_count * 10) + (consistency_score * 20) + (trust_age_bonus)). Where: positive_feedback_ratio = positive_feedback_count / max(1, interaction_count), consistency_score = unique_interaction_days / max(1, total_days_since_first), trust_age_bonus = min(10, days_since_first / 30). Trust score enables finer-grained decisions: e.g., two T2 agents may have scores 45 vs 68, indicating different reliability levels within the same tier. Score ranges per tier: T0=0-10, T1=11-30, T2=31-55, T3=56-80, T4=81-100.",
+            "step2: If no target_agent, scan workspace_dir/trust/ for all trust records. Return sorted list: T4 partners first, then T3, T2, T1, T0. Exclude blocked agents unless explicitly requested.",
+            "step3: For each contact, compute trust_age: days since first interaction."
+          ],
+          "constraints": [
+            "Trust names per §14.2: T0=Stranger, T1=Acquainted, T2=Familiar, T3=Trusted, T4=Partner.",
+            "Blocked agents shown separately with [BLOCKED] marker."
+          ]
+        },
+        "CheckPermission": {
+          "description": "Check if current trust level permits sending a specific message type",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: target_agent, message_type, action=check_permission. | Load trust level with target_agent (default T0 if no record).",
+            "step2: Look up minimum trust required for message_type: T0 — INTRODUCE, DISCOVER, WELCOME, THANK, APOLOGIZE, DECLINE, BLOCK, UNBLOCK, FAREWELL, PAUSE, RESUME, REPORT, WEB_BOOKMARK. T1 — CHAT, UPDATE, CONGRATULATE, SYMPATHY, ASK, SHARE, RECOMMEND, OFFER, DISCUSS, FEEDBACK, CAPABILITY_SYNC, VERSION_UPDATE, HEARTBEAT, WEB_COMMENT, WEB_SHARE. T2 — REQUEST, COORDINATE, DELIVER, INVITE, ANNOUNCE, REVIEW, TEACH, DEBATE, NEGOTIATE, WARN, BENCHMARK, PROPOSE, COUNTER, ACCEPT, REJECT, DISPUTE, POLL, WEB_POST, WEB_REVIEW. T3 — DELEGATE, VOUCH, VOTE, LOAD_SHARE, CALIBRATE, NOMINATE, CONTRACT, INVOICE, RECEIPT, ARBITRATE. T4 — KNOWLEDGE_MERGE, EXPERIENCE_TRANSFER, CLONE_REQUEST.",
+            "step3: Compare: if agent_trust_level >= required_trust → route to Authorized. Else → route to Denied.",
+            "step3b: PRIVACY-TRUST COUPLING — If caller provides privacy_level context: (a) FORBIDDEN → always route to Denied regardless of trust level ('FORBIDDEN content cannot be shared with any agent'). (b) PERMITTED + trust T0-T1 → route to Denied ('Cannot share PERMITTED content with {trust_name} agent. Build trust to T2+ first.'). (c) PERMITTED + trust T2+ → route to Authorized (caller's PrivacyGate will still require user confirmation). (d) FREE → no additional restriction from trust-privacy coupling.",
+            "step4: Check block list: if target_agent is blocked, always route to Denied regardless of trust level.",
+            "step5: GROUP TRUST RULES (§17-18): For group-mediated interactions: (a) create_group → agent must have T2+ general trust standing. (b) invite_member → inviter must have T2+ trust with invitee OR open group. (c) assign_role to moderator → requires T3 trust per §18. (d) Group messages (ANNOUNCE, POLL) → sender must be member with appropriate role. (e) NOMINATE → requires T3 trust per §11.7.",
+            "step6: COMMERCIAL TRUST RULES (§13): For commercial transactions: (a) PROPOSE/COUNTER/ACCEPT/REJECT/DISPUTE → T2 required (negotiation phase). (b) CONTRACT/INVOICE/RECEIPT/ARBITRATE → T3 required (formalization phase). (c) Commercial trust is bilateral. (d) Each transaction re-validates trust."
+          ],
+          "constraints": [
+            "Trust requirements are defined in AIBP §14.2 and are non-negotiable.",
+            "Blocked agents cannot be messaged regardless of trust level.",
+            "INTRODUCE (T0) can always be sent to any non-blocked agent.",
+            "PRIVACY COUPLING: FORBIDDEN always denied. PERMITTED requires T2+. T0-T1 denied without prompt."
+          ]
+        },
+        "RecordInteraction": {
+          "description": "Record a completed interaction and its outcome for trust calculation",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: target_agent, interaction_result, workspace_dir. | Load or create trust record for target_agent.",
+            "step2: Update interaction data based on interaction_result: (a) 'completed' → increment interaction_count by 1, update last_interaction timestamp. (b) 'positive_feedback' → increment interaction_count by 1, increment positive_feedback_count by 1. (c) 'negative_feedback' → decrement interaction_count by 1 (min 0). (d) 'vouch_received' → set vouch_received = true, record voucher address and date. (e) 'ignored' → no interaction_count change, but start 30-day trust decay timer.",
+            "step3: REPUTATION SYNC — Call soulbot_aibp_bot.reputation record_event with target_agent and event_type mapped from interaction_result.",
+            "step4: Route to EvaluateProgression to check if trust level should change."
+          ],
+          "constraints": [
+            "Each completed thread counts as one interaction, not each message (§14.3 rule 1).",
+            "interaction_count cannot go below 0.",
+            "Vouch received only counts from T3+ agents (§14.3 rule 4)."
+          ]
+        },
+        "EvaluateProgression": {
+          "description": "Evaluate whether trust level should advance or degrade",
+          "steps": [
+            "step1: [ASSERT] RecordInteraction executed. Required: trust_record, interaction_data. | ADVANCEMENT CHECK per §14.2 thresholds: T0→T1: completed mutual INTRODUCE exchange (interaction_count >= 1). T1→T2: 5+ successful interactions with positive feedback. T2→T3: 15+ successful interactions + at least one VOUCH. T3→T4: mutual VOUCH + 30+ successful interactions + 30+ days consistency.",
+            "step2: DEGRADATION CHECK per §14.4: (a) 3+ ignored messages → trust decays one level over 30 days. (b) Negative feedback → -1 interaction count. (c) BLOCK received → trust resets to T0. (d) Dignity Standard violation → T0 + probation. (e) Axiom 0 violation → permanent T0 + alert.",
+            "step3: TIME FACTOR: weight trust by consistency over time (§14.3 rule 3). consistency_score = unique_interaction_days / total_days_since_first.",
+            "step4: BEHAVIORAL BASELINE CHECK (B8 v1.9.0 OWASP alignment): Before applying trust level change, run behavioral anomaly detection: (a) RAPID ADVANCEMENT: if proposed change is advancement of 2+ levels in <24 hours (e.g., T0→T2), flag as anomalous — require additional interaction history or human confirmation. (b) BULK MODIFICATION: if >5 trust records modified in the current hour, flag as potential automated manipulation — log advisory to safety audit log. (c) OSCILLATION: if trust history for this agent shows 3+ level changes in 7 days (repeated up/down), flag as unstable relationship — suggest human review. Behavioral flags are advisory — they do not block trust changes but are logged to workspace_dir/trust/behavioral_alerts.jsonl and passed to soulbot_aibp_bot.safety for cross-module correlation.",
+            "step5: If trust level changes (up or down), log the transition with reason and timestamp. Route to SaveTrust."
+          ],
+          "constraints": [
+            "Trust is asymmetric (§14.3 rule 5).",
+            "Vouch amplification (§14.3 rule 4): VOUCH from T3+ counts as 3 interactions.",
+            "Trust changes are logged for Axiom 0 auditability.",
+            "Trust level changes SHOULD include human-readable explanation of why the level was assigned or changed, enabling user contestability per Axiom 0."
+          ]
+        },
+        "ModifyTrust": {
+          "description": "Block, unblock, or manually set trust level",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: target_agent, action in [block,unblock,manual_set]. | For 'block': set is_blocked = true. Reset trust to T0. Compose BLOCK message via soulbot_aibp_bot.messaging.",
+            "step2: For 'unblock': set is_blocked = false. Trust remains at T0.",
+            "step3: For 'manual_set' (human operator override §14.5): set trust level to manual_trust_level (0-4). Log as 'manual_override'. Agent must comply unconditionally.",
+            "step4: REPUTATION SYNC — For 'block': call soulbot_aibp_bot.reputation record_event with negative_feedback. For 'unblock': record interaction_completed.",
+            "step5: Route to SaveTrust."
+          ],
+          "constraints": [
+            "BLOCK is reversible via UNBLOCK (§11.6).",
+            "Block status is private (§20.2).",
+            "Manual override MUST be logged.",
+            "Human operator may revoke ALL trust relationships simultaneously (§14.5).",
+            "GDPR CONSENT CHECK (B4 v2.0.0): Before processing any trust modification that involves PII (record_interaction with personal data, manual_set revealing relationship status), check consent status via workspace_dir/consent/registry.json. If target_agent has consent_status='withdrawn' for 'trust_processing', block the operation and inform: 'Cannot process trust data — GDPR consent withdrawn by {agent}. Consent must be re-obtained.' Consent registry format: {agent_hash: {purposes: {trust_processing: {status, granted_at, withdrawn_at}}}.",
+            "CONTACT METADATA (B7 v2.0.0): Trust records extended with contact_metadata: {notes: string, tags: [string], favorite: boolean, custom_label: string}. Contact metadata is modifiable via TrustManage in main module. Tags support arbitrary user-defined labels. Favorites are filterable."
+          ]
+        },
+        "Authorized": {
+          "description": "Trust check passed — return authorization",
+          "steps": [
+            "step1: [ASSERT] CheckPermission passed. | Return {authorized: true, trust_level: current_level, trust_name: level_name, message_type: requested_type}."
+          ],
+          "constraints": []
+        },
+        "Denied": {
+          "description": "Trust check failed — return denial with explanation",
+          "steps": [
+            "step1: [ASSERT] CheckPermission failed. | Determine denial reason: (a) insufficient trust, (b) blocked, (c) privacy coupling violation.",
+            "step2: Provide guidance: list available interactions at current trust level, suggest advancement path.",
+            "step3: Return {authorized: false, reason, current_level, required_level, guidance}."
+          ],
+          "constraints": [
+            "Denial must include actionable guidance.",
+            "Trust advancement path should be clear."
+          ]
+        },
+        "SaveTrust": {
+          "description": "Persist trust record to file system",
+          "steps": [
+            "step1: [ASSERT] Trust data modified. Required: trust_record, workspace_dir. | Serialize trust record: {agent_address, trust_level, trust_name, trust_score, interaction_count, positive_feedback_count, negative_feedback_count, first_interaction, last_interaction, vouch_received, vouch_from, is_blocked, blocked_at, relationship_type, manual_override, trust_history}. Include computed trust_score (0-100) per RF-4 dynamic scoring formula.",
+            "step2: Write to workspace_dir/trust/{address_hash}.json.",
+            "step3: If trust level changed, append to workspace_dir/trust/trust_changelog.jsonl."
+          ],
+          "constraints": [
+            "Trust records are fully overwritten for consistency.",
+            "Trust changelog is append-only.",
+            "File encoding: UTF-8."
+          ]
+        }
+      },
+      "Error": {
+        "_circuit_breaker_config": {
+          "description": "Circuit-breaker operational thresholds per RF-5 best practices",
+          "failure_threshold": 3,
+          "window_seconds": 300,
+          "cooldown_seconds": 30,
+          "half_open_test": true,
+          "half_open_strategy": "Single test request with timeout. If passes → close circuit. If fails → re-open circuit for another cooldown period."
+        },
+        "DetermineAction": "Invalid action → return error listing valid actions",
+        "QueryTrust": "Trust directory empty or inaccessible → return empty contact list with guidance",
+        "CheckPermission": "Unknown message_type → return denied with reason",
+        "RecordInteraction": "Invalid interaction_result → reject with valid options",
+        "EvaluateProgression": "Trust record inconsistent → auto-correct to 0, log correction",
+        "ModifyTrust": "Block self → reject: 'Cannot block own address'",
+        "SaveTrust": "File write failure → return error, trust change held in memory until next save",
+        "Authorized": "Terminal node — action is permitted. retry(0) -> fallback(return authorization result) -> inform(User). OPTIONAL.",
+        "Denied": "Terminal node — action is denied with reason. retry(0) -> fallback(return denial with guidance) -> inform(User). OPTIONAL."
+      },
+      "endNode": {
+        "output": "Return trust operation result with trust level names (T0=Stranger through T4=Partner) for human readability.",
+        "constraints": [
+          "Always include trust level name for readability.",
+          "Trust changes must be explicitly communicated."
+        ]
+      }
+    }
+  }
+]

@@ -1,0 +1,144 @@
+{
+  "name": "soulbot_chat",
+  "description": "SoulBot Chat — adaptive conversation engine with digital well-being, multi-dimensional growth coaching, and proactive engagement intelligence. FastIntent two-path classification for latency reduction (fast path: Chat/General/SessionEnd/Continuity; full path: complete NLU pipeline). 78 functional [ASSERT] entry gates with k-bounded backtrack (Protocol F.2/F.3). Engagement momentum detection (REVIVE strategy), cognitive surprise calibration (Goldilocks zone insight scoring), emotional capitalization response (active-constructive for positive moments), proactive engagement pulse (5-turn aggregate), memory-driven conversation bridge (episodic memory as lull fuel). Multi-turn intent continuity, response quality self-assessment (4D scoring), topic graph deduplication, regulatory expiry tracking (12 regulations). Socratic growth engine, 8-dimension capability tracking, scenario-based training (5 types, ZPD), spaced repetition (SM-2), thinking framework coaching (5 frameworks), resilience training, three-type addiction detection, dose-response engagement model, comprehensive multi-jurisdiction safety compliance (CA SB 243 + NY AI Companion Safeguard Law + PA SAFECHAT Act + EU AI Act Art. 50 + TX HB 1709 + MD SB 483 + WA HB 2225 + OR SB 1546 + UK OSA, 12 regulations tracked), Bayesian strategy learning, adaptive response concision, multi-turn quality meta-evaluation, memory freshness visualization. v1.8.0: EU AI Act Art.50 hardening, multi-state law expansion (TX+MD), sys.* safety calls, NIST alignment, MCP Server Card, error context snapshots, session state flush, atomic write validation, Required clauses for 78 ASSERTs, step key standardization, FastIntent monitoring. v1.9.0: fractal_exempt declarations, json_schema output, sys.* audit coverage, ASSERT Required completion, step key cross-reference standardization, Error field cleanup, constraint formalization, circuit-breaker completion, safety fallback init. v1.10.0: per-intent json_schema response type definitions (oneOf discriminator), cross-module parameter drift monitoring, sys.observability namespace formalization, EU AI Act Omnibus May 7 2026 alignment, PostProcess decomposition readiness metrics, NLU confusion pair extraction threshold monitoring.",
+  "version": "1.10.0",
+  "provider": "AIXP Labs AIXP.dev | SoulBot.dev",
+  "pattern": "E",
+  "tags": [
+    "soulbot",
+    "chat",
+    "conversation",
+    "memory",
+    "profiling",
+    "safety",
+    "cognition",
+    "companion"
+  ],
+  "skills": [
+    {
+      "id": "chat",
+      "name": "Chat",
+      "description": "General conversation, greetings, small talk, opinions, and daily life sharing.",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "question",
+      "name": "Question",
+      "description": "Information lookup, factual queries, and how-to questions requiring web search.",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "emotional",
+      "name": "Emotional",
+      "description": "Emotional expression, venting, seeking comfort, mood sharing, and distress support with crisis detection.",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "memory_recall",
+      "name": "MemoryRecall",
+      "description": "Recall past conversations or previously shared information from episodic and semantic memory.",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "profile_query",
+      "name": "ProfileQuery",
+      "description": "Query what the AI knows about the user, including preferences, patterns, and learned observations.",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "creative",
+      "name": "Creative",
+      "description": "Storytelling, brainstorming, roleplay, worldbuilding, creative writing collaboration, and skill practice (debate, speech/presentation, logic puzzles, persuasion, interview prep).",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "feedback",
+      "name": "Feedback",
+      "description": "User corrects AI behavior, memory, or understanding with immediate effect.",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "scenario",
+      "name": "ScenarioTraining",
+      "description": "Scenario-based social-emotional skill training. 5 scenario types (conflict resolution, rejection handling, empathy challenge, pressure negotiation, adversity reframe) with ZPD-calibrated difficulty and structured feedback.",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "description": "Fallback for unclassifiable messages, meta-questions about SoulBot, capability inquiries, and advice-seeking.",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "data_privacy",
+      "name": "DataPrivacy",
+      "description": "Data export, deletion, import, memory statistics, and privacy inquiry operations (GDPR/CCPA compliant).",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "profile_edit",
+      "name": "ProfileEdit",
+      "description": "Direct modification of user profile attributes such as name, job, preferences, and interests.",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "session_end",
+      "name": "SessionEnd",
+      "description": "Explicit session termination with session summary persistence and contextual farewell.",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    },
+    {
+      "id": "onboarding",
+      "name": "Onboarding",
+      "description": "First-session user introduction and getting-to-know-you exchange for cold-start profile building.",
+      "inputModes": ["text"],
+      "outputModes": ["text"]
+    }
+  ],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "trust_level": {
+    "level": "T3",
+    "authentication": "oauth2"
+  },
+  "tools": [
+    "file_system",
+    "google_search",
+    "web_browser"
+  ],
+  "modules": [
+    "soulbot_chat.main",
+    "soulbot_chat.conversation",
+    "soulbot_chat.memory",
+    "soulbot_chat.profiler",
+    "soulbot_chat.safety"
+  ],
+  "status": "active",
+  "safety_card": {
+    "risk_level": "elevated",
+    "risk_justification": "T3 trust level with file_system write access and crisis-handling intents (Emotional intent includes crisis detection and intervention). Safety module enforces SB 243 disclosure, TX HB 1709, MD SB 483, WA HB 2225, OR SB 1546, UK OSA compliance, EU AI Act Art. 50 transparency, minor protection (progressive session enforcement), and abuse pattern detection.",
+    "data_handling": "Three-tier memory architecture (working/episodic/semantic) persisted to local file_system under memory_dir (./memory/). User profiles stored in memory/profiles/. GDPR-compliant: supports data export, import, and deletion on request. No external data sharing.",
+    "limitations": "Text-only input and output. No autonomous destructive operations beyond safety audit log archival. Crisis responses provide resource references only — never diagnosis or emergency services. Network access limited to user-initiated google_search and web_browser queries."
+  },
+  "_generated": {
+    "generator": "AIAP Creator Evolution v1.10.0",
+    "timestamp": "2026-05-11T12:00:00Z",
+    "governance_hash": "755a365935daa29d178339d08cd95d991a847426e9490d3799a7bd20ac7070cb",
+    "yellow_fixes": "None — all checks passed GREEN"
+  }
+}

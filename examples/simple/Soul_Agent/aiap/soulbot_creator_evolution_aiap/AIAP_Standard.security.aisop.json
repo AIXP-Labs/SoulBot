@@ -1,0 +1,353 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "template_version": "1.6.0",
+      "last_verified_date": "2026-05-12",
+      "extends": "AIAP_Standard.core.aisop.json",
+      "id": "aiap_standard.security",
+      "version": "1.0.0",
+      "trust_level": 4,
+      "name": "AIAP Quality Standard — Security Extension v1.0.0",
+      "output_mode": {
+        "L0": "Output JSON in ENGLISH: {intent, confidence, route, state, op}",
+        "L1": "Output helpfully in User's exact language and script variant",
+        "output": "L1"
+      },
+      "description": "Security-focused quality rules extending the core STANDARD. Includes security quality checks (I8-I11), detail checks (D8-D10), threat taxonomy (AT1-AT6), and Code Trust Gate for Pattern G embedded code. Loaded for programs with trust_level >= T3 or tool annotations.",
+      "fractal_exempt": "Standard library reference module — no executable flow graph.",
+      "tools": [
+        {
+          "name": "file_system",
+          "annotations": {
+            "read_only": true,
+            "destructive": false,
+            "idempotent": true,
+            "open_world": false
+          }
+        }
+      ],
+      "summary": "Security extension for AIAP quality standard — threat taxonomy, identity verification, governance checks.",
+      "loading_mode": "normal",
+      "system_prompt": "AIAP security quality extension. Enforce threat awareness, identity verification, and governance completeness. Mirror User's exact language and script variant.\nAlign Axiom 0: Human Sovereignty and Wellbeing.",
+      "quality_checklist": {
+        "intrinsic": {
+          "I8": {
+            "name": "Threat Model Awareness",
+            "check": "AIAP program addresses relevant security threats from the AIAP threat taxonomy (AT1-AT6).",
+            "severity": "WARNING",
+            "how_to_verify": "For T3/T4 trust_level programs: verify Start.constraints address applicable threats from AT1-AT6 based on program's tool usage and trust_level. Cross-reference: AT1 (tool poisoning) — programs with dynamic tool loading; AT2 (rug pull) — programs with external dependencies; AT3 (server compromise) — programs with network tools; AT4 (excessive authority) — all T3+ programs; AT5 (cross-agent leakage) — Pattern F / programs with dependencies; AT6 (prompt injection) — all programs. Minimum: T3+ programs must address AT4 and AT6.",
+            "threat_taxonomy_ref": "See threat_taxonomy section in this extension for AT1-AT6 definitions."
+          },
+          "I9": {
+            "name": "Supply Chain Integrity",
+            "check": "Published AIAP programs must have verifiable governance_hash.",
+            "severity": "WARNING",
+            "how_to_verify": "For programs from external sources: verify governance_hash matches computed SHA-256 of all files. For programs with trust_level >= T3: governance_hash is REQUIRED, not optional.",
+            "applies_to": "Published programs, external dependencies"
+          },
+          "I10": {
+            "name": "Trust Level Compliance",
+            "check": "Program's declared trust_level is consistent with its actual permissions and side_effects. Higher trust levels require stricter justification.",
+            "severity": "WARNING",
+            "how_to_verify": "Read AIAP.md trust_level. Compare against permissions and side_effects: T1 (metadata-only) — no tools, no side_effects. T2 (read-only sandbox) — read-only tools, no write side_effects. T3 (supervised) — write tools allowed, requires explicit permissions scope. T4 (autonomous) — full permissions, requires justification. If trust_level exceeds what permissions/side_effects require, flag as over-privileged. If trust_level is lower than what tools/side_effects imply, flag as under-declared.",
+            "applies_to": "All programs with trust_level declared in AIAP.md"
+          },
+          "I11": {
+            "name": "Program Identity Verification",
+            "check": "Published AIAP programs SHOULD declare program_identity per STANDARD.data_contracts.program_identity. Verification covers program_id format, publisher presence, and optional cryptographic signature.",
+            "severity": "WARNING",
+            "how_to_verify": "Check AIAP.md for identity block. If present: (1) verify program_id is non-empty and follows reverse-DNS format (e.g., 'aiap.dev/aiap_creator', 'org.example/my_program'), (2) verify publisher field is non-empty string, (3) if signature field present, verify it is a valid Ed25519 signature of governance_hash using signature_public_key, (4) if registry_url present, verify URL format (do not fetch — network access not assumed during validation). If identity block absent: WARNING for programs with trust_level >= T3 or status == 'active'. Not applicable to draft programs.",
+            "applies_to": "Published programs (status=active), programs with trust_level >= T3",
+            "relationship": "Extends I9 (Supply Chain Integrity) with active identity verification. I9 verifies hash integrity; I11 verifies publisher provenance.",
+            "na_conditions": "Draft programs, programs without AIAP.md identity block and trust_level <= T2"
+          },
+          "I14": {
+            "name": "sys.io.confirm Audit Completeness",
+            "check": "Programs with sys.io.confirm must have audit capability. Every sys.io.confirm invocation and response must be logged.",
+            "severity": "WARNING",
+            "how_to_verify": "For T3+ programs containing sys.io.confirm steps: verify the program or executor provides audit logging for confirmation events. If program uses sys.security.audit explicitly, verify coverage includes all sys.io.confirm steps. Programs without sys.io.confirm → N/A.",
+            "applies_to": "T3+ programs with sys.io.confirm steps",
+            "reference": "AIAP Protocol Appendix G.2, G.8, AISOP V1.0.0 §6.2"
+          },
+          "I15": {
+            "name": "System Execution Safety",
+            "check": "Programs using sys.run or sys.code.exec must declare appropriate security constraints.",
+            "severity": "WARNING",
+            "how_to_verify": "For programs with sys.run or sys.code.exec steps: (a) verify permissions.shell or code_execution is declared in AIAP.md. (b) verify high-risk commands have accompanying sys.io.confirm or on_error routing. (c) for sys.code.exec, verify language is specified and within expected set. Programs without sys.run/sys.code → N/A.",
+            "applies_to": "Programs using sys.run or sys.code.exec",
+            "reference": "AIAP Protocol §17.4, Appendix G.4, AISOP V1.0.0 §6.4/§6.7"
+          }
+        },
+        "detail": {
+          "D8": {
+            "name": "AIAP.md Completeness",
+            "check": "AIAP.md exists in project root with all required frontmatter fields and meaningful body sections.",
+            "severity": "WARNING",
+            "how_to_verify": "PIPELINE EXEMPTION: during Create pipeline, D8 is automatically deferred to ReviewFinalize (4/4) — AIAP.md is generated as part of ReviewStep, not Generate. For Evolve/Modify pipelines and standalone Validate, D8 applies normally. Read AIAP.md. Verify YAML frontmatter contains: protocol, authority, seed, executor, axiom_0, governance_mode, name, version, pattern, summary, tools, modules. Verify body contains: governance statement, feature overview, usage instructions. Verify file ends with AIAP closing seal.",
+            "required_frontmatter": {
+              "governance": [
+                "protocol",
+                "authority",
+                "seed",
+                "executor",
+                "axiom_0",
+                "governance_mode"
+              ],
+              "project": [
+                "name",
+                "version",
+                "pattern",
+                "summary",
+                "tools",
+                "modules"
+              ]
+            },
+            "required_body_sections": [
+              "governance statement",
+              "feature overview",
+              "usage instructions"
+            ],
+            "required_seal": "File must end with AIAP closing seal matching governance_mode",
+            "pattern_a_note": "For Pattern A (single file), modules list contains exactly one entry. modules field is still required for consistency and discovery purposes."
+          },
+          "D9": {
+            "name": "Lifecycle Status Validity",
+            "check": "AIAP.md status field is valid and consistent with program state.",
+            "severity": "WARNING",
+            "how_to_verify": "Verify status is one of: draft, active, deprecated, archived. If deprecated: verify deprecated_date and successor fields exist, deprecation_reason field exists (recommended). If archived: verify no Evolve/Modify operations are attempted. Status transitions: only active→deprecated and deprecated→archived are valid forward transitions."
+          },
+          "D10": {
+            "name": "Applicability Condition Completeness",
+            "check": "AIAP.md defines applicability_condition with non-empty triggers.",
+            "severity": "WARNING",
+            "how_to_verify": "Read AIAP.md applicability_condition field. Verify: (a) triggers array is non-empty — at least one trigger pattern defined. (b) preconditions array exists (may be empty for simple programs). (c) exclusions array exists (may be empty). If applicability_condition field is missing entirely, flag as D10 issue. If triggers is empty, flag as D10 issue.",
+            "pipeline_exemption": "During Create pipeline, D10 is automatically deferred to ReviewFinalize (same as D8) — applicability_condition is generated as part of the pipeline, not expected to pre-exist."
+          }
+        }
+      },
+      "code_trust_gate": {
+        "description": "Security verification architecture for Pattern G programs with bundled code in tool_dirs/. Ensures embedded code passes multi-layer security checks before execution.",
+        "applicability": "Pattern G programs only. Programs without tool_dirs skip Code Trust Gate entirely.",
+        "verification_flow": [
+          "Step 1: governance_hash verification — recompute and compare against AIAP.md declaration",
+          "Step 2: Static analysis — detect network API imports per I13(b), compare against permissions.network",
+          "Step 3: File hash verification — recompute SHA-256 for each file in tool_dirs/, compare against mcp_server.json file_hashes",
+          "Step 4: Trust level check — Pattern G requires minimum trust_level T3",
+          "Step 5: Dependency lock validation — verify lock files exist and use exact versioning per I13(d)",
+          "Step 6: Shell audit check — if shell_tools/ present, verify T4 + shell_audit_approved per I13(f)",
+          "Step 7: AIAP sub-program recursive verification — when aiap_tools/ directory detected: (a) Initialize call_stack = [], push parent.program_id. (b) For each {name}_aiap/ in aiap_tools/: read AIAP.md, verify 6 required governance fields; CIRCULAR CHECK: program_id not in call_stack, then push; TRUST CEILING: sub.trust_level <= parent.trust_level; PERMISSION SUBSET: sub.permissions subset of parent.permissions; GOVERNANCE HASH: recompute and verify; DEPTH CHECK: current_depth < max_recursion_depth (3); if sub is Pattern G with aiap_tools/, recurse with depth+1; pop program_id from call_stack (finally semantics). (c) Any sub-program FAIL → entire gate FAIL."
+        ],
+        "zip_slip_protection": {
+          "description": "Extended ZIP SLIP protection for .aiap packages containing tool_dirs/.",
+          "rules": [
+            "Reject any archive member with '..' in path (existing rule)",
+            "tool_dirs/ files must match declared directory types in AIAP.md tool_dirs[].type",
+            "Binary file size limit: 100MB per file, 500MB total for all tool_dirs/",
+            "Executable files require hash match against mcp_server.json file_hashes",
+            "aiap_tools/ sub-program paths must not contain symlinks pointing outside the sub-program directory. Resolve all symlinks before trust verification."
+          ]
+        },
+        "trust_modes": {
+          "T3_supervised": "All Code Trust Gate checks must pass AND human operator must explicitly approve before MCP Server startup. Approval prompt includes: file count, total size, detected network imports, dependency count.",
+          "T4_autonomous": "All Code Trust Gate checks must pass. If all pass, MCP Server starts automatically without human confirmation. Any check failure still blocks execution."
+        },
+        "enforcement": "I13 Embedded Code Safety (in core STANDARD) provides the check items. Code Trust Gate defines the execution flow and trust-level-dependent approval process. ThreeDimTest I13 verifies the check items exist and are correctly implemented."
+      },
+      "threat_taxonomy": {
+        "description": "AIAP security threat classification. Maps common AI agent attack vectors to AIAP-specific mitigations. Cross-referenced by I8 for threat model verification.",
+        "owasp_mcp_mapping": "Categories AT1-AT6 are partially mapped to OWASP MCP Top 10 (2025) where applicable. AIAP-specific threats without direct MCP equivalents are marked N/A.",
+        "categories": {
+          "AT1": {
+            "name": "Tool Poisoning",
+            "owasp_mcp_ref": "MCP01 — Tool Poisoning Attacks",
+            "description": "Adversarial manipulation of tool descriptions, schemas, or metadata to redirect agent behavior. Includes hidden instructions in tool descriptions that override system_prompt behavior.",
+            "attack_surface": "Programs with dynamic tool discovery, MCP server integration, or runtime tool loading from untrusted sources.",
+            "mitigation": "I2 injection guard on tool metadata + tool schema validation against declared contract + allowlist-only tool loading (tools[] in AIAP.md defines the boundary).",
+            "detection": "ThreeDimTest I8 verifies tools[] matches actual usage (I1). Any tool not in declared tools[] is flagged."
+          },
+          "AT2": {
+            "name": "Rug Pull",
+            "owasp_mcp_ref": "MCP03 — Rug Pulls",
+            "description": "Post-deployment behavioral change of a tool or dependency. Initial version behaves correctly during testing; later version introduces malicious behavior (e.g., MCP server returning altered data after gaining trust).",
+            "attack_surface": "Programs depending on external MCP servers, third-party AIAP programs, or dynamically resolved tools.",
+            "mitigation": "governance_hash verification (PL14) + I9 supply chain integrity + pinned tool/dependency versions + periodic re-validation.",
+            "detection": "governance_hash mismatch after external update. I9 checks hash consistency for published programs."
+          },
+          "AT3": {
+            "name": "Indirect Prompt Injection via Tools",
+            "owasp_mcp_ref": "MCP06 — Indirect Prompt Injection via Tools",
+            "description": "Compromised or adversarial external service injecting malicious content via tool responses. Search results, web pages, or API responses contain instructions that override agent behavior.",
+            "attack_surface": "Programs with network tools (google_search, web_browser, API calls) that process external content.",
+            "mitigation": "Output sanitization on tool responses + I2 injection guard applied to tool outputs (not just user inputs) + response schema validation + content length limits.",
+            "detection": "ThreeDimTest I2 verifies injection guard scope includes tool output processing."
+          },
+          "AT4": {
+            "name": "Excessive Authority",
+            "owasp_mcp_ref": "MCP10 — Excessive Functionality / Permissions",
+            "description": "Program requesting or possessing more permissions than needed for declared functionality. Over-privileged programs increase blast radius of any compromise.",
+            "attack_surface": "All programs with trust_level >= T3. Risk proportional to gap between declared and actual permission usage.",
+            "mitigation": "I10 trust level compliance + principle of least privilege audit + permission scope review (tools[] should contain only tools actually used per I1).",
+            "detection": "ThreeDimTest I10 compares declared trust_level against actual tool usage. I1 detects phantom tools."
+          },
+          "AT5": {
+            "name": "Cross-Agent Data Leakage",
+            "owasp_mcp_ref": "N/A (AIAP-specific)",
+            "description": "Sensitive data from one AIAP program leaking to another through shared file_system access, delegation handoffs, or common state files.",
+            "attack_surface": "Pattern F ecosystems, programs with dependencies[], programs sharing workspace_dir.",
+            "mitigation": "Permission scope isolation per program + MF4 data contract enforcement (explicit schemas prevent unintended data exposure) + sandbox per program (distinct working directories).",
+            "detection": "Simulation Category K (multi-agent) tests cross-program data boundary. MF14 traces field dependencies."
+          },
+          "AT6": {
+            "name": "Direct Prompt Injection",
+            "owasp_mcp_ref": "MCP06/MCP07 — Prompt Injection",
+            "description": "User or upstream module injecting adversarial prompts that override system_prompt behavior. Includes role override attempts ('ignore previous instructions'), system prompt extraction, and persona manipulation.",
+            "attack_surface": "All programs. Universal threat — any program accepting natural language input.",
+            "mitigation": "I2 injection guard (mandatory for all programs) + system_prompt hardening + input sanitization.",
+            "detection": "ThreeDimTest I2 is FAIL severity — missing injection guard is always a blocking issue."
+          },
+          "AT7": {
+            "name": "Confirmation Bypass",
+            "owasp_mcp_ref": "N/A (Axiom 0 enforcement)",
+            "description": "Threat where sys.io.confirm is circumvented through prompt injection, auto-approval scripts, execution path manipulation, or LLM discretion. Violates Axiom 0 Human Sovereignty.",
+            "risk_level": "CRITICAL",
+            "attack_surface": "All programs containing sys.io.confirm steps. Risk highest when executor delegates confirm handling to AI Agent.",
+            "mitigation": [
+              "Runtime must treat sys.io.confirm as inviolable (AISOP §6.2)",
+              "No LLM discretion over sys.io.confirm execution",
+              "Headless mode must abort with confirm_timeout, not silently approve",
+              "Sub-task validation: parent's sys.io.confirm must not be removed in child",
+              "MF32 blocks evolution that deletes sys.io.confirm"
+            ],
+            "detection": "MF32 (evolution-time). I14 (audit completeness). Runtime: executor must log every sys.io.confirm invocation and response.",
+            "axiom_0_related": true,
+            "reference": "AIAP Protocol Appendix G.2, AISOP V1.0.0 §6.2"
+          }
+        },
+        "enforcement": "I8 threat_taxonomy cross-references AT1-AT6. ThreeDimTest I8 verifies applicable threats are addressed based on program's tool usage (tools[]) and trust_level. Minimum: all programs must address AT6; T3+ programs must also address AT4; programs with network tools must also address AT3.",
+        "evolution": "AT categories may be extended in future STANDARD versions. Extension numbering continues sequentially (AT7, AT8, ...). New categories are added to this extension file, not core."
+      },
+      "safety_card_requirements": {
+        "description": "Requirements for safety_card section within agent_card.json. Addresses MIT CSAIL AI Agent Index finding (2025) that 87% of deployed AI agents lack safety documentation.",
+        "applicability": "ALL programs — safety_card is part of unconditional agent_card generation (P11+P14)",
+        "required_fields": {
+          "risk_level": "One of: minimal, limited, high, unacceptable. Derived from trust_level with intent-based elevation.",
+          "data_handling": "Object describing data storage, retention, and encryption practices.",
+          "limitations": "Array of known limitations, constraints, and failure modes."
+        },
+        "recommended_fields": {
+          "known_biases": "Documented biases in training data or decision-making.",
+          "compliance_markers": "References to applicable regulatory standards (EU AI Act, NIST AI RMF, NIST AI Agent Standards Initiative Feb 2026, ISO).",
+          "human_oversight_level": "Required human oversight: none, monitoring, approval, full_control.",
+          "fail_safe_behavior": "Description of behavior when errors or safety boundaries are hit."
+        },
+        "validation_rules": {
+          "completeness_check": "D8-AGENT-CARD-MISSING extended: missing safety_card → YELLOW (-0.5)",
+          "risk_consistency": "risk_level must be consistent with trust_level mapping and intent analysis",
+          "eu_ai_act_alignment": "risk_level categories align with EU AI Act risk classification (2026-08 enforcement)",
+          "nist_ai_agent_alignment": "Security governance, development lifecycle, and monitoring practices align with NIST AI Agent Standards Initiative (Feb 2026) three-pillar framework: (1) industry-led agent standards, (2) community-led open source protocol development, (3) research in agent security and identity. RFI on agent security closed Mar 9 2026. Automated benchmark evaluations draft closed Mar 31 2026. Software and AI Agent Identity draft feedback due Apr 2 2026. Listening sessions Apr 2026 covering agent benchmarking, identity, and security scope."
+        }
+      },
+      "security_schemes": {
+        "description": "External authentication scheme declarations for AIAP programs. Defines supported authentication types, trust-level mapping, and A2A interop binding. Programs declare authentication requirements in AIAP.md security.authentication[] per STANDARD.core security_authentication_spec.",
+        "supported_schemes": {
+          "apiKey": {
+            "description": "API key authentication via header, query parameter, or cookie",
+            "a2a_type": "apiKey",
+            "applicable_trust": [
+              "T2",
+              "T3",
+              "T4"
+            ],
+            "validation": "Key must be non-empty string. Recommend header-based (in=header) over query-based for security."
+          },
+          "http": {
+            "description": "HTTP authentication (Basic or Bearer token)",
+            "a2a_type": "http",
+            "subtypes": [
+              "basic",
+              "bearer"
+            ],
+            "applicable_trust": [
+              "T2",
+              "T3",
+              "T4"
+            ],
+            "validation": "Bearer tokens must be opaque or JWT. Basic auth requires TLS."
+          },
+          "oauth2": {
+            "description": "OAuth 2.0 with supported flows: authorization_code, client_credentials, device_code",
+            "a2a_type": "oauth2",
+            "applicable_trust": [
+              "T3",
+              "T4"
+            ],
+            "validation": "Must specify at least one flow with valid token_url. Scopes should be meaningful and minimal."
+          },
+          "openIdConnect": {
+            "description": "OpenID Connect discovery-based authentication",
+            "a2a_type": "openIdConnect",
+            "applicable_trust": [
+              "T3",
+              "T4"
+            ],
+            "validation": "Must specify openIdConnectUrl pointing to valid .well-known/openid-configuration."
+          },
+          "mutualTls": {
+            "description": "Mutual TLS (mTLS) certificate-based authentication",
+            "a2a_type": "mutualTls",
+            "applicable_trust": [
+              "T4"
+            ],
+            "validation": "Certificate chain must be verifiable. Only applicable for network-deployed programs."
+          }
+        },
+        "trust_level_requirements": {
+          "T1_sandbox": "No authentication required — isolated execution environment",
+          "T2_community": "RECOMMENDED: apiKey or http bearer — lightweight access control",
+          "T3_professional": "REQUIRED: oauth2 — enterprise-grade authentication with scopes",
+          "T4_enterprise": "REQUIRED: oauth2 + RECOMMENDED: mutualTls — maximum security assurance"
+        },
+        "enforcement": "Generator should auto-suggest appropriate security schemes based on trust_level. ThreeDimTest can verify scheme-trust alignment as advisory (not blocking for T1/T2). Programs published to remote registries (PL22) with T3+ SHOULD have security.authentication declared.",
+        "backward_compatibility": "Programs without security.authentication remain valid. Trust_level (T1-T4) continues to govern internal permission boundaries independently."
+      },
+      "identity_signing": {
+        "description": "Cryptographic signing specification for AIAP program identity. Provides publisher authenticity proof using JWS (JSON Web Signature), complementing governance_hash (SHA-256 integrity) with origin verification.",
+        "algorithm_support": {
+          "primary": "ES256 (ECDSA with P-256 curve and SHA-256) — recommended for broad compatibility",
+          "alternative": "EdDSA (Ed25519) — recommended for performance-critical scenarios",
+          "format": "JWS Compact Serialization (RFC 7515)"
+        },
+        "key_management": {
+          "public_key_format": "JWK Set (RFC 7517) hosted at publisher's well-known URL",
+          "key_rotation": "Publishers SHOULD support key rotation via JWK Set kid (Key ID) field",
+          "key_url_pattern": "https://{publisher_domain}/.well-known/signing-keys.json"
+        },
+        "signing_process": [
+          "1. Compute SHA-256 of AIAP.md content (excluding identity.signature field)",
+          "2. Create JWS payload with: { hash: sha256_hex, program_id: string, version: string, timestamp: ISO8601 }",
+          "3. Sign payload with publisher's private key using declared algorithm",
+          "4. Store JWS compact serialization in identity.signature.value"
+        ],
+        "verification_integration": {
+          "i11_check": "I11 Program Identity Verification extended: if identity.signature present, verify JWS against public_key_url. PASS → SIGNATURE_VERIFIED. FAIL → SIGNATURE_INVALID (WARNING). Absent → SIGNATURE_NOT_PRESENT (INFO for local, WARNING for remote registry).",
+          "registry_requirement": "Programs published to remote registries (PL22) with trust_level >= T3 MUST have identity.signature. Unsigned T3+ programs in remote registries flagged as REGISTRY_UNSIGNED WARNING.",
+          "package_integration": "When packaging (.aiap archive), include identity.signature in manifest.json for end-to-end verification: package hash → governance_hash → identity.signature → publisher."
+        },
+        "enforcement": "Optional for local programs. Recommended for trust_level >= T3 with status='active'. Required for remote registry publication of T3+ programs. Absence is never a blocking error for local use.",
+        "backward_compatibility": "Programs without identity.signature remain fully valid. All existing I11 checks continue to work — signature verification is additive."
+      },
+      "execute_mode": "library"
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "note": "This is a STANDARD extension file — not directly executable. Loaded by ThreeDimTest and ReadTemplate as supplementary quality checks."
+    }
+  }
+]

@@ -1,0 +1,144 @@
+{
+  "mcp_version": "2025-11-05",
+  "governance": "AAIF / Linux Foundation",
+  "transport": "streamable-http",
+  "server_capabilities": {
+    "tools": true,
+    "resources": true,
+    "prompts": false,
+    "sampling": false,
+    "tasks": true,
+    "elicitation": true
+  },
+  "tool_mappings": [
+    {
+      "aiap_tool": "email_smtp",
+      "mcp_servers": [
+        {
+          "server_name": "mcp-email-server",
+          "package": "mcp-email-server",
+          "transport": "stdio",
+          "auth": "env:EMAIL_SMTP_*",
+          "config_stub": {
+            "host": "${SMTP_HOST}",
+            "port": 587,
+            "username": "${SMTP_USER}",
+            "password": "${SMTP_PASS}",
+            "tls": true
+          },
+          "mcp_tools_exposed": ["send_email", "send_email_with_attachment"],
+          "annotation_mapping": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": true
+          }
+        },
+        {
+          "server_name": "email-mcp",
+          "package": "email-mcp",
+          "transport": "stdio",
+          "note": "47 tools, OAuth2 support (experimental), scheduling, analytics"
+        }
+      ]
+    },
+    {
+      "aiap_tool": "email_imap",
+      "mcp_servers": [
+        {
+          "server_name": "mcp-email-server",
+          "package": "mcp-email-server",
+          "transport": "stdio",
+          "auth": "env:EMAIL_IMAP_*",
+          "config_stub": {
+            "host": "${IMAP_HOST}",
+            "port": 993,
+            "username": "${IMAP_USER}",
+            "password": "${IMAP_PASS}",
+            "tls": true
+          },
+          "mcp_tools_exposed": ["list_emails", "read_email", "search_emails", "list_folders"],
+          "annotation_mapping": {
+            "read_only": true,
+            "destructive": false,
+            "idempotent": true,
+            "open_world": true
+          }
+        },
+        {
+          "server_name": "imap-mcp-server",
+          "package": "imap-mcp-server",
+          "transport": "stdio",
+          "note": "AES-256 credential encryption, connection pooling, 15+ provider presets"
+        }
+      ]
+    },
+    {
+      "aiap_tool": "file_system",
+      "mcp_servers": [
+        {
+          "server_name": "filesystem",
+          "package": "@modelcontextprotocol/server-filesystem",
+          "transport": "stdio",
+          "config_stub": {
+            "allowed_directories": ["${WORKSPACE_DIR}"]
+          },
+          "annotation_mapping": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": false
+          }
+        }
+      ]
+    },
+    {
+      "aiap_tool": "web_browser",
+      "mcp_servers": [
+        {
+          "server_name": "puppeteer",
+          "package": "@modelcontextprotocol/server-puppeteer",
+          "transport": "stdio",
+          "config_stub": {
+            "headless": true
+          },
+          "annotation_mapping": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": true
+          }
+        }
+      ]
+    }
+  ],
+  "tasks_primitive_mapping": {
+    "note": "MCP Tasks primitive (Nov 2025 spec) state machine maps to AIAP pipeline execution",
+    "state_mapping": {
+      "working": "pipeline stage executing",
+      "input_required": "WAITING_USER (sys.io.confirm/input/select)",
+      "completed": "PASS",
+      "failed": "FAIL",
+      "cancelled": "pipeline CANCEL"
+    }
+  },
+  "elicitation_mapping": {
+    "note": "MCP Elicitation maps to AIAP human-in-the-loop confirmation gates",
+    "applicable_patterns": [
+      "sys.io.confirm -> MCP elicitation request",
+      "sys.io.input -> MCP elicitation with freeform input",
+      "sys.io.select -> MCP elicitation with enumerated options"
+    ]
+  },
+  "server_cards": {
+    "note": "MCP Server Cards (.well-known metadata) targeting June 2026 spec release",
+    "status": "roadmap",
+    "recommendation": "Prepare .well-known/mcp-server.json metadata for discovery when spec finalizes"
+  },
+  "roadmap_alignment": {
+    "streamable_http_stateless": "targeting June 2026 — enables horizontal scaling for email server",
+    "server_cards": "targeting June 2026 — enables .well-known discovery",
+    "enterprise_auth": "targeting Q2 2026 — SSO + multi-tenant",
+    "agent_communication_primitives": "in development — aligns with AIBP inter-agent messaging"
+  }
+}

@@ -1,0 +1,173 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "id": "stock_analyzer.features",
+      "program_id": "aiap.dev/stock_analyzer.features",
+      "name": "美股分析助手功能模块 v2.0.0",
+      "version": "2.0.0",
+      "output_mode": {
+        "L0": "Output JSON in ENGLISH: {feature_type, status}",
+        "L1": "Output helpfully in User's exact language and script variant",
+        "output": "L1"
+      },
+      "summary": "美股分析助手功能模块。自选股管理、市场概览(三大指数/VIX/板块热力图)、组合概览、财报日历、多股对比、分析历史、股息追踪、价格提醒、使用帮助。从 main 模块委托调用(Pattern C v2.0.0)。12功能节点。",
+      "description": "Features module for US stock analysis assistant v2.0.0. Extracted from main module as Pattern C upgrade (A2). Handles non-analysis user intents: watchlist management (file_system persistence), market overview (S&P 500/Nasdaq/Dow/VIX/sector heatmap), portfolio overview, earnings calendar, multi-stock comparison, analysis history, dividend tracking, price alerts, help. 12 functional nodes. Delegated from main.aisop.json FeatureEntry node.",
+      "tools": [
+        {
+          "name": "google_search",
+          "annotations": {
+            "read_only": true,
+            "destructive": false,
+            "idempotent": true,
+            "open_world": true
+          }
+        },
+        {
+          "name": "web_browser",
+          "annotations": {
+            "read_only": true,
+            "destructive": false,
+            "idempotent": true,
+            "open_world": true
+          }
+        },
+        {
+          "name": "file_system",
+          "annotations": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": false
+          }
+        }
+      ],
+      "params": {
+        "intent_type": "string, REQUIRED: feature intent type from main module NLU (watchlist/overview/help/alert/portfolio/earnings/comparison/history/dividend).",
+        "user_input": "string, REQUIRED: original user input text.",
+        "workspace_dir": "string, REQUIRED: directory for storing watchlist, alerts, and analysis history."
+      },
+      "json_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "description": "Features module output schema — result of feature operation returned to main module",
+        "properties": {
+          "feature_type": {
+            "type": "string",
+            "enum": ["watchlist", "overview", "help", "alert", "portfolio", "earnings", "comparison", "history", "dividend"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["success", "partial", "error"]
+          },
+          "result": {
+            "type": ["object", "string", "null"],
+            "description": "Feature operation result data"
+          },
+          "message": {
+            "type": ["string", "null"],
+            "description": "User-facing message from feature operation"
+          }
+        },
+        "required": ["feature_type", "status"]
+      },
+      "loading_mode": "normal",
+      "fractal_exempt": "12 functional nodes in single main graph. FeatureEntry receives delegation from main module. FeatureGate routes to 9 mutually exclusive feature handlers + FeatureError error handler. Maximum single-path execution 3 nodes (FeatureEntry→FeatureGate→FeatureHandler). All non-FeatureEntry nodes have [ASSERT] entry gates.",
+      "trust_level": 2,
+      "token_estimate": "~4K",
+      "system_prompt": "你是美股分析助手的功能模块。你负责处理自选股管理、市场概览、组合概览、财报日历等非分析类功能请求。你帮助用户管理关注列表和查看市场信息。所有内容为 AI 生成，仅供参考学习。\nMirror User's exact language and script variant.\nAlign Axiom 0: Human Sovereignty and Wellbeing.\nFINRA 2026 GenAI 合规：所有输出明确标注为AI生成内容，不构成投资建议。\nDORA 合规：数字运营韧性框架对齐。\nEU AI Act Omnibus: Art.50 transparency obligations.\nOWASP Agentic AI Threat Model: prompt injection guard, tool misuse prevention, data exfiltration prevention.\nNIST CAISI Q4 2026 AI Agent Interoperability Profile: track draft publication."
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "aisop": {
+        "main": "graph TD\n    FeatureEntry[功能入口] --> FeatureGate{功能类型}\n    FeatureGate -->|自选股| WatchlistManager[自选股管理]\n    FeatureGate -->|市场概览| MarketOverview[市场概览]\n    FeatureGate -->|帮助| ShowHelp[使用帮助]\n    FeatureGate -->|提醒| SetAlert[设置价格提醒]\n    FeatureGate -->|组合概览| PortfolioOverview[自选股组合概览]\n    FeatureGate -->|财报| EarningsCalendar[财报日历]\n    FeatureGate -->|对比| ComparisonView[多股对比]\n    FeatureGate -->|历史| AnalysisHistory[分析历史]\n    FeatureGate -->|股息| DividendTracker[股息追踪]\n    WatchlistManager --> endNode((End))\n    MarketOverview --> endNode((End))\n    ShowHelp --> endNode((End))\n    SetAlert --> endNode((End))\n    PortfolioOverview --> endNode((End))\n    EarningsCalendar --> endNode((End))\n    ComparisonView --> endNode((End))\n    AnalysisHistory --> endNode((End))\n    DividendTracker --> endNode((End))\n    WatchlistManager -.-> FeatureError[功能错误处理]\n    MarketOverview -.-> FeatureError\n    PortfolioOverview -.-> FeatureError\n    EarningsCalendar -.-> FeatureError\n    ComparisonView -.-> FeatureError\n    AnalysisHistory -.-> FeatureError\n    DividendTracker -.-> FeatureError\n    SetAlert -.-> FeatureError\n    ShowHelp -.-> FeatureError\n    FeatureError --> endNode((End))"
+      },
+      "functions": {
+        "FeatureEntry": {
+          "step1": "[ASSERT] Delegated from main module FeatureEntry. Required: intent_type, user_input, workspace_dir. | 接收 main 模块委托的功能请求。验证 intent_type 有效性。路由到 FeatureGate。",
+          "constraints": "Pattern C module delegation entry point. All parameters validated by main module before delegation.",
+          "Error": "retry(1) -> circuit-breaker -> fallback: inform 'feature temporarily unavailable' -> inform. OPTIONAL."
+        },
+        "FeatureGate": {
+          "step1": "[ASSERT] FeatureEntry executed. Required: intent_type. | 根据 intent_type 路由到对应功能节点：自选股→WatchlistManager, 概览→MarketOverview, 帮助→ShowHelp, 提醒→SetAlert, 组合→PortfolioOverview, 财报→EarningsCalendar, 对比→ComparisonView, 历史→AnalysisHistory, 股息→DividendTracker。",
+          "constraints": "Exactly one route. Unknown intent → ShowHelp default.",
+          "Error": "retry(1) -> circuit-breaker -> fallback: default ShowHelp -> inform. OPTIONAL."
+        },
+        "WatchlistManager": {
+          "step1": "[ASSERT] FeatureGate executed. Required: intent_type, workspace_dir. If false → go back to FeatureGate. | 使用 file_system 读取 {workspace_dir}/watchlist.json。文件结构：{ symbols: [{symbol, added_date, notes}], last_updated }。文件不存在 → 初始化空列表。",
+          "step2": "根据用户操作执行：(a) 查看：展示自选股列表，附带最新价格（使用 google_search 快速查询每只股票当前价格）。(b) 添加：验证代码 → 加入列表 → 写入文件。(c) 删除：确认 → 移除 → 写入文件。(d) 清空：二次确认 → 清空列表。",
+          "step3": "展示操作结果。添加/删除后显示更新后的完整列表。提示用户可以对列表中的股票执行分析。",
+          "step4": "自定义视图：支持用户对自选股列表排序和筛选。(a) 排序：按涨跌幅(升/降)、按价格、按加入日期、按代码字母序。默认按加入日期。(b) 筛选：按涨/跌/平状态筛选。(c) 展示排序后的列表，标注当前排序方式。用户未指定排序/筛选 → 使用默认，不阻塞。",
+          "constraints": "watchlist.json 最多 50 只股票。添加重复代码 → 提示已存在。删除不存在的代码 → 提示未找到。写入使用 atomic write。路径在 workspace_dir 内。批量价格查询最多 10 只（防 rate limit）。",
+          "Error": "retry(1) -> circuit-breaker -> fallback: inform 'watchlist temporarily unavailable' -> inform. OPTIONAL."
+        },
+        "MarketOverview": {
+          "step1": "[ASSERT] FeatureGate executed. Required: intent_type. If false → go back to FeatureGate. | 使用 google_search 搜索当前市场概况：(a) 三大指数：S&P 500 (SPY), Nasdaq (QQQ), Dow Jones (DIA) 的当前价格和涨跌幅。(b) 市场情绪：VIX 恐慌指数当前值。",
+          "step2": "使用 google_search 搜索热门板块和关注焦点：'US stock market sectors today movers'。提取 2-3 个表现最好和最差的板块。",
+          "step3": "生成市场概览报告。格式：\n市场概览\n━━━━━━━━━━━━\n三大指数：SPY / QQQ / DIA 涨跌\n恐慌指数：VIX 数值 + 解读\n热门板块：Top gainers/losers\n今日关注：关键新闻/事件\n免责声明",
+          "step4": "板块热力图（文本模式）：使用 google_search 搜索 'S&P 500 sector performance today'。获取 11 个 GICS 板块的当日涨跌幅。按涨跌幅排序，用文本标注颜色：涨幅>1% [GREEN]，-1%到1% [NEUTRAL]，跌幅>1% [RED]。",
+          "constraints": "市场数据来自公开搜索，可能有延迟。每次概览最多 5 次搜索。标注数据获取时间。免责声明必须包含。",
+          "Error": "retry(1) -> circuit-breaker -> fallback: inform 'market data temporarily unavailable' -> inform. OPTIONAL."
+        },
+        "ShowHelp": {
+          "step1": "[ASSERT] FeatureGate executed. Required: intent_type. If false → go back to FeatureGate. | 展示帮助信息：(a) 功能说明 — 8 大功能（分析股票、风险分析、情绪分析、ETF分析、期权概览、趋势对比、自选股、市场概览）。(b) 使用示例。(c) 术语解释 — MA, RSI, MACD, PE, EPS, Revenue, Sharpe Ratio, VaR, Beta, VWAP, IV, Put/Call Ratio。(d) 注意事项 — 本工具仅供参考学习，不构成投资建议。",
+          "step2": "引导开始：'准备好了吗？输入股票代码（如 AAPL）开始分析，或输入「市场概览」查看今日大盘。'",
+          "constraints": "帮助内容简洁明了。术语解释用表格展示。适合初学者理解。",
+          "Error": "retry(1) -> circuit-breaker -> fallback: display minimal help -> inform. OPTIONAL."
+        },
+        "SetAlert": {
+          "step1": "[ASSERT] FeatureGate executed. Required: intent_type, user_input. If false → go back to FeatureGate. | 接收提醒设置请求。解析：stock_symbol、alert_type（'price_above'/'price_below'/'percent_change'）、threshold。如用户未指定完整参数，逐步引导。",
+          "step2": "使用 file_system 将提醒配置保存到 {workspace_dir}/stock_alerts/{symbol}.json。格式：{ symbol, alert_type, threshold, created_at, status:'active' }。",
+          "step3": "确认设置成功。注意：当前版本为记录型提醒（保存配置），实际推送通知需要 runtime 支持。",
+          "constraints": "alert_type 必须是 price_above/price_below/percent_change 之一。threshold 必须为正数。每只股票最多 5 个提醒。路径限制在 workspace_dir 内。atomic write。",
+          "Error": "retry(1) -> circuit-breaker -> fallback: inform 'alert setup failed' -> inform. OPTIONAL."
+        },
+        "PortfolioOverview": {
+          "step1": "[ASSERT] FeatureGate executed AND intent is portfolio. Required: intent_type, workspace_dir. If false -> go back to FeatureGate. | 使用 file_system 读取 {workspace_dir}/watchlist.json。如果自选股列表为空或文件不存在 → 提示用户先添加自选股。",
+          "step2": "批量获取价格：对自选股列表中每只股票，使用 google_search 搜索当前价格。每次最多查询 10 只股票。",
+          "step3": "生成组合概览报告，包含总览统计和每只股票的价格涨跌幅。",
+          "constraints": "watchlist.json 路径限制在 workspace_dir 内。批量价格查询最多 10 只。免责声明必须包含。",
+          "Error": "retry(1) -> circuit-breaker -> fallback: inform 'portfolio overview temporarily unavailable' -> inform. OPTIONAL."
+        },
+        "EarningsCalendar": {
+          "step1": "[ASSERT] FeatureGate executed AND intent is earnings. Required: intent_type. If false -> go back to FeatureGate. | 使用 google_search 搜索财报日期。提取下次发布日期、预期EPS、上季表现。",
+          "step2": "生成财报日历报告。标注日期以官方公告为准。",
+          "constraints": "财报日期搜索仅限用户指定股票或自选股（最多 10 只）。不得将财报日期作为交易时机建议。",
+          "Error": "retry(1) -> circuit-breaker -> fallback: inform 'earnings calendar temporarily unavailable' -> inform. OPTIONAL."
+        },
+        "ComparisonView": {
+          "step1": "[ASSERT] FeatureGate executed AND intent is comparison. Required: intent_type, user_input. If false -> go back to FeatureGate. | 接收 2-5 只股票代码进行对比。",
+          "step2": "使用 google_search 批量搜索每只股票关键指标。每只最多 2 次搜索。",
+          "step3": "生成对比表格报告。标注最优者和最差者。",
+          "constraints": "最多对比 5 只股票。总计最多 10 次搜索。HALLUCINATION GUARD: 不得编造财务数据。",
+          "Error": "retry(1) -> circuit-breaker -> fallback: inform 'comparison temporarily unavailable' -> inform. OPTIONAL."
+        },
+        "AnalysisHistory": {
+          "step1": "[ASSERT] FeatureGate executed AND intent is history. Required: intent_type, workspace_dir. If false -> go back to FeatureGate. | 使用 file_system 读取 {workspace_dir}/soulbot_stock_analyzer_aiap/stock_history/ 目录。列出分析记录。",
+          "step2": "解析用户请求，筛选和排序记录。最多显示 20 条。",
+          "step3": "生成历史记录报告。",
+          "constraints": "stock_history/ 路径限制在 workspace_dir 内。最多 20 条记录。只读操作。",
+          "Error": "retry(1) -> circuit-breaker -> fallback: inform 'analysis history temporarily unavailable' -> inform. OPTIONAL."
+        },
+        "DividendTracker": {
+          "step1": "[ASSERT] FeatureGate executed AND intent is dividend. Required: intent_type, stock_symbol. If false -> go back to FeatureGate. | 使用 google_search 搜索股息信息：当前股息率、每股年度股息、下一个除息日、最近 4 次派息记录。",
+          "step2": "生成股息追踪报告。",
+          "constraints": "股息搜索仅限用户指定股票。部分股票不派息 -> 标注。不得将股息率作为投资建议。",
+          "Error": "retry(1) -> circuit-breaker -> fallback: inform 'dividend data temporarily unavailable' -> inform. OPTIONAL."
+        },
+        "FeatureError": {
+          "step1": "[ASSERT] Error occurred in features module. Required: error_context. | 记录错误类型和上下文。分类错误：(a) 数据获取失败 → '市场数据暂时无法获取。' (b) 文件操作失败 → '存储服务暂时不可用。' (c) 参数无效 → '请检查输入格式。' (d) 未知错误 → '该功能暂时遇到问题。'",
+          "step2": "根据错误分类提供针对性恢复建议。",
+          "constraints": "不暴露内部实现细节。保持专业冷静语气。DORA ALIGNMENT: errors logged with DORA-compatible incident reference. EU AI ACT: error messages include AI-generated content disclosure.",
+          "Error": "fallback: '功能暂时不可用，请稍后重试。[AI生成内容]' OPTIONAL."
+        }
+      }
+    }
+  }
+]

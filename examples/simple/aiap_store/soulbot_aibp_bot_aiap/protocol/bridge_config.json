@@ -1,0 +1,68 @@
+{
+  "bridge_enabled": true,
+  "listen_port": 8080,
+  "base_path": "/a2a",
+  "transport": "http",
+  "auth_scheme": {
+    "type": "oauth2",
+    "flows": {
+      "authorizationCode": {
+        "authorizationUrl": "${AUTH_URL}/authorize",
+        "tokenUrl": "${AUTH_URL}/token",
+        "scopes": {
+          "agent:read": "Read agent capabilities and status",
+          "agent:message": "Send and receive AIBP messages",
+          "agent:trust": "Query trust level information",
+          "agent:commercial": "Conduct commercial transactions"
+        }
+      },
+      "deviceCode": {
+        "tokenUrl": "${AUTH_URL}/device/token",
+        "deviceAuthorizationUrl": "${AUTH_URL}/device/code",
+        "note": "RFC 8628 Device Code flow for headless agent authentication"
+      }
+    },
+    "identity_signing": {
+      "enabled": true,
+      "algorithm": "EdDSA",
+      "note": "JWS-signed Agent Cards for T3+ trust level (RFC 7515 + RFC 8785 JCS canonicalization)"
+    },
+    "mutual_tls": {
+      "enabled": false,
+      "note": "Available for T4 trust level. Set enabled=true and provide client_cert_path for mutual TLS."
+    }
+  },
+  "supported_interfaces": [
+    "message/send",
+    "message/stream",
+    "tasks/get",
+    "tasks/cancel",
+    "tasks/pushNotification/set",
+    "tasks/pushNotification/get"
+  ],
+  "interface_mapping": {
+    "message/send": "AIBP message send via email_smtp (64 message types)",
+    "message/stream": "AIBP inbox monitoring via email_imap IDLE",
+    "tasks/get": "Pipeline execution status query by task_id",
+    "tasks/cancel": "Graceful pipeline termination",
+    "tasks/pushNotification/set": "Configure async notification for long-running operations",
+    "tasks/pushNotification/get": "Retrieve push notification configuration"
+  },
+  "timeout_seconds": 300,
+  "cors_origins": ["*"],
+  "grpc_alternative": {
+    "note": "A2A v1.0 supports gRPC as alternative transport. Recommended for high-throughput inter-agent communication.",
+    "config_if_enabled": {
+      "transport": "grpc",
+      "port": 50051,
+      "reflection": true,
+      "max_message_size_mb": 4
+    }
+  },
+  "governance": {
+    "specification": "A2A v1.0",
+    "governance_body": "Linux Foundation AAIF",
+    "members": "150+ supporting organizations",
+    "alignment": "Bridge from AIBP to A2A/MCP transport; A2A and MCP follow AAIF/LF governance on their side"
+  }
+}

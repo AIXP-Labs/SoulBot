@@ -1,0 +1,81 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "soulbot"
+version = "1.0.0"
+description = "SoulBot — AI Agent Framework with AISOP protocol and AIAP package system"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+authors = [
+    { name = "SoulBot.dev", email = "noreply@soulbot.dev" },
+]
+keywords = ["ai", "agent", "framework", "aisop", "aiap", "llm"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "soulacp>=0.1.3",
+    "pydantic>=2.0",
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
+    "click>=8.0",
+    "python-dotenv>=1.0",
+    "sse-starlette>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.3",
+]
+telegram = [
+    "python-telegram-bot>=20.0",
+]
+sqlite = [
+    "aiosqlite>=0.20",
+]
+distributed = [
+    "redis[hiredis]>=5.0",
+    "asyncpg>=0.29",
+]
+observability = [
+    "opentelemetry-api>=1.30.0",
+    "opentelemetry-sdk>=1.30.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.30.0",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.30.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/AIXP-Labs/SoulBot"
+Documentation = "https://github.com/AIXP-Labs/SoulBot#documentation"
+Repository = "https://github.com/AIXP-Labs/SoulBot"
+Issues = "https://github.com/AIXP-Labs/SoulBot/issues"
+Changelog = "https://github.com/AIXP-Labs/SoulBot/blob/main/CHANGELOG.md"
+
+[project.scripts]
+soulbot = "soulbot.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/soulbot"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+markers = [
+    "live: end-to-end tests requiring real LLM (claude CLI authenticated)",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

@@ -1,0 +1,322 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "type": "aisop",
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "name": "soulbot_aibp_bot_group v2.1.0",
+      "version": "2.1.0",
+      "output_mode": {
+        "L0": "Output JSON in ENGLISH: {action, group_address, result, members_count}",
+        "L1": "Output helpfully in User's exact language and script variant",
+        "output": "L1"
+      },
+      "description": "AIBP Group & Community module — enables AI agents to create groups, manage membership, assign roles, conduct polls, broadcast announcements, and manage subscriptions per AIBP §17-19. v2.0.0: B10 batch operations support — batch_invite (invite multiple members), batch_announce (send announcement to multiple groups), batch_role_assign (assign roles to multiple members). Batch operations use sequential processing with per-item error handling. v1.9.0: Subscription/Observer model (§19.2). Enforces Axiom 0: human operators may withdraw agents from any group.",
+      "id": "soulbot_aibp_bot.group",
+      "loading_mode": "normal",
+      "tools": [
+        {
+          "name": "email_smtp",
+          "required": true,
+          "annotations": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": true
+          }
+        },
+        {
+          "name": "email_imap",
+          "required": true,
+          "annotations": {
+            "read_only": true,
+            "destructive": false,
+            "idempotent": true,
+            "open_world": true
+          }
+        },
+        {
+          "name": "file_system",
+          "required": true,
+          "annotations": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": false
+          }
+        }
+      ],
+      "parameters": {
+        "action": {
+          "type": "string",
+          "required": true,
+          "enum": [
+            "create_group",
+            "join_group",
+            "leave_group",
+            "invite_member",
+            "remove_member",
+            "assign_role",
+            "list_groups",
+            "group_info",
+            "announce",
+            "poll",
+            "nominate",
+            "dissolve_group",
+            "subscribe",
+            "unsubscribe"
+          ],
+          "description": "Group action per §17-19. subscribe/unsubscribe: observer model per §19.2",
+          "agentic_prompt": "Extracted from user message by GroupPipeline in main module."
+        },
+        "group_address": {
+          "type": "string",
+          "required": false,
+          "description": "Group address format: aibot-group_{name}@{domain}",
+          "agentic_prompt": "Extracted from user message or selected from list."
+        },
+        "group_config": {
+          "type": "object",
+          "required": false,
+          "description": "Group config for create_group: {name, description, membership, moderation, visibility, max_members, archive_policy}"
+        },
+        "target_agent": {
+          "type": "string",
+          "required": false,
+          "description": "Target agent AIBP address for invite/remove/assign/nominate"
+        },
+        "content_text": {
+          "type": "string",
+          "required": false,
+          "description": "Content for announce/poll/nominate messages"
+        },
+        "role": {
+          "type": "string",
+          "required": false,
+          "enum": [
+            "founder",
+            "moderator",
+            "member",
+            "observer"
+          ],
+          "description": "Role for assign_role per §18"
+        },
+        "aibp_address": {
+          "type": "string",
+          "required": true,
+          "description": "This agent's AIBP address",
+          "agentic_prompt": "Shared from main orchestrator."
+        },
+        "workspace_dir": {
+          "type": "string",
+          "required": true,
+          "description": "Directory for group data",
+          "agentic_prompt": "Shared workspace_dir from main orchestrator."
+        }
+      },
+      "json_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "group_result": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string"
+              },
+              "group_address": {
+                "type": "string"
+              },
+              "success": {
+                "type": "boolean"
+              },
+              "members_count": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "action",
+              "success"
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "aisop": {
+        "main": "graph TD\n    Start([Start]) --> DetermineAction[DetermineAction]\n    DetermineAction -->|create| CreateGroup[CreateGroup]\n    DetermineAction -->|join_leave| MembershipAction[MembershipAction]\n    DetermineAction -->|invite_remove_assign| ManageMembers[ManageMembers]\n    DetermineAction -->|list_info| QueryGroup[QueryGroup]\n    DetermineAction -->|announce_poll_nominate| GroupMessage[GroupMessage]\n    DetermineAction -->|dissolve| DissolveGroup[DissolveGroup]\n    DetermineAction -->|subscribe_unsubscribe| ObserverManagement[ObserverManagement]\n    CreateGroup --> ValidateGroupTrust[ValidateGroupTrust]\n    MembershipAction --> SaveGroupData[SaveGroupData]\n    ManageMembers --> ValidateGroupTrust\n    GroupMessage --> GroupContentAudit[GroupContentAudit]\n    GroupContentAudit -->|approved| SendGroupMessage[SendGroupMessage]\n    GroupContentAudit -->|blocked| RejectGroupContent[RejectGroupContent]\n    ValidateGroupTrust -->|pass| SendGroupMessage\n    ValidateGroupTrust -->|fail| RejectGroupContent\n    SendGroupMessage --> SaveGroupData\n    DissolveGroup --> SaveGroupData\n    ObserverManagement --> SaveGroupData\n    QueryGroup --> End((End))\n    RejectGroupContent --> End\n    SaveGroupData --> End"
+      },
+      "functions": {
+        "DetermineAction": {
+          "description": "Route to appropriate group function",
+          "steps": [
+            "step1: [ASSERT] Valid parameters received. Required: action, aibp_address, workspace_dir. | Validate action. Route: create_group → CreateGroup, join_group/leave_group → MembershipAction, invite_member/remove_member/assign_role → ManageMembers, list_groups/group_info → QueryGroup, announce/poll/nominate → GroupMessage, dissolve_group → DissolveGroup, subscribe/unsubscribe → ObserverManagement.",
+            "step2: For actions requiring group_address: validate format aibot-group_{name}@{domain}.",
+            "step3: Load registry from workspace_dir/groups/registry.json. Verify group exists."
+          ],
+          "constraints": [
+            "Group address MUST match format per §17. SECURITY: No path traversal."
+          ]
+        },
+        "CreateGroup": {
+          "description": "Create a new AIBP group per §17",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: group_config, aibp_address. | Validate config: name, description required. Defaults: membership=open, moderation=light, visibility=public, max_members=1000.",
+            "step2: Generate group address. Check name collision.",
+            "step3: Call soulbot_aibp_bot.trust CheckPermission. Requires T2+. Route to ValidateGroupTrust.",
+            "step4: Compose CREATE_GROUP message via soulbot_aibp_bot.messaging.",
+            "step5: Register in workspace_dir/groups/registry.json with founder=aibp_address."
+          ],
+          "constraints": [
+            "T2+ required per §17. Unique name. Founder auto-assigned."
+          ]
+        },
+        "MembershipAction": {
+          "description": "Handle join and leave group actions",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: group_address, action in [join_group,leave_group]. | JOIN: check membership policy (open/invite/approval). LEAVE: verify not sole Founder.",
+            "step2: Update members list. Compose MEMBERSHIP_CHANGE message.",
+            "step3: Route to SaveGroupData."
+          ],
+          "constraints": [
+            "Any member may leave (§18). Axiom 0: human may withdraw. Sole Founder cannot leave."
+          ]
+        },
+        "ManageMembers": {
+          "description": "Handle invite, remove, and role assignment",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: group_address, target_agent. | INVITE: verify Moderator/Founder role. REMOVE: verify role + moderator consensus. ASSIGN_ROLE: verify Founder + T3 for moderator.",
+            "step2: Call soulbot_aibp_bot.trust CheckPermission. Route to ValidateGroupTrust."
+          ],
+          "constraints": [
+            "Invite: Moderator+. Remove: consensus. Moderator appointment: Founder + T3."
+          ]
+        },
+        "QueryGroup": {
+          "description": "Query group information and list groups",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: action in [list_groups,group_info]. | LIST: load registry, display all. INFO: load specific group details.",
+            "step2: For public groups not in registry, query via soulbot_aibp_bot.directory."
+          ],
+          "constraints": [
+            "Read-only. Private groups visible to members only."
+          ]
+        },
+        "GroupMessage": {
+          "description": "Handle announce, poll, and nominate messages",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: group_address, content_text. | ANNOUNCE: verify Member+ role. POLL: verify Member+ role, compose with options/deadline. NOMINATE: verify Member+ role + T3 trust.",
+            "step2: Route to GroupContentAudit."
+          ],
+          "constraints": [
+            "ANNOUNCE: Member+, max 5/hour. NOMINATE: T3 per §11.7."
+          ]
+        },
+        "ValidateGroupTrust": {
+          "description": "Validate trust requirements for group operations",
+          "steps": [
+            "step1: [ASSERT] CreateGroup or ManageMembers executed. Required: trust_check_result. | Evaluate: pass → SendGroupMessage or SaveGroupData. Fail → RejectGroupContent."
+          ],
+          "constraints": [
+            "T2 basic ops, T3 elevated. Trust check MANDATORY."
+          ]
+        },
+        "GroupContentAudit": {
+          "description": "Safety audit for group messages",
+          "steps": [
+            "step1: [ASSERT] GroupMessage executed. Required: message_content. | Call soulbot_aibp_bot.safety ContentAudit. Apply moderation level.",
+            "step2: Call soulbot_aibp_bot.safety PrivacyGate.",
+            "step3: Approved → SendGroupMessage. Blocked → RejectGroupContent."
+          ],
+          "constraints": [
+            "Moderation policy respected. Level 1 Dignity Standard always enforced. Spam detection applies."
+          ]
+        },
+        "SendGroupMessage": {
+          "description": "Send approved group message",
+          "steps": [
+            "step1: [ASSERT] GroupContentAudit or ValidateGroupTrust passed. | Compose via soulbot_aibp_bot.messaging with group L0 metadata.",
+            "step2: Send via email_smtp. Record in workspace_dir/groups/{group_name}/messages/.",
+            "step3: Call soulbot_aibp_bot.reputation and soulbot_aibp_bot.trust record."
+          ],
+          "constraints": [
+            "Sender identity in L0. Archive per policy."
+          ]
+        },
+        "DissolveGroup": {
+          "description": "Dissolve a group per §18",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: group_address, aibp_address must be Founder. | Verify Founder. Send 7-day notice ANNOUNCE.",
+            "step2: Set status='dissolving'. Require human operator confirmation (Axiom 0)."
+          ],
+          "constraints": [
+            "Founder only. 7-day notice mandatory. Human confirmation required."
+          ]
+        },
+        "ObserverManagement": {
+          "description": "Manage subscription/observer relationships for group announcements per §19.2",
+          "steps": [
+            "step1: [ASSERT] DetermineAction executed. Required: group_address, aibp_address, action in [subscribe,unsubscribe]. | SUBSCRIBE: (a) Verify group exists and is public or agent has been invited. (b) Add agent to group's observers list in workspace_dir/groups/{group_name}/observers.json with role='observer'. Observer receives ANNOUNCE messages but cannot post, vote, or nominate. (c) No trust gate required for subscription (T0 sufficient for read-only observation). (d) Compose MEMBERSHIP_CHANGE message with change_type='subscribed'.",
+            "step2: UNSUBSCRIBE: (a) Verify agent is in observers list. (b) Remove from observers list. (c) Compose MEMBERSHIP_CHANGE message with change_type='unsubscribed'. (d) Route to SaveGroupData.",
+            "step3: Return result: {action: subscribe|unsubscribe, group_address, success, observer_count}."
+          ],
+          "constraints": [
+            "Observers receive ANNOUNCE messages only — no post, poll, nominate, or moderate permissions.",
+            "Subscription is voluntary and reversible — Axiom 0 ensures human can unsubscribe at any time.",
+            "Private groups require invitation before subscription.",
+            "Observer count tracked separately from member count."
+          ]
+        },
+        "RejectGroupContent": {
+          "description": "Handle rejected group operations",
+          "steps": [
+            "step1: [ASSERT] Trust or content check failed. | Determine reason. Inform user. Log to rejected_log.jsonl."
+          ],
+          "constraints": [
+            "Rejected ops MUST NOT proceed. Append-only log."
+          ]
+        },
+        "SaveGroupData": {
+          "description": "Persist group data changes",
+          "steps": [
+            "step1: [ASSERT] Group state modified. Required: group_data, workspace_dir. | Update registry.json. Write activity log.",
+            "step2: If membership changed: update soulbot_aibp_bot.identity Groups field."
+          ],
+          "constraints": [
+            "Atomic write. Activity log append-only. Registry backup."
+          ]
+        }
+      },
+      "Error": {
+        "DetermineAction": "Invalid action → error listing valid actions",
+        "CreateGroup": "Creation fails → specific error (name collision, trust, config)",
+        "MembershipAction": "Join/leave fails → inform (policy violation, sole founder)",
+        "ManageMembers": "Management fails → inform (permission, trust, consensus)",
+        "QueryGroup": "Query fails → inform (not found, access denied)",
+        "GroupMessage": "Preparation fails → inform (content, role)",
+        "ValidateGroupTrust": "Trust error → default BLOCK",
+        "GroupContentAudit": "Audit error → default BLOCK",
+        "SendGroupMessage": "Send fails → save draft",
+        "ObserverManagement": "Subscribe/unsubscribe fails → inform (group not found, already subscribed/not subscribed, private group requires invitation)",
+        "DissolveGroup": "Dissolution fails → group remains active",
+        "RejectGroupContent": "Log failure → still reject",
+        "SaveGroupData": "Write failure → warn, retry"
+      },
+      "endNode": {
+        "output": "Return group action result with group context.",
+        "constraints": [
+          "Axiom 0 respected. Private group details hidden from non-members."
+        ]
+      }
+    }
+  }
+]
