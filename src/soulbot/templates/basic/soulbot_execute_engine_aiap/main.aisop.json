@@ -7,11 +7,11 @@
       "flow_format": "mermaid",
       "id": "soulbot_execute_engine.main",
       "program_id": "dev.soulbot.execute_engine",
-      "name": "SoulBot Execute Engine Router v5.3.0",
+      "name": "SoulBot Execute Engine Router v5.6.0",
       "output_mode": "begin with 🤖 + helpfully in User's exact language and script variant",
-      "version": "5.3.0",
-      "summary": "Engine Router v5.3.0: route + dual Engine orchestration + atomic cache lifecycle + OpenTelemetry SDK integration + OWASP ASI threat mapping. loading_mode='node' -> node_engine (Sub Agent). loading_mode='normal' -> normal_engine (inline). OTel trace context propagation from _index.json to all engines. v5.3.0: A1 OTel SDK (opentelemetry-sdk capability dependency, trace_id/span_id wired to OTel context), A2 events[] + SpanEvent dispatcher (node_engine), B1 OWASP ASI01-ASI10 threat mapping, C1-C5 maintenance (version sync, ASSERT refresh, orphan cleanup, snapshot scope, Error->on_error dual-key).",
-      "description": "SoulBot Engine Router v5.3.0: matches user intent, prepares execution context via dual-path cache creation (agent.py python import for fast path ~5ms, bash CLI fallback for portability ~300ms — both call same prepare_cache.prepare_execution_context). Selects Engine by loading_mode, physically reads it, then engineExec orchestrates node-by-node execution. No react sub-graph -- Main Agent controls all output. dispatch_plan persisted to _index.json. NodeSummary after each node, ExecutionSummary with structured execution_metrics. 5 functions. v5.3.0: OpenTelemetry SDK integration — opentelemetry-sdk capability dependency, trace_id/span_id wired to OTel context propagation across all engine modules. OWASP ASI threat mapping (ASI01-ASI10). Error->on_error dual-key transitional support (C5). v5.2: prepare_cache.py dual-use module. v5.1: M1 WAITING_USER/MESSAGE_PENDING interrupt relay.",
+      "version": "5.6.0",
+      "summary": "Engine Router v5.6.0: route + dual Engine orchestration + atomic cache lifecycle + OTel SDK + OWASP ASI + score_integrity_rules + dispatch_audit mandatory + governance_hash TRI-SYNC + server-side agent_id generation + dispatch_plan compliance + spawn_failure_evidence enforcement. v5.6.0: A1 spawn_failure_evidence REQUIRED for inline_fallback, A2 no-evidence fallback = FAIL, A3 dispatch_audit legit/illegitimate fallback classification, A4 agent_id_generator prefix alignment with capability_probe.",
+      "description": "SoulBot Engine Router v5.6.0: matches user intent, prepares execution context (dual-path cache). Selects Engine by loading_mode, orchestrates node-by-node execution. v5.6.0: A1 spawn_failure_evidence schema REQUIRED for inline_fallback (attempted_spawn_tool, attempted_at, failure_signal, failure_detail), A2 no-evidence fallback = FAIL with SPAWN_NOT_ATTEMPTED, A3 dispatch_audit restored legit/illegitimate fallback classification, A4 agent_id_generator prefix aligned with capability_probe.recommended.",
       "loading_mode": "normal",
       "tools": [
         {
@@ -39,35 +39,83 @@
           "type": "counter",
           "unit": "1",
           "description": "Total number of pipeline runs initiated by Engine Router. Incremented once per execute function entry.",
-          "attributes": ["aiap_name", "loading_mode", "status"]
+          "attributes": [
+            "aiap_name",
+            "loading_mode",
+            "status"
+          ]
         },
         {
           "name": "soulbot.execute_engine.node_execution_duration_ms",
           "type": "histogram",
           "unit": "ms",
           "description": "Duration of each node execution in milliseconds. Measured from node dispatch to cache write completion.",
-          "attributes": ["aiap_name", "node_name", "execute_mode", "status"],
-          "buckets": [50, 100, 250, 500, 1000, 2500, 5000, 10000, 30000, 60000]
+          "attributes": [
+            "aiap_name",
+            "node_name",
+            "execute_mode",
+            "status"
+          ],
+          "buckets": [
+            50,
+            100,
+            250,
+            500,
+            1000,
+            2500,
+            5000,
+            10000,
+            30000,
+            60000
+          ]
         },
         {
           "name": "soulbot.execute_engine.circuit_breaker_trips_total",
           "type": "counter",
           "unit": "1",
           "description": "Total number of circuit breaker state transitions. Tracks closed->open, half-open->open, half-open->closed transitions.",
-          "attributes": ["engine_type", "from_state", "to_state"]
+          "attributes": [
+            "engine_type",
+            "from_state",
+            "to_state"
+          ]
         },
         {
           "name": "soulbot.execute_engine.cache_write_latency_ms",
           "type": "histogram",
           "unit": "ms",
           "description": "Latency of node cache atomic write operations (tmp + rename). Covers both agent_write_node_cache.py and manual fallback paths.",
-          "attributes": ["aiap_name", "node_name", "write_method"],
-          "buckets": [5, 10, 25, 50, 100, 250, 500, 1000]
+          "attributes": [
+            "aiap_name",
+            "node_name",
+            "write_method"
+          ],
+          "buckets": [
+            5,
+            10,
+            25,
+            50,
+            100,
+            250,
+            500,
+            1000
+          ]
         }
       ],
       "threat_mapping": {
         "framework": "OWASP ASI (Agentic Security Initiative) 2026",
-        "mapped_threats": ["ASI01", "ASI02", "ASI03", "ASI04", "ASI05", "ASI06", "ASI07", "ASI08", "ASI09", "ASI10"],
+        "mapped_threats": [
+          "ASI01",
+          "ASI02",
+          "ASI03",
+          "ASI04",
+          "ASI05",
+          "ASI06",
+          "ASI07",
+          "ASI08",
+          "ASI09",
+          "ASI10"
+        ],
         "mitigations": {
           "ASI01_goal_drift": "goal_hash drift detection via governance_hash comparison at execution start",
           "ASI06_cache_integrity": "cache HMAC verification on _index.json and node cache reads",
@@ -82,7 +130,16 @@
             "node cache read at NodeVerify (node_engine programExec.step3.e2, normal_engine programExec.step3.c2)",
             "node cache read at NodeSummary (engineExec.step4)"
           ],
-          "implementation_status": "DECLARED — specification complete, runtime implementation deferred to executor layer (agent.py / prepare_cache.py). AISOP modules reference HMAC verification in threat_mapping but do not perform cryptographic operations directly."
+          "implementation_status": "DECLARED — specification complete, runtime implementation deferred to executor layer (agent.py / prepare_cache.py). AISOP modules reference HMAC verification in threat_mapping but do not perform cryptographic operations directly.",
+          "procedural_verification_notes": {
+            "description": "Concrete python_tools call points where HMAC verification SHOULD be invoked when runtime implementation is materialized.",
+            "call_points": [
+              "python_tools/prepare_cache.py::prepare_execution_context() — HMAC-sign _index.json on creation. Key from SOULBOT_CACHE_HMAC_KEY env or {workspace_dir}/.soulbot/cache_hmac.key.",
+              "python_tools/agent_write_node_cache.py — HMAC-sign each node cache file on write (.tmp signed before atomic rename). Verify _index.json HMAC before updating nodes_status.",
+              "python_tools/agent_update_index.py — Verify _index.json HMAC before read-modify-write, re-sign after update."
+            ],
+            "migration_path": "Phase 1: Add optional --hmac-verify flag to agent_write_node_cache.py and prepare_cache.py (backward compatible, no-op if key absent). Phase 2: Default --hmac-verify=true when SOULBOT_CACHE_HMAC_KEY is set. Phase 3: Mandatory verification in v6.0.0."
+          }
         }
       },
       "error_taxonomy": {
@@ -171,7 +228,76 @@
         }
       },
       "execution_mode": "sequential",
-      "system_prompt": "{system_prompt}"
+      "system_prompt": "{system_prompt}",
+      "score_integrity_rules": {
+        "description": "Score integrity enforcement for DEGRADED nodes. Prevents score inflation.",
+        "degraded_cap": {
+          "weighted_delta_max": 0.1,
+          "reconcile_delta_max": 0.05,
+          "forced_retest_threshold": 0.2,
+          "rule": "When any node status=DEGRADED: (1) weighted delta <= +0.10, cap if exceeded. (2) reconcile delta <= +0.05. (3) delta > +0.20 forces retest. ReviewFinalize enforces."
+        },
+        "score_confidence": {
+          "rule": "DEGRADED nodes get score_confidence=low. ReviewFinalize reads score_confidence; if any low, inject degraded_nodes_during_pipeline into result.",
+          "values": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "default": "high",
+          "degraded_override": "low"
+        }
+      },
+      "agent_id_strict_spec": {
+        "description": "Server-side agent_id generation (A1 v5.5.0). agent_id is generated by agent_id_generator.py BEFORE sub-agent dispatch and written to _index.json::dispatch_plan[node].expected_agent_id. Host AI has NO self-report capability. agent_write_node_cache.py auto-reads expected_agent_id from _index.json.",
+        "categories": [
+          { "pattern": "^auto-[0-9a-f]{8}$", "usage": "Sub Agent dispatch via Agent tool", "source": "agent_id_generator.py --dispatch_type=auto" },
+          { "pattern": "^task-[0-9a-f]{8}$", "usage": "Sub Agent dispatch via Task tool", "source": "agent_id_generator.py --dispatch_type=task" },
+          { "pattern": "^gemini-[0-9a-f]{8}$", "usage": "Sub Agent dispatch via Gemini CLI", "source": "agent_id_generator.py --dispatch_type=gemini" },
+          { "literal": "inline_planned", "usage": "Planned inline execution (normal_engine default)", "source": "auto-assigned for dispatch_plan execute_mode=inline" },
+          { "literal": "inline_fallback", "usage": "Fallback to inline when sub-agent dispatch fails. MUST include fallback_reason field.", "source": "auto-assigned on dispatch failure with fallback_reason" }
+        ],
+        "generation_flow": "node_engine programExec step3(d) -> agent_id_generator.py -> _index.json::dispatch_plan[node].expected_agent_id + dispatch_records[node] -> sub-agent spawn -> agent_write_node_cache.py reads expected_agent_id -> cache.agent_id = expected",
+        "enforcement": "MANDATORY. agent_write_node_cache.py auto-reads from _index.json. --agent_id CLI param REMOVED (v5.5.0). Missing expected_agent_id -> PRE_V5_5_0_INCOMPATIBLE rejection.",
+        "dispatch_records": {
+          "description": "_index.json::dispatch_records[node] stores generation provenance. Written by agent_id_generator.py. Append-only, write-once per node.",
+          "schema": {
+            "node": "string",
+            "expected_agent_id": "string",
+            "generated_at": "ISO 8601 timestamp",
+            "generation_seed": "16 hex chars",
+            "parent_trace_id": "string",
+            "parent_pid": "integer"
+          }
+        },
+        "fallback_rule": "inline_fallback requires fallback_reason AND spawn_failure_evidence in cache record (A1 v5.6.0). Missing spawn_failure_evidence -> node FAIL with SPAWN_NOT_ATTEMPTED (A2 v5.6.0). dispatch_audit classifies: with valid evidence -> legit_fallback, without -> illegitimate_fallback (violation)."
+      },
+      "governance_hash_spec": {
+        "algorithm": "SHA-256",
+        "canonicalization": {
+          "line_endings": "CRLF->LF normalize before hashing",
+          "file_ordering": "alphabetical by filename",
+          "framing": "filename NUL content NUL per file",
+          "scope": "all *.aisop.json files in AIAP directory"
+        },
+        "enforcement": "MANDATORY. governance_hash MUST be written to ALL THREE governance files (TRI-SYNC): AIAP.md, agent_card.json, AND quality_baseline.json. All three MUST contain identical governance_hash values. Mismatch across any of the three -> FAIL GOVERNANCE_HASH_TRI_SYNC_VIOLATION.",
+        "tri_sync_targets": ["AIAP.md", "agent_card.json", "quality_baseline.json"],
+        "hash_algorithm_version": "v1.0",
+        "cache_field": "hash_algorithm_version",
+        "current_version": "1.0",
+        "compute_tool": "python_tools/compute_governance_hash.py (if available; otherwise inline SHA-256 computation per canonicalization spec)",
+        "pipeline_note": "governance_hash is ONLY authoritative when computed by ReviewFinalize at pipeline end. Intermediate hashes (e.g. from Generate1) are STALE because subsequent stages (Research2, ModifyStep) modify files. Intermediate hashes MUST be marked intermediate=true and expires_after=ReviewFinalize in cache output. Do NOT use intermediate hashes for TRI-SYNC verification."
+      },
+      "version_history_integrity": {
+        "enforcement": "APPEND_ONLY",
+        "rule": "quality_baseline.json version_history[] and evolution_history[] are APPEND-ONLY. Modifications or removals REJECTED. Only append at end. ReviewFinalize verifies: (1) pre-existing entries unchanged (SHA-256 per-entry vs snapshot), (2) appended at tail only, (3) chronological order. Violation -> FAIL VERSION_HISTORY_INTEGRITY_VIOLATION.",
+        "verification_method": "SHA-256 per-entry comparison against .evolution_snapshot/ baseline"
+      },
+      "module_score_freshness": {
+        "rule": "At pipeline start, compare module last_modified vs quality_baseline.snapshot_date. Delta > 60 days -> MODULE_SCORE_STALE, recommend retest.",
+        "stale_threshold_days": 60,
+        "action": "advisory - flag + recommend retest"
+      }
     }
   },
   {
@@ -200,21 +326,21 @@
         "execute": {
           "step1": "GATE_IN: [ASSERT] match completed. Required: matched AIAP package name + entry path + workspace_dir + loading_mode (from [Available AIAP packages] registry). | Record target: store package_name, entry_path, workspace_dir, loading_mode, aiap_name (= package_name, explicit for downstream Engine params). [PROHIBIT] Reading target AIAP file content. Only record the PATH and loading_mode from registry. | GATE_OUT: [VERIFY] entry_path + loading_mode + aiap_name stored. | OUTPUT to user: 'Router: matched {package_name} [loading_mode={loading_mode}]'",
           "step2": "GATE_IN: [ASSERT] step1 passed. | CHECK: If [EXECUTION CONTEXT] exists in prompt AND turn_id is present: cache and conversation context already created by agent.py via python import of prepare_cache.prepare_execution_context (which runs cleanup_cache internally — atomic cache lifecycle). Skip creation, read turn_id, cache_dir, cache_name, trace_id from [EXECUTION CONTEXT]. GATE_OUT: [VERIFY] turn_id obtained. OUTPUT to user: 'Context: conversation context updated turn_id={turn_id}'. Otherwise (fallback — agent.py import failed or different Agent framework): SAFE TRANSPORT (I15) — DO NOT use shell-echo to interpolate user_message. Instead: (a) INPUT GUARD: verify user_message is a string ≤ 100000 bytes (UTF-8, NFC-normalized); reject otherwise. (b) TEMPFILE WRITE: create a tempfile in OS temp dir using python's tempfile.NamedTemporaryFile (delete=False, suffix='.json') — write the exact JSON payload {\"user_message\": <user_message>} using json.dump (which properly escapes metachars). Capture <tempfile_path>. (c) SUBPROCESS (argv list, no shell): Execute Bash command using argv-list form: python {this_file_directory}/python_tools/prepare_cache.py --payload-file <tempfile_path>. {this_file_directory} is the directory containing THIS main.aisop.json file (same reference as step4). No shell=True; no string-concatenation of user content into command. (d) Parse stdout JSON, extract turn_id, cache_dir, cache_name, trace_id, status. Verify status=='ok'. (e) CLEANUP: delete <tempfile_path> immediately after read (os.unlink). On Windows verify ACLs permit the python invocation user to read the tempfile before python_tools/prepare_cache.py opens it. Store all 4 values for step3 (which will detect presence and skip its own creation). | GATE_OUT: [VERIFY] turn_id + cache_dir + trace_id obtained from subprocess result; tempfile deleted. | OUTPUT to user: 'Context: conversation context updated turn_id={turn_id} (bash fallback)'",
-          "step3": "GATE_IN: [ASSERT] step2 passed. Required: turn_id, cache_dir, trace_id (from [EXECUTION CONTEXT] or step2 Bash fallback). | Both paths have already created cache dir and _index.json — step3's only job is to update _index.json with match result. Update _index.json via atomic write (write to _index.json.tmp first, then rename): add target=entry_path, workspace=workspace_dir, aiap_name, loading_mode from step1 match result. Do NOT overwrite trace_id, turn_id, cache_schema_version, engine_version, started_at — these are already set by prepare_cache. | GATE_OUT: [VERIFY] _index.json contains target, aiap_name, loading_mode, trace_id. | OUTPUT to user: 'Cache: execution cache ready cache/{cache_name} [trace={trace_id_short}]'",
+          "step3": "GATE_IN: [ASSERT] step2 passed. Required: turn_id, cache_dir, trace_id (from [EXECUTION CONTEXT] or step2 Bash fallback). | Both paths have already created cache dir and _index.json — step3's only job is to update _index.json with match result. Update _index.json via atomic write (write to _index.json.tmp first, then rename): add target=entry_path, workspace=workspace_dir, aiap_name, loading_mode from step1 match result. Do NOT overwrite trace_id, turn_id, cache_schema_version, engine_version, started_at — these are already set by prepare_cache. Do NOT overwrite initial_user_message — this field is write-once, set by prepare_cache at creation time. ENGINE_VERSION_SYNC: _index.json::engine_version MUST match the version field in this main.aisop.json. prepare_cache.py _ENGINE_VERSION constant is the source. On version bump, _ENGINE_VERSION MUST be updated in prepare_cache.py. | GATE_OUT: [VERIFY] _index.json contains target, aiap_name, loading_mode, trace_id. | OUTPUT to user: 'Cache: execution cache ready cache/{cache_name} [trace={trace_id_short}]'",
           "step4": "GATE_IN: [ASSERT] step3 passed. Required: cache_dir, trace_id. | Check loading_mode from step1 (already known from registry). Select execution mode by loading_mode: Resolve engine directory: extract the directory path of THIS file (main.aisop.json) that you just read. If loading_mode='node': [PHYSICAL READ] Read {this_file_directory}/node_engine.aisop.json using file_system tool. Verify version. OUTPUT: 'Engine: node engine loaded v{version}'. If loading_mode='normal': [PHYSICAL READ] Read {this_file_directory}/normal_engine.aisop.json using file_system tool. Verify version. OUTPUT: 'Engine: normal engine loaded v{version}'. If loading_mode='lite': NO engine file needed. Router will directly execute the target AIAP in engineExec. OUTPUT: 'Engine: lite mode, direct execution'. If loading_mode not set: default to 'normal'. [PROHIBIT] Using memorized Engine content for node/normal -- must physically read. | GATE_OUT: [VERIFY] For node/normal: engine file read + version confirmed. For lite: loading_mode='lite' confirmed.",
           "constraints": "STRICT STEP ORDER: step1->step2->step3->step4. DUAL-PATH CACHE CREATION: [EXECUTION CONTEXT] from agent.py python import takes priority (fast path ~5ms); if absent, step2 falls back to subprocess invocation of python_tools/prepare_cache.py via --payload-file tempfile (safer than --stdin shell-echo; portable path ~300ms). Both paths produce identical cache structure — prepare_cache.py is single source of truth. step3 always skips creation (cache ready from step2), only updates _index.json with match result. [PROHIBIT] Reading target AIAP content. [PROHIBIT] Manually generating UUID or writing cache files — always use prepare_cache. loading_mode comes from [Available AIAP packages] registry (injected by agent.py), NOT from reading the target file. After step4 -> route to engineExec.\\n\\nSHELL SAFETY (I15): Bash invocations MUST NOT interpolate user-supplied content via shell-echo. Use --payload-file <tempfile> or env-var transport (subprocess argv list). Tempfile cleanup MUST happen post-read; on Windows verify ACLs allow read by the python invocation user.\\n\\nINPUT GUARDS (I2 5-pillar): TYPE check (user_message MUST be string ≤ 100KB), INJECTION sanitize (escape JSON metachars before tempfile write — use json.dump not string-concat), SIZE limit (≤ 100000 bytes), PATH safety (no traversal in tempfile path; use tempfile.NamedTemporaryFile in OS temp dir), ENCODING normalization (NFC, UTF-8 only).\\n\\nTHREAT MITIGATIONS (I8): AT4 (excessive_authority): Bash subprocess restricted to python invocation only; no arbitrary shell commands, no shell=True. AT6 (prompt_injection): user_message treated as opaque payload to prepare_cache.py — never expanded into AISOP system prompts; downstream LLM only sees the structured JSON output of prepare_cache, not raw user_message text.",
-          "Error": "retry(3) -> circuit-breaker -> fallback(endNode) -> inform(User). CRITICAL. Error classification: transient (cache write failure, file read timeout) -> retry with backoff. fatal (workspace_dir invalid, entry_path not found) -> no retry, fallback immediately."
+          "Error": "retry(3) -> circuit-breaker -> fallback(endNode) -> inform(User). CRITICAL. Error classification per error_taxonomy: transient [cache_write_timeout, file_read_timeout] -> retry with backoff. fatal [target_not_found (entry_path), path_invalid (workspace_dir), bootstrap_validation_failed] -> no retry, fallback immediately. recoverable_with_fallback [parse_error, io_error] -> retry(1) then fallback."
         },
         "engineExec": {
-          "step1": "[ASSERT] execute completed. Required: entry_path, cache_dir, loading_mode. | LITE MODE CHECK: If loading_mode='lite' -> skip to step1_lite. Otherwise (node/normal): Pass target AIAP path (entry_path) + workspace_dir + cache_dir to the Engine read in step4. [PROHIBIT] Reading target AIAP content here -- Engine handles all target reading. Update _index.json via atomic write with: { target: entry_path, engine_file: selected_engine_path }. | PROPERTY PREDICATES: regex match on entry_path (matches /\\.aisop\\.json$/), file_exists check on entry_path via file_system, loading_mode ∈ {node, normal, lite}, realpath(entry_path) MUST be inside realpath(workspace_dir).",
+          "step1": "[ASSERT] execute completed. Required: entry_path, cache_dir, loading_mode. | LITE MODE CHECK: If loading_mode='lite' -> skip to step1_lite. Otherwise (node/normal): Pass target AIAP path (entry_path) + workspace_dir + cache_dir to the Engine read in step4. [PROHIBIT] Reading target AIAP content here -- Engine handles all target reading. Update _index.json via atomic write with: { target: entry_path, engine_file: selected_engine_path }. | PROPERTY PREDICATES: regex match on entry_path (matches /\\.aisop\\.json$/), file_exists check on entry_path via file_system, loading_mode ∈ {node, normal, lite}, realpath(entry_path) MUST be inside realpath(workspace_dir). GOVERNANCE_HASH VERIFICATION (A3 v5.4.1 TRI-SYNC): At execution start, if AIAP.md has governance_hash: (1) compute expected hash per governance_hash_spec (SHA-256, sorted *.aisop.json, CRLF->LF, filename-NUL-content-NUL framing, hash_algorithm_version=v1.0). (2) Compare computed hash vs AIAP.md governance_hash. Mismatch -> WARNING governance_hash drift. (3) TRI-SYNC CHECK: verify governance_hash is identical across AIAP.md, agent_card.json, AND quality_baseline.json. Any mismatch across the three -> WARNING GOVERNANCE_HASH_TRI_SYNC_DRIFT in pipeline_metadata.governance_hash_verification. All match -> PASS.",
           "step1_lite": "LITE EXECUTION (only if loading_mode='lite'): (a) [PHYSICAL READ] target AIAP entry file from entry_path. Parse aisop.main mermaid graph. (b) Execute the target AIAP flow directly — read functions, follow mermaid path, execute steps with real tool calls. No dispatch_plan, no per-node cache, no NodeSummary. (c) L10 AUDIT: After execution, compile audit trail per node using schema: { \"Real Done Flow\": { \"<file_id>[Read file used file_system:<bool>]\": \"<fn>[step1:<⊘|✗|✓>,step2:<⊘|✗|✓>,...]→<fn>[step1:<⊘|✗|✓>,...]\" } }. ✓=executed with tool call, ✗=failed, ⊘=skipped. (d) Write final result to _index.json: { execution_mode: 'lite', status: 'completed', ai_response: response_text, l0_thinking: L0 JSON from match/execute phases, l10_audit: audit_trail }. (e) Skip step2-step5, go directly to step6.",
           "step2": "Execute Engine protocol (node/normal only): Follow the Engine file's aisop.main graph (read in execute.step4). Engine's programExec will [PHYSICAL READ] the target AIAP, parse mermaid graph, identify nodes_in_path, build dispatch_plan. Router passes entry_path and cache_dir -- Engine does the rest.",
-          "step3": "Monitor Engine execution (node/normal only). After EACH node completes (Engine writes cache): Read cache {AIAP_NAME}.{NodeName}.json -> check status field: (a) WAITING_USER -> Interrupt-Resume flow: 1. Output question to user (from cache 'question' field). 2. Wait for user response. 3. Re-dispatch the SAME node to Engine with RESUME_MODE=true + USER_ANSWER. Engine creates new Sub Agent with bootstrap: 'RESUME_MODE=true. USER_ANSWER={user_response}. YOUR_NODE={same_node}.' Sub Agent reads steps_done from cache -> skips completed steps -> continues. 4. After resumed node completes -> re-check status (may PASS or WAITING_USER again). Do NOT proceed to NodeSummary until status is PASS/FAIL/PARTIAL/DEGRADED. (b) MESSAGE_PENDING -> forward message to user, re-dispatch SAME node immediately with RESUME_MODE=true (no USER_ANSWER needed, Sub Agent continues from where it stopped). (c) PASS / FAIL / PARTIAL / DEGRADED -> proceed to step4 NodeSummary as normal.",
+          "step3": "Monitor Engine execution (node/normal only). After EACH node completes (Engine writes cache): Read cache {AIAP_NAME}.{NodeName}.json -> check status field: (a) WAITING_USER -> Interrupt-Resume flow: 1. Output question to user (from cache 'question' field). 2. Wait for user response. 3. Re-dispatch the SAME node to Engine with RESUME_MODE=true + USER_ANSWER. Engine creates new Sub Agent with bootstrap: 'RESUME_MODE=true. USER_ANSWER={user_response}. YOUR_NODE={same_node}.' Sub Agent reads steps_done from cache -> skips completed steps -> continues. 4. After resumed node completes -> re-check status (may PASS or WAITING_USER again). Do NOT proceed to NodeSummary until status is PASS/FAIL/PARTIAL/DEGRADED. DISPATCH_PLAN COMPLIANCE (A1 v5.4.3): On BOOT or RESUME re-dispatch, the Sub Agent MUST be dispatched using the mechanism specified in dispatch_plan[NodeName]. Read _index.json::dispatch_plan[NodeName] BEFORE re-dispatch. If dispatch_plan says 'agent' -> MUST use Sub Agent dispatch (Agent tool / Task tool / Gemini CLI per capability probe). If dispatch_plan says 'inline' -> MUST use inline execution. NEVER silently switch dispatch mode on resume. Violation -> set plan_violation=true in dispatch_audit results. (b) MESSAGE_PENDING -> forward message to user, re-dispatch SAME node immediately with RESUME_MODE=true (no USER_ANSWER needed, Sub Agent continues from where it stopped). (c) PASS / FAIL / PARTIAL / DEGRADED -> proceed to step4 NodeSummary as normal. (d) SPAWN_NOT_ATTEMPTED CHECK (A2 v5.6.0): After reading each node cache, if agent_id == 'inline_fallback' AND dispatch_plan[NodeName] == 'agent': verify spawn_failure_evidence object is present with all required fields (attempted_spawn_tool, attempted_at, failure_signal, failure_detail). Also verify attempted_at > dispatch_records[NodeName].generated_at. If spawn_failure_evidence is MISSING or INVALID (failure_signal not in [timeout, nonzero_exit, exception, spawn_error] or temporal ordering violated): FORCE node status = FAIL. Log: 'SPAWN_NOT_ATTEMPTED: inline_fallback for {NodeName} without valid spawn_failure_evidence. This indicates the host AI did not actually attempt sub-agent dispatch. Pipeline paused for human intervention.' The node MUST NOT be counted as PASS. Pipeline stops at this node until human reviews the fallback.",
           "step4": "NODE SUMMARY — two-part output (node/normal only, runs AFTER each node): (A) OUTPUT: Read {AIAP_NAME}.{NodeName}.json cache file. Extract output field (Sub Agent's raw findings). Forward to user verbatim. (B) EXPLAIN: Orchestrator writes detailed explanation for user. Read user_summary + output + tool_calls + modifications from cache. Explain in user's language: what work was performed, what was discovered, what decisions were made, what files were modified. Include specific numbers and findings. No length limit. Format: 'Node Summary: [{N}/{total}] {NodeName} ({mode}) {status}\n{orchestrator explain}'. The prefix 'Node Summary:' is MANDATORY. You MUST output this BEFORE the next node executes. Repeat step3->step4 for each node.",
-          "step5": "EXECUTION SUMMARY (node/normal): After ALL nodes complete, read all cache files. Compile structured execution_metrics: { nodes_executed: N, nodes_passed: N, nodes_degraded: N, nodes_skipped: N, total_tool_calls: sum, per_node_summary: [{node, status, tool_calls}], execution_depth_metric: (nodes_passed / nodes_executed), cache_schema_version: '1.0', l0_thinking: L0 JSON from match/execute phases }. HONEST ASSESSMENT -- if any nodes DEGRADED or SKIPPED, say so clearly. Write execution_metrics to _index.json via atomic write.",
+          "step5": "EXECUTION SUMMARY (node/normal): After ALL nodes complete, read all cache files. Compile structured execution_metrics: { nodes_executed: N, nodes_passed: N, nodes_degraded: N, nodes_skipped: N, total_tool_calls: sum, per_node_summary: [{node, status, tool_calls}], execution_depth_metric: (nodes_passed / nodes_executed), cache_schema_version: '1.0', l0_thinking: L0 JSON from match/execute phases }. HONEST ASSESSMENT -- if any nodes DEGRADED or SKIPPED, say so clearly. Write execution_metrics to _index.json via atomic write. DISPATCH AUDIT v5.6.0 (MANDATORY): After compiling execution_metrics, you MUST run dispatch_audit.py: python {this_file_directory}/python_tools/dispatch_audit.py --cache_dir={cache_dir} --json. Parse the JSON output. v5.6.0: dispatch_audit performs integrity checking (cache.agent_id vs expected) + legit/illegitimate fallback classification (inline_fallback with/without valid spawn_failure_evidence). Output: { total_nodes, integrity_violations, legit_fallbacks, illegitimate_fallbacks, fallback_rate_pct, integrity_rate_pct, illegitimate_rate_pct, severity, violations[] }. Write results to _index.json::dispatch_audit = { integrity_violations: N, legit_fallbacks: L, illegitimate_fallbacks: I, severity: 'OK'|'WARN'|'CRITICAL', audited_at: <ISO8601 timestamp> }. Severity thresholds: 0 integrity_violations AND 0 illegitimate -> OK, illegitimate > 0 OR integrity <= 10% -> WARN, illegitimate/total > 10% OR integrity > 10% -> CRITICAL. If severity == CRITICAL: pipeline completion is BLOCKED. [PROHIBIT] Skipping dispatch_audit.",
           "step6": "Update conversation_context.json: find the existing turn matching turn_id (from [EXECUTION CONTEXT] or from step2) — do NOT append a new turn. Set status='completed', turn_type='execution_progress', add matched_package, ai_response, intent, execution_depth_metric. | OUTPUT to user: 'Context: conversation record completed status=completed'. Forward final response to user.",
           "constraints": "For node/normal mode: [PROHIBIT] Router reading target AIAP content -- Engine reads it via programExec. Router only passes entry_path. Engine handles: read target, dispatch_plan, node loop, cache write. Router handles: Node Summary output, Execution Summary, conversation_context update. step4 NODE SUMMARY is MANDATORY after EVERY node. For lite mode: Router reads and executes target AIAP directly. No engine file, no dispatch_plan, no node cache, no NodeSummary. Only _index.json + conversation_context written. Main Agent controls all user-facing output directly.",
-          "Error": "retry(3) -> circuit-breaker -> fallback(endNode with partial results) -> inform(User). CRITICAL. Error classification: transient (Sub Agent timeout, cache read failure) -> retry with backoff. fatal (engine file corrupted, target AIAP invalid) -> no retry, fallback immediately."
+          "Error": "retry(3) -> circuit-breaker -> fallback(endNode with partial results) -> inform(User). CRITICAL. Error classification per error_taxonomy: transient [sub_agent_timeout, file_read_timeout, cache_write_timeout] -> retry with backoff. fatal [engine_file_corrupted, target_not_found, schema_violation] -> no retry, fallback immediately. recoverable_with_fallback [command_timeout, io_error] -> retry(1) then fallback."
         },
         "endNode": {
           "step1": "GATE_IN: [ASSERT] engineExec completed. | Output final response to user. | GATE_OUT: [VERIFY] response delivered.",

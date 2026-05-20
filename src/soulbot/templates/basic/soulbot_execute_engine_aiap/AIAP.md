@@ -10,13 +10,14 @@ governance_mode: NORMAL
 
 # Project Fields (8 required)
 name: soulbot_execute_engine
-version: "5.3.0"
+version: "5.6.0"
 pattern: B+
 tool_dirs: []                # No tool packages embedded; python_tools/ is executor_shim only
 executor_shim: true          # python_tools/ contains executor-internal shims (prepare_cache.py, etc.) — NOT registered tools per AIAP Pattern G. See 'executor_shim note' below.
 flow_format: "mermaid"
-summary: "SoulBot Execute Engine v5.3.0 — Router + dual Engine orchestration (node/normal) + Sub Agent contract + OpenTelemetry SDK integration + OWASP ASI threat mapping. 4 modules, 14 nodes. v5.3.0: A1 OpenTelemetry SDK (opentelemetry-sdk capability dependency, trace_id/span_id wired to OTel context propagation), A2 events[] + SpanEvent dispatcher (5 events in node_engine), B1 OWASP ASI01-ASI10 threat mapping (goal_hash drift, cache HMAC, IPC signatures, runtime drift), C1-C5 maintenance (version sync, ASSERT refresh, normal_engine orphan cleanup, python_tools snapshot scope, Error->on_error dual-key). Pattern B+."
-governance_hash: "sha256:90bc4a0a8a0acbf8de06cd5b0b3d4c4d1b76191342d7ad99875147ff192015c9"
+summary: "SoulBot Execute Engine v5.6.0 — Router + dual Engine orchestration (node/normal) + Sub Agent contract + server-side agent_id generation + spawn_failure_evidence enforcement + legit/illegitimate fallback dispatch_audit + governance_hash TRI-SYNC + dispatch_plan compliance enforcement + dispatch_records timestamp anti-forgery. 4 modules, 14 nodes. v5.6.0: A1 spawn_failure_evidence REQUIRED for inline_fallback (attempted_spawn_tool, attempted_at, failure_signal, failure_detail), A2 no-evidence fallback = FAIL (SPAWN_NOT_ATTEMPTED), A3 dispatch_audit restored legit/illegitimate fallback classification, A4 agent_id_generator prefix aligned with capability_probe.recommended. Pattern B+."
+governance_hash: "sha256:d31561a01e5f25cb074ad63bb16917344186eee0e6596d65dd16faea4233aeb8"
+hash_algorithm_version: "v1.0"
 tools:
   - name: file_system
     required: true
@@ -63,7 +64,7 @@ modules:
 program_id: dev.soulbot.execute_engine
 identity:
   publisher: "AIXP Foundation AIXP.dev | SoulBot.dev"
-  verified_on: "2026-04-06"
+  verified_on: "2026-05-20"
 trust_level:
   level: 3
   justification: "Execute Engine requires read/write access to execution cache directory and target AIAP files. No network access. No destructive operations. Internal orchestration component."
@@ -121,6 +122,9 @@ capabilities:
     - bootstrap_validation
     - opentelemetry_sdk_integration
     - owasp_asi_threat_mapping
+    - server_side_agent_id_generation
+    - dispatch_records_anti_forgery
+    - integrity_only_audit
   required:
     - file_system
 
@@ -162,22 +166,22 @@ intent_examples:
 
 # Benchmark
 benchmark:
-  threedimscore: 4.95
+  threedimscore: 4.895
   grade: "S"
-  cognitive: 4.93
-  intrinsic: 4.92
-  detail: 5.00
-  simulation_coverage: "18/18 GREEN"
+  cognitive: 4.786
+  intrinsic: 4.885
+  detail: 5.0
+  simulation_coverage: "45/45 GREEN"
   total_nodes: 14
-  pass_rate: "112/113 validation (99.1%)"
-  nihil_density: "PASS (M-score 0.32 LOW)"
-  note: "v5.3.0 ReviewFinalize final_adjusted_score 4.95 (Grade S). Previous baseline v5.0.0: 4.72 (Grade A). D6/D8/D10 reconciled post-Finalize to 5.0 (version sync + agent_card + quality_baseline governance hash tri-sync)."
+  pass_rate: "18/18 pipeline stages PASS (18/18 nodes)"
+  nihil_density: "PASS (all GREEN, 1.67%)"
+  note: "v5.6.0 FINALIZED cycle 20. Generate2 scores: C=4.786 I=4.885 D=4.850. Deferred D6/D8/D10 reconciled 4.5->5.0. D_avg->5.0. Final weighted 4.895 (S). Delta +0.046 from v5.5.0 (4.849). Above baseline 4.72. 0 illegitimate_fallback."
 
 # Quality
 quality:
-  weighted_score: 4.95
+  weighted_score: 4.895
   grade: S
-  last_pipeline: "Creator Evolve pipeline v5.3.0 (2026-05-13): observability-first evolution (OTel SDK + events[] + OWASP ASI threat mapping)"
+  last_pipeline: "Creator Evolve pipeline v5.6.0 FINALIZED (2026-05-20): v5.5.0 -> v5.6.0 MINOR. A1 spawn_failure_evidence REQUIRED for inline_fallback, A2 no-evidence fallback = FAIL (SPAWN_NOT_ATTEMPTED), A3 dispatch_audit legit/illegitimate fallback classification, A4 agent_id_generator prefix alignment with capability_probe. Final weighted 4.895 (S). Deferred D6/D8/D10 reconciled. governance_hash TRI-SYNC verified."
   changes_v4_0_0: "15 items: A1(AIAP.md) + A2(quality_baseline) + B1(crash recovery) + B2(circuit breaker) + B3(parallel dispatch) + B4(execution metrics) + B5(tool annotations) + C1-C8(atomic writes, cache schema, retry classification, turn_type, ASSERT gates, version sync, json_schema, identity). ThreeDimTest: 4.43 weighted (Grade A). Created by Creator Evolve pipeline (cache/129)."
   changes_v5_0_0: "14 design items + 4 quality fixes: M1(WAITING_USER/MESSAGE_PENDING relay), A1(identity definition), A2(Print-it), A3(USER_MESSAGE), A4(sys.* 24-call handling), A5(AGENT_ID), A6(on_error routing), A7(steps_done/remaining), N1(NodeVerify), N1.5(parallel wave interrupt), N2(Decision Node gate), N3(sys.* bootstrap hint), NM1-NM3(normal_engine parity). QS-01(half-open circuit breaker), QS-04(trace_id), QS-05(bootstrap validation), QS-06(normal_engine resilience parity). ThreeDimTest: 4.72 weighted (Grade A). Created by Creator Create pipeline (cache/131). Based on 05-engine-aiap-v5-design.md."
   changes_v5_2_0: "Architecture refactor (non-Creator): prepare_cache.py dual-use module introduced at python_tools/prepare_cache.py — callable as Python library (agent.py fast path ~5ms) or Bash CLI (AISOP fallback ~300ms). agent.py reduced from ~450 to ~361 lines (-89). main.aisop.json execute.step2/step3 simplified — single source of truth for cache creation. 16 test cases added (TestLibraryAPI x8 + TestCLI x5 + TestEquivalence x3), 16/16 PASS. Portable across Agent frameworks supporting Bash. Architecture aligned with 'AISOP layer only creates new caches' principle. Based on 05-prepare-cache-dual-use-plan.md."
@@ -211,6 +215,27 @@ evolution:
   - version: "5.3.0"
     date: "2026-05-13"
     note: "Observability-first evolution via Creator Evolve pipeline. 8 items: A1 OpenTelemetry SDK integration (opentelemetry-sdk capability dependency across all 4 modules, trace_id/span_id wired to OTel context propagation per gen_ai semantic conventions), A2 events[] declaration + SpanEvent dispatcher (5 events in node_engine: node_started, node_completed, node_failed, circuit_breaker_tripped, decision_gate_routed), B1 OWASP ASI threat mapping (ASI01-ASI10, 4 YELLOW items addressed: ASI01 goal_hash drift, ASI06 cache HMAC, ASI07 IPC signatures, ASI10 runtime drift), C1 version sync (all modules to 5.3.0), C2 ASSERT gate property predicate refresh, C3 normal_engine orphan function cleanup (MF31), C4 python_tools/ PL26 snapshot scope inclusion, C5 Error->on_error dual-key transitional support. All additive, zero breaking changes."
+  - version: "5.4.0"
+    date: "2026-05-18"
+    note: "Governance + integrity hardening. 8 items (4B + 4C): B1 agent_id naming, B2 score_integrity_rules, B3 dispatch_audit, B4 score_confidence, C1 governance_hash canonical, C2 version_history append-only, C3 module_scores stale, C4+C5 version sync."
+  - version: "5.4.1"
+    date: "2026-05-18"
+    note: "Agent_id strict enum + dispatch_audit mandatory + governance_hash TRI-SYNC. 6 items (3A + 3C): A1 agent_id strict 5-category enum (auto-<hex8>/task-<hex8>/gemini-<hex8>/inline_planned/inline_fallback) enforced in json_schema + dispatch + writeCache + python_tools, A2 dispatch_audit MANDATORY gate (CRITICAL blocks pipeline), A3 governance_hash TRI-SYNC (AIAP.md + agent_card.json + quality_baseline.json + hash_algorithm_version=v1.0), C1 version bump, C2 name sync, C3 evolution_history + bootstrap_advisory. All additive, zero breaking changes."
+  - version: "5.4.2"
+    date: "2026-05-19"
+    note: "Internal consistency patch. 8 items (4A + 4C): A1 dispatch_audit total_nodes off-by-one fix (explicit category sum, invariant cross-validation), A2 governance_hash intermediate snapshot pipeline_note (intermediate hashes marked stale, expires_after=ReviewFinalize), A3 engine_version _ENGINE_VERSION sync 5.2.2->5.4.2, A4 initial_user_message write-once field in _index.json. C1 version bump, C2 name sync, C3 evolution_history append, C4 governance_hash deferred to ReviewFinalize. All additive, zero breaking changes."
+  - version: "5.4.3"
+    date: "2026-05-19"
+    note: "Dispatch plan compliance patch. 8 items (4A + 4C): A1 RESUME/boot path explicit re-dispatch with dispatch_plan compliance enforcement (main engineExec.step3, node_engine RESUME_MODE_DISPATCH, agent_engine writeCache plan-violation hard validator), A2 dispatch_audit plan-violation category with cross-check against dispatch_plan from _index.json, A3 dispatch_plan_expected cache schema field (agent_engine + normal_engine + agent_write_node_cache.py auto-fill), A4 task-hex capability verification (node_engine + agent_engine capability cross-check). C1 version bump, C2 name sync, C3 evolution_history append, C4 governance_hash deferred to ReviewFinalize. All additive, zero breaking changes."
+  - version: "5.4.4"
+    date: "2026-05-19"
+    note: "Agent_id integrity patch. 6 items (3A + 3C): A1 agent_id entropy + uniqueness HARD enforcement (unique hex chars >= 4, cross-cache uniqueness rejection, os.urandom(4).hex() mandated in resolve_agent_id), A2 dispatch_audit fake_hex 4-category detection (trivial/invalid/duplicate/low_entropy) + spawn_audit_trail timing verification (60s threshold), A3 spawn_audit_trail schema field (spawned_at, spawn_tool, parent_trace_id, hex_entropy_source) for real sub-agent evidence. C1 version bump, C2 name sync, C3 evolution_history append. All additive, zero breaking changes."
+  - version: "5.5.0"
+    date: "2026-05-19"
+    note: "BREAKING:agent_id_self_report_removed. MAJOR evolution v5.4.4 -> v5.5.0. 9 items (4A + 5C). Root cause fix for cycle 15-17 cat-and-mouse evasion: host AI loses self-report agent_id capability. A1 agent_id server-side generation via NEW agent_id_generator.py (secrets.token_hex(4), PRNG entropy controlled by Engine, written to _index.json::dispatch_plan[node].expected_agent_id before dispatch). A2 --agent_id CLI param removed from agent_write_node_cache.py (auto-reads from _index.json, deprecated flag ignored). A3 dispatch_audit.py simplified to integrity-only checking (removed fake_hex_trivial/invalid/duplicate/low_entropy + suspicious_sub_agent, single integrity_violation category: cache.agent_id == expected_agent_id). A4 spawn_audit_trail timestamp anti-forgery via dispatch_records (generated_at written by agent_id_generator.py, spawned_at > generated_at ordering invariant verified by dispatch_audit). C1 version bump, C2 name sync, C3 evolution_history append (BREAKING marker), C4 governance_hash TRI-SYNC recompute, C5 agent_engine json_schema update. BREAKING: not backward compatible with v5.4.x self-report agent_id cache schema. ThreeDimTest: C=4.714 I=4.923 D=4.850 weighted=4.849 (Grade S)."
+  - version: "5.6.0"
+    date: "2026-05-20"
+    note: "Fallback tightening with spawn_failure_evidence. MINOR evolution v5.5.0 -> v5.6.0. 8 items (4A + 4C). Evidence: cycle 19 ObservabilityStep used inline_fallback with vague fallback_reason — cannot distinguish real spawn failure from never-attempted spawn. A1 spawn_failure_evidence schema REQUIRED for inline_fallback (attempted_spawn_tool, attempted_at > generated_at, failure_signal enum, failure_detail structured). A2 no-evidence fallback = FAIL with SPAWN_NOT_ATTEMPTED. A3 dispatch_audit.py restored legit/illegitimate fallback classification. A4 agent_id_generator.py prefix alignment with capability_probe.recommended. C1 version bump, C2 name sync, C3 evolution_history append, C4 governance_hash TRI-SYNC. 0 breaking changes."
 ---
 
 ## Governance Declaration

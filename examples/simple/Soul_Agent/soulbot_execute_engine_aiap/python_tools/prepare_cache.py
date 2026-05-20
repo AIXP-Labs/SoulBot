@@ -37,7 +37,7 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 _CACHE_NUM_DEFAULT = 100
-_ENGINE_VERSION = "5.2.2"
+_ENGINE_VERSION = "5.6.0"
 _CACHE_SCHEMA_VERSION = "1.0"
 
 # housekeeping thresholds
@@ -154,6 +154,10 @@ def prepare_execution_context(
         index_data = {
             "engine_version": _ENGINE_VERSION,
             "user_message": user_message,
+            # initial_user_message is write-once: captures the original user
+            # message at cache creation time.  Subsequent updates to _index.json
+            # (e.g. by execute.step3) MUST NOT overwrite this field.
+            "initial_user_message": user_message,
             "status": "in_progress",
             "started_at": datetime.now().isoformat(timespec="seconds"),
             "cache_schema_version": _CACHE_SCHEMA_VERSION,

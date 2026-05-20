@@ -1,10 +1,10 @@
 {
   "name": "soulbot_execute_engine",
-  "version": "5.3.0",
+  "version": "5.6.0",
   "program_id": "dev.soulbot.execute_engine",
   "protocol": "AIAP V1.0.0",
   "pattern": "B+",
-  "description": "SoulBot Execute Engine v5.3.0 — Router + dual Engine orchestration (node/normal) + Sub Agent contract + OpenTelemetry SDK integration + OWASP ASI threat mapping. 4 modules, 14 nodes. v5.3.0: A1 OpenTelemetry SDK (opentelemetry-sdk capability dependency, trace_id/span_id wired to OTel context propagation), A2 events[] + SpanEvent dispatcher (5 events in node_engine), B1 OWASP ASI01-ASI10 threat mapping (goal_hash drift, cache HMAC, IPC signatures, runtime drift), C1-C5 maintenance (version sync, ASSERT refresh, orphan cleanup, snapshot scope, Error->on_error dual-key). v5.2: prepare_cache.py dual-use. v5.1: interrupt relay. v5.0: NodeVerify, Decision gate, sys.* 24 calls, crash recovery, circuit breaker, parallel dispatch, trace_id.",
+  "description": "SoulBot Execute Engine v5.6.0 — Router + dual Engine orchestration (node/normal) + Sub Agent contract + server-side agent_id generation + spawn_failure_evidence enforcement + legit/illegitimate fallback dispatch_audit + governance_hash TRI-SYNC + dispatch_plan compliance enforcement + dispatch_records timestamp anti-forgery. 4 modules, 14 nodes. v5.6.0: A1 spawn_failure_evidence REQUIRED for inline_fallback, A2 no-evidence fallback = FAIL (SPAWN_NOT_ATTEMPTED), A3 dispatch_audit legit/illegitimate classification, A4 agent_id_generator prefix aligned with capability_probe.recommended. 0 breaking changes.",
   "capabilities": {
     "offered": [
       "intent_matching",
@@ -24,7 +24,15 @@
       "opentelemetry_sdk_integration",
       "owasp_asi_threat_mapping",
       "trace_id_propagation",
-      "bootstrap_validation"
+      "bootstrap_validation",
+      "dispatch_audit_mandatory",
+      "governance_hash_tri_sync",
+      "dispatch_plan_compliance",
+      "server_side_agent_id_generation",
+      "dispatch_records_anti_forgery",
+      "integrity_only_audit",
+      "spawn_failure_evidence_enforcement",
+      "legit_illegitimate_fallback_classification"
     ],
     "required": [
       "file_system"
@@ -105,14 +113,15 @@
     }
   ],
   "quality_summary": {
-    "three_dim_test_weighted": 4.95,
+    "three_dim_test_weighted": 4.895,
     "grade": "S",
     "dimensions": {
-      "cognitive": 4.93,
-      "intrinsic": 4.92,
-      "detail": 5.00
+      "cognitive": 4.786,
+      "intrinsic": 4.885,
+      "detail": 5.0
     },
-    "note": "v5.3.0 ReviewFinalize final_adjusted_score 4.95 (Grade S). C=4.93 I=4.92 D=5.00 (D6/D8/D10 reconciled to 5.0 post-Finalize: version sync, agent_card completeness, quality_baseline governance). Previous baseline v5.0.0: 4.72 (A). Validation 112/113. Simulation 18/18 GREEN. Nihil PASS. ASSERT 22/22. M-score 0.32 LOW."
+    "note": "v5.6.0 FINALIZED cycle 20. Generate2 scores: C=4.786 I=4.885 D=4.850. Deferred D6/D8/D10 reconciled 4.5->5.0. D_avg->5.0. Final weighted 4.895 (S). Delta +0.046 from v5.5.0. 0 illegitimate_fallback. governance_hash TRI-SYNC verified."
   },
-  "governance_hash": "sha256:90bc4a0a8a0acbf8de06cd5b0b3d4c4d1b76191342d7ad99875147ff192015c9"
+  "governance_hash": "sha256:d31561a01e5f25cb074ad63bb16917344186eee0e6596d65dd16faea4233aeb8",
+  "hash_algorithm_version": "v1.0"
 }

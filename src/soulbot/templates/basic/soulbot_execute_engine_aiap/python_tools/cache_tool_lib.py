@@ -17,7 +17,6 @@ import json
 import os
 import sys
 import time
-import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
@@ -147,6 +146,42 @@ def merge_index_top_level(
 # Agent ID auto-generation
 # ---------------------------------------------------------------------------
 
+import re as _re
+
+# Strict agent_id categories (A1 v5.4.1)
+# Only these 5 patterns are accepted:
+_AGENT_ID_PATTERNS = [
+    _re.compile(r"^auto-[0-9a-f]{8}$"),
+    _re.compile(r"^task-[0-9a-f]{8}$"),
+    _re.compile(r"^gemini-[0-9a-f]{8}$"),
+]
+_AGENT_ID_LITERALS = frozenset(("inline_planned", "inline_fallback"))
+
+
+def validate_agent_id_strict(agent_id: str) -> tuple[bool, str]:
+    """Validate agent_id against the strict 5-category enum (A1 v5.4.1).
+
+    Returns (is_valid, reason). If invalid, reason explains the rejection.
+    Categories:
+      1. ^auto-[0-9a-f]{8}$   (Sub Agent dispatch via Agent tool)
+      2. ^task-[0-9a-f]{8}$   (Sub Agent dispatch via Task tool)
+      3. ^gemini-[0-9a-f]{8}$ (Sub Agent dispatch via Gemini CLI)
+      4. 'inline_planned'      (Planned inline execution)
+      5. 'inline_fallback'     (Fallback — requires fallback_reason)
+    """
+    if not agent_id or not isinstance(agent_id, str):
+        return False, "agent_id is empty or not a string"
+    if agent_id in _AGENT_ID_LITERALS:
+        return True, f"matched literal '{agent_id}'"
+    for pat in _AGENT_ID_PATTERNS:
+        if pat.match(agent_id):
+            return True, f"matched pattern {pat.pattern}"
+    return False, (
+        f"agent_id '{agent_id}' does not match any of the 5 strict categories: "
+        "auto-<hex8>, task-<hex8>, gemini-<hex8>, inline_planned, inline_fallback"
+    )
+
+
 def resolve_agent_id(supplied: Optional[str]) -> str:
     """Pick agent_id with sensible fallbacks.
 
@@ -157,6 +192,7 @@ def resolve_agent_id(supplied: Optional[str]) -> str:
       4. Auto-generated unique ID 'auto-{8 hex chars}'
 
     Never returns the generic 'default' which loses audit signal.
+    All returned values conform to the strict 5-category enum (A1 v5.4.1).
     """
     if supplied and supplied != "default":
         return supplied
@@ -164,7 +200,7 @@ def resolve_agent_id(supplied: Optional[str]) -> str:
         env_val = os.environ.get(env_key, "").strip()
         if env_val:
             return env_val
-    return f"auto-{uuid.uuid4().hex[:8]}"
+    return f"auto-{os.urandom(4).hex()}"
 
 
 def read_json_lenient(path: Path) -> dict:
@@ -252,7 +288,6 @@ def fill_defaults_node_cache(
     data: dict,
     cache_dir: Path,
     node_name: str,
-    agent_id: str | None = None,
 ) -> tuple[dict, list[str]]:
     """Fill missing required fields with sane defaults. Returns (filled, list_of_fills)."""
     out = dict(data)
@@ -299,11 +334,34 @@ def fill_defaults_node_cache(
             out["span_id"] = f"{tid}.{node_name}"
             fills.append("span_id=auto(trace.node)")
 
-    # agent_id: CLI arg → env var → auto-generated (never plain 'default')
+    # agent_id: v5.5.0 server-side — read from _index.json::dispatch_plan[node].expected_agent_id
+    # CLI arg removed; host AI cannot self-report agent_id
+    # Q4 FIX (v5.5.0): Do NOT silently fallback to resolve_agent_id(None) for non-inline
+    # agent nodes — that would bypass agent_write_node_cache.py step 3a's
+    # PRE_V5_5_0_INCOMPATIBLE rejection check. Leave agent_id unset so the
+    # downstream strict enforcement can trigger.
     if "agent_id" not in out:
-        resolved = resolve_agent_id(agent_id)
-        out["agent_id"] = resolved
-        fills.append(f"agent_id={resolved!r}")
+        plan = read_index_field(cache_dir, "dispatch_plan", {}) or {}
+        plan_entry = plan.get(node_name)
+        expected_aid = None
+        if isinstance(plan_entry, dict):
+            expected_aid = plan_entry.get("expected_agent_id")
+        if expected_aid:
+            out["agent_id"] = expected_aid
+            fills.append(f"agent_id=server({expected_aid!r})")
+        else:
+            # Fallback for inline nodes only
+            em = None
+            if isinstance(plan_entry, dict):
+                em = plan_entry.get("execute_mode")
+            elif isinstance(plan_entry, str):
+                em = plan_entry
+            if em == "inline":
+                out["agent_id"] = "inline_planned"
+                fills.append("agent_id=inline_planned")
+            # else: intentionally leave agent_id unset for agent-dispatched nodes
+            # so agent_write_node_cache.py step 3a can reject with PRE_V5_5_0_INCOMPATIBLE
+            # when expected_agent_id is missing from _index.json
 
     # user_messages: default empty list
     if "user_messages" not in out:
@@ -376,3 +434,66 @@ def read_stdin_json() -> dict:
     if not text.strip():
         raise ValueError("Empty stdin — expected JSON object")
     return json.loads(text)
+
+
+# ---------------------------------------------------------------------------
+# Shared spawn_failure_evidence validation (Q2 v5.6.0 DRY extraction)
+# ---------------------------------------------------------------------------
+
+# Valid failure_signal enum values for spawn_failure_evidence
+VALID_FAILURE_SIGNALS = frozenset(("timeout", "nonzero_exit", "exception", "spawn_error"))
+
+# Required fields in spawn_failure_evidence
+SPAWN_FAILURE_EVIDENCE_REQUIRED = ("attempted_spawn_tool", "attempted_at", "failure_signal", "failure_detail")
+
+
+def validate_spawn_failure_evidence(
+    sfe: Any,
+    generated_at: str = "",
+) -> tuple[bool, str]:
+    """Validate a spawn_failure_evidence object (A1 v5.6.0).
+
+    Shared validation used by both agent_write_node_cache.py and dispatch_audit.py.
+
+    Args:
+        sfe: The spawn_failure_evidence value from cache data.
+        generated_at: ISO 8601 timestamp from dispatch_records[node].generated_at
+            for temporal ordering check. Empty string skips the check.
+
+    Returns:
+        (is_valid, reason) tuple.
+        is_valid=True means evidence is present and valid.
+        is_valid=False with reason explaining the rejection.
+    """
+    if not isinstance(sfe, dict):
+        return False, "spawn_failure_evidence is missing or not a dict"
+
+    # Check required fields
+    missing = [f for f in SPAWN_FAILURE_EVIDENCE_REQUIRED if f not in sfe]
+    if missing:
+        return False, f"spawn_failure_evidence missing required fields: {missing}"
+
+    # Validate failure_signal enum
+    fs = sfe.get("failure_signal", "")
+    if fs not in VALID_FAILURE_SIGNALS:
+        return False, (
+            f"failure_signal '{fs}' not in {sorted(VALID_FAILURE_SIGNALS)}. "
+            "Vague reasons are not accepted."
+        )
+
+    # Validate temporal ordering: attempted_at > generated_at
+    if generated_at:
+        attempted_at = sfe.get("attempted_at", "")
+        if attempted_at:
+            try:
+                gen_t = datetime.fromisoformat(generated_at.replace("Z", "+00:00"))
+                att_t = datetime.fromisoformat(attempted_at.replace("Z", "+00:00"))
+                if att_t <= gen_t:
+                    return False, (
+                        f"attempted_at ({attempted_at}) <= generated_at ({generated_at}). "
+                        "Spawn attempt must occur AFTER agent_id generation."
+                    )
+            except (ValueError, TypeError):
+                return False, "could not parse timestamps for temporal ordering check"
+
+    return True, "valid"

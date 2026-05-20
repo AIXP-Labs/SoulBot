@@ -44,7 +44,7 @@ AUTO-FILLED FIELDS (if missing)
   execute_mode           ← read from _index.json::dispatch_plan
   trace_id               ← read from _index.json
   span_id                ← {trace_id}.{node}
-  agent_id               ← from --agent_id or 'default'
+  agent_id               ← auto-read from _index.json::dispatch_plan[node].expected_agent_id (v5.5.0)
   cache_schema_version   ← '1.0'
   user_messages          ← []
   modifications          ← []
@@ -64,6 +64,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re as _re_aid
 import sys
 from pathlib import Path
 
@@ -77,10 +78,13 @@ from cache_tool_lib import (  # noqa: E402
     fill_defaults_node_cache,
     assert_critical_fields_present,
     validate_soft,
+    validate_agent_id_strict,
     read_json_lenient,
+    read_index_field,
     read_stdin_json,
     merge_index_field,
     merge_index_top_level,
+    validate_spawn_failure_evidence,
 )
 
 # Statuses that count as "node done" → eligible to advance last_completed_node.
@@ -94,7 +98,6 @@ def write_node_cache(
     node_name: str,
     data: dict,
     *,
-    agent_id: str | None = None,
     dry_run: bool = False,
 ) -> dict:
     """Write a node cache file safely.
@@ -149,9 +152,165 @@ def write_node_cache(
     data, coercions = coerce_types(data, "node_cache")
     result["coercions"] = coercions
 
-    # 3. Auto-fill defaults
-    data, fills = fill_defaults_node_cache(data, cache_dir, node_name, agent_id=agent_id)
+    # 3. Auto-fill defaults (v5.5.0: agent_id auto-read from _index.json, no CLI arg)
+    data, fills = fill_defaults_node_cache(data, cache_dir, node_name)
     result["fields_filled"] = fills
+
+    # 3a. AGENT_ID SERVER-SIDE READ (A1 v5.5.0)
+    # agent_id MUST come from _index.json::dispatch_plan[node].expected_agent_id
+    # Host AI has NO override capability. Missing field -> reject as PRE_V5_5_0_INCOMPATIBLE.
+    if "agent_id" not in data or not data.get("agent_id"):
+        plan = read_index_field(cache_dir, "dispatch_plan", {}) or {}
+        plan_entry = plan.get(node_name)
+        expected_aid = None
+        if isinstance(plan_entry, dict):
+            expected_aid = plan_entry.get("expected_agent_id")
+        if expected_aid:
+            data["agent_id"] = expected_aid
+            result["fields_filled"].append(f"agent_id=server({expected_aid!r})")
+        else:
+            # Check for inline nodes
+            em = None
+            if isinstance(plan_entry, dict):
+                em = plan_entry.get("execute_mode")
+            elif isinstance(plan_entry, str):
+                em = plan_entry
+            if em == "inline":
+                data["agent_id"] = "inline_planned"
+                result["fields_filled"].append("agent_id=inline_planned")
+            else:
+                result["status"] = "error"
+                result["errors"].append(
+                    "PRE_V5_5_0_INCOMPATIBLE: _index.json::dispatch_plan"
+                    f"['{node_name}'].expected_agent_id is missing. "
+                    "v5.5.0 requires server-side agent_id generation via "
+                    "agent_id_generator.py BEFORE sub-agent dispatch. "
+                    "The --agent_id CLI parameter has been removed."
+                )
+                result["hints"].append(
+                    "Run agent_id_generator.py --cache_dir=<dir> --node=<node> "
+                    "--dispatch_type=auto BEFORE dispatching the sub-agent."
+                )
+                return result
+
+    # 3b. AUTO-FILL dispatch_plan_expected from _index.json (A3 v5.4.3)
+    if "dispatch_plan_expected" not in data:
+        plan = read_index_field(cache_dir, "dispatch_plan", {}) or {}
+        plan_val = plan.get(node_name)
+        if isinstance(plan_val, dict):
+            plan_val = plan_val.get("execute_mode", "agent")
+        elif not isinstance(plan_val, str):
+            plan_val = None
+        if plan_val in ("agent", "inline"):
+            data["dispatch_plan_expected"] = plan_val
+            result["fields_filled"].append(f"dispatch_plan_expected=auto({plan_val!r})")
+
+    # 3c. AGENT_ID_STRICT validation (A1 v5.4.1)
+    aid = data.get("agent_id", "")
+    aid_valid, aid_reason = validate_agent_id_strict(aid)
+    if not aid_valid:
+        result["warnings"].append(
+            f"AGENT_ID_STRICT (A1 v5.4.1): {aid_reason}. "
+            "Expected: auto-<hex8>, task-<hex8>, gemini-<hex8>, inline_planned, inline_fallback."
+        )
+    if aid == "inline_fallback" and not data.get("fallback_reason"):
+        result["warnings"].append(
+            "AGENT_ID_STRICT: agent_id='inline_fallback' but 'fallback_reason' is missing. "
+            "inline_fallback MUST include fallback_reason per A1 v5.4.1."
+        )
+
+    # 3d. AGENT_ID ENTROPY + UNIQUENESS HARD VALIDATOR (A1 v5.4.4)
+    # For prefixed hex agent_ids, enforce:
+    #   (a) hex portion has >= 4 unique hex characters (rejects trivial fakes)
+    #   (b) agent_id is unique across sibling caches in same trace_id
+    _HEX_PREFIX_RE = _re_aid.compile(r"^(auto|task|gemini)-([0-9a-f]{8})$")
+    hex_match = _HEX_PREFIX_RE.match(aid)
+    if hex_match:
+        hex_portion = hex_match.group(2)
+        unique_chars = len(set(hex_portion))
+        # (a) Entropy check: unique hex chars >= 4
+        if unique_chars < 4:
+            result["status"] = "error"
+            result["errors"].append(
+                f"AGENT_ID_ENTROPY_VIOLATION (A1 v5.4.4): agent_id '{aid}' "
+                f"has only {unique_chars} unique hex chars in '{hex_portion}' "
+                f"(minimum 4 required). Trivial/fake hex patterns are rejected. "
+                f"Use os.urandom(4).hex() or secrets.token_hex(4) to generate."
+            )
+            result["hints"].append(
+                "Generate agent_id hex via: python -c \"import os; print('auto-' + os.urandom(4).hex())\""
+            )
+            return result
+
+        # (b) Cross-cache uniqueness check: scan sibling caches for duplicate agent_id
+        for sibling_fn in sorted(cache_dir.iterdir()):
+            if not sibling_fn.name.endswith(".json"):
+                continue
+            if sibling_fn.name in ("_index.json", "conversation_context.json", "node_cache.schema.json"):
+                continue
+            if sibling_fn.name.startswith("_"):
+                continue
+            # Skip our own target file
+            expected_filename = f"{aiap_name}.{node_name}.json"
+            if sibling_fn.name == expected_filename:
+                continue
+            try:
+                with open(sibling_fn, encoding="utf-8") as _sf:
+                    sibling_cache = json.load(_sf)
+                if isinstance(sibling_cache, dict):
+                    sibling_aid = sibling_cache.get("agent_id", "")
+                    if sibling_aid == aid:
+                        result["status"] = "error"
+                        result["errors"].append(
+                            f"AGENT_ID_UNIQUENESS_VIOLATION (A1 v5.4.4): agent_id '{aid}' "
+                            f"already exists in sibling cache '{sibling_fn.name}'. "
+                            f"Each sub-agent node MUST have a unique agent_id within the same trace. "
+                            f"Duplicate agent_id indicates fabrication (collision probability ~1/2^32)."
+                        )
+                        result["hints"].append(
+                            "Re-generate agent_id via: python -c \"import os; print('auto-' + os.urandom(4).hex())\""
+                        )
+                        return result
+            except (json.JSONDecodeError, OSError):
+                continue
+
+    # 3e. SPAWN_FAILURE_EVIDENCE validation (A1 v5.6.0)
+    # When agent_id='inline_fallback' AND dispatch_plan says 'agent',
+    # spawn_failure_evidence is REQUIRED with valid fields.
+    # Q2 v5.6.0: Uses shared validate_spawn_failure_evidence from cache_tool_lib.py
+    aid_val = data.get("agent_id", "")
+    if aid_val == "inline_fallback":
+        plan = read_index_field(cache_dir, "dispatch_plan", {}) or {}
+        plan_entry = plan.get(node_name)
+        plan_mode = None
+        if isinstance(plan_entry, dict):
+            plan_mode = plan_entry.get("execute_mode")
+        elif isinstance(plan_entry, str):
+            plan_mode = plan_entry
+        if plan_mode == "agent":
+            sfe = data.get("spawn_failure_evidence")
+            # Get generated_at for temporal ordering check
+            generated_at = ""
+            records = read_index_field(cache_dir, "dispatch_records", {}) or {}
+            record = records.get(node_name)
+            if isinstance(record, dict):
+                generated_at = record.get("generated_at", "")
+            sfe_valid, sfe_reason = validate_spawn_failure_evidence(sfe, generated_at)
+            if not sfe_valid:
+                result["status"] = "error"
+                result["errors"].append(
+                    f"SPAWN_FAILURE_EVIDENCE_INVALID (A1 v5.6.0): {sfe_reason}. "
+                    f"agent_id='inline_fallback' with dispatch_plan['{node_name}']='agent' "
+                    "requires valid spawn_failure_evidence."
+                )
+                result["hints"].append(
+                    "spawn_failure_evidence is REQUIRED for inline_fallback when "
+                    "dispatch_plan says 'agent'. Include attempted_spawn_tool "
+                    "(Agent|Task|Bash:gemini), attempted_at (ISO8601), "
+                    "failure_signal (timeout|nonzero_exit|exception|spawn_error), "
+                    "and failure_detail with structured error info."
+                )
+                return result
 
     # 4. Strict schema validation BEFORE write
     errors = validate_soft(data, "node_cache")
@@ -321,7 +480,7 @@ def main() -> int:
     parser.add_argument("--aiap", required=True, help="AIAP name (e.g. soulbot_creator_evolution).")
     parser.add_argument("--node", required=True, help="Node name (e.g. DependencyCheck).")
     parser.add_argument("--data", default=None, help="JSON string. If omitted, read from stdin.")
-    parser.add_argument("--agent_id", default=None, help="Optional agent ID (default: 'default').")
+    parser.add_argument("--agent_id", default=None, help="DEPRECATED (v5.5.0): agent_id is now auto-read from _index.json. This flag is ignored.")
     parser.add_argument("--dry-run", action="store_true", help="Validate + auto-fill but don't write.")
     parser.add_argument("--quiet", action="store_true", help="Only print exit code.")
     args = parser.parse_args()
@@ -344,12 +503,22 @@ def main() -> int:
         print(json.dumps({"status": "error", "errors": ["Input is not a JSON object"]}, ensure_ascii=False))
         return 2
 
+    # v5.5.0: --agent_id is deprecated and ignored. agent_id is auto-read from _index.json.
+    if args.agent_id:
+        print(json.dumps({
+            "status": "ok",
+            "warnings": [
+                "DEPRECATED (v5.5.0): --agent_id CLI flag is ignored. "
+                "agent_id is now auto-read from _index.json::dispatch_plan[node].expected_agent_id. "
+                "Remove --agent_id from your invocation."
+            ]
+        }, ensure_ascii=False), file=sys.stderr)
+
     result = write_node_cache(
         Path(args.cache_dir),
         args.aiap,
         args.node,
         data,
-        agent_id=args.agent_id,
         dry_run=args.dry_run,
     )
 
