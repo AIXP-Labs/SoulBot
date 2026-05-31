@@ -10,10 +10,10 @@ governance_mode: NORMAL
 
 # Project Fields (8 required)
 name: aiap_creator
-version: "2.23.0"
+version: "2.29.0"
 pattern: D
 flow_format: "mermaid"
-summary: "AIAP Creator — 18-stage pipeline for creating, evolving, validating, simulating, and managing AIAP programs. 15 modules, 213 nodes. Pattern D, Grade S (4.943). Supports Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert workflows. ThreeDimTest 4.943/S, governance_hash canonical v1.0."
+summary: "AIAP Creator — 18-stage pipeline for creating, evolving, validating, simulating, and managing AIAP programs. 15 modules, 213 nodes, 1167 scenarios (A-AJ). Pattern D, Grade S (4.993). Supports Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert workflows. ThreeDimTest 4.993/S, governance_hash canonical v1.0. v2.29.0: ReviewFinalize v2.28.0->v2.29.0 evolution finalization, governance_hash TRI-SYNC verified."
 tools:
   - name: file_system
     required: true
@@ -22,7 +22,7 @@ tools:
       destructive: false
       idempotent: false
       open_world: false
-  - name: google_search
+  - name: web_search
     required: false
     fallback: "degrade"
     annotations:
@@ -30,7 +30,7 @@ tools:
       destructive: false
       idempotent: true
       open_world: true
-  - name: web_browser
+  - name: web_fetch
     required: false
     fallback: "degrade"
     annotations:
@@ -131,12 +131,12 @@ modules:
     side_effects: []
 
 # Optional Fields
-governance_hash: 05beabc56c006583c504367f202117747a895651100f3b56fcca3e7d955961a8
+governance_hash: 5463223d1d669a74c0a839fe6ef0884a8cc1f3e13c4177478bfc2d625a6f4d84
 governance_hash_canonical_version: "1.0"
 quality:
-  weighted_score: 4.943
+  weighted_score: 4.993
   grade: S
-  last_pipeline: "3907f3db-f951-4ca6-8388-323ded747ae1"
+  last_pipeline: "f85584b0-8fb1-4ec0-9675-cb28db48abd5"
 tags: [aiap, creator, pipeline, governance, meta, execution, strict_mode, density_metrics, strict_semantics, self_evolution, dsm, token_efficiency, evolution_fitness, attestation, insights, quality, threedimscore]
 author: SoulBot.dev
 license: Apache-2.0
@@ -145,7 +145,7 @@ copyright: "Copyright 2026 AIXP Labs AIXP.dev | SoulBot.dev"
 # Security and Runtime Optional Fields
 trust_level:
   level: 4
-  justification: "AIAP Creator requires full read/write access to workspace for creating, evolving, and modifying AIAP programs. Network access needed for research stages (google_search, web_browser)."
+  justification: "AIAP Creator requires full read/write access to workspace for creating, evolving, and modifying AIAP programs. Network access needed for research stages (web_search, web_fetch)."
   constraints:
     - "file_system write scope limited to workspace_dir"
     - "network access limited to *.google.com and *.bing.com"
@@ -238,7 +238,7 @@ min_protocol_version: "AIAP V1.0.0"
 identity:
   program_id: "aiap.dev/aiap_creator"
   publisher: "AIXP Labs AIXP.dev | SoulBot.dev"
-  verified_on: "2026-04-20"
+  verified_on: "2026-05-28"
 benchmark:
   threedimscore: 5.000
   grade: "S"
@@ -306,8 +306,8 @@ AIAP Creator manages the complete lifecycle of AIAP programs through a 15-module
 | Tool | Required | Purpose |
 |------|----------|---------|
 | file_system | Yes | Read/write AISOP files |
-| google_search | No | Search best practices during research stages |
-| web_browser | No | Deep web research |
+| web_search | No | Search best practices during research stages |
+| web_fetch | No | Deep web research |
 
 ### Prerequisites
 

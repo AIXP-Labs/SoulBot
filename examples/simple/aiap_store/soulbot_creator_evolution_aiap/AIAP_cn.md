@@ -10,10 +10,10 @@ governance_mode: NORMAL
 
 # 项目字段 (8 个必需)
 name: aiap_creator
-version: "2.23.0"
+version: "2.29.0"
 pattern: D
 flow_format: "mermaid"
-summary: "AIAP Creator — 通过 18 阶段 Pipeline 创建、进化、验证、模拟和管理 AIAP 程序。15 个模块，213 个节点。Pattern D，Grade S (4.943)。支持 Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert 工作流。ThreeDimTest 4.943/S, governance_hash canonical v1.0。"
+summary: "AIAP Creator — 通过 18 阶段 Pipeline 创建、进化、验证、模拟和管理 AIAP 程序。15 个模块，213 个节点，1167 个场景 (A-AJ)。Pattern D，Grade S (4.993)。支持 Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert 工作流。ThreeDimTest 4.993/S, governance_hash canonical v1.0。v2.29.0: ReviewFinalize 进化完成，governance_hash TRI-SYNC 已验证。"
 tools:
   - name: file_system
     required: true
@@ -22,7 +22,7 @@ tools:
       destructive: false
       idempotent: false
       open_world: false
-  - name: google_search
+  - name: web_search
     required: false
     fallback: "degrade"
     annotations:
@@ -30,7 +30,7 @@ tools:
       destructive: false
       idempotent: true
       open_world: true
-  - name: web_browser
+  - name: web_fetch
     required: false
     fallback: "degrade"
     annotations:
@@ -131,12 +131,12 @@ modules:
     side_effects: []
 
 # 可选字段
-governance_hash: 05beabc56c006583c504367f202117747a895651100f3b56fcca3e7d955961a8
+governance_hash: 5463223d1d669a74c0a839fe6ef0884a8cc1f3e13c4177478bfc2d625a6f4d84
 governance_hash_canonical_version: "1.0"
 quality:
-  weighted_score: 4.943
+  weighted_score: 4.993
   grade: S
-  last_pipeline: "3907f3db-f951-4ca6-8388-323ded747ae1"
+  last_pipeline: "f85584b0-8fb1-4ec0-9675-cb28db48abd5"
   changes_v1_95_0: "6 LEVEL_B + 8 LEVEL_C: B1 AIAP.md simulate 节点数 18->14。B2 AIAP.md modify 节点数 12->10。B3 SimulateStep 委派参数完整性 (research_context, evolution_context, quality_baseline, research_quality_context)。B4 MCP/A2A/NIST/EU AI Act 引用时间戳刷新 (ProtocolAlign + Research3)。B5 MCP Tool Annotations 最佳实践对齐。B6 总节点数 213->207 校准 (AIAP.md)。C1 版本同步 15/15, C2 名称同步 10/10, C3 AIAP.md (第 61 次), C4 agent_card.json, C5 quality_baseline, C6 governance hash, C7 protocol_config, C8 AIAP_cn.md 同步。14 项变更。MAINTENANCE 第 61 次。"
   changes_v1_94_0: "4 LEVEL_B + 6 LEVEL_C: B1 Engine v4.5 (确定性循环拒绝、WAITING_USER 冲突守卫、effort_per_step、InlineExec 透传、跨平台 os.replace、[ASSERT] 前向引用阻塞、混合程序分类)。B2 Engine Router v1.2 (match/classify/endNode constraints)。B3 Router v3.1 (match/classify/execute/endNode constraints)。B4 Engine fractal_exempt 节点数修正 (25->27, main 20 + react 7)。C1 版本同步 10/10, C2 AIAP.md (第 60 次), C3 agent_card.json, C4 quality_baseline, C5 governance hash, C6 名称同步。10 项变更。MAINTENANCE 第 60 次。"
   changes_v1_93_0: "5 LEVEL_B + 6 LEVEL_C: B1 Engine v4.4 版本引用同步 (v4.3->v4.4)。B2 Engine v4.4 normal 模式感知 (NormalResolve, NormalAgentExec/FUNCTION_LOOP, NormalResultVerify, NormalNodeComplete)。B3 Engine Router v1.1 编排协议 (CheckMode 路由)。B4 prompt_template FUNCTION_LOOP MODE 生成支持 (sys.io.confirm 中断, [ASSERT] 内存读取, 子模块检查, 循环警告)。B5 双路由器架构同步 (Router v3.0 + Engine Router v1.1)。C1 版本同步 10/10, C2 AIAP.md (第 59 次), C3 agent_card.json, C4 quality_baseline, C5 governance hash, C6 名称同步。11 项变更。MAINTENANCE 第 59 次。"
@@ -160,7 +160,7 @@ copyright: "Copyright 2026 AIXP Labs AIXP.dev | SoulBot.dev"
 # 安全与运行时可选字段
 trust_level:
   level: 4
-  justification: "AIAP Creator requires full read/write access to workspace for creating, evolving, and modifying AIAP programs. Network access needed for research stages (google_search, web_browser)."
+  justification: "AIAP Creator requires full read/write access to workspace for creating, evolving, and modifying AIAP programs. Network access needed for research stages (web_search, web_fetch)."
   constraints:
     - "file_system write scope limited to workspace_dir"
     - "network access limited to *.google.com and *.bing.com"
@@ -253,7 +253,7 @@ min_protocol_version: "AIAP V1.0.0"
 identity:
   program_id: "aiap.dev/aiap_creator"
   publisher: "AIXP Labs AIXP.dev | SoulBot.dev"
-  verified_on: "2026-04-20"
+  verified_on: "2026-05-28"
 benchmark:
   threedimscore: 5.000
   grade: "S"
@@ -321,8 +321,8 @@ AIAP Creator 通过 15 模块 (213 节点)、18 阶段 Pipeline（含自动 Prot
 | 工具 | 必需 | 用途 |
 |------|------|------|
 | file_system | 是 | 读写 AISOP 文件 |
-| google_search | 否 | 研究阶段搜索最佳实践 |
-| web_browser | 否 | 深度网页研究 |
+| web_search | 否 | 研究阶段搜索最佳实践 |
+| web_fetch | 否 | 深度网页研究 |
 
 ### 前置条件
 

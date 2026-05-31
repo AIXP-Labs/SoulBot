@@ -209,6 +209,23 @@ def generate_agent_id(
                     }
                 data["dispatch_plan"] = dispatch_plan
 
+            # observability (plan20/16): append-only dispatch timeline for crash
+            # localization. ACP session_id is NOT reachable here (soulacp layer),
+            # so correlate a crash by timestamp: ACP elapsed_ms back-derives the
+            # crash wall-clock, matched against these per-node dispatch ts.
+            # Empty/short timeline at crash => crash happened in startup/orchestrator
+            # stage (before first dispatch), not in a node sub-agent.
+            _tl = data.get("dispatch_timeline", [])
+            if not isinstance(_tl, list):
+                _tl = []
+            _tl.append({
+                "node": node_name,
+                "ts": generated_at,
+                "dispatch_type": actual_prefix,
+                "agent_id": expected_agent_id,
+            })
+            data["dispatch_timeline"] = _tl
+
             atomic_write_json(index_path, data)
 
     except TimeoutError as e:

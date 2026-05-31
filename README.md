@@ -38,7 +38,7 @@ SoulBot is a Python-based AI Agent framework that connects to LLMs through CLI s
 | Gemini CLI | `npm install -g @google/gemini-cli` | `gemini login` |
 | OpenCode | `npm install -g opencode` | Free models, no login needed |
 
-> 💡 **Recommended combination**: SoulBot + Claude Code CLI + Claude Opus 4.7. This project is primarily developed and tested with this stack. New users: start here.
+> 💡 **Recommended combination**: SoulBot + Claude Code CLI + Claude Opus 4.8. This project is primarily developed and tested with this stack. New users: start here.
 
 ### Install
 
@@ -53,7 +53,7 @@ pip install -e .
 Before running, rename the example config to `.env`:
 
 ```bash
-mv examples/simple/SoulBot_Agent/.env.example examples/simple/SoulBot_Agent/.env
+mv examples/simple/Soul_Agent/.env.example examples/simple/Soul_Agent/.env
 ```
 
 Open the new `.env` and pick your LLM backend (Claude / Gemini / OpenCode).
@@ -68,10 +68,10 @@ python start.py
 soulbot web --agents-dir examples/simple
 
 # Terminal interactive mode
-soulbot run examples/simple/SoulBot_Agent
+soulbot run examples/simple/Soul_Agent
 
 # Telegram Bot
-soulbot telegram examples/simple/SoulBot_Agent
+soulbot telegram examples/simple/Soul_Agent
 ```
 
 ### Create Your Own Agent
@@ -309,7 +309,7 @@ Features: Markdown rendering, SSE streaming, agent switching, session management
 
 1. Get a bot token from [@BotFather](https://t.me/BotFather)
 2. Add `TELEGRAM_BOT_TOKEN=your_token` to `.env`
-3. Run: `soulbot telegram examples/simple/SoulBot_Agent`
+3. Run: `soulbot telegram examples/simple/Soul_Agent`
 
 Or run Web + Telegram together: `soulbot web --agents-dir examples/simple`
 
@@ -347,7 +347,7 @@ SoulBot/
 │   ├── templates/            # Agent scaffolding templates
 │   └── cli.py                # CLI entry point
 ├── examples/simple/          # Example agents
-│   └── SoulBot_Agent/        # Main agent with AIAP packages
+│   └── Soul_Agent/        # Main agent with AIAP packages
 ├── tests/                    # 1266 unit tests
 ├── docs/                     # Documentation
 └── pyproject.toml            # Project configuration
@@ -419,13 +419,15 @@ AIXP Labs develops and maintains the following core projects:
 | Project | Description | Website |
 |---------|-------------|---------|
 | [HSAW](https://hsaw.dev) | Human Sovereignty and Wellbeing — Axiom 0 white paper (foundation) | hsaw.dev |
+| [AIZP](https://aizp.dev) | AI Zenith-Zero Protocol — runtime behavioral alignment | aizp.dev |
 | [AILP](https://ailp.dev) | AI List Protocol — agent discovery and capability advertising | ailp.dev |
 | [AIVP](https://aivp.dev) | AI Value Protocol — international commerce, crypto asset settlement | aivp.dev |
 | [AIRP](https://airp.dev) | AI RMB Protocol — Mainland China commerce, RMB licensed settlement | airp.dev |
 | [AIBP](https://aibp.dev) | AI Bot Protocol — social communication and trust | aibp.dev |
 | [AIAP](https://aiap.dev) | AI Application Protocol — governance and compliance | aiap.dev |
 | [AISOP](https://aisop.dev) | AI Standard Operating Protocol — flow program definition | aisop.dev |
-| [SoulBot](https://soulbot.dev) | AI agent runtime and framework (this project) | soulbot.dev |
+| [SoulAgent](https://soulagent.dev) | Drop-in AI agent invoked directly by any CLI / SDK / IDE | soulagent.dev |
+| [SoulBot](https://soulbot.dev) | AI agent runtime & orchestration framework (scheduling, agent-spawn, inter-agent comms) **(this project)** | soulbot.dev |
 | [SoulACP](https://soulacp.dev) | Adapter library — bridging CLI tools and LLM providers | soulacp.dev |
 
 ---

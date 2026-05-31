@@ -1073,7 +1073,7 @@ main 遵循与功能模块相同的渐进式节点建议。区别是**质的约�
 
 ```
 优先级 1 — 工具边界:
-  节点组 A 用 google_search + web_browser
+  节点组 A 用 web_search + web_fetch
   节点组 B 只用 file_system
   → 天然分界线，拆分为独立 sub_aiap
 

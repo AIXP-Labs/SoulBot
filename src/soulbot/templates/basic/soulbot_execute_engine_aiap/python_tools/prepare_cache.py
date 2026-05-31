@@ -37,7 +37,12 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 _CACHE_NUM_DEFAULT = 100
-_ENGINE_VERSION = "5.6.0"
+# engine_version is read at runtime from main.aisop.json (single source of
+# truth — see _resolve_engine_version). This fallback applies ONLY when that
+# file is missing/unparseable, so cache creation never hard-fails on lookup.
+# Deliberately NOT a version number: a stale hardcoded version silently
+# mislabels every _index.json (the root cause of the 5.6.0 drift).
+_ENGINE_VERSION_FALLBACK = "unknown"
 _CACHE_SCHEMA_VERSION = "1.0"
 
 # housekeeping thresholds
@@ -152,7 +157,7 @@ def prepare_execution_context(
         # 7. Generate trace_id + write _index.json
         trace_id = str(uuid.uuid4())
         index_data = {
-            "engine_version": _ENGINE_VERSION,
+            "engine_version": _resolve_engine_version(engine_aiap_dir),
             "user_message": user_message,
             # initial_user_message is write-once: captures the original user
             # message at cache creation time.  Subsequent updates to _index.json
@@ -376,6 +381,27 @@ def _read_trace_id(cache_dir: Path) -> Optional[str]:
         return tid if isinstance(tid, str) and tid else None
     except (OSError, json.JSONDecodeError):
         return None
+
+
+def _resolve_engine_version(engine_aiap_dir: Path) -> str:
+    """Read the engine version from ``{engine_aiap_dir}/main.aisop.json``.
+
+    main.aisop.json is a list whose first element is the system node; the
+    engine version lives at ``[0].content.version`` (single source of truth).
+    Falls back to ``_ENGINE_VERSION_FALLBACK`` if the file is missing or
+    unparseable, so cache creation never hard-fails on a version lookup.
+    """
+    try:
+        main_file = Path(engine_aiap_dir) / "main.aisop.json"
+        with open(main_file, encoding="utf-8-sig") as f:
+            data = json.load(f)
+        if isinstance(data, list) and data:
+            ver = data[0].get("content", {}).get("version")
+            if isinstance(ver, str) and ver:
+                return ver
+    except (OSError, json.JSONDecodeError, AttributeError, TypeError) as e:
+        logger.warning("engine version lookup failed, using fallback: %s", e)
+    return _ENGINE_VERSION_FALLBACK
 
 
 # ---------------------------------------------------------------------------

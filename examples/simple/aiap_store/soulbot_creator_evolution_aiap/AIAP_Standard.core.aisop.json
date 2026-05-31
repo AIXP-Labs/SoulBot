@@ -273,7 +273,7 @@
               "no_split": "Convergence groups (fan-in), error recovery loops, tightly coupled same-tool nodes -> keep together."
             },
             "enforcement": "Generate checks functional node count. 2+ independent functions -> suggest Pattern B. Progressive warnings at 13+ and 16+. Never FAIL on node count alone.",
-            "tool_weight_factor": "TOOL WEIGHT FACTOR FOR FRACTAL THRESHOLD: zero-tool modules (modules with empty tools[] or no tools declared) have lower per-node cognitive complexity because nodes contain pure text instructions without tool invocation logic. For zero-tool modules: ADVISORY threshold raised to 15 functional nodes (from 13), RECOMMENDED SPLIT threshold raised to 18 (from 16). For modules with file_system write operations: standard thresholds apply (13 ADVISORY, 16 RECOMMENDED). For modules with network tools (google_search, web_browser): standard thresholds apply. Rationale: tool-invoking nodes require parameter marshaling, error handling, and response parsing — approximately 1.5x cognitive load per node compared to pure-logic nodes.",
+            "tool_weight_factor": "TOOL WEIGHT FACTOR FOR FRACTAL THRESHOLD: zero-tool modules (modules with empty tools[] or no tools declared) have lower per-node cognitive complexity because nodes contain pure text instructions without tool invocation logic. For zero-tool modules: ADVISORY threshold raised to 15 functional nodes (from 13), RECOMMENDED SPLIT threshold raised to 18 (from 16). For modules with file_system write operations: standard thresholds apply (13 ADVISORY, 16 RECOMMENDED). For modules with network tools (web_search, web_fetch): standard thresholds apply. Rationale: tool-invoking nodes require parameter marshaling, error handling, and response parsing — approximately 1.5x cognitive load per node compared to pure-logic nodes.",
             "sub_mermaid_decomposition": {
               "description": "sub_mermaid is in-file decomposition using multiple Mermaid graphs within a single .aisop.json. Preferred over file-level splitting when functional cohesion is high.",
               "structure_rules": {
@@ -822,7 +822,7 @@
           "image_generation tool -> output FilePart with mimeType 'image/png'",
           "tts (text-to-speech) tool -> output FilePart with mimeType 'audio/wav'",
           "code_execution tool -> output DataPart with execution results",
-          "web_browser tool -> output TextPart with extracted content",
+          "web_fetch tool -> output TextPart with extracted content",
           "file_system read -> output FilePart if binary, TextPart if text",
           "Default: TextPart for all unmatched tool outputs"
         ],

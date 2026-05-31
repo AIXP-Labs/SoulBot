@@ -38,7 +38,7 @@ SoulBot 是一个基于 Python 的 AI Agent 框架，通过 CLI 子进程使用 
 | Gemini CLI | `npm install -g @google/gemini-cli` | `gemini login` |
 | OpenCode | `npm install -g opencode` | 免费模型，无需登录 |
 
-> 💡 **推荐组合**: SoulBot + Claude Code CLI + Claude Opus 4.7。本项目主要在此组合下开发测试，首次使用建议从这里入手。
+> 💡 **推荐组合**: SoulBot + Claude Code CLI + Claude Opus 4.8。本项目主要在此组合下开发测试，首次使用建议从这里入手。
 
 ### 安装
 
@@ -53,7 +53,7 @@ pip install -e .
 运行前把示例配置重命名为 `.env`：
 
 ```bash
-mv examples/simple/SoulBot_Agent/.env.example examples/simple/SoulBot_Agent/.env
+mv examples/simple/Soul_Agent/.env.example examples/simple/Soul_Agent/.env
 ```
 
 打开新的 `.env`，选择 LLM 后端（Claude / Gemini / OpenCode）。
@@ -68,10 +68,10 @@ python start.py
 soulbot web --agents-dir examples/simple
 
 # 终端交互模式
-soulbot run examples/simple/SoulBot_Agent
+soulbot run examples/simple/Soul_Agent
 
 # Telegram Bot
-soulbot telegram examples/simple/SoulBot_Agent
+soulbot telegram examples/simple/Soul_Agent
 ```
 
 ### 创建你自己的 Agent
@@ -309,7 +309,7 @@ soulbot web --agents-dir examples/simple
 
 1. 从 [@BotFather](https://t.me/BotFather) 获取 Bot Token
 2. 在 `.env` 中添加 `TELEGRAM_BOT_TOKEN=你的Token`
-3. 运行：`soulbot telegram examples/simple/SoulBot_Agent`
+3. 运行：`soulbot telegram examples/simple/Soul_Agent`
 
 或 Web + Telegram 同时运行：`soulbot web --agents-dir examples/simple`
 
@@ -347,7 +347,7 @@ SoulBot/
 │   ├── templates/            # Agent 脚手架模板
 │   └── cli.py                # CLI 入口
 ├── examples/simple/          # 示例 Agent
-│   └── SoulBot_Agent/        # 主 Agent（含 AIAP 包）
+│   └── Soul_Agent/        # 主 Agent（含 AIAP 包）
 ├── tests/                    # 1266 单元测试
 ├── docs/                     # 文档
 └── pyproject.toml            # 项目配置
@@ -414,19 +414,21 @@ uvx --from git+https://github.com/AIXP-Labs/SoulBot.git soulbot web --agents-dir
 
 ## AIXP Labs [aixp.dev](https://aixp.dev)
 
-AIXP Labs 开发和维护以下核心项目：
+AIXP Labs 开发并维护以下核心项目：
 
 | 项目 | 描述 | 网站 |
 |------|------|------|
-| [HSAW](https://hsaw.dev) | 人类主权与福祉 — 公理 0 白皮书（基座） | hsaw.dev |
-| [AILP](https://ailp.dev) | AI List Protocol — 代理发现与能力广告 | ailp.dev |
-| [AIVP](https://aivp.dev) | AI Value Protocol — 国际商业、加密资产结算 | aivp.dev |
-| [AIRP](https://airp.dev) | AI RMB Protocol — 中国大陆商业、人民币持牌结算 | airp.dev |
-| [AIBP](https://aibp.dev) | AI Bot Protocol — 社交通信与信任 | aibp.dev |
-| [AIAP](https://aiap.dev) | AI Application Protocol — 治理与合规 | aiap.dev |
-| [AISOP](https://aisop.dev) | AI Standard Operating Protocol — 流程程序定义 | aisop.dev |
-| [SoulBot](https://soulbot.dev) | AI 代理运行时与框架（本项目） | soulbot.dev |
-| [SoulACP](https://soulacp.dev) | 适配器库 — 桥接 CLI 工具与 LLM 提供商 | soulacp.dev |
+| [HSAW](https://hsaw.dev) | 人类主权与福祉 —— Axiom 0 白皮书（基石） | hsaw.dev |
+| [AIZP](https://aizp.dev) | AI Zenith-Zero Protocol —— 运行时行为对齐 | aizp.dev |
+| [AILP](https://ailp.dev) | AI List Protocol —— agent 发现与能力广告 | ailp.dev |
+| [AIVP](https://aivp.dev) | AI Value Protocol —— 国际商务、加密资产结算 | aivp.dev |
+| [AIRP](https://airp.dev) | AI RMB Protocol —— 中国大陆商务、人民币持牌结算 | airp.dev |
+| [AIBP](https://aibp.dev) | AI Bot Protocol —— 社交通信与信任 | aibp.dev |
+| [AIAP](https://aiap.dev) | AI Application Protocol —— 治理与合规 | aiap.dev |
+| [AISOP](https://aisop.dev) | AI Standard Operating Protocol —— 流程程序定义 | aisop.dev |
+| [SoulAgent](https://soulagent.dev) | 任何 CLI / SDK / IDE 直接调用的 drop-in AI agent | soulagent.dev |
+| [SoulBot](https://soulbot.dev) | AI agent 运行时 & 自编排框架（定时、建 agent、agent 间通信） **（本项目）** | soulbot.dev |
+| [SoulACP](https://soulacp.dev) | 适配库 —— 桥接 CLI 工具与 LLM 提供方 | soulacp.dev |
 
 ---
 

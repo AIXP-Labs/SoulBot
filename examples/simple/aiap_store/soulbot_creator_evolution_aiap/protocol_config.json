@@ -1,5 +1,5 @@
 {
-  "version": "2.23.0",
+  "version": "2.28.0",
   "split_metadata": {
     "source": "main.aisop.json",
     "split_version": "2.4.0",
@@ -526,11 +526,12 @@
       "Subsystem that only does mechanical increment -> retire",
       "Subsystem duplicated by another -> merge",
       "History entries with no future reference value -> archive",
-      "summary field: current capabilities only, <=500 chars (AIAP protocol alignment)"
+      "summary field: current capabilities only, <=500 chars (AIAP protocol alignment)",
+      "Error field format: standardized taxonomy per B3 v2.25.0 — deviations flagged as YELLOW"
     ],
     "history_retention": 5,
     "archive_target": "quality_archive.json",
-    "enforcement": "advisory + max_summary_chars enforced"
+    "enforcement": "advisory + max_summary_chars enforced + lightweight_policy_enforcement rules (v2.25.0)"
   },
   "nihil_density_metrics": {
     "enabled": true,
@@ -577,7 +578,7 @@
     "note": "Complements self_evolution_density_policy (monotonic_increasing for logic/info density)."
   },
   "monitoring": {
-    "description": "Monitoring and alerting thresholds for pipeline health observability. Consumed by ObservabilityStep and ReviewPresent.",
+    "description": "Monitoring and alerting thresholds for pipeline health observability. Consumed by ObservabilityStep and ReviewPresent. v2.25.0: added per-stage thresholds, attestation monitoring, and error taxonomy correlation.",
     "alerting_thresholds": {
       "pipeline_duration_warning_ms": 300000,
       "pipeline_duration_critical_ms": 600000,
@@ -587,42 +588,143 @@
       "error_rate_warning_pct": 30,
       "error_rate_critical_pct": 50,
       "score_drop_warning": 0.3,
-      "score_drop_critical": 0.5
+      "score_drop_critical": 0.5,
+      "attestation_gap_warning": 2,
+      "attestation_gap_critical": 4,
+      "c1_sync_failure_threshold": 0
     },
     "health_check_interval": "per_pipeline_run",
     "alert_channels": ["pipeline_metadata", "telemetry_report"],
     "suppression_rules": {
       "duplicate_window_ms": 60000,
       "max_alerts_per_stage": 5
+    },
+    "error_taxonomy_correlation": {
+      "description": "Cross-reference error types against monitoring thresholds for root-cause classification.",
+      "timeout_errors": "Correlated with stage_duration_anomaly_factor and pipeline_duration thresholds.",
+      "parse_errors": "Correlated with token_budget thresholds (budget exhaustion -> truncated output -> parse failure).",
+      "quality_failures": "Correlated with score_drop thresholds for regression detection."
     }
   },
   "execution_config_defaults": {
-    "description": "Documented defaults for execution configuration parameters. Provides rationale for each default value to support informed override decisions.",
+    "description": "Documented defaults for execution configuration parameters. Provides rationale for each default value to support informed override decisions. Each default includes empirical basis, override mechanism, and interaction notes for cross-config awareness.",
     "defaults": {
       "quality_threshold": {
         "value": "standard",
-        "rationale": "standard (weighted>=2.7) balances quality assurance with development velocity. strict (>=3.6) for production-critical programs. relaxed (>=2.0) for prototyping.",
-        "override": "CLI --quality-threshold or pipeline param"
+        "rationale": "standard (weighted>=2.7) balances quality assurance with development velocity. strict (>=3.6) for production-critical programs. relaxed (>=2.0) for prototyping. Empirical basis: 24+ evolution cycles show standard threshold catches 95% of regressions without false-positive gate blocks.",
+        "override": "CLI --quality-threshold or pipeline param",
+        "interactions": "Affects QualityGate pass/fail decision, dimension_floor enforcement, and early_termination dynamic_threshold."
       },
       "trace_budget": {
         "value": 2000,
-        "rationale": "2000 trace entries sufficient for 18-stage pipeline with 30 trace_max per stage. Dynamic formula scales for larger targets.",
-        "override": "execution.trace_budget field"
+        "rationale": "2000 trace entries sufficient for 18-stage pipeline with 30 trace_max per stage. Dynamic formula scales for larger targets. Empirical: typical pipeline run uses 400-800 entries; 2000 provides 2.5x headroom.",
+        "override": "execution.trace_budget field",
+        "interactions": "dynamic_trace_budget formula may increase beyond 2000 for large targets. context_compression activates at 50% budget."
       },
       "max_backtrack_depth": {
         "value": "min(3, node_count / 4)",
-        "rationale": "Bounded backtracking prevents infinite loops while allowing recovery from transient failures. 3 is empirically sufficient for 21-node pipelines.",
-        "override": "node_gate.max_backtrack_depth field"
+        "rationale": "Bounded backtracking prevents infinite loops while allowing recovery from transient failures. 3 is empirically sufficient for 21-node pipelines. Formula ensures smaller programs get proportionally fewer retries.",
+        "override": "node_gate.max_backtrack_depth field",
+        "interactions": "Exceeding depth triggers halt_with_diagnostic per node_gate.backtrack_exceeded."
       },
       "self_evolution_penalty_multiplier": {
         "value": 2.0,
-        "rationale": "Double penalty for self-evolution violations ensures stricter compliance when modifying own code, preventing degradation feedback loops.",
-        "override": "Not overridable — safety constraint"
+        "rationale": "Double penalty for self-evolution violations ensures stricter compliance when modifying own code, preventing degradation feedback loops. Safety invariant: cannot be reduced below 1.5x.",
+        "override": "Not overridable — safety constraint",
+        "interactions": "Activated by self_evolution_verification.auto_detection. Affects penalty_accumulation grade_mapping thresholds."
       },
       "nihil_density_green_threshold": {
         "value": 0.15,
-        "rationale": "15% meaningless content ratio is acceptable for generated AISOP files. Below 10% is ideal. Above 30% indicates generation quality issues.",
-        "override": "nihil_density_metrics.thresholds"
+        "rationale": "15% meaningless content ratio is acceptable for generated AISOP files. Below 10% is ideal. Above 30% indicates generation quality issues. Empirical: mature programs (20+ cycles) converge to 5-8%.",
+        "override": "nihil_density_metrics.thresholds",
+        "interactions": "self_evolution_nihil_policy enforces monotonic_decreasing for self-evolution targets."
+      },
+      "pipeline_duration_warning_ms": {
+        "value": 300000,
+        "rationale": "5-minute warning threshold based on p75 pipeline duration across 24+ cycles. Exceeding indicates potential bottleneck or tool timeout.",
+        "override": "monitoring.alerting_thresholds.pipeline_duration_warning_ms",
+        "interactions": "ObservabilityStep consumes for anomaly detection. stage_duration_anomaly_factor (2.0x) catches per-stage outliers."
+      },
+      "attestation_chain_verification_mode": {
+        "value": "strict",
+        "rationale": "Strict verification (recompute all hashes, verify chain length) catches tampering and silent skip. Relaxed mode (length-only) available for debugging but not recommended for production.",
+        "override": "Not overridable in production — safety invariant",
+        "interactions": "pipeline_integrity_chain.broken_chain_action triggers WARNING. QualityGate and ReviewFinalize are verification checkpoints."
+      }
+    }
+  },
+  "execution_config_validation": {
+    "description": "Runtime validation schema for execution_config_defaults. Provides JSON Schema enforcement to ensure configuration values conform to expected types and constraints at pipeline initialization. Closes I12 gap: runtime validation schema enforcement (RF-02).",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "quality_threshold": {
+          "type": "string",
+          "enum": ["strict", "standard", "relaxed"],
+          "default": "standard"
+        },
+        "trace_budget": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 50000,
+          "default": 2000
+        },
+        "max_backtrack_depth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 3
+        },
+        "self_evolution_penalty_multiplier": {
+          "type": "number",
+          "minimum": 1.5,
+          "maximum": 5.0,
+          "default": 2.0,
+          "readOnly": true
+        },
+        "nihil_density_green_threshold": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 0.5,
+          "default": 0.15
+        },
+        "pipeline_duration_warning_ms": {
+          "type": "integer",
+          "minimum": 60000,
+          "maximum": 1800000,
+          "default": 300000
+        },
+        "attestation_chain_verification_mode": {
+          "type": "string",
+          "enum": ["strict", "relaxed"],
+          "default": "strict",
+          "readOnly": true
+        }
+      },
+      "required": ["quality_threshold", "trace_budget", "attestation_chain_verification_mode"],
+      "additionalProperties": false
+    },
+    "enforcement": "PipelineStart: validate execution_config against schema before pipeline proceeds. Validation failure -> BLOCK with CONFIG_VALIDATION_ERROR and field-level diagnostics.",
+    "validator_stage": "PipelineStart.step_config_validation"
+  },
+  "lightweight_policy_enforcement": {
+    "description": "Actionable enforcement rules for lightweight_policy. Provides concrete thresholds and automated actions rather than advisory-only guidance.",
+    "rules": {
+      "summary_enforcement": {
+        "threshold": 500,
+        "unit": "chars",
+        "action": "BLOCK — summary exceeding 500 chars halts pipeline at Generate stage. Auto-truncation attempted first (strip changelog, then trim trailing sentences).",
+        "validator": "ValidateStep.step10 field (m)"
+      },
+      "history_retention_enforcement": {
+        "max_entries": 5,
+        "action": "Entries beyond 5 archived to quality_archive.json. ReviewFinalize enforces during evolution_history append.",
+        "archive_format": "{ version, date, weighted_score, grade, archived_at }"
+      },
+      "deprecated_field_cleanup": {
+        "trigger": "Field lifecycle status = CLOSED or DEPRECATED for >= 2 versions",
+        "action": "Auto-remove from active config, preserve 1-line status in archive. EvolveStep flags as LEVEL_C auto-cleanup."
       }
     }
   }

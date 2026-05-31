@@ -1075,7 +1075,7 @@ When Creator suggests splitting, analyze split boundaries in the following prior
 
 ```
 Priority 1 — Tool boundaries:
-  Node group A uses google_search + web_browser
+  Node group A uses web_search + web_fetch
   Node group B uses only file_system
   → Natural boundary, split into independent sub_aiap
 

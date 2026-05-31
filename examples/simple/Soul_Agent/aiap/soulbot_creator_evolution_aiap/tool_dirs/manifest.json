@@ -2,7 +2,7 @@
   "schema_version": "mcp-1.0-prep",
   "manifest_type": "aiap_tool_directory",
   "aiap_id": "aiap_creator",
-  "aiap_version": "2.23.0",
+  "aiap_version": "2.27.0",
   "aiap_pattern": "D",
   "trust_level": 4,
   "governance": {
@@ -18,17 +18,73 @@
     "runtime": "tbd",
     "entry_point": "tbd"
   },
-  "tools": [],
+  "tools": [
+    {
+      "name": "snapshot_audit",
+      "description": "Audit version snapshot integrity — verifies completeness against hard-coded SNAPSHOT_MANIFEST, validates SHA-256 hashes of snapshot files against source originals, checks meta.json canonical fields (including created_at truthfulness validation: rejects 00:00:00 placeholder, out-of-range year, non-ISO strings). Provides --emit-created-at subcommand to emit Python-computed UTC ISO 8601 timestamp to stdout for meta.json created_at field (emit path is output-only, does not write files). Audit main path: READ-ONLY, never writes or modifies any file.",
+      "path": "tool_dirs/snapshot_audit.py",
+      "language": "python",
+      "runtime": "python3",
+      "annotations": {
+        "read_only": true,
+        "destructive": false,
+        "idempotent": true,
+        "open_world": false
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "snapshot_dir": {
+            "type": "string",
+            "description": "Path to the snapshot directory (.version_history/{version}/)"
+          },
+          "version": {
+            "type": "string",
+            "description": "Expected semver version string"
+          },
+          "aiap_dir": {
+            "type": "string",
+            "description": "Path to the source AIAP directory"
+          }
+        },
+        "required": ["snapshot_dir", "version", "aiap_dir"]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["PASS", "FAIL"] },
+          "files_expected": { "type": "integer" },
+          "files_found": { "type": "integer" },
+          "missing": { "type": "array", "items": { "type": "string" } },
+          "extra": { "type": "array", "items": { "type": "string" } },
+          "hash_mismatches": { "type": "array" },
+          "meta_valid": { "type": "boolean" },
+          "timestamp": { "type": "string" }
+        }
+      },
+      "exit_codes": {
+        "0": "PASS — all checks passed",
+        "1": "FAIL — one or more checks failed"
+      },
+      "invocation": "python tool_dirs/snapshot_audit.py --snapshot_dir=<path> --version=<semver> --aiap_dir=<path> | python tool_dirs/snapshot_audit.py --emit-created-at",
+      "added_in_version": "2.27.0",
+      "consumed_by": "review.aisop.json Finalize.step2 (mandatory post-snapshot audit)"
+    }
+  ],
   "tool_metadata": {
-    "total_tools": 0,
-    "languages": [],
+    "total_tools": 1,
+    "languages": ["python"],
     "dependencies": []
   },
   "security": {
     "file_scope": "tool_dirs/",
     "network_access": "none",
     "dependency_pinning": "strict",
-    "audit_triggers": ["dependency_change", "network_declaration", "permission_escalation"]
+    "audit_triggers": [
+      "dependency_change",
+      "network_declaration",
+      "permission_escalation"
+    ]
   },
   "compatibility": {
     "min_aiap_version": "1.0.0",

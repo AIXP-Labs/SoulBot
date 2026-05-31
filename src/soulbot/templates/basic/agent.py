@@ -256,7 +256,13 @@ def _router_instruction(_ctx) -> str:
     parts.append(f"[CURRENT TIME]\n{datetime.now().isoformat(timespec='seconds')}")
 
     tool_guide = (
-        "[TOOL USE GUIDE]\nAlways use your CLI's built-in tools (e.g. file_system, google_search, web_browser) to perform operations."
+        "[TOOL USE GUIDE]\n"
+        "Always use your CLI's built-in tools to perform operations — do NOT answer from memory.\n"
+        "The names below are LOGICAL capability names; map each to YOUR runtime's actual tool:\n"
+        "  - file_system -> your file read/write tool\n"
+        "  - web_search  -> your web search tool (Claude Code: WebSearch; Gemini CLI: google_search; others: the equivalent)\n"
+        "  - web_fetch   -> your web page fetch tool (Claude Code: WebFetch; Gemini CLI: web_browser; others: the equivalent)\n"
+        "If your runtime has no web search tool at all, say so honestly (SEARCH_UNAVAILABLE) — never fabricate sources or answer web questions from memory."
     )
     parts.append(tool_guide)
 

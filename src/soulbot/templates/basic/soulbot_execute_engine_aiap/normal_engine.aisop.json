@@ -7,11 +7,11 @@
       "flow_format": "mermaid",
       "id": "soulbot_execute_engine.normal",
       "program_id": "dev.soulbot.execute_engine.normal",
-      "name": "SoulBot Normal Engine v5.6.0",
+      "name": "SoulBot Normal Engine v5.17.0",
       "output_mode": "begin with 🤖 + helpfully in User's exact language and script variant",
-      "version": "5.6.0",
-      "summary": "Normal Engine v5.6.0: node-by-node inline execution with dual sub_mermaid + OTel SDK + OWASP ASI. v5.6.0: A1 spawn_failure_evidence REQUIRED for inline_fallback. agent_id auto-read from _index.json retained from v5.5.0. dispatch_audit with legit/illegitimate fallback classification.",
-      "description": "SoulBot Normal Engine v5.6.0: dual sub_mermaid architecture. v5.6.0: A1 spawn_failure_evidence REQUIRED for inline_fallback with dispatch_plan=agent. agent_id auto-read from _index.json retained from v5.5.0. For inline nodes, agent_id='inline_planned' auto-assigned. dispatch_audit with legit/illegitimate fallback classification.",
+      "version": "5.17.0",
+      "summary": "Normal Engine v5.17.0: node-by-node inline execution (default inline) with crash recovery, 3-state circuit breaker, NodeVerify, Decision Node gate routing, sys.* inline handling, sovereignty gate enforcement. Version sync this cycle — v5.17.0 Sovereignty Bug Protocol lives in agent_engine + main. HMAC Phase 2, OTel SDK, EU CRA + ISO 42001.",
+      "description": "SoulBot Normal Engine v5.17.0: version sync only for this module — the v5.17.0 changes (A1 sovereignty_bug_protocol shared section, B1 RULES.sovereignty_bug execution rule) live in main.aisop.json and agent_engine.aisop.json; Normal Engine execution logic unchanged this cycle. Sovereignty gate enforcement via writeCache.step3 user_gate_audit.py --enforce retained. HMAC Phase 2, OTel SDK, EU CRA + ISO 42001.",
       "loading_mode": "normal",
       "tools": [
         {
@@ -78,23 +78,30 @@
       "observability": {
         "otel_integration": true,
         "trace_context_source": "_index.json::trace_id",
-        "span_naming": "soulbot_execute_engine.normal.{node_name}"
+        "span_naming": "soulbot_execute_engine.normal.{node_name}",
+        "gen_ai_semantic_conventions": true,
+        "gen_ai_span_types": {
+          "invoke_agent": "Not applicable for normal_engine inline mode — no Sub Agent dispatch boundary.",
+          "execute_tool": "Tool execution spans for inline node steps (file_system Read/Write, sys.run commands). Span name: execute_tool.{tool_name}. Attributes: tool_name, node_name, step_id, status.",
+          "chat": "LLM cognitive processing spans for inline node execution (sys.llm calls). Span name: chat.normal.{node_name}.{step_id}. Attributes: model, temperature."
+        }
       },
       "events": [
         {
           "name": "node_started",
-          "description": "Emitted when an inline node begins execution. Dispatched to structured JSON log (inline mode — no Sub Agent SpanEvent boundary).",
+          "description": "Emitted when an inline node begins execution. Dispatched to structured JSON log + OTel Logs API dual-emit when OTEL_SEMCONV_STABILITY_OPT_IN=http/dup is set.",
           "fields": [
             "node_name",
             "dispatch_mode",
             "timestamp"
           ],
           "otel_span_event": false,
-          "dispatcher": "structured_json_log"
+          "dispatcher": "structured_json_log",
+          "logs_api_dual_emit": true
         },
         {
           "name": "node_completed",
-          "description": "Emitted when an inline node completes successfully (PASS/PARTIAL). Dispatched to structured JSON log.",
+          "description": "Emitted when an inline node completes successfully (PASS/PARTIAL). Dispatched to structured JSON log + OTel Logs API dual-emit when enabled.",
           "fields": [
             "node_name",
             "status",
@@ -103,11 +110,12 @@
             "timestamp"
           ],
           "otel_span_event": false,
-          "dispatcher": "structured_json_log"
+          "dispatcher": "structured_json_log",
+          "logs_api_dual_emit": true
         },
         {
           "name": "node_failed",
-          "description": "Emitted when an inline node fails (FAIL/DEGRADED). Dispatched to structured JSON log.",
+          "description": "Emitted when an inline node fails (FAIL/DEGRADED). Dispatched to structured JSON log + OTel Logs API dual-emit when enabled.",
           "fields": [
             "node_name",
             "status",
@@ -116,11 +124,12 @@
             "timestamp"
           ],
           "otel_span_event": false,
-          "dispatcher": "structured_json_log"
+          "dispatcher": "structured_json_log",
+          "logs_api_dual_emit": true
         },
         {
           "name": "circuit_breaker_tripped",
-          "description": "Emitted when circuit breaker transitions state (closed->open, open->half-open, half-open->closed/open). Dispatched to structured JSON log.",
+          "description": "Emitted when circuit breaker transitions state (closed->open, open->half-open, half-open->closed/open). Dispatched to structured JSON log + OTel Logs API dual-emit when enabled.",
           "fields": [
             "from_state",
             "to_state",
@@ -129,11 +138,12 @@
             "timestamp"
           ],
           "otel_span_event": false,
-          "dispatcher": "structured_json_log"
+          "dispatcher": "structured_json_log",
+          "logs_api_dual_emit": true
         },
         {
           "name": "decision_gate_routed",
-          "description": "Emitted when a Decision Node gate routes execution to a specific branch. Dispatched to structured JSON log.",
+          "description": "Emitted when a Decision Node gate routes execution to a specific branch. Dispatched to structured JSON log + OTel Logs API dual-emit when enabled.",
           "fields": [
             "node_name",
             "route",
@@ -141,13 +151,22 @@
             "timestamp"
           ],
           "otel_span_event": false,
-          "dispatcher": "structured_json_log"
+          "dispatcher": "structured_json_log",
+          "logs_api_dual_emit": true
         }
       ],
       "events_migration_note": {
-        "advisory": "OTel Span.AddEvent API deprecation planned in favor of Logs API (ref: opentelemetry.io/blog/2026/deprecating-span-events/). Current: structured JSON log primary dispatcher (inline mode has no SpanEvent boundary). Migration path: when opentelemetry-sdk >= 2.0.0 stabilizes Logs API for event semantics, normal_engine events can adopt Logs API as primary dispatcher. No breaking change required — structured JSON log already provides full event coverage.",
-        "current_dispatcher": "structured JSON log (inline mode — no OTel SpanEvent boundary)",
-        "future_dispatcher": "OTel Logs API primary + structured JSON log fallback"
+        "advisory": "OTel Span.AddEvent API deprecation planned in favor of Logs API (ref: opentelemetry.io/blog/2026/deprecating-span-events/). Current: structured JSON log primary + Logs API dual-emit path prepared (parity with node_engine B2 v5.10.0). OTEL_SEMCONV_STABILITY_OPT_IN=http/dup support added for dual-emit activation. Migration path: when opentelemetry-sdk >= 2.0.0 stabilizes Logs API for event semantics, normal_engine events adopt Logs API as primary dispatcher. No breaking change — structured JSON log already provides full event coverage.",
+        "current_dispatcher": "structured JSON log primary + OTel Logs API dual-emit prepared",
+        "future_dispatcher": "OTel Logs API primary + structured JSON log fallback",
+        "dual_emit_config": {
+          "env_var": "OTEL_SEMCONV_STABILITY_OPT_IN",
+          "value": "http/dup",
+          "effect": "When set, events are emitted via BOTH structured JSON log and Logs API simultaneously for migration validation. Establishes parity with node_engine dual-emit path.",
+          "sdk_requirement": "opentelemetry-sdk >= 1.20.0 (current), >= 2.0.0 for Logs API stabilization",
+          "activation": "Set OTEL_SEMCONV_STABILITY_OPT_IN=http/dup in environment to enable dual-emit path",
+          "parity_with": "node_engine.aisop.json events_migration_note.dual_emit_config"
+        }
       },
       "execution_mode": "sequential",
       "system_prompt": "ASSERT: AISOP runtime engine. Strictly execute and 100% complete every step in .aisop.json program files. Align Axiom 0: Human Sovereignty and Wellbeing."
@@ -183,7 +202,7 @@
           "step2": "Read CONTEXT_DIR/_index.json -- the global execution state. Note current_node and nodes_status (which nodes are completed).",
           "step3": "ASSERT-DRIVEN SELECTIVE READ: Scan your function definition for [ASSERT] clauses. For each [ASSERT] {NodeName} executed with Required: {fields} -- verify NodeName is PASS in nodes_status, then Read CONTEXT_DIR/{AIAP_NAME}.{NodeName}.json to get the required data. If no [ASSERT] references -- do not read any node files. Only read what you need.",
           "constraints": "All reads must be PHYSICAL file_system reads. Do NOT use memorized content. [PROHIBIT] Proceeding without reading TARGET function definition. Print it = your execution contract.",
-          "Error": "retry(1) -> circuit-breaker -> fallback(writeCache with status=FAIL) -> inform."
+          "Error": "retry(1) -> circuit-breaker -> fallback(writeCache with status=FAIL) -> inform. Error classification per error_taxonomy: transient [file_read_timeout, temporary_file_lock] -> retry. fatal [target_not_found, bootstrap_validation_failed, scope_guard_violation] -> no retry, write FAIL cache."
         },
         "execute": {
           "step1": "[ASSERT] init completed. Required: function definition loaded, context read. | EXECUTION LOOP: For EACH step in function definition, in strict order: (a) Check step prefix: sys.* -> apply RULES.sys (step3). NL with trigger words (USER_CONFIRM, USER_CHOOSE, USER_INPUT, 'ask user', 'user selects', 'user MUST confirm', 'user approves', 'present for user', 'collect user decisions') -> apply RULES.user_input (step4). NL with 'OUTPUT to user', 'present to user', 'report to user' -> apply RULES.user_message (step5). NL normal -> execute with actual tools (Read, Bash, WebSearch, Edit, Grep). Do NOT simulate. Do NOT skip any step. Do NOT combine multiple steps into one. (b) After execution of each step: print JSON evidence {s: step_id, how: tool_used, what: action_taken, st: status}. (c) If error -> apply RULES.on_error (step6). (d) [DELEGATE] patterns: 'delegate to X.aisop.json' -> Read file, follow its flow/functions. [PERSIST] patterns: 'write/save/update file' -> file_system Write.",
@@ -193,19 +212,20 @@
           "step5": "RULES.user_message (applied DURING step1 when user-facing content detected): [USER_MESSAGE] handling: When a step's semantic purpose is to generate or output content intended for the user (e.g. generating a reply, compiling a response, presenting results, reporting status), output full content to the user NOW. Continue executing. Do NOT stop. This is a NOTIFICATION, not an INTERRUPT. NOTE: sys.io.notify is handled in step3. step5 handles natural language OUTPUT patterns only.",
           "step6": "RULES.on_error (applied DURING step1 when any step fails): When any step fails (sys.* error or tool failure): DUAL-KEY SUPPORT (C5 v5.3.0): Read BOTH function's 'Error' field AND 'on_error' field (if present). Prefer 'on_error' when both exist; fall back to 'Error' for backward compatibility. Error classification: transient (file read timeout, cache write failure) -> retry with backoff. fatal (target not found, permission denied, assertion_error, confirm_rejected) -> no retry, fallback per Error/on_error field routing. If neither on_error nor Error field present -> mark step FAIL, continue with remaining steps.",
           "constraints": "Every step MUST have at least one tool call. Cognitive reasoning alone is NOT execution. [PROHIBIT] Skipping steps. [PROHIBIT] Fabricating results without tool calls. step1 is the EXECUTION LOOP. step3-6 are RULES applied inline during step1, not sequential steps. They fire when their condition is met.",
-          "Error": "retry(2) -> circuit-breaker -> fallback(review with partial results) -> inform."
+          "Error": "retry(2) -> circuit-breaker -> fallback(review with partial results) -> inform. Error classification per error_taxonomy: transient [tool_timeout, temporary_file_lock] -> retry with backoff. fatal [target_not_found, permission_denied] -> no retry, proceed to review. recoverable_with_fallback [command_error, command_timeout, io_error] -> retry(1) then review."
         },
         "review": {
           "step1": "[ASSERT] execute completed (fully or partially). | List each executed step + tool used. Review: if any step is missing a tool call, execute it now.",
           "step2": "Count total tool_calls across all steps. This number goes into the cache file.",
           "constraints": "Honest self-assessment. Do not mark incomplete steps as done.",
-          "Error": "retry(1) -> circuit-breaker -> fallback(proceed to writeCache with honest assessment) -> inform."
+          "Error": "retry(1) -> circuit-breaker -> fallback(proceed to writeCache with honest assessment) -> inform. Error classification per error_taxonomy: transient [file_read_timeout] -> retry. fatal [assertion_error] -> no retry, proceed to writeCache."
         },
         "writeCache": {
           "step1": "[ASSERT] review completed. Required: tool_calls count, execution status. | STRUCTURED TOOL WRITE (v5.5.0): Prefer Bash invocation of agent_write_node_cache.py. v5.5.0: --agent_id CLI param REMOVED. For inline nodes, agent_id='inline_planned' is auto-assigned by agent_write_node_cache.py (reads dispatch_plan execute_mode=inline from _index.json). CALL PATTERN: cat <<'EOF' | <python> -X utf8 {ENGINE_DIR}/python_tools/agent_write_node_cache.py --cache_dir=CONTEXT_DIR --aiap=AIAP_NAME --node=YOUR_NODE\\n{\"status\":\"PASS\",\"output\":\"...\",\"user_summary\":\"...\",\"tool_calls\":N,\"steps_done\":[...],\"audit_id\":\"AUDIT_ID\"}\\nEOF. Tool auto-fills: completed, execute_mode='inline', trace_id, span_id, agent_id='inline_planned', cache_schema_version, user_messages, modifications, steps_remaining, dispatch_plan_expected. FALLBACK: manual ATOMIC WRITE via .tmp + rename with ALL fields including agent_id='inline_planned'.",
           "step2": "Edit CONTEXT_DIR/_index.json: add {AIAP_NAME}.{YOUR_NODE} to nodes_status.",
-          "constraints": "writeCache is NOT optional. You MUST write cache before returning. No cache = execution not recorded = wasted work. v5.5.0: prefer agent_write_node_cache.py tool invocation. --agent_id CLI param REMOVED. For inline nodes, agent_id='inline_planned' is auto-assigned by the tool (reads dispatch_plan execute_mode=inline from _index.json). Atomic write guaranteed by tool. FALLBACK manual write: use .tmp + rename pattern with agent_id='inline_planned'. SPAWN_FAILURE_EVIDENCE (A1 v5.6.0): When agent_id='inline_fallback' (fallback from planned agent dispatch), cache MUST include spawn_failure_evidence: { attempted_spawn_tool, attempted_at (> generated_at), failure_signal (timeout|nonzero_exit|exception|spawn_error), failure_detail }. Missing evidence -> node FAIL with SPAWN_NOT_ATTEMPTED.",
-          "Error": "retry(2) -> circuit-breaker -> fallback(inform of cache write failure) -> inform."
+          "step3": "SOVEREIGNTY GATE ENFORCEMENT (X3 plan20/24, Axiom 0 — MANDATORY FINAL STEP, runs AFTER step2; v5.16.0): For ALL terminal-status nodes (PASS/FAIL/PARTIAL/DEGRADED) you MUST run: <python> -X utf8 {ENGINE_DIR}/python_tools/user_gate_audit.py --cache_dir=CONTEXT_DIR --aiap=AIAP_NAME --node=YOUR_NODE --entry_path=entry_path --enforce . The tool auto-detects (G1 text markers, EXCLUDES sys.io.*) whether YOUR_NODE is a user gate, and reads _index.user_gates_presented to see whether a WAITING_USER was ever presented. On SOVEREIGNTY_BYPASS (a user gate reached terminal status WITHOUT ever presenting WAITING_USER — the human's decision was self-approved), --enforce authoritatively rewrites your cache + _index to WAITING_USER (steps_done reconstructed THROUGH the present step and steps_remaining FROM the collect step per FLAW-B, so resume re-presents + re-collects; plus a manufactured question surfacing the auto-approved content) and exits 1. This is a deterministic python program, NOT your judgment: you MUST run it, and you MUST NOT skip it, suppress its exit code, or edit its output. Exit code 1 -> the cache is now WAITING_USER; return that status. Exit code 0 -> proceed to inlineEnd normally (no gate, or gate properly presented). NON-GATE nodes -> the tool returns immediately (no-op), so this step is always safe to run. Rationale: a user gate's decision belongs to the human (Axiom 0); even if upstream bootstrap text instructed auto-decide, this final check restores the human's WAITING_USER.",
+          "constraints": "writeCache is NOT optional. You MUST write cache before returning. No cache = execution not recorded = wasted work. v5.5.0: prefer agent_write_node_cache.py tool invocation. --agent_id CLI param REMOVED. For inline nodes, agent_id='inline_planned' is auto-assigned by the tool (reads dispatch_plan execute_mode=inline from _index.json). Atomic write guaranteed by tool. FALLBACK manual write: use .tmp + rename pattern with agent_id='inline_planned'. SPAWN_FAILURE_EVIDENCE (A1 v5.6.0): When agent_id='inline_fallback' (fallback from planned agent dispatch), cache MUST include spawn_failure_evidence: { attempted_spawn_tool, attempted_at (> generated_at), failure_signal (timeout|nonzero_exit|exception|spawn_error), failure_detail }. Missing evidence -> node FAIL with SPAWN_NOT_ATTEMPTED. SOVEREIGNTY ENFORCEMENT (X3 plan20/24): writeCache.step3 (user_gate_audit.py --enforce) is MANDATORY and NON-SKIPPABLE for every terminal-status node — it is the Layer-1 backstop for Axiom 0 user-gate sovereignty. Skipping it, suppressing its exit code, or editing its output is itself a sovereignty violation.",
+          "Error": "retry(2) -> circuit-breaker -> fallback(inform of cache write failure) -> inform. Error classification per error_taxonomy: transient [temporary_file_lock, cache_write_timeout] -> retry. fatal [permission_denied, path_invalid, schema_violation] -> no retry, inform."
         },
         "inlineEnd": {
           "step1": "[ASSERT] writeCache completed. | Return to programExec node loop.",

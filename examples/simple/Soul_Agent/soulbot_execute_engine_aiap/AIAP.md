@@ -10,14 +10,15 @@ governance_mode: NORMAL
 
 # Project Fields (8 required)
 name: soulbot_execute_engine
-version: "5.6.0"
+version: "5.17.0"
 pattern: B+
 tool_dirs: []                # No tool packages embedded; python_tools/ is executor_shim only
 executor_shim: true          # python_tools/ contains executor-internal shims (prepare_cache.py, etc.) — NOT registered tools per AIAP Pattern G. See 'executor_shim note' below.
 flow_format: "mermaid"
-summary: "SoulBot Execute Engine v5.6.0 — Router + dual Engine orchestration (node/normal) + Sub Agent contract + server-side agent_id generation + spawn_failure_evidence enforcement + legit/illegitimate fallback dispatch_audit + governance_hash TRI-SYNC + dispatch_plan compliance enforcement + dispatch_records timestamp anti-forgery. 4 modules, 14 nodes. v5.6.0: A1 spawn_failure_evidence REQUIRED for inline_fallback (attempted_spawn_tool, attempted_at, failure_signal, failure_detail), A2 no-evidence fallback = FAIL (SPAWN_NOT_ATTEMPTED), A3 dispatch_audit restored legit/illegitimate fallback classification, A4 agent_id_generator prefix aligned with capability_probe.recommended. Pattern B+."
-governance_hash: "sha256:d31561a01e5f25cb074ad63bb16917344186eee0e6596d65dd16faea4233aeb8"
+summary: "SoulBot Execute Engine v5.17.0 -- MINOR: Sovereignty Bug Protocol. A1 sovereignty_bug_protocol shared section (main.aisop.json + agent_engine.aisop.json): sovereignty_toolset enumeration, self_modification_red_line, bug_classification 3-tier, bug_legal_channel (separation of powers), exposure_chain_spec (sovereignty_log with prev_hash). B1 RULES.sovereignty_bug execution rule in agent_engine (Critical=immediate WAITING_USER, Medium=continue+report, Light=summary+ask). 0 breaking changes. X3 sovereignty enforcement, HMAC Phase 2, deterministic dispatch, server-side agent_id retained. 4 modules, 14 nodes. Pattern B+."
+governance_hash: "sha256:0d1f81c467b94f4cf5769541900c1aeaa0badb3452470069e0eef9c4e7c340dc"
 hash_algorithm_version: "v1.0"
+governance_hash_canonical_version: "1.0"
 tools:
   - name: file_system
     required: true
@@ -42,7 +43,7 @@ modules:
     idempotent: false
     side_effects: [file_write]
     execution_mode: hybrid
-    description: "Node Engine — executes target AIAP node-by-node via Sub Agent dispatch (default agent). Crash recovery (last_completed_node), circuit breaker (3-state: closed/half-open/open), parallel dispatch (independent branch analysis), NodeVerify audit, Decision Node gate routing."
+    description: "Node Engine — executes target AIAP node-by-node via Sub Agent dispatch (default agent). Deterministic dispatch_plan generation via generate_dispatch_plan.py (v5.7.0 A1). Dispatch audit pre-execution gate (v5.7.0 A3). Crash recovery (last_completed_node), circuit breaker (3-state: closed/half-open/open), parallel dispatch (independent branch analysis), NodeVerify audit, Decision Node gate routing. Transient cache retry with exponential backoff (v5.6.1 A2)."
   - id: soulbot_execute_engine.normal
     file: normal_engine.aisop.json
     nodes: 2
@@ -58,13 +59,13 @@ modules:
     idempotent: false
     side_effects: [file_write]
     execution_mode: sequential
-    description: "Agent Engine — Sub Agent execution contract. init (read target + context + ASSERT-driven selective read + SCOPE GUARD + RESUME_MODE) -> execute (execution loop with RULES.sys/user_input/user_message/on_error) -> review (tool call verification) -> writeCache (atomic write + steps_done/remaining). Identity-defined, Print-it commitment."
+    description: "Agent Engine — Sub Agent execution contract. init (read target + context + ASSERT-driven selective read + SCOPE GUARD + RESUME_MODE) -> execute (execution loop with RULES.sys/user_input/user_message/on_error/sovereignty_bug) -> review (tool call verification) -> writeCache (atomic write + read-back verification + steps_done/remaining + last_completed_node advancement for terminal nodes + sovereignty gate enforcement via user_gate_audit.py --enforce). v5.17.0: RULES.sovereignty_bug (3-tier classification for sovereignty toolset bugs). Identity-defined, Print-it commitment."
 
 # Identity
 program_id: dev.soulbot.execute_engine
 identity:
   publisher: "AIXP Foundation AIXP.dev | SoulBot.dev"
-  verified_on: "2026-05-20"
+  verified_on: "2026-05-29"
 trust_level:
   level: 3
   justification: "Execute Engine requires read/write access to execution cache directory and target AIAP files. No network access. No destructive operations. Internal orchestration component."
@@ -125,6 +126,11 @@ capabilities:
     - server_side_agent_id_generation
     - dispatch_records_anti_forgery
     - integrity_only_audit
+    - transient_cache_retry
+    - degraded_reason_enum
+    - write_cache_read_back_verification
+    - deterministic_dispatch_plan_generation
+    - dispatch_audit_pre_execution_gate
   required:
     - file_system
 
@@ -166,22 +172,22 @@ intent_examples:
 
 # Benchmark
 benchmark:
-  threedimscore: 4.895
+  threedimscore: "4.97"
   grade: "S"
-  cognitive: 4.786
-  intrinsic: 4.885
-  detail: 5.0
-  simulation_coverage: "45/45 GREEN"
+  cognitive: "4.930"
+  intrinsic: "5.000"
+  detail: "4.950"
+  simulation_coverage: "100%"
   total_nodes: 14
-  pass_rate: "18/18 pipeline stages PASS (18/18 nodes)"
-  nihil_density: "PASS (all GREEN, 1.67%)"
-  note: "v5.6.0 FINALIZED cycle 20. Generate2 scores: C=4.786 I=4.885 D=4.850. Deferred D6/D8/D10 reconciled 4.5->5.0. D_avg->5.0. Final weighted 4.895 (S). Delta +0.046 from v5.5.0 (4.849). Above baseline 4.72. 0 illegitimate_fallback."
+  pass_rate: "100%"
+  nihil_density: "0.4%"
+  note: "v5.15.0 FINALIZED by ReviewFinalize (cache/57). Full scope (4/4 modules). ThreeDimTest: C=4.930 I=4.950 D=4.800 stage-weighted=4.900 (Professional C*0.25+I*0.45+D*0.30). Post-Finalize D6/D10 reconciliation: D_avg 4.80->4.90, final_adjusted=4.930 Grade S. Previous: v5.14.1 weighted=4.97 (Grade S)."
 
 # Quality
 quality:
-  weighted_score: 4.895
-  grade: S
-  last_pipeline: "Creator Evolve pipeline v5.6.0 FINALIZED (2026-05-20): v5.5.0 -> v5.6.0 MINOR. A1 spawn_failure_evidence REQUIRED for inline_fallback, A2 no-evidence fallback = FAIL (SPAWN_NOT_ATTEMPTED), A3 dispatch_audit legit/illegitimate fallback classification, A4 agent_id_generator prefix alignment with capability_probe. Final weighted 4.895 (S). Deferred D6/D8/D10 reconciled. governance_hash TRI-SYNC verified."
+  weighted_score: "4.930"
+  grade: "S"
+  last_pipeline: "Creator Evolve pipeline v5.16.0 FINALIZED by ReviewFinalize (cache/58, 2026-05-30): v5.15.0 -> v5.16.0 MINOR. B1 normal_engine sovereignty gate enforcement. ThreeDimTest: C=4.93 I=4.95 D=4.90 weighted=4.930 Grade S. Simulation: 3/3 PASS. Validation: 24/24 PASS. Previous: v5.15.0 final_adjusted=4.930 Grade S."
   changes_v4_0_0: "15 items: A1(AIAP.md) + A2(quality_baseline) + B1(crash recovery) + B2(circuit breaker) + B3(parallel dispatch) + B4(execution metrics) + B5(tool annotations) + C1-C8(atomic writes, cache schema, retry classification, turn_type, ASSERT gates, version sync, json_schema, identity). ThreeDimTest: 4.43 weighted (Grade A). Created by Creator Evolve pipeline (cache/129)."
   changes_v5_0_0: "14 design items + 4 quality fixes: M1(WAITING_USER/MESSAGE_PENDING relay), A1(identity definition), A2(Print-it), A3(USER_MESSAGE), A4(sys.* 24-call handling), A5(AGENT_ID), A6(on_error routing), A7(steps_done/remaining), N1(NodeVerify), N1.5(parallel wave interrupt), N2(Decision Node gate), N3(sys.* bootstrap hint), NM1-NM3(normal_engine parity). QS-01(half-open circuit breaker), QS-04(trace_id), QS-05(bootstrap validation), QS-06(normal_engine resilience parity). ThreeDimTest: 4.72 weighted (Grade A). Created by Creator Create pipeline (cache/131). Based on 05-engine-aiap-v5-design.md."
   changes_v5_2_0: "Architecture refactor (non-Creator): prepare_cache.py dual-use module introduced at python_tools/prepare_cache.py — callable as Python library (agent.py fast path ~5ms) or Bash CLI (AISOP fallback ~300ms). agent.py reduced from ~450 to ~361 lines (-89). main.aisop.json execute.step2/step3 simplified — single source of truth for cache creation. 16 test cases added (TestLibraryAPI x8 + TestCLI x5 + TestEquivalence x3), 16/16 PASS. Portable across Agent frameworks supporting Bash. Architecture aligned with 'AISOP layer only creates new caches' principle. Based on 05-prepare-cache-dual-use-plan.md."
@@ -236,6 +242,48 @@ evolution:
   - version: "5.6.0"
     date: "2026-05-20"
     note: "Fallback tightening with spawn_failure_evidence. MINOR evolution v5.5.0 -> v5.6.0. 8 items (4A + 4C). Evidence: cycle 19 ObservabilityStep used inline_fallback with vague fallback_reason — cannot distinguish real spawn failure from never-attempted spawn. A1 spawn_failure_evidence schema REQUIRED for inline_fallback (attempted_spawn_tool, attempted_at > generated_at, failure_signal enum, failure_detail structured). A2 no-evidence fallback = FAIL with SPAWN_NOT_ATTEMPTED. A3 dispatch_audit.py restored legit/illegitimate fallback classification. A4 agent_id_generator.py prefix alignment with capability_probe.recommended. C1 version bump, C2 name sync, C3 evolution_history append, C4 governance_hash TRI-SYNC. 0 breaking changes."
+  - version: "5.6.1"
+    date: "2026-05-26"
+    note: "Reliability patch via Creator Evolve pipeline (cache/32). PATCH evolution v5.6.0 -> v5.6.1. 3 items (1A + 1B + 1C-implicit): A2 transient cache retry for node_engine (retry with exponential backoff on transient file system errors during cache read/write), A3 degraded_reason enum (structured enum replacing free-text degraded_reason in NodeVerify: TOOL_CALL_DEFICIT, PARTIAL_OUTPUT, TIMEOUT, TRANSIENT_FAILURE), B1 writeCache read-back verification in agent_engine (atomic write followed by read-back comparison to detect silent write corruption). 0 breaking changes. ThreeDimTest: C=4.857 I=5.000 D=4.700 weighted=4.874 (Grade S)."
+  - version: "5.9.0"
+    date: "2026-05-27"
+    note: "Dispatch plan generation vulnerability fix via Creator Evolve pipeline (cache/40). MINOR evolution v5.6.1 -> v5.7.0. 3 A-level + 1 B-level + C-sync items. A1 NEW python_tools/generate_dispatch_plan.py deterministic tool. A2 node_engine.aisop.json programExec.step2 rewritten. A3 dispatch_audit.py --pre-execution generation-stage gate. B1 version bump. 0 breaking changes. ThreeDimTest 4.874 (Grade S)."
+  - version: "5.10.0"
+    date: "2026-05-28"
+    note: "HMAC Phase 2 + NIST CAISI + compliance hardening via Creator Evolve pipeline (cache/45). MINOR evolution v5.9.0 -> v5.10.0. A1 HMAC Phase 2 runtime active (signing/verification when key present). B1 NIST CAISI three-pillar alignment propagated to all engines. B2 HMAC delegation contract formalized. B3 EU CRA SRP registration readiness. B4 Art.50 CoP tracking. B5 OTel Logs API dual-emit preparation. C1-C3 governance sync + summary trimming. 0 breaking changes."
+  - version: "5.12.0"
+    date: "2026-05-29"
+    note: "User_gate enforcement remediation via Creator Evolve pipeline (cache/47). MINOR evolution v5.11.0 -> v5.12.0 FINALIZED. G1 auto-detect gates from node definition text (user_gate_audit.py enhancement). G3 multi-file node parsing for gate detection across delegated modules. G4 effective coerce to FAIL+halt (not WAITING_USER) when sovereignty bypass detected. HMAC_CONSTANT_TIME MUST enforcement upgraded from advisory per CVE-2026-21713. HMAC key rotation 4-step procedure documented. MCP 2026 roadmap tracking (Server Cards, Streamable HTTP, DPoP, Tasks). B3 sovereignty gate precedence retained. ThreeDimTest: C=4.929 I=4.923 D=5.000 weighted=4.947 Grade S. 0 breaking changes."
+  - version: "5.13.0"
+    date: "2026-05-29"
+    note: "nodes_in_path completeness + NODE SUMMARY user language via Creator Evolve pipeline (cache/48). MINOR evolution v5.12.0 -> v5.13.0 FINALIZED. A1 dispatch_audit.py nodes_in_path completeness verification (independent mermaid reparse, QI-2, gate omission CRITICAL, decision branch exempt). A2 node_engine programExec step2 wire completeness check. B1 NODE SUMMARY forced user language. C1-C5 version sync, name sync, evolution_history, governance_hash TRI-SYNC, summary. 0 breaking changes. ThreeDimTest: C=5.000 I=4.923 D=4.950 weighted=4.950 Grade S."
+  - version: "5.13.1"
+    date: "2026-05-29"
+    note: "Branch-aware completeness fix via Creator Evolve pipeline (cache/49). PATCH evolution v5.13.0 -> v5.13.1. A1 dispatch_audit.py branch-aware completeness verification (walked branches checked, unwalked branches exempt, edge label regex fix — prevents false node matches from Pass/Fail/Red/Yellow edge labels). A2 node_engine step2 wiring recalibrated for branch-aware semantics. C-auto version bump, name sync, governance_hash TRI-SYNC deferred to ReviewFinalize. 0 breaking changes."
+  - version: "5.13.2"
+    date: "2026-05-29"
+    note: "Python subprocess prefix alignment via Creator Evolve pipeline (cache/50) FINALIZED. PATCH evolution v5.13.1 -> v5.13.2. C-PREFIX-1/C-PREFIX-2: agent_engine writeCache step2/step3 python subprocess call prefix aligned from bare 'python' to '<python> -X utf8', consistent with node_engine/normal_engine convention (prevents Windows non-ASCII encoding issues per PEP 686). C-auto version bump, name sync, evolution_history append, governance_hash TRI-SYNC. ThreeDimTest: C=4.930 I=4.960 D=5.000 weighted=4.960 Grade S. 0 breaking changes."
+  - version: "5.14.0"
+    date: "2026-05-29"
+    note: "X3 sovereignty enforcement documentation formalization via Creator Evolve pipeline (cache/51) FINALIZED. MINOR evolution v5.13.2 -> v5.14.0. C1: Fixed agent_engine description — G4 FAIL+halt narrative corrected to X3 WAITING_USER rewrite via user_gate_audit.py --enforce (FLAW-A resets _index, FLAW-B reconstructs steps_done). C2: Updated node_engine e2f label to X3 semantics. C3: Replaced 'pending v5.14.0 bump' version placeholders. C4: Updated summary fields across all 4 modules. C5: Version bump 5.13.2 -> 5.14.0 + name sync. C8: Industry research gap report — Layer-1 vs Layer-2 enforcement comparison (4 gaps, 4 backlog items). X3 execution logic was manually implemented between v5.13.1->v5.13.2; this version formalizes documentation. No execution body changes — step3 --enforce, e2f --enforce, FLAW-A/B behavior, NON-SKIPPABLE all preserved verbatim. ThreeDimTest: C=4.900 I=5.000 D=5.000 weighted=4.975 Grade S. 0 breaking changes."
+  - version: "5.14.1"
+    date: "2026-05-29"
+    note: "PATCH evolution v5.14.0 -> v5.14.1 via Creator Evolve pipeline (cache/52) FINALIZED. 3 bug fixes + 5 C-auto items. A1 node_engine programExec step5 _index.json merge via agent_update_index.py (prevents loss of user_gates_presented during concurrent writes). A2 node_engine programExec step4 language fallback chain changed to conversation language detection before English fallback. A3 agent_engine init step6 RESUME_MODE completion mandate — after RESUME_MODE execution, full review->writeCache pipeline MUST execute including step2 agent_update_index.py and step3 user_gate_audit.py --enforce (prevents bypass of nodes_status update and sovereignty enforcement on resumed nodes). Guardrails verified: writeCache.step3 and X3 sovereignty enforcement NOT MODIFIED. ThreeDimTest: C=4.930 I=5.000 D=4.950 weighted=4.97 Grade S. 0 breaking changes."
+  - version: "5.14.2"
+    date: "2026-05-30"
+    note: "PATCH (documentation only) v5.14.1 -> v5.14.2 via Creator Evolve pipeline (cache/53) FINALIZED. A1: added 'Known Limitations (v5.14.2)' section to AIAP.md documenting underlying-runtime (Claude Code/Node/V8) long-session JS heap OOM — symptom: single long-running node session accumulation -> child process exit 0xC0000409 (abort/heap OOM), crash node drifts; root cause: upstream Claude Code not-planned (GitHub #25926 mutableMessages monotonic growth never released + #11155 tool-output whole-session residency), explicitly NOT an engine defect; diagnosis: child NODE_OPTIONS += --heapsnapshot-near-heap-limit=2 --trace-gc to capture pre-crash heap; mitigation: --max-old-space-size headroom + process boundary (existing soulacp retry / proactive session rotation / heavy-node segmentation as root-fix), with note that /compact and sub-agent do NOT solve (same process). C1-C4 auto: version bump 5.14.1->5.14.2 across 4 .aisop.json + AIAP.md frontmatter + agent_card.json + quality_baseline.json, name/summary/description current-version sync (historical changelog lineage preserved), evolution_history append, governance_hash TRI-SYNC recompute. Doc-only invariant machine-verified: node/agent/normal engine function bodies byte-identical to v5.14.1 snapshot (ZERO execution-logic edits); X3 writeCache.step3 --enforce, node_engine step5 _index merge (agent_update_index.py / user_gates_presented / last_completed), e2f / FLAW-A/B / WAITING_USER / NON-SKIPPABLE all preserved verbatim; main.execute.step3 prose corrected to match existing prepare_cache.py _resolve_engine_version runtime behavior (doc-to-code alignment, no logic change). ThreeDimTest (Generate2 full-scope fresh retest): C=4.5 I=4.577 D=4.5 weighted=4.531; final_adjusted post-Finalize D6/D10 reconciliation (version_sync 4.5->5.0, description 4.5->5.0): D_avg 4.5->4.8, final_adjusted=4.621 Grade S. Stage weighted-delta vs v5.14.1 (4.97) is a fresh-retest scoring-method artifact (deferred-neutral 4.5 per P23 + full re-score), NOT an execution-path regression (0 path-coverage drop, 0 dead nodes, 0 changed execution steps). 0 breaking changes."
+  - version: "5.15.0"
+    date: "2026-05-30"
+    note: "MINOR evolution v5.14.2 -> v5.15.0 via Creator Evolve pipeline (cache/57) — DRAFT generated by Generate1 (finalized by ReviewFinalize). B1 (LEVEL_B, user-authorized turn 57): agent-mode last_completed_node advancement. ROOT CAUSE (empirically verified — live _index of this run had last_completed_node stuck at ProtocolAlign while the pipeline was at EvolveStep): agent-mode direct-write (v5.6.1) bypasses the last_completed auto-advance that agent_write_node_cache.py performs only for inline nodes; agent_update_index.py is a pure merge with no auto-advance, so an agent-heavy pipeline (creator: 18 agent + 2 inline) leaves _index.last_completed_node stuck at the last inline node for the entire run (crash-recovery still works via current_node + nodes_status). FIX (single change, agent_engine.writeCache.step2 only): when the node is terminal/completed (status in PASS/FAIL/PARTIAL/DEGRADED/ABORTED; EXCLUDE pause states WAITING_USER/MESSAGE_PENDING), merge last_completed_node={YOUR_NODE} into the EXISTING agent_update_index.py --updates call alongside nodes_status (same single write, NO new tool call). X3 PAIRING (no code change): user_gate_audit.py FLAW-A un-advance branch — previously dead for agent gate nodes because last_completed never advanced — now activates; on gate bypass with last_completed_node==forced node, FLAW-A un-advances to the prior node automatically. This cycle EXPLICITLY AUTHORIZES writing _index.last_completed_node (reversing the prior doc-only-PATCH 'do not touch last_completed' constraint); presented + confirmed at EvolveStep sovereignty gate (user reply 'all', Axiom 0 satisfied). C-auto: C1 version bump 5.14.2->5.15.0 across 4 .aisop.json + AIAP.md frontmatter + agent_card.json + quality_baseline.json (protocol_config.json not present — skipped); C2 name field version sync (4 modules); C3 evolution_history + changelog append (this entry); C4 governance_hash recompute + TRI-SYNC at ReviewFinalize; C5 AIAP.md parallel-wave concurrent last_completed_node single-value caveat documented (documentation only, no concurrency-model change). HARD CONSTRAINTS (preserved): (1) ONLY agent_engine.writeCache.step2 changed — no node_engine / normal_engine step change, no X3 writeCache.step3 / node_engine e2f --enforce change, no user_gate_audit.py / agent_update_index.py CODE change. (2) Parallel-wave concurrency: caveat documented only, concurrency model unchanged. (3) Version per evolution_rules LEVEL_C auto. Backward compatible (additive single _index key; old caches readable). 0 breaking changes. NOTE: scores below are pending ReviewFinalize re-measure."
+
+  - version: "5.16.0"
+    date: "2026-05-30"
+    note: "MINOR evolution v5.15.0 -> v5.16.0 via Creator Evolve pipeline (cache/58) — DRAFT generated by Generate1 (finalized by ReviewFinalize). B1 (LEVEL_B, user-authorized): normal_engine sovereignty gate enforcement. user_gate_audit.py --enforce added to normal_engine writeCache.step3, matching agent_engine writeCache.step3 and node_engine programExec.step3.e2f sovereignty enforcement pattern. Programs with loading_mode=normal now have Axiom 0 Layer-1 backstop parity. C-auto: C1 agent_engine writeCache field count harmonized (step1 says 15, step1_5 now also says 15), C2 main.aisop.json system_prompt placeholder '{system_prompt}' replaced with actual content, C3 normal_engine Error fields aligned to error_taxonomy categories, C4 agent_engine description trimmed to current-version-only (changelog history moved to AIAP.md), C5 AIAP.md benchmark note updated from v5.14.1 to v5.15.0 reference, C6 version sync across all 4 modules + governance files, C7 governance hash intermediate recompute. 0 breaking changes."
+
+  - version: "5.17.0"
+    date: "2026-05-31"
+    note: "MINOR evolution v5.16.0 -> v5.17.0 via Creator Evolve pipeline (cache/62) — DRAFT generated by Generate1. Sovereignty Bug Protocol. A1 sovereignty_bug_protocol shared section (main.aisop.json + agent_engine.aisop.json). B1 RULES.sovereignty_bug execution rule in agent_engine. C1-C6 version bump + metadata sync. Reference: plan20/34_permissive_sovereignty_gate_framework.md. 0 breaking changes."
+
 ---
 
 ## Governance Declaration
@@ -352,6 +400,58 @@ Threat surface mapped to OWASP Agentic Security Initiative (ASI) ASI01-ASI10:
 | **Blocking** | sys.run, sys.run.timeout, sys.io.read, sys.io.write, sys.code.exec, sys.code.eval, sys.llm, sys.llm.json, sys.llm.classify, sys.event.wait | 10 |
 | **Non-blocking** | sys.io.print, sys.run.bg, sys.event.emit, sys.state.get, sys.state.set, sys.state.save, sys.state.load, sys.security.audit, sys.security.redact | 10 |
 | **Total** | 8 namespaces | **24** |
+
+### Sovereignty Bug Protocol (v5.17.0)
+
+The Sovereignty Bug Protocol formalizes how the agent handles bugs discovered in the sovereignty toolset during execution. It implements the permissive sovereignty gate framework from plan20/34.
+
+| Concept | Description |
+|---------|-------------|
+| **Red Line** | Self-modifying sovereignty toolset code without human approval = Axiom 0 violation (absolutely prohibited) |
+| **Gate** | Everything else goes through user gate (human approves) |
+| **Honest Boundary** | Local agent physically CAN modify; this protocol makes unauthorized modification have no excuse and always be detectable |
+
+**Sovereignty Toolset Members:**
+- `python_tools/user_gate_audit.py`
+- `python_tools/agent_update_index.py` (FLAW-A un-advance branch)
+- `python_tools/dispatch_audit.py`
+- `python_tools/snapshot_audit.py`
+- `sovereignty_bug_protocol` definition itself (self-referential closure)
+
+**Bug Classification (3-tier):**
+
+| Tier | Criteria | Response | Fix Assertion |
+|------|----------|----------|---------------|
+| **Critical** | Sovereignty bypass, gate removal, fix requires self-modification | Immediate WAITING_USER | REQUEST_IMMEDIATE |
+| **Medium** | Safe to execute, no sovereignty impact, fix does not touch toolset | Continue + report in cache | SUGGEST_FIX |
+| **Light** | Cosmetic/doc, zero danger | Continue + summary | ASK_IF_FIX |
+
+**Separation of Powers:** Agent discovers + classifies + proposes (executive). Human approves (legislative). Exposure chain records (judicial).
+
+**Exposure Chain:** Append-only sovereignty_log in `_index.json` with SHA-256 prev_hash chain. Integrity invariant: any TOOL_MODIFY must have a preceding HUMAN_APPROVAL with matching diff_hash.
+
+### Known Limitations (v5.17.0)
+
+> **Scope of this entry:** documentation/observability only. This records a known upstream runtime constraint; it does NOT describe an engine defect and does NOT change any engine execution logic.
+
+**Underlying-runtime long-session JS heap OOM (Claude Code / Node / V8).**
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptom** | During a single long-running node session, accumulated in-memory state causes the underlying Claude Code child process (Node/V8) to terminate with exit code `0xC0000409` (abort / heap OOM). The crashing node drifts (it is not a fixed node) because the crash is triggered by cumulative heap pressure rather than by any specific node's logic. |
+| **Root cause** | Upstream Claude Code behavior, currently marked *not planned* by the upstream project: (1) GitHub issue #25926 — the conversation message buffer (`mutableMessages`) grows monotonically and is never released; (2) GitHub issue #11155 — tool outputs remain resident for the whole session. This is an underlying-runtime memory-retention characteristic, **NOT a defect in this engine** (main/node/agent/normal engines). |
+| **Diagnosis** | Set child-process `NODE_OPTIONS` to include `--heapsnapshot-near-heap-limit=2 --trace-gc` to capture a heap snapshot and GC trace immediately before the crash, confirming heap exhaustion as the cause. |
+| **Mitigation** | (1) Add heap headroom via `--max-old-space-size`; (2) enforce a process boundary so the orchestrator survives a child crash — the existing `soulacp` retry already provides a fallback; (3) proactive session rotation; (4) splitting heavy nodes into smaller segments is the root-fix direction. Note: in-session `/compact` and sub-agent dispatch do **not** resolve this because they run inside the same process and do not free the underlying-runtime heap. |
+| **Status** | Known upstream limitation, tracked for observability. No engine-side code change is warranted; resilience is provided at the process boundary (retry + rotation + node segmentation). |
+
+**Parallel-wave concurrent `last_completed_node` write (v5.15.0 B1 caveat).**
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptom** | As of v5.15.0, `agent_engine.writeCache.step2` advances `_index.last_completed_node = {YOUR_NODE}` for every terminal agent node. `last_completed_node` is a single-valued scalar field. Under **parallel-wave dispatch** (Node Engine fanning out independent mermaid branches concurrently), two or more sub-agents in the same wave may write `last_completed_node` at overlapping times, producing a non-deterministic last-writer-wins value — the field may reflect any one of the concurrently-completed nodes rather than a well-defined cursor. |
+| **Scope** | Affects ONLY parallel-wave execution. **Linear (sequential) pipelines — the default and the case this fix targets — never trigger it**, because exactly one node writes at a time. Crash-recovery does NOT depend on `last_completed_node` precision (it uses `current_node` + `nodes_status`), so a stale/raced value is observability noise, not a correctness hazard. |
+| **Decision** | Deliberately NOT addressed in v5.15.0. Making `last_completed_node` correct under concurrency would require a different data shape (e.g. per-branch cursors or a completed-set) and a concurrency-model change, which is out of scope for this fix. Industry durable-execution engines (Temporal/LangGraph/DBOS) similarly require a reliably-advancing scalar cursor for the linear case and model concurrent completion separately. |
+| **Status** | Documented caveat, tracked for a future concurrency-model evolution. No code change this cycle. |
 
 ## Usage
 

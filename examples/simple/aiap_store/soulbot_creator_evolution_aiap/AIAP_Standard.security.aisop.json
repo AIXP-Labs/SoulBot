@@ -181,7 +181,7 @@
             "name": "Indirect Prompt Injection via Tools",
             "owasp_mcp_ref": "MCP06 — Indirect Prompt Injection via Tools",
             "description": "Compromised or adversarial external service injecting malicious content via tool responses. Search results, web pages, or API responses contain instructions that override agent behavior.",
-            "attack_surface": "Programs with network tools (google_search, web_browser, API calls) that process external content.",
+            "attack_surface": "Programs with network tools (web_search, web_fetch, API calls) that process external content.",
             "mitigation": "Output sanitization on tool responses + I2 injection guard applied to tool outputs (not just user inputs) + response schema validation + content length limits.",
             "detection": "ThreeDimTest I2 verifies injection guard scope includes tool output processing."
           },

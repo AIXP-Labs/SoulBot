@@ -20,6 +20,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import time
 from typing import Any, AsyncGenerator, ClassVar, Optional
 
@@ -498,10 +499,24 @@ class ACPLlm(BaseLlm):
         provider = resolve_provider(self.model)
         return self._get_pool_for(provider, self.model)
 
+    @staticmethod
+    def _build_extra_env() -> dict[str, str]:
+        """Forward parent NODE_OPTIONS into the ACP subprocess so it overrides
+        soulacp claude_client's unconditional setdefault(--max-old-space-size=8192)
+        (adapters/claude_client.py:44 + base_client.py:320 env.update clobbers a
+        bare parent NODE_OPTIONS). Unset -> {} (soulacp keeps 8192, no change)."""
+        extra_env: dict[str, str] = {}
+        node_opts = os.environ.get("NODE_OPTIONS", "").strip()
+        if node_opts:
+            extra_env["NODE_OPTIONS"] = node_opts
+        return extra_env
+
     def _get_config(self) -> ACPConfig:
         """Get config for the current model."""
         provider = resolve_provider(self.model)
-        return ACPConfig.from_env(provider=provider, model=self.model)
+        return ACPConfig.from_env(
+            provider=provider, model=self.model, extra_env=self._build_extra_env()
+        )
 
     @classmethod
     def _get_pool_for(cls, provider: str, model: str) -> ACPConnectionPool:
@@ -519,7 +534,9 @@ class ACPLlm(BaseLlm):
             loop_id = 0  # no running loop (sync tests) — single-loop fallback
         pool_key = f"{loop_id}:{provider}:{model}"
         if pool_key not in cls._pools:
-            config = ACPConfig.from_env(provider=provider, model=model)
+            config = ACPConfig.from_env(
+                provider=provider, model=model, extra_env=cls._build_extra_env()
+            )
             client_class = resolve_client_class(provider)
             pool = ACPConnectionPool(config, client_class)
             pool.start_keepalive()
