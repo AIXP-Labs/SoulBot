@@ -1,219 +1,219 @@
 [
-  {
-    "role": "system",
-    "content": {
-      "protocol": "AIAP V1.0.0",
-      "axiom_0": "Human_Sovereignty_and_Wellbeing",
-      "flow_format": "mermaid",
-      "id": "aiap_creator.nihil_density",
-      "program_id": "dev.aiap_creator.nihil_density",
-      "name": "AIAP Creator v2.29.0 — NihilDensity",
-      "output_mode": {
-        "L0": "Output JSON in ENGLISH: {intent, confidence, route, state, op}",
-        "L1": "Output helpfully in User's exact language and script variant",
-        "output": "L1"
-      },
-      "version": "2.29.0",
-      "token_estimate": "~12K tokens",
-      "trust_level": 4,
-      "summary": "Audit AISOP files for non-execution content (nihil density). GH1-GH7 detection, per-file density gate (GREEN/YELLOW/RED), tiered improvement, trend analysis, suggestion persistence tracking.",
-      "description": "NihilDensity module. Per-file nihil density audit with GH1-GH7 rules, three-color gate (GREEN ≤0.15 / YELLOW 0.15-0.30 / RED >0.30), confidence-tiered improvement (AUTO_FIX + SUGGEST_ONLY), trend analysis with GH contribution tracking. 13 nodes.",
-      "fractal_exempt": "Not applicable — 13 nodes, below fractal threshold.",
-      "tools": [
-        {
-          "name": "file_system",
-          "annotations": {
-            "read_only": false,
-            "destructive": false,
-            "idempotent": false,
-            "open_world": false
-          }
-        }
-      ],
-      "params": {
-        "workspace_dir": "string, REQUIRED: Must use the [AIAP Store Directory] absolute path injected in system instruction. This parameter has no usable default — the injected path is the only valid value. User override takes precedence.",
-        "pipeline_context": "object|null, default: null, Accept from Pipeline. Contains pipeline_mode (create|evolve), target_program, current_version, modified_files.",
-        "audit_target": "string|null, default: null, agentic_prompt: 'Absolute path to a single .aisop.json file or AIAP directory for standalone nihil density audit. Use this param when invoking NihilDensity outside the Pipeline (e.g., from Validate or ad-hoc user request). When set, overrides pipeline_context.target_program. The audit scans for GH1-GH7 non-execution content (filler, placeholders, redundancy) and produces a per-file density gate (GREEN/YELLOW/RED).' Standalone audit mode target path.",
-        "compare_versions": "object|null, default: null, agentic_prompt: 'Object with two paths {version_a: path, version_b: path} for cross-version nihil density comparison. Enables delta analysis showing which GH categories improved or regressed between versions. Use when the user wants to compare content hygiene between two evolution snapshots. If null, audit runs on the single current version without comparative analysis.' {version_a: path, version_b: path} for compare mode."
-      },
-      "loading_mode": "normal",
-      "output_schema": {
-        "$ref": "AIAP_Standard.core.aisop.json#/data_contracts/nihil_density_report/json_schema"
-      },
-      "json_schema": {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "type": "object",
-        "description": "AIAP Creator nihil density output schema",
-        "properties": {
-          "nihil_density_result": {
-            "type": "object",
-            "properties": {
-              "gate_result": {
-                "type": "string",
-                "enum": [
-                  "PASS",
-                  "IMPROVE",
-                  "HALT",
-                  "REPORT"
-                ]
-              },
-              "aggregate_nihil_ratio": {
-                "type": "number",
-                "minimum": 0,
-                "maximum": 1
-              },
-              "files_analyzed": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "per_file": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "file": {
-                      "type": "string"
-                    },
-                    "density": {
-                      "type": "number"
-                    },
-                    "color": {
-                      "type": "string",
-                      "enum": [
-                        "GREEN",
-                        "YELLOW",
-                        "RED"
-                      ]
-                    }
-                  },
-                  "required": [
-                    "file",
-                    "density",
-                    "color"
-                  ]
-                }
-              }
+    {
+        "role": "system",
+        "content": {
+            "protocol": "AIAP V1.0.0",
+            "axiom_0": "Human_Sovereignty_and_Wellbeing",
+            "flow_format": "mermaid",
+            "id": "aiap_creator.nihil_density",
+            "program_id": "dev.aiap_creator.nihil_density",
+            "name": "AIAP Creator v2.34.0 — NihilDensity",
+            "output_mode": {
+                "L0": "Output JSON in ENGLISH: {intent, confidence, route, state, op}",
+                "L1": "Output helpfully in User's exact language and script variant",
+                "output": "L1"
             },
-            "required": [
-              "gate_result",
-              "aggregate_nihil_ratio",
-              "files_analyzed"
-            ]
-          }
+            "version": "2.34.0",
+            "token_estimate": "~12K tokens",
+            "trust_level": 4,
+            "summary": "Audit AISOP files for non-execution content (nihil density). GH1-GH7 detection, per-file density gate (GREEN/YELLOW/RED), tiered improvement, trend analysis, suggestion persistence tracking.",
+            "description": "NihilDensity module. Per-file nihil density audit with GH1-GH7 rules, three-color gate (GREEN ≤0.05 / YELLOW 0.05-0.20 / RED >0.20), confidence-tiered improvement (AUTO_FIX + SUGGEST_ONLY), trend analysis with GH contribution tracking. 13 nodes.",
+            "fractal_exempt": "Not applicable — 13 nodes, below fractal threshold.",
+            "tools": [
+                {
+                    "name": "file_system",
+                    "annotations": {
+                        "read_only": false,
+                        "destructive": false,
+                        "idempotent": false,
+                        "open_world": false
+                    }
+                }
+            ],
+            "params": {
+                "workspace_dir": "string, REQUIRED: Must use the [AIAP Store Directory] absolute path injected in system instruction. This parameter has no usable default — the injected path is the only valid value. User override takes precedence.",
+                "pipeline_context": "object|null, default: null, Accept from Pipeline. Contains pipeline_mode (create|evolve), target_program, current_version, modified_files.",
+                "audit_target": "string|null, default: null, agentic_prompt: 'Absolute path to a single .aisop.json file or AIAP directory for standalone nihil density audit. Use this param when invoking NihilDensity outside the Pipeline (e.g., from Validate or ad-hoc user request). When set, overrides pipeline_context.target_program. The audit scans for GH1-GH7 non-execution content (filler, placeholders, redundancy) and produces a per-file density gate (GREEN/YELLOW/RED).' Standalone audit mode target path.",
+                "compare_versions": "object|null, default: null, agentic_prompt: 'Object with two paths {version_a: path, version_b: path} for cross-version nihil density comparison. Enables delta analysis showing which GH categories improved or regressed between versions. Use when the user wants to compare content hygiene between two evolution snapshots. If null, audit runs on the single current version without comparative analysis.' {version_a: path, version_b: path} for compare mode."
+            },
+            "loading_mode": "normal",
+            "output_schema": {
+                "$ref": "AIAP_Standard.core.aisop.json#/data_contracts/nihil_density_report/json_schema"
+            },
+            "json_schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "description": "AIAP Creator nihil density output schema",
+                "properties": {
+                    "nihil_density_result": {
+                        "type": "object",
+                        "properties": {
+                            "gate_result": {
+                                "type": "string",
+                                "enum": [
+                                    "PASS",
+                                    "IMPROVE",
+                                    "HALT",
+                                    "REPORT"
+                                ]
+                            },
+                            "aggregate_nihil_ratio": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                            },
+                            "files_analyzed": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "per_file": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "file": {
+                                            "type": "string"
+                                        },
+                                        "density": {
+                                            "type": "number"
+                                        },
+                                        "color": {
+                                            "type": "string",
+                                            "enum": [
+                                                "GREEN",
+                                                "YELLOW",
+                                                "RED"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "file",
+                                        "density",
+                                        "color"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "gate_result",
+                            "aggregate_nihil_ratio",
+                            "files_analyzed"
+                        ]
+                    }
+                }
+            },
+            "system_prompt": "AIAP content density auditor. Detect and reduce nihil (filler) content in AIAP programs. Align Axiom 0: Human Sovereignty and Wellbeing.",
+            "threat_mapping_refs": {
+                "ASI01": "goal_hash drift detection",
+                "ASI02": "prompt injection guard - I2 input sanitization",
+                "ASI03": "training data integrity - quality_baseline regression detection",
+                "ASI04": "model supply chain - tool dependency pinning",
+                "ASI05": "output integrity - json_schema enforcement",
+                "ASI06": "cache/state integrity - atomic write patterns",
+                "ASI07": "IPC signatures - span_id provenance",
+                "ASI08": "agent identity - agent_card governance_hash",
+                "ASI09": "excessive autonomy - Axiom 0 enforcement",
+                "ASI10": "runtime drift - version field consistency"
+            }
         }
-      },
-      "system_prompt": "AIAP content density auditor. Detect and reduce nihil (filler) content in AIAP programs. Align Axiom 0: Human Sovereignty and Wellbeing.",
-      "threat_mapping_refs": {
-        "ASI01": "goal_hash drift detection",
-        "ASI02": "prompt injection guard - I2 input sanitization",
-        "ASI03": "training data integrity - quality_baseline regression detection",
-        "ASI04": "model supply chain - tool dependency pinning",
-        "ASI05": "output integrity - json_schema enforcement",
-        "ASI06": "cache/state integrity - atomic write patterns",
-        "ASI07": "IPC signatures - span_id provenance",
-        "ASI08": "agent identity - agent_card governance_hash",
-        "ASI09": "excessive autonomy - Axiom 0 enforcement",
-        "ASI10": "runtime drift - version field consistency"
-      }
-    }
-  },
-  {
-    "role": "user",
-    "content": {
-      "instruction": "ASSERT RUN aisop.main",
-      "aisop": {
-        "main": "graph TD\n    NihilStart[\"NihilStart\"] --> ScanTarget\n    ScanTarget[\"ScanTarget\"] --> FieldAnalysis\n    FieldAnalysis[\"FieldAnalysis\"] --> ApplyGH\n    ApplyGH[\"ApplyGH\"] --> NihilGate\n    NihilGate{\"NihilGate\"}\n    NihilGate -->|\"≤ 0.15 & pipeline\"| PassThrough[\"PassThrough\"]\n    NihilGate -->|\"0.15-0.30 & pipeline\"| ImproveFields[\"ImproveFields\"]\n    NihilGate -->|\"> 0.30 & pipeline\"| HaltForHuman[\"HaltForHuman\"]\n    NihilGate -->|\"audit/compare\"| ReportOnly[\"ReportOnly\"]\n    HaltForHuman -->|\"proceed\"| ImproveFields\n    HaltForHuman -->|\"abort\"| NihilEnd\n    HaltForHuman -->|\"audit\"| ReportOnly\n    ImproveFields --> RecalculateDensity[\"RecalculateDensity\"]\n    PassThrough --> TrendAnalysis\n    ReportOnly --> TrendAnalysis\n    RecalculateDensity --> TrendAnalysis\n    TrendAnalysis[\"TrendAnalysis\"] --> GenerateReport\n    GenerateReport[\"GenerateReport\"] --> NihilEnd[\"NihilEnd\"]"
-      },
-      "functions": {
-        "NihilStart": {
-          "step1": "[ASSERT] Valid input received. Required: pipeline_context, workspace_dir.  | SCAN_MODE_DETECTION — Mode precedence: pipeline_context > audit_target > compare_versions. Determine execution mode: if called from main pipeline (pipeline_context exists): if pipeline_context.pipeline_mode == 'create': mode = 'pipeline_create' (full scan all files). else: mode = 'pipeline_evolve' (scan modified_files only, see ScanTarget). target = pipeline_context.target_program. if called with audit_target parameter: mode = 'audit', target = audit_target. if called with compare_versions parameter: mode = 'compare', targets = [version_a, version_b].",
-          "step2": "LOAD_STANDARD — Read AIAP_Standard.core.generation_hygiene: GH1-GH7 rule definitions, execution_content, non_execution_content, structural_protection. Read protocol_config.nihil_density_metrics: thresholds (green/red/ideal), regression_rule, gh_rule_set_version. Read protocol_config.self_evolution_nihil_policy: Creator self-evolution monotonic_decreasing rule.",
-          "step3": "TARGET_VALIDATION — Verify target program exists. Verify target path contains .aisop.json files. Exclude protocol files: AIAP_Standard.*.aisop.json not in audit scope.",
-          "constraints": "(A) Target program path must be valid. (B) Protocol files absolutely excluded. (C) Only process current specified AIAP program. (D) generation_hygiene standard must be available (protocol or builtin). (E) Encoding guard — NFC normalize all string fields.",
-          "Error": "retry(1) -> circuit-breaker -> fallback: attempt graceful degradation by using builtin quality_baseline fallback template, emit validation warning with missing fields list -> inform(User). IMPORTANT. Error types: timeout(operation_timeout)->retry with backoff. parse_error(data_malformed)->retry(1) then fallback. io_error(file_write_failure)->retry(1) then fallback."
-        },
-        "ScanTarget": {
-          "step1": "[ASSERT] NihilStart executed., target_path. If false → go back to NihilStart. | FILE_ENUMERATION — if mode == 'pipeline_evolve' and pipeline_context.modified_files exists: enumerate only pipeline_context.modified_files .aisop.json files. if evolve_full_scan == true: append all .aisop.json files. else: traverse target program directory for all .aisop.json files (Create/audit/compare modes). Exclude: AIAP_Standard.*.aisop.json, AIAP_Protocol.md. Record: file_list = [{ path, size_kb, function_count }].",
-          "step2": "FILE_PRIORITY — Sort by file size descending (large files first). Tag each file's sub_mermaid membership.",
-          "constraints": "(A) Only scan .aisop.json extension files. (B) Protocol files must be excluded.",
-          "Error": "retry(1) -> circuit-breaker -> fallback: report accessible files, skip inaccessible -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
-        },
-        "FieldAnalysis": {
-          "step1": "[ASSERT] ScanTarget executed. Required: file_list. If false → go back to ScanTarget. | PARSE_STRUCTURE — For each .aisop.json file: read JSON structure. Extract all functions (functions object keys). For each function extract: step1..stepN, constraints, Error.",
-          "step2": "REF_RESOLUTION — For files containing $ref: detect $ref references (e.g. sub_mermaid split files). Merge per density_auto_merge rules: merged total chars as denominator (consistent with protocol_config.density_auto_merge). Record: { file, ref_files: [...], merged_chars: N }. Standalone .aisop.json without external refs: compute independently, no merge.",
-          "step3": "FIELD_TEXT_EXTRACTION — For each field: record { file, function, field, text, char_count }. Generate field_inventory[].",
-          "step4": "STRUCTURAL_METADATA — Statistics: total_files, total_functions, total_fields, per_file_chars, largest_file, largest_function, largest_field.",
-          "constraints": "(A) JSON parse failure → mark file as UNPARSEABLE, continue with remaining files. (B) Empty files → skip.",
-          "Error": "retry(1) -> circuit-breaker -> fallback: skip unparseable file, continue -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
-        },
-        "ApplyGH": {
-          "step1": "[ASSERT] FieldAnalysis executed. Required: field_inventory. If false → go back to FieldAnalysis. | GH_RULE_EXECUTION — For each field in field_inventory execute GH1-GH7 detection: GH1_SCAN: identify non-current-version annotations. Regex: /(B\\d+|CR\\d+).*?v\\d+\\.\\d+\\.\\d+/ where version != current. Record match positions and char counts. GH2_SCAN: identify superseded old definitions. Detect same UPPERCASE tag appearing 2+ times in same field. Mark earlier (older) definition paragraphs. GH3_SCAN: identify intra-file duplicate content. Find exact repeated text (>50 chars) across all fields in same file. Mark 2nd+ occurrences. GH4_SCAN: identify stale accumulated data. Detect >3 version number references in same field. Mark entries before 3rd-most-recent. GH5_SCAN: identify non-functional decorative text. Detect sentences starting with decorative keywords. Execute protection rule: exclude sentences containing execution keywords. Mark pure decorative sentences. GH6_SCAN: identify expired condition branches. Detect version conditions referencing versions with >10 gap from current. Mark expired branch paragraphs. GH7_SCAN: identify redundant error handling templates. Detect retry/circuit-breaker generic details in Error fields. Mark generic implementation details.",
-          "step2": "CONFIDENCE_TIER_TAGGING — For each GH match, tag confidence tier: AUTO_FIX: GH1(100%), GH2(high), GH3(100%), GH4(high), GH6(high), GH7(high). SUGGEST_ONLY: GH5(medium-high). gh_matches = { GH1: {count, chars, locations[], tier: 'AUTO_FIX'}, ..., GH5: {..., tier: 'SUGGEST_ONLY'}, ... }.",
-          "step3": "FILE_NIHIL_DENSITY_CALCULATION — For each file compute file_nihil_density: file.residual_chars = sum(all GH matches for this file). file.nihil_density = file.residual_chars / file.total_chars. file.auto_fix_chars = sum(AUTO_FIX tier matches). file.suggest_chars = sum(SUGGEST_ONLY tier matches).",
-          "step4": "GH_DENSITY_CONTRIBUTION — For each file compute per-GH-rule contribution: file.gh_contribution = { GH1: { chars: N, pct_of_gap: N }, ..., primary: 'GHx' }. Where pct_of_gap = rule_chars / file.residual_chars. primary = rule with highest pct_of_gap. Verify: sum of all rule chars = file.residual_chars.",
-          "constraints": "(A) GH rules only mark, never modify. (B) Protection rules must execute (GH5 execution keyword protection). (C) Same character not double-counted across rules. (D) Confidence tiers must match ImproveFields tiers.",
-          "Error": "retry(1) -> circuit-breaker -> fallback: report partial results with applied_rules list, mark incomplete_analysis flag true for affected files -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
-        },
-        "NihilGate": {
-          "step1": "[ASSERT] ApplyGH executed. Required: gh_results, nihil_density_scores. If false → go back to ApplyGH. | FILE_LEVEL_GATE_DECISION — For each file independently: if file.nihil_density <= 0.15: file.status = 'GREEN'. elif file.nihil_density <= 0.30: file.status = 'YELLOW'. else: file.status = 'RED'. Aggregate decision (worst status): if mode in ['audit', 'compare'] → ReportOnly (never modify files). elif any(file.status == 'RED') → HaltForHuman. elif any(file.status == 'YELLOW') → ImproveFields. else → PassThrough (all GREEN).",
-          "step2": "RED_HALT_REASONING — if gate_result == 'HALT': list all RED files with nihil_density values. nihil_density > 0.30 means >30% non-execution content. Under protocol standard + source control, Generate output should be ≤0.10. If still >0.30, indicates: (a) Generate severely violated standard, (b) target program has structural issues, (c) GH rules over-matching. Pause Pipeline, present: per-file density and status, RED file GH contribution breakdown, human choices: 'proceed'/'abort'/'audit'.",
-          "constraints": "(A) GREEN threshold: protocol_config.nihil_density_metrics.thresholds.green (0.15). (B) RED threshold: protocol_config.nihil_density_metrics.thresholds.red (0.30). (C) Gate uses per-file decisions, not weighted average (prevents large files masking small file problems). (D) audit/compare mode never modifies files. (E) RED halt requires human confirmation before continuing.",
-          "Error": "retry(1) -> circuit-breaker -> fallback: treat as ReportOnly mode -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
-        },
-        "PassThrough": {
-          "step1": "[ASSERT] NihilGate executed with gate_result == 'PASS'. Required: gate_result.  If false → go back to NihilGate. | RECORD_PASS — For each GREEN file: record file.gate_result = 'PASS', file.nihil_density = file.initial_nihil_density. If minor residual (file.nihil_density > 0 but ≤ 0.15): record residual details for nihil_report. No cleanup executed (already meeting threshold).",
-          "constraints": "Read-only — no file modifications. All files already meet GREEN threshold. Records density data for downstream reporting.",
-          "Error": "retry(1) -> circuit-breaker -> fallback: proceed without recording -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
-        },
-        "HaltForHuman": {
-          "step1": "[ASSERT] NihilGate executed with gate_result == 'HALT'. Required: gate_result, red_files.  If false → go back to NihilGate. | RED_ALERT_PRESENTATION — Present RED-level alert: current nihil_density values, GH contribution breakdown (identify primary cause). Anomaly assessment: if auto_fix_chars / total_chars > 0.20: 'Generate may have severely violated protocol standard — recommend checking Generate flow'. if suggest_chars / total_chars > 0.15: 'Large amount of non-functional decorative text — may be bulk-copied external content'. else: 'Structural density issue — recommend manual review of target files'.",
-          "step2": "AWAIT_HUMAN_DECISION — Wait for human choice: 'proceed' → continue automatic improvement (route to ImproveFields). 'abort' → terminate Pipeline (route to NihilEnd, gate_result = 'ABORTED'). 'audit' → switch to audit mode (route to ReportOnly, no file modification).",
-          "constraints": "(A) Must wait for human confirmation, no automatic selection. (B) Human choice recorded to nihil_report.halt_decision. (C) Reference: Creator Traffic Light RED = pause for human approval.",
-          "Error": "retry(1) -> circuit-breaker -> fallback: treat as 'audit' mode -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
-        },
-        "ImproveFields": {
-          "step1": "[ASSERT] NihilGate or HaltForHuman routed here. Required: gate_result, gh_matches.  If false → go back to NihilGate. | CONFIDENCE_TIER_CLASSIFICATION — Classify GH matches per confidence tiers defined in ApplyGH.step2.",
-          "step2": "EXECUTE_AUTO_FIX — For AUTO_FIX tier (GH1-GH4, GH6, GH7) matches: execute cleanup per GH rule definitions. Record each modification: { file, function, field, rule, before_chars, after_chars, tier: 'AUTO_FIX' }.",
-          "step3": "MARK_SUGGESTIONS — For SUGGEST_ONLY tier (GH5) matches: do not modify files. Record suggestions: { file, function, field, rule, matched_text, suggestion: 'remove', tier: 'SUGGEST_ONLY' }. These appear in nihil_report.suggestions.",
-          "step4": "CREATE_NIHIL_BACKUP — Write pre-improvement file copies to .nihil_backup/ directory. Always created when ImproveFields executes (covers both YELLOW→ImproveFields and RED→proceed→ImproveFields paths). Purpose: Validate/Simulate regression detection rollback source. Lifecycle: ImproveFields creates → Validate/Simulate reads → ReviewFinalize cleans up.",
-          "step5": "VERIFY_IMPROVEMENT — Re-parse improved JSON to verify structural integrity. if JSON invalid → rollback all modifications for that file, mark as IMPROVE_FAILED.",
-          "step6": "WRITE_IMPROVED_FILES — Write improved .aisop.json files back. Preserve JSON formatting and indentation.",
-          "constraints": "(A) Protected content absolutely untouched (Mermaid, function names, step numbers, conditional logic). (B) AUTO_FIX tier: auto-clean, JSON validation before write. (C) SUGGEST_ONLY tier: never auto-modify, record suggestions only. (D) Improvement failure → preserve original file, no partial improvements. (E) Record all improvement actions and suggestions for nihil_report.",
-          "Error": "retry(1) -> circuit-breaker -> fallback: rollback to original, mark IMPROVE_FAILED -> inform(User). IMPORTANT. Error types: timeout(operation_timeout)->retry with backoff. parse_error(data_malformed)->retry(1) then fallback. io_error(file_write_failure)->retry(1) then fallback."
-        },
-        "ReportOnly": {
-          "step1": "[ASSERT] NihilGate or HaltForHuman routed here. Required: gate_result, gh_matches.  If false → go back to NihilGate. | MARK_SUGGESTIONS — Mark all GH matches as 'suggested improvement'. Do not modify any files. Generate improvement suggestion list.",
-          "constraints": "Strictly read-only — no file modifications permitted. Audit/compare mode output only. All GH matches recorded as suggestions, none auto-fixed.",
-          "Error": "retry(1) -> circuit-breaker -> fallback: mark all as unprocessed -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
-        },
-        "RecalculateDensity": {
-          "step1": "[ASSERT] ImproveFields executed. Required: improved_files. If false → go back to ImproveFields. | POST_IMPROVEMENT_FILE_DENSITY — For each improved file re-execute GH1-GH7 detection. Compute two density values: file.improved_nihil_density — density after AUTO_FIX cleanup. file.potential_nihil_density — theoretical density if SUGGEST_ONLY suggestions also adopted. file.improvement_delta = file.improved_nihil_density - file.nihil_density.",
-          "step2": "POST_IMPROVEMENT_FILE_STATUS — For each file based on improved_nihil_density: classify per NihilGate thresholds (protocol_config.nihil_density_metrics). If file.improved_nihil_density > 0.15 but file.potential_nihil_density <= 0.15: annotate '{file} can meet threshold by adopting GH5 suggestions' for Review stage human decision.",
-          "constraints": "(A) No cyclic improvement after recalculation (avoid infinite loops). (B) Report residual causes for human judgment. (C) potential_nihil_density is reference only, drives no automatic behavior.",
-          "Error": "retry(1) -> circuit-breaker -> fallback: use initial density values -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
-        },
-        "TrendAnalysis": {
-          "step1": "[ASSERT] PassThrough or ReportOnly or RecalculateDensity executed. Required: density_scores, quality_baseline. If false → go back to prior node. | FILE_VERSION_COMPARISON — if quality_baseline.json exists with previous nihil_data: for each file compute density change: regression_threshold = protocol_config.nihil_density_metrics.regression_rule (default 1.05). Mark regression: file.current > file.previous * regression_threshold → NIHIL_REGRESSION (density increased = degradation). Mark improvement: file.current < file.previous * 0.90 → NIHIL_IMPROVEMENT (density decreased ≥10%).",
-          "step2": "FILE_TREND_DIRECTION — For each file independently: if 3+ consecutive versions with rising nihil_density → file.trend = 'DECLINING' (degrading). if nihil_density stable at ≤ 0.15 → file.trend = 'HEALTHY'. if first calculation → file.trend = 'BASELINE'. Per-file trend provides more actionable information than program-level trend.",
-          "step3": "FILE_GH_CONTRIBUTION_TREND — For each file compare per-GH-rule contribution across versions: for each GH rule: current_pct = file.gh_contribution[GH_N].pct_of_gap. previous_pct = previous_nihil_data.files[file].gh_contribution[GH_N].pct_of_gap. delta = current_pct - previous_pct. Mark worsening: delta > 0.03 → GH_REGRESSION. Mark improvement: delta < -0.03 → GH_IMPROVEMENT.",
-          "step4": "GH_RULE_SET_VERSION_CHECK — if quality_baseline.nihil_data.gh_rule_set_version exists: if current_gh_rule_set_version != previous_gh_rule_set_version: clear all NIHIL_REGRESSION marks from step1-step3. Mark all file trends as 'BASELINE_RESET'. Record: 'GH rule set changed from {old} to {new}, nihil density baseline reset'. baseline_reset = true. Note: step1-step3 still execute (compute current values), but regression judgments overridden by BASELINE_RESET.",
-          "step5": "COMPARE_MODE_ANALYSIS — if mode == 'compare': compute per-file nihil_density for version_a and version_b separately. Generate comparison table: comparison = [{ file, density_a, density_b, delta, direction: 'improved|degraded|stable' }]. Skip persistence tracking (compare mode has no version continuity). Pass directly to GenerateReport.",
-          "step6": "SUGGEST_PERSISTENCE_TRACKING — For each current SUGGEST_ONLY suggestion: search previous nihil_data.suggestions[] for same location match (file + function + field + rule). if found: persistence_count = previous.persistence_count + 1. else: persistence_count = 1. Persistence window: suggest_persistence_window = 3 (default, configurable 2-5). if persistence_count >= suggest_persistence_window: status = 'PERSISTENT'. Prominently annotate in nihil_report. Do not auto-upgrade to AUTO_FIX (GH5 certainty unchanged). But in Review stage force display, require human explicit decision: 'accept' (execute cleanup) / 'reject' (mark intentional, stop reminding) / 'defer' (continue tracking).",
-          "constraints": "(A) No history → persistence_count = 1. (B) Trend judgment requires 3+ data points. (C) Persistence tracking data persisted to quality_baseline.json.nihil_data.suggestions[]. (D) 'reject' marked suggestions removed from persistence tracking.",
-          "Error": "retry(1) -> circuit-breaker -> fallback: skip trend, report current density only -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
-        },
-        "GenerateReport": {
-          "step1": "[ASSERT] TrendAnalysis executed. Required: trend_data, density_scores, gate_result. If false → go back to TrendAnalysis. | COMPILE_TIERED_REPORT — Generate tiered nihil_report: TIER 1 — Summary (always shown): density badge 'NihilDensity {PASS|IMPROVE|HALT|REPORT} — N files, N GREEN, N YELLOW, N RED (max nihil: X.XX)'. gate_result + per-status file counts. if HALT: prominently display RED file list and human options. TIER 2 — Details (shown when YELLOW/RED files exist): per-file density table: | File | Nihil Density | Status | Primary GH | Trend |. YELLOW/RED file GH contribution breakdown: | GH Rule | Chars | % of Gap |. SUGGEST_ONLY suggestion list (with persistence marks). TIER 3 — Improvement Records (shown when improvements executed): per-item improvement details: { file, function, field, rule, tier, chars_removed }. Conflict records (if any). Persistence warnings (if PERSISTENT suggestions exist). Structured data for downstream modules: { meta: { target, timestamp, mode, standard_source }, gate_result, summary: { total_files, green, yellow, red, overall_status, chars_removed, chars_suggested, files_modified }, files: [{ file, nihil_density, improved_nihil_density, potential_nihil_density, status, trend, functions_audited, gh_contribution, improvements, suggestions }], suggestion_persistence, halt_decision }.",
-          "step2": "PERSIST_DENSITY_DATA — Filter out suggestions with status='rejected' before persisting. Write current density data to quality_baseline.json nihil_data field: quality_baseline.nihil_data = { version, gh_rule_set_version, baseline_reset, scan_mode, files: { [filename]: { nihil_density, status, gh_contribution } }, suggestions: [{ file, function, field, rule, persistence_count, status }], timestamp }. GH rule version tagging: gh_rule_set_version tracks current GH rule set. baseline_reset = true when gh_rule_set_version changes. Purpose: TrendAnalysis detects version change → marks BASELINE_RESET, avoids false NIHIL_REGRESSION.",
-          "constraints": "(A) nihil_report must include all audited files. (B) quality_baseline.json update must not destroy existing fields.",
-          "Error": "retry(1) -> circuit-breaker -> fallback: output partial report -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
-        },
-        "NihilEnd": {
-          "step1": "[ASSERT] GenerateReport executed or HaltForHuman aborted. Required: nihil_report.  If false → go back to GenerateReport. | OUTPUT_RESULTS — if mode in ['pipeline_create', 'pipeline_evolve']: pass nihil_report to next node (ValidateStep). Pass improved files to ValidateStep. Pipeline continues (non-blocking). elif mode == 'audit': output nihil_report for human review. Output improvement suggestion list. elif mode == 'compare': output nihil_comparison_report.",
-          "constraints": "Terminal node — routes nihil_report to appropriate downstream consumer based on mode. Non-blocking for pipeline modes.",
-          "Error": "retry(1) -> circuit-breaker -> fallback: output available report data -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
+    },
+    {
+        "role": "user",
+        "content": {
+            "instruction": "ASSERT RUN aisop.main",
+            "aisop": {
+                "main": "graph TD\n    NihilStart[\"NihilStart\"] --> ScanTarget\n    ScanTarget[\"ScanTarget\"] --> FieldAnalysis\n    FieldAnalysis[\"FieldAnalysis\"] --> ApplyGH\n    ApplyGH[\"ApplyGH\"] --> NihilGate\n    NihilGate{\"NihilGate\"}\n    NihilGate -->|\"≤ 0.05 & pipeline\"| PassThrough[\"PassThrough\"]\n    NihilGate -->|\"0.05-0.20 & pipeline\"| ImproveFields[\"ImproveFields\"]\n    NihilGate -->|\"> 0.20 & pipeline\"| HaltForHuman[\"HaltForHuman\"]\n    NihilGate -->|\"audit/compare\"| ReportOnly[\"ReportOnly\"]\n    HaltForHuman -->|\"proceed\"| ImproveFields\n    HaltForHuman -->|\"abort\"| NihilEnd\n    HaltForHuman -->|\"audit\"| ReportOnly\n    ImproveFields --> RecalculateDensity[\"RecalculateDensity\"]\n    PassThrough --> TrendAnalysis\n    ReportOnly --> TrendAnalysis\n    RecalculateDensity --> TrendAnalysis\n    TrendAnalysis[\"TrendAnalysis\"] --> GenerateReport\n    GenerateReport[\"GenerateReport\"] --> NihilEnd[\"NihilEnd\"]"
+            },
+            "functions": {
+                "NihilStart": {
+                    "step1": "[ASSERT] Valid input received. Required: pipeline_context, workspace_dir.  | SCAN_MODE_DETECTION — Mode precedence: pipeline_context > audit_target > compare_versions. Determine execution mode: if called from main pipeline (pipeline_context exists): if pipeline_context.pipeline_mode == 'create': mode = 'pipeline_create' (full scan all files). else: mode = 'pipeline_evolve' (scan modified_files only, see ScanTarget). target = pipeline_context.target_program. if called with audit_target parameter: mode = 'audit', target = audit_target. if called with compare_versions parameter: mode = 'compare', targets = [version_a, version_b].",
+                    "step2": "LOAD_STANDARD — Read AIAP_Standard.core.generation_hygiene: GH1-GH7 rule definitions, execution_content, non_execution_content, structural_protection. Read protocol_config.nihil_density_metrics: thresholds (green/red/ideal), regression_rule, gh_rule_set_version. Read protocol_config.self_evolution_nihil_policy: Creator self-evolution monotonic_decreasing rule.",
+                    "step3": "TARGET_VALIDATION — Verify target program exists. Verify target path contains .aisop.json files. Exclude protocol files: AIAP_Standard.*.aisop.json not in audit scope.",
+                    "constraints": "(A) Target program path must be valid. (B) Protocol files absolutely excluded. (C) Only process current specified AIAP program. (D) generation_hygiene standard must be available (protocol or builtin). (E) Encoding guard — NFC normalize all string fields.",
+                    "Error": "retry(1) -> circuit-breaker -> fallback: attempt graceful degradation by using builtin quality_baseline fallback template, emit validation warning with missing fields list -> inform(User). IMPORTANT. Error types: timeout(operation_timeout)->retry with backoff. parse_error(data_malformed)->retry(1) then fallback. io_error(file_write_failure)->retry(1) then fallback."
+                },
+                "ScanTarget": {
+                    "step1": "[ASSERT] NihilStart executed., target_path. If false → go back to NihilStart. | FILE_ENUMERATION — if mode == 'pipeline_evolve' and pipeline_context.modified_files exists: enumerate only pipeline_context.modified_files .aisop.json files. if evolve_full_scan == true: append all .aisop.json files. else: traverse target program directory for all .aisop.json files (Create/audit/compare modes). Exclude: AIAP_Standard.*.aisop.json, AIAP_Protocol.md. Record: file_list = [{ path, size_kb, function_count }].",
+                    "step2": "FILE_PRIORITY — Sort by file size descending (large files first). Tag each file's sub_mermaid membership.",
+                    "constraints": "(A) Only scan .aisop.json extension files. (B) Protocol files must be excluded.",
+                    "Error": "retry(1) -> circuit-breaker -> fallback: report accessible files, skip inaccessible -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
+                },
+                "FieldAnalysis": {
+                    "step1": "[ASSERT] ScanTarget executed. Required: file_list. If false → go back to ScanTarget. | PARSE_STRUCTURE — For each .aisop.json file: read JSON structure. Extract all functions (functions object keys). For each function extract: step1..stepN, constraints, Error.",
+                    "step2": "REF_RESOLUTION — For files containing $ref: detect $ref references (e.g. sub_mermaid split files). Merge per density_auto_merge rules: merged total chars as denominator (consistent with protocol_config.density_auto_merge). Record: { file, ref_files: [...], merged_chars: N }. Standalone .aisop.json without external refs: compute independently, no merge.",
+                    "step3": "FIELD_TEXT_EXTRACTION — For each field: record { file, function, field, text, char_count }. Generate field_inventory[].",
+                    "step4": "STRUCTURAL_METADATA — Statistics: total_files, total_functions, total_fields, per_file_chars, largest_file, largest_function, largest_field.",
+                    "constraints": "(A) JSON parse failure → mark file as UNPARSEABLE, continue with remaining files. (B) Empty files → skip.",
+                    "Error": "retry(1) -> circuit-breaker -> fallback: skip unparseable file, continue -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
+                },
+                "ApplyGH": {
+                    "step1": "[ASSERT] FieldAnalysis executed. Required: field_inventory. If false → go back to FieldAnalysis. | GH_RULE_EXECUTION — For each field in field_inventory execute GH1-GH7 detection: GH1_SCAN: identify non-current-version annotations. Regex: /(B\\d+|CR\\d+).*?v\\d+\\.\\d+\\.\\d+/ where version != current. Record match positions and char counts. GH2_SCAN: identify superseded old definitions. Detect same UPPERCASE tag appearing 2+ times in same field. Mark earlier (older) definition paragraphs. GH3_SCAN: identify intra-file duplicate content. Find exact repeated text (>50 chars) across all fields in same file. Mark 2nd+ occurrences. GH4_SCAN: identify stale accumulated data. Detect >3 version number references in same field. Mark entries before 3rd-most-recent. GH5_SCAN: identify non-functional decorative text. Detect sentences starting with decorative keywords. Execute protection rule: exclude sentences containing execution keywords. Mark pure decorative sentences. GH6_SCAN: identify expired condition branches. Detect version conditions referencing versions with >10 gap from current. Mark expired branch paragraphs. GH7_SCAN: identify redundant error handling templates. Detect retry/circuit-breaker generic details in Error fields. Mark generic implementation details.",
+                    "step2": "CONFIDENCE_TIER_TAGGING — For each GH match, tag confidence tier: AUTO_FIX: GH1(100%), GH2(high), GH3(100%), GH4(high), GH6(high), GH7(high). SUGGEST_ONLY: GH5(medium-high). gh_matches = { GH1: {count, chars, locations[], tier: 'AUTO_FIX'}, ..., GH5: {..., tier: 'SUGGEST_ONLY'}, ... }.",
+                    "step3": "FILE_NIHIL_DENSITY_CALCULATION — For each file compute file_nihil_density: file.residual_chars = sum(all GH matches for this file). file.nihil_density = file.residual_chars / file.total_chars. file.auto_fix_chars = sum(AUTO_FIX tier matches). file.suggest_chars = sum(SUGGEST_ONLY tier matches).",
+                    "step4": "GH_DENSITY_CONTRIBUTION — For each file compute per-GH-rule contribution: file.gh_contribution = { GH1: { chars: N, pct_of_gap: N }, ..., primary: 'GHx' }. Where pct_of_gap = rule_chars / file.residual_chars. primary = rule with highest pct_of_gap. Verify: sum of all rule chars = file.residual_chars.",
+                    "constraints": "(A) GH rules only mark, never modify. (B) Protection rules must execute (GH5 execution keyword protection). (C) Same character not double-counted across rules. (D) Confidence tiers must match ImproveFields tiers.",
+                    "Error": "retry(1) -> circuit-breaker -> fallback: report partial results with applied_rules list, mark incomplete_analysis flag true for affected files -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
+                },
+                "NihilGate": {
+                    "step1": "[ASSERT] ApplyGH executed. Required: gh_results, nihil_density_scores. If false → go back to ApplyGH. | FILE_LEVEL_GATE_DECISION — For each file independently: if file.nihil_density <= 0.05: file.status = 'GREEN'. elif file.nihil_density <= 0.20: file.status = 'YELLOW'. else: file.status = 'RED'. Aggregate decision (worst status): if mode in ['audit', 'compare'] → ReportOnly (never modify files). elif any(file.status == 'RED') → HaltForHuman. elif any(file.status == 'YELLOW') → ImproveFields. else → PassThrough (all GREEN).",
+                    "step2": "RED_HALT_REASONING — if gate_result == 'HALT': list all RED files with nihil_density values. nihil_density > 0.20 means >20% non-execution content. Under protocol standard + source control, Generate output should be ≤0.05. If still >0.20, indicates: (a) Generate severely violated standard, (b) target program has structural issues, (c) GH rules over-matching. Pause Pipeline, present: per-file density and status, RED file GH contribution breakdown, human choices: 'proceed'/'abort'/'audit'.",
+                    "constraints": "(A) GREEN threshold: protocol_config.nihil_density_metrics.thresholds.green (0.05). (B) RED threshold: protocol_config.nihil_density_metrics.thresholds.red (0.20). (C) Gate uses per-file decisions, not weighted average (prevents large files masking small file problems). (D) audit/compare mode never modifies files. (E) RED halt requires human confirmation before continuing.",
+                    "Error": "retry(1) -> circuit-breaker -> fallback: treat as ReportOnly mode -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
+                },
+                "PassThrough": {
+                    "step1": "[ASSERT] NihilGate executed with gate_result == 'PASS'. Required: gate_result.  If false → go back to NihilGate. | RECORD_PASS — For each GREEN file: record file.gate_result = 'PASS', file.nihil_density = file.initial_nihil_density. If minor residual (file.nihil_density > 0 but ≤ 0.05): record residual details for nihil_report. No cleanup executed (already meeting threshold).",
+                    "constraints": "Read-only — no file modifications. All files already meet GREEN threshold. Records density data for downstream reporting.",
+                    "Error": "retry(1) -> circuit-breaker -> fallback: proceed without recording -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
+                },
+                "HaltForHuman": {
+                    "step1": "[ASSERT] NihilGate executed with gate_result == 'HALT'. Required: gate_result, red_files.  If false → go back to NihilGate. | RED_ALERT_PRESENTATION — Present RED-level alert: current nihil_density values, GH contribution breakdown (identify primary cause). Anomaly assessment: if auto_fix_chars / total_chars > 0.20: 'Generate may have severely violated protocol standard — recommend checking Generate flow'. if suggest_chars / total_chars > 0.15: 'Large amount of non-functional decorative text — may be bulk-copied external content'. else: 'Structural density issue — recommend manual review of target files'.",
+                    "step2": "AWAIT_HUMAN_DECISION — Wait for human choice: 'proceed' → continue automatic improvement (route to ImproveFields). 'abort' → terminate Pipeline (route to NihilEnd, gate_result = 'ABORTED'). 'audit' → switch to audit mode (route to ReportOnly, no file modification).",
+                    "constraints": "(A) Must wait for human confirmation, no automatic selection. (B) Human choice recorded to nihil_report.halt_decision. (C) Reference: Creator Traffic Light RED = pause for human approval.",
+                    "Error": "retry(1) -> circuit-breaker -> fallback: treat as 'audit' mode -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
+                },
+                "ImproveFields": {
+                    "step1": "[ASSERT] NihilGate or HaltForHuman routed here. Required: gate_result, gh_matches.  If false → go back to NihilGate. | CONFIDENCE_TIER_CLASSIFICATION — Classify GH matches per confidence tiers defined in ApplyGH.step2.",
+                    "step2": "EXECUTE_AUTO_FIX — For AUTO_FIX tier (GH1-GH4, GH6, GH7) matches: execute cleanup per GH rule definitions. Record each modification: { file, function, field, rule, before_chars, after_chars, tier: 'AUTO_FIX' }.",
+                    "step3": "MARK_SUGGESTIONS — For SUGGEST_ONLY tier (GH5) matches: do not modify files. Record suggestions: { file, function, field, rule, matched_text, suggestion: 'remove', tier: 'SUGGEST_ONLY' }. These appear in nihil_report.suggestions.",
+                    "step4": "CREATE_NIHIL_BACKUP — Write pre-improvement file copies to .nihil_backup/ directory. Always created when ImproveFields executes (covers both YELLOW→ImproveFields and RED→proceed→ImproveFields paths). Purpose: Validate/Simulate regression detection rollback source. Lifecycle: ImproveFields creates → Validate/Simulate reads → ReviewFinalize cleans up.",
+                    "step5": "VERIFY_IMPROVEMENT — Re-parse improved JSON to verify structural integrity. if JSON invalid → rollback all modifications for that file, mark as IMPROVE_FAILED.",
+                    "step6": "WRITE_IMPROVED_FILES — Write improved .aisop.json files back. Preserve JSON formatting and indentation.",
+                    "constraints": "(A) Protected content absolutely untouched (Mermaid, function names, step numbers, conditional logic). (B) AUTO_FIX tier: auto-clean, JSON validation before write. (C) SUGGEST_ONLY tier: never auto-modify, record suggestions only. (D) Improvement failure → preserve original file, no partial improvements. (E) Record all improvement actions and suggestions for nihil_report.",
+                    "Error": "retry(1) -> circuit-breaker -> fallback: rollback to original, mark IMPROVE_FAILED -> inform(User). IMPORTANT. Error types: timeout(operation_timeout)->retry with backoff. parse_error(data_malformed)->retry(1) then fallback. io_error(file_write_failure)->retry(1) then fallback."
+                },
+                "ReportOnly": {
+                    "step1": "[ASSERT] NihilGate or HaltForHuman routed here. Required: gate_result, gh_matches.  If false → go back to NihilGate. | MARK_SUGGESTIONS — Mark all GH matches as 'suggested improvement'. Do not modify any files. Generate improvement suggestion list.",
+                    "constraints": "Strictly read-only — no file modifications permitted. Audit/compare mode output only. All GH matches recorded as suggestions, none auto-fixed.",
+                    "Error": "retry(1) -> circuit-breaker -> fallback: mark all as unprocessed -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
+                },
+                "RecalculateDensity": {
+                    "step1": "[ASSERT] ImproveFields executed. Required: improved_files. If false → go back to ImproveFields. | POST_IMPROVEMENT_FILE_DENSITY — For each improved file re-execute GH1-GH7 detection. Compute two density values: file.improved_nihil_density — density after AUTO_FIX cleanup. file.potential_nihil_density — theoretical density if SUGGEST_ONLY suggestions also adopted. file.improvement_delta = file.improved_nihil_density - file.nihil_density.",
+                    "step2": "POST_IMPROVEMENT_FILE_STATUS — For each file based on improved_nihil_density: classify per NihilGate thresholds (protocol_config.nihil_density_metrics). If file.improved_nihil_density > 0.05 but file.potential_nihil_density <= 0.05: annotate '{file} can meet threshold by adopting GH5 suggestions' for Review stage human decision.",
+                    "constraints": "(A) No cyclic improvement after recalculation (avoid infinite loops). (B) Report residual causes for human judgment. (C) potential_nihil_density is reference only, drives no automatic behavior.",
+                    "Error": "retry(1) -> circuit-breaker -> fallback: use initial density values -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
+                },
+                "TrendAnalysis": {
+                    "step1": "[ASSERT] PassThrough or ReportOnly or RecalculateDensity executed. Required: density_scores, quality_baseline. If false → go back to prior node. | FILE_VERSION_COMPARISON — if quality_baseline.json exists with previous nihil_data: for each file compute density change: regression_threshold = protocol_config.nihil_density_metrics.regression_rule (default 1.05). Mark regression: file.current > file.previous * regression_threshold → NIHIL_REGRESSION (density increased = degradation). Mark improvement: file.current < file.previous * 0.90 → NIHIL_IMPROVEMENT (density decreased ≥10%).",
+                    "step2": "FILE_TREND_DIRECTION — For each file independently: if 3+ consecutive versions with rising nihil_density → file.trend = 'DECLINING' (degrading). if nihil_density stable at ≤ 0.05 → file.trend = 'HEALTHY'. if first calculation → file.trend = 'BASELINE'. Per-file trend provides more actionable information than program-level trend.",
+                    "step3": "FILE_GH_CONTRIBUTION_TREND — For each file compare per-GH-rule contribution across versions: for each GH rule: current_pct = file.gh_contribution[GH_N].pct_of_gap. previous_pct = previous_nihil_data.files[file].gh_contribution[GH_N].pct_of_gap. delta = current_pct - previous_pct. Mark worsening: delta > 0.03 → GH_REGRESSION. Mark improvement: delta < -0.03 → GH_IMPROVEMENT.",
+                    "step4": "GH_RULE_SET_VERSION_CHECK — if quality_baseline.nihil_data.gh_rule_set_version exists: if current_gh_rule_set_version != previous_gh_rule_set_version: clear all NIHIL_REGRESSION marks from step1-step3. Mark all file trends as 'BASELINE_RESET'. Record: 'GH rule set changed from {old} to {new}, nihil density baseline reset'. baseline_reset = true. Note: step1-step3 still execute (compute current values), but regression judgments overridden by BASELINE_RESET.",
+                    "step5": "COMPARE_MODE_ANALYSIS — if mode == 'compare': compute per-file nihil_density for version_a and version_b separately. Generate comparison table: comparison = [{ file, density_a, density_b, delta, direction: 'improved|degraded|stable' }]. Skip persistence tracking (compare mode has no version continuity). Pass directly to GenerateReport.",
+                    "step6": "SUGGEST_PERSISTENCE_TRACKING — For each current SUGGEST_ONLY suggestion: search previous nihil_data.suggestions[] for same location match (file + function + field + rule). if found: persistence_count = previous.persistence_count + 1. else: persistence_count = 1. Persistence window: suggest_persistence_window = 3 (default, configurable 2-5). if persistence_count >= suggest_persistence_window: status = 'PERSISTENT'. Prominently annotate in nihil_report. Do not auto-upgrade to AUTO_FIX (GH5 certainty unchanged). But in Review stage force display, require human explicit decision: 'accept' (execute cleanup) / 'reject' (mark intentional, stop reminding) / 'defer' (continue tracking).",
+                    "constraints": "(A) No history → persistence_count = 1. (B) Trend judgment requires 3+ data points. (C) Persistence tracking data persisted to quality_baseline.json.nihil_data.suggestions[]. (D) 'reject' marked suggestions removed from persistence tracking.",
+                    "Error": "retry(1) -> circuit-breaker -> fallback: skip trend, report current density only -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
+                },
+                "GenerateReport": {
+                    "step1": "[ASSERT] TrendAnalysis executed. Required: trend_data, density_scores, gate_result. If false → go back to TrendAnalysis. | COMPILE_TIERED_REPORT — Generate tiered nihil_report: TIER 1 — Summary (always shown): density badge 'NihilDensity {PASS|IMPROVE|HALT|REPORT} — N files, N GREEN, N YELLOW, N RED (max nihil: X.XX)'. gate_result + per-status file counts. if HALT: prominently display RED file list and human options. TIER 2 — Details (shown when YELLOW/RED files exist): per-file density table: | File | Nihil Density | Status | Primary GH | Trend |. YELLOW/RED file GH contribution breakdown: | GH Rule | Chars | % of Gap |. SUGGEST_ONLY suggestion list (with persistence marks). TIER 3 — Improvement Records (shown when improvements executed): per-item improvement details: { file, function, field, rule, tier, chars_removed }. Conflict records (if any). Persistence warnings (if PERSISTENT suggestions exist). Structured data for downstream modules: { meta: { target, timestamp, mode, standard_source }, gate_result, summary: { total_files, green, yellow, red, overall_status, chars_removed, chars_suggested, files_modified }, files: [{ file, nihil_density, improved_nihil_density, potential_nihil_density, status, trend, functions_audited, gh_contribution, improvements, suggestions }], suggestion_persistence, halt_decision }.",
+                    "step2": "PERSIST_DENSITY_DATA — Filter out suggestions with status='rejected' before persisting. Write current density data to quality_baseline.json nihil_data field: quality_baseline.nihil_data = { version, gh_rule_set_version, baseline_reset, scan_mode, files: { [filename]: { nihil_density, status, gh_contribution } }, suggestions: [{ file, function, field, rule, persistence_count, status }], timestamp }. GH rule version tagging: gh_rule_set_version tracks current GH rule set. baseline_reset = true when gh_rule_set_version changes. Purpose: TrendAnalysis detects version change → marks BASELINE_RESET, avoids false NIHIL_REGRESSION.",
+                    "constraints": "(A) nihil_report must include all audited files. (B) quality_baseline.json update must not destroy existing fields.",
+                    "Error": "retry(1) -> circuit-breaker -> fallback: output partial report -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
+                },
+                "NihilEnd": {
+                    "step1": "[ASSERT] GenerateReport executed or HaltForHuman aborted. Required: nihil_report.  If false → go back to GenerateReport. | OUTPUT_RESULTS — if mode in ['pipeline_create', 'pipeline_evolve']: pass nihil_report to next node (ValidateStep). Pass improved files to ValidateStep. Pipeline continues (non-blocking). elif mode == 'audit': output nihil_report for human review. Output improvement suggestion list. elif mode == 'compare': output nihil_comparison_report.",
+                    "constraints": "Terminal node — routes nihil_report to appropriate downstream consumer based on mode. Non-blocking for pipeline modes.",
+                    "Error": "retry(1) -> circuit-breaker -> fallback: output available report data -> inform(User). OPTIONAL. Error types: timeout(operation_timeout)->retry. parse_error(data_malformed)->retry(1) then fallback. io_error(file_access_failure)->retry(1) then fallback."
+                }
+            }
         }
-      }
     }
-  }
 ]

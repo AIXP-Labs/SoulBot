@@ -10,10 +10,10 @@ governance_mode: NORMAL
 
 # 项目字段 (8 个必需)
 name: aiap_creator
-version: "2.29.0"
+version: "2.34.0"
 pattern: D
 flow_format: "mermaid"
-summary: "AIAP Creator — 通过 18 阶段 Pipeline 创建、进化、验证、模拟和管理 AIAP 程序。15 个模块，213 个节点，1167 个场景 (A-AJ)。Pattern D，Grade S (4.993)。支持 Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert 工作流。ThreeDimTest 4.993/S, governance_hash canonical v1.0。v2.29.0: ReviewFinalize 进化完成，governance_hash TRI-SYNC 已验证。"
+summary: "AIAP Creator — 通过 18 阶段 Pipeline 创建、进化、验证、模拟和管理 AIAP 程序。15 个模块，213 个节点，1167 个场景 (A-AJ)。Pattern D，Grade S (4.972)。支持 Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert 工作流。ThreeDimTest 质量评分, governance_hash canonical v1.0。v2.34.0: A1 EvolveStep user_gate=true + A2 ValidateStep user_gate=false + A3 ReviewPresent user_gate=conditional（G1 误报消除）。governance_hash TRI-SYNC 已验证。"
 tools:
   - name: file_system
     required: true
@@ -131,12 +131,12 @@ modules:
     side_effects: []
 
 # 可选字段
-governance_hash: 5463223d1d669a74c0a839fe6ef0884a8cc1f3e13c4177478bfc2d625a6f4d84
+governance_hash: 01854f9cd0c23d75b11d2b9e7be08488534c1af052ab75dcd5a6c862642a14f6
 governance_hash_canonical_version: "1.0"
 quality:
-  weighted_score: 4.993
+  weighted_score: 4.972
   grade: S
-  last_pipeline: "f85584b0-8fb1-4ec0-9675-cb28db48abd5"
+  last_pipeline: "1c17901a-a71b-42b2-8d37-fc2959fd77d1"
   changes_v1_95_0: "6 LEVEL_B + 8 LEVEL_C: B1 AIAP.md simulate 节点数 18->14。B2 AIAP.md modify 节点数 12->10。B3 SimulateStep 委派参数完整性 (research_context, evolution_context, quality_baseline, research_quality_context)。B4 MCP/A2A/NIST/EU AI Act 引用时间戳刷新 (ProtocolAlign + Research3)。B5 MCP Tool Annotations 最佳实践对齐。B6 总节点数 213->207 校准 (AIAP.md)。C1 版本同步 15/15, C2 名称同步 10/10, C3 AIAP.md (第 61 次), C4 agent_card.json, C5 quality_baseline, C6 governance hash, C7 protocol_config, C8 AIAP_cn.md 同步。14 项变更。MAINTENANCE 第 61 次。"
   changes_v1_94_0: "4 LEVEL_B + 6 LEVEL_C: B1 Engine v4.5 (确定性循环拒绝、WAITING_USER 冲突守卫、effort_per_step、InlineExec 透传、跨平台 os.replace、[ASSERT] 前向引用阻塞、混合程序分类)。B2 Engine Router v1.2 (match/classify/endNode constraints)。B3 Router v3.1 (match/classify/execute/endNode constraints)。B4 Engine fractal_exempt 节点数修正 (25->27, main 20 + react 7)。C1 版本同步 10/10, C2 AIAP.md (第 60 次), C3 agent_card.json, C4 quality_baseline, C5 governance hash, C6 名称同步。10 项变更。MAINTENANCE 第 60 次。"
   changes_v1_93_0: "5 LEVEL_B + 6 LEVEL_C: B1 Engine v4.4 版本引用同步 (v4.3->v4.4)。B2 Engine v4.4 normal 模式感知 (NormalResolve, NormalAgentExec/FUNCTION_LOOP, NormalResultVerify, NormalNodeComplete)。B3 Engine Router v1.1 编排协议 (CheckMode 路由)。B4 prompt_template FUNCTION_LOOP MODE 生成支持 (sys.io.confirm 中断, [ASSERT] 内存读取, 子模块检查, 循环警告)。B5 双路由器架构同步 (Router v3.0 + Engine Router v1.1)。C1 版本同步 10/10, C2 AIAP.md (第 59 次), C3 agent_card.json, C4 quality_baseline, C5 governance hash, C6 名称同步。11 项变更。MAINTENANCE 第 59 次。"
@@ -253,9 +253,9 @@ min_protocol_version: "AIAP V1.0.0"
 identity:
   program_id: "aiap.dev/aiap_creator"
   publisher: "AIXP Labs AIXP.dev | SoulBot.dev"
-  verified_on: "2026-05-28"
+  verified_on: "2026-06-04"
 benchmark:
-  threedimscore: 5.000
+  threedimscore: 4.972
   grade: "S"
   simulation_coverage: "A(16)+B(13)+C(10)+D(10)+E(13)+F(8)+G(10)+H(14)+J(4)+K(7)+L(2)+M(22)+N(5)+O(6)+P(10)+Q(12)+R(404)+S(20)+T(19)+U(14)+V(18)+W(12)+X(21)+Y(11)+Z(16)+AA(22)+AB(29)+AC(37)+AD(40)+AE(35)+AF(38)+AG(40)+AH(38)+AI(45)+AJ(2) = 1023 scenarios"
   total_nodes: 213

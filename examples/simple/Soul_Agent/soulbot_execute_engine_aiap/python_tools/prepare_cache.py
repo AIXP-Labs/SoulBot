@@ -45,6 +45,159 @@ _CACHE_NUM_DEFAULT = 100
 _ENGINE_VERSION_FALLBACK = "unknown"
 _CACHE_SCHEMA_VERSION = "1.0"
 
+
+def _strip_non_natural_language(text: str) -> str:
+    """Strip non-natural-language tokens that pollute language detection.
+
+    Removes the following token categories (v5.21.0 B1 fix):
+      - File paths: segments containing \\ or / (including drive letters D:\\)
+      - snake_case identifiers: words matching [a-z]+(_[a-z0-9]+){2,}
+        (e.g. soulbot_creator_evolution_aiap, _detect_user_language)
+      - URLs: http:// or https:// followed by non-whitespace
+      - Version numbers: patterns like v1.2.3 or 5.20.0
+      - Hex hashes: standalone hex strings of 8+ chars (e.g. a306ca0f)
+
+    Returns the remaining text with non-NL tokens replaced by spaces.
+    """
+    if not text:
+        return text
+
+    # Order matters: URLs before paths (URLs contain /)
+    # 1. URLs (http:// or https://)
+    result = re.sub(r'https?://\S+', ' ', text)
+    # 2. File paths: sequences containing \ or / with path-like structure
+    #    Matches drive-letter paths (D:\...) and Unix paths (/foo/bar)
+    result = re.sub(r'[A-Za-z]:\\[^\s,;，；。、\u3000]*', ' ', result)
+    result = re.sub(r'(?<!\w)/(?:[^\s/,;，；。、\u3000]+/)+[^\s,;，；。、\u3000]*', ' ', result)
+    # 3. snake_case identifiers (3+ segments: word_word_word)
+    result = re.sub(r'\b[a-zA-Z][a-zA-Z0-9]*(?:_[a-zA-Z0-9]+){2,}\b', ' ', result)
+    # 4. Version numbers (v1.2.3 or bare 5.20.0)
+    result = re.sub(r'\bv?\d+\.\d+\.\d+\b', ' ', result)
+    # 5. Hex hashes (standalone 8+ hex chars that contain at least one digit,
+    #    not preceded/followed by word chars). The digit requirement prevents
+    #    false positives on legitimate alphabetic words that happen to be
+    #    hex-valid (e.g. 'abcdefgh'). Q1 quality fix from Research2.
+    result = re.sub(r'\b(?=[0-9a-fA-F]{8,}\b)(?=\S*\d)[0-9a-fA-F]{8,}\b', ' ', result)
+
+    return result
+
+
+def _strip_english_technical_terms(text: str) -> str:
+    """Strip English technical terms/identifiers that are NOT natural language.
+
+    v5.23.0 B1: Additional stripping beyond _strip_non_natural_language.
+    Removes common English technical terms embedded in CJK-dominant text that
+    inflate the ASCII letter count and cause false 'en' detection.
+
+    Strips:
+      - camelCase identifiers (e.g. getUserData, EvolveStep, ReviewFinalize)
+      - ALL_CAPS identifiers of 3+ chars (e.g. LEVEL_B, WAITING_USER, PASS)
+      - Short technical tokens <= 4 ascii-only chars surrounded by CJK/punct
+        (e.g. 'en', 'zh', 'py', 'md', 'json')
+      - Quoted strings (both single and double quotes)
+      - Parenthesized English fragments like (LEVEL_B) or (prepare_cache.py)
+    """
+    if not text:
+        return text
+    # camelCase: 2+ segments starting with uppercase after lowercase
+    result = re.sub(r'\b[a-z]+(?:[A-Z][a-z0-9]*)+\b', ' ', text)
+    # ALL_CAPS with optional underscores (3+ chars, e.g. LEVEL_B, WAITING_USER)
+    result = re.sub(r'\b[A-Z][A-Z0-9_]{2,}\b', ' ', result)
+    # Quoted strings (single or double)
+    result = re.sub(r"'[^']{1,80}'", ' ', result)
+    result = re.sub(r'"[^"]{1,80}"', ' ', result)
+    # Parenthesized technical fragments (ASCII-only content in parens)
+    result = re.sub(r'\([A-Za-z0-9_./ ,;:-]{2,60}\)', ' ', result)
+    return result
+
+
+def _detect_user_language(user_message: str) -> str:
+    """Lightweight heuristic language detection from user message text.
+
+    v5.23.0 B1: CJK body presence heuristic (replaces ASCII-vs-CJK ratio).
+    After stripping paths/snake_case/URLs/version numbers/hex hashes AND
+    English technical terms, if remaining natural language contains sufficient
+    CJK ideographic body content, classify as 'zh' (or ja/ko as applicable).
+    This fixes the root cause where Chinese instructions mixed with English
+    technical terms (e.g. 'LEVEL_B', 'prepare_cache.py', 'WAITING_USER')
+    were incorrectly detected as English because the ASCII letter count from
+    technical terms dominated the CJK ideograph count.
+
+    v5.21.0 B1: Strips non-natural-language tokens (file paths, snake_case
+    identifiers, URLs, version numbers, hex hashes) before counting.
+
+    Detection algorithm (v5.23.0):
+      1. Strip non-NL tokens (_strip_non_natural_language).
+      2. Strip English technical terms (_strip_english_technical_terms).
+      3. Count CJK ideographs in the cleaned text.
+      4. If CJK ideograph count >= 5 (absolute threshold for "sufficient
+         CJK body content"), classify as CJK language regardless of ASCII
+         count. The absolute threshold replaces the ratio-based check that
+         was vulnerable to technical term inflation.
+      5. Japanese (ja): Hiragana/Katakana > 10% of significant chars.
+      6. Korean (ko): Hangul > 10% of significant chars.
+      7. Chinese (zh): CJK ideographs present with absolute count >= 5.
+         CJK detection covers BMP + Extension A-G + Compatibility Ideographs
+         (Q2 quality fix: comprehensive rare CJK character support).
+      8. Fallback to ratio: if CJK count < 5 but CJK ratio > 30%, still zh.
+      9. Default: "en".
+
+    No external library required — pure stdlib.
+    """
+    if not user_message:
+        return "en"
+
+    # v5.21.0 B1: Strip non-natural-language tokens before character counting
+    cleaned = _strip_non_natural_language(user_message)
+    # v5.23.0 B1: Additionally strip English technical terms
+    cleaned = _strip_english_technical_terms(cleaned)
+
+    cjk_count = 0
+    ja_count = 0
+    ko_count = 0
+    ascii_letter_count = 0
+    for ch in cleaned:
+        cp = ord(ch)
+        if (0x3040 <= cp <= 0x309F) or (0x30A0 <= cp <= 0x30FF):
+            # Hiragana or Katakana — uniquely Japanese
+            ja_count += 1
+        elif 0xAC00 <= cp <= 0xD7AF:
+            # Hangul Syllables — uniquely Korean
+            ko_count += 1
+        elif (0x4E00 <= cp <= 0x9FFF) or (0x3400 <= cp <= 0x4DBF) or (0x20000 <= cp <= 0x2A6DF) or (0x2A700 <= cp <= 0x2B73F) or (0x2B740 <= cp <= 0x2B81F) or (0x2B820 <= cp <= 0x2CEAF) or (0x2CEB0 <= cp <= 0x2EBEF) or (0x30000 <= cp <= 0x3134F) or (0xF900 <= cp <= 0xFAFF):
+            # CJK Unified Ideographs (shared by zh/ja/ko)
+            # Includes: BMP (U+4E00-9FFF), Ext A (U+3400-4DBF),
+            # Ext B (U+20000-2A6DF), Ext C (U+2A700-2B73F),
+            # Ext D (U+2B740-2B81F), Ext E (U+2B820-2CEAF),
+            # Ext F (U+2CEB0-2EBEF), Ext G (U+30000-3134F),
+            # CJK Compatibility Ideographs (U+F900-FAFF).
+            # Q2 quality fix from Research2: comprehensive rare CJK coverage.
+            cjk_count += 1
+        elif ch.isascii() and ch.isalpha():
+            ascii_letter_count += 1
+
+    total = cjk_count + ja_count + ko_count + ascii_letter_count
+    if total == 0:
+        return "en"
+
+    # Japanese: Hiragana/Katakana > 10% is a strong ja signal
+    if ja_count / total > 0.10:
+        return "ja"
+    # Korean: Hangul > 10% is a strong ko signal
+    if ko_count / total > 0.10:
+        return "ko"
+    # v5.23.0 B1: CJK body presence — if enough CJK ideographs exist in
+    # the cleaned text (after stripping all technical tokens), the user's
+    # natural language intent is CJK regardless of remaining ASCII ratio.
+    # Absolute threshold >= 5 CJK chars = sufficient ideographic body.
+    if cjk_count >= 5:
+        return "zh"
+    # Fallback: ratio-based check for edge cases with very short messages
+    if total > 0 and cjk_count / total > 0.30:
+        return "zh"
+    return "en"
+
+
 # housekeeping thresholds
 _TMP_FILE_MAX_AGE_S = 300         # orphan .tmp older than 5 min → delete
 _IN_PROGRESS_MAX_AGE_S = 6 * 3600  # in_progress turn older than 6h → mark abandoned
@@ -154,8 +307,9 @@ def prepare_execution_context(
         # 6. Create cache dir with suffix collision resolution
         cache_name, cache_dir = _create_cache_dir(cache_root, turn_id)
 
-        # 7. Generate trace_id + write _index.json
+        # 7. Generate trace_id + detect user language + write _index.json
         trace_id = str(uuid.uuid4())
+        user_language = _detect_user_language(user_message)
         index_data = {
             "engine_version": _resolve_engine_version(engine_aiap_dir),
             "user_message": user_message,
@@ -167,8 +321,13 @@ def prepare_execution_context(
             "started_at": datetime.now().isoformat(timespec="seconds"),
             "cache_schema_version": _CACHE_SCHEMA_VERSION,
             "trace_id": trace_id,
+            "user_language": user_language,
         }
         _atomic_write_json(cache_dir / "_index.json", index_data)
+
+        # 7b. Persist user_language into conversation_context.json (top-level)
+        ctx["user_language"] = user_language
+        _atomic_write_json(ctx_file, ctx)
 
         return {
             "turn_id": turn_id,

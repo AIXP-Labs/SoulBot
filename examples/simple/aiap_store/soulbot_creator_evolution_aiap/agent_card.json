@@ -1,7 +1,7 @@
 {
   "name": "aiap_creator",
-  "description": "AIAP Creator — 18-stage pipeline for creating, evolving, validating, simulating, and managing AIAP programs. 15 modules, 213 nodes, 1167 scenarios (A-AJ). Pattern D orchestrator with sub_mermaid delegation. Grade S (4.993). Supports Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert workflows. ThreeDimTest quality scoring, governance hash canonical v1.0. v2.29.0: ReviewFinalize evolution finalization, governance_hash TRI-SYNC verified.",
-  "version": "2.29.0",
+  "description": "AIAP Creator — 18-stage pipeline for creating, evolving, validating, simulating, and managing AIAP programs. 15 modules, 213 nodes, 1167 scenarios (A-AJ). Pattern D orchestrator with sub_mermaid delegation. Grade S (4.972). Supports Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert workflows. ThreeDimTest quality scoring, governance hash canonical v1.0. MCP 2026-07-28 RC stateless protocol integration, EU AI Act Art.50 FRESHNESS tracking.",
+  "version": "2.34.0",
   "provider": "AIXP Labs AIXP.dev | SoulBot.dev",
   "pattern": "D",
   "tags": [
@@ -228,7 +228,7 @@
     "aiap_creator.nihil_density"
   ],
   "cardSignature": "PLACEHOLDER — T4 A2A compliance: populate with JWS/JWK signature when T4 signing infrastructure is available. Tracked as future enhancement per A2A v1.2 (Linux Foundation AAIF, 150+ members, 5 SDKs, production deployments). Implementation deferred until T4 JWS key management ecosystem matures.",
-  "governance_hash": "5463223d1d669a74c0a839fe6ef0884a8cc1f3e13c4177478bfc2d625a6f4d84",
+  "governance_hash": "01854f9cd0c23d75b11d2b9e7be08488534c1af052ab75dcd5a6c862642a14f6",
   "governance_hash_canonical_version": "1.0",
   "status": "active",
   "safety_card": {

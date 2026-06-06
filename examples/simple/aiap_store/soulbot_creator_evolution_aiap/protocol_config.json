@@ -1,5 +1,5 @@
 {
-  "version": "2.28.0",
+  "version": "2.34.0",
   "split_metadata": {
     "source": "main.aisop.json",
     "split_version": "2.4.0",
@@ -537,9 +537,9 @@
     "enabled": true,
     "description": "Nihil density tracking for generation hygiene. Measures meaningless content ratio in generated AISOP files.",
     "thresholds": {
-      "green": 0.15,
-      "red": 0.3,
-      "ideal": 0.1
+      "green": 0.05,
+      "red": 0.2,
+      "ideal": 0.03
     },
     "categories": [
       "GH1",
@@ -594,7 +594,10 @@
       "c1_sync_failure_threshold": 0
     },
     "health_check_interval": "per_pipeline_run",
-    "alert_channels": ["pipeline_metadata", "telemetry_report"],
+    "alert_channels": [
+      "pipeline_metadata",
+      "telemetry_report"
+    ],
     "suppression_rules": {
       "duplicate_window_ms": 60000,
       "max_alerts_per_stage": 5
@@ -634,8 +637,8 @@
         "interactions": "Activated by self_evolution_verification.auto_detection. Affects penalty_accumulation grade_mapping thresholds."
       },
       "nihil_density_green_threshold": {
-        "value": 0.15,
-        "rationale": "15% meaningless content ratio is acceptable for generated AISOP files. Below 10% is ideal. Above 30% indicates generation quality issues. Empirical: mature programs (20+ cycles) converge to 5-8%.",
+        "value": 0.05,
+        "rationale": "5% meaningless content ratio is the GREEN threshold for generated AISOP files. Below 3% is ideal. Above 20% indicates generation quality issues (RED). Empirical: mature programs (20+ cycles) converge to 3-5%.",
         "override": "nihil_density_metrics.thresholds",
         "interactions": "self_evolution_nihil_policy enforces monotonic_decreasing for self-evolution targets."
       },
@@ -661,7 +664,11 @@
       "properties": {
         "quality_threshold": {
           "type": "string",
-          "enum": ["strict", "standard", "relaxed"],
+          "enum": [
+            "strict",
+            "standard",
+            "relaxed"
+          ],
           "default": "standard"
         },
         "trace_budget": {
@@ -687,7 +694,7 @@
           "type": "number",
           "minimum": 0.01,
           "maximum": 0.5,
-          "default": 0.15
+          "default": 0.05
         },
         "pipeline_duration_warning_ms": {
           "type": "integer",
@@ -697,12 +704,19 @@
         },
         "attestation_chain_verification_mode": {
           "type": "string",
-          "enum": ["strict", "relaxed"],
+          "enum": [
+            "strict",
+            "relaxed"
+          ],
           "default": "strict",
           "readOnly": true
         }
       },
-      "required": ["quality_threshold", "trace_budget", "attestation_chain_verification_mode"],
+      "required": [
+        "quality_threshold",
+        "trace_budget",
+        "attestation_chain_verification_mode"
+      ],
       "additionalProperties": false
     },
     "enforcement": "PipelineStart: validate execution_config against schema before pipeline proceeds. Validation failure -> BLOCK with CONFIG_VALIDATION_ERROR and field-level diagnostics.",

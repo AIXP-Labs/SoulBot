@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
 """
-user_gate_audit.py  v5.12.0
+user_gate_audit.py  v5.23.0
 
 Mechanical audit tool for user_gate sovereignty enforcement.
+v5.23.0 B3: Tri-state user_gate mechanism.
+  - user_gate: true  -> real sovereignty gate, enforce prevents bypass.
+  - user_gate: false -> pure validation node, audit skipped entirely.
+  - user_gate: "conditional" -> conditional gate, no coerce by this tool;
+    agent_engine handles the gate logic (e.g. finalize_risk check).
+  - user_gate absent -> fall back to text_marker detection (G1, fail-closed).
+  NEVER reads domain-specific fields (finalize_decision, finalize_risk).
+  NEVER relaxes text_marker detection for nodes without user_gate field.
+
 v5.12.0 changes (G1+G3 from plan20/19_user_gate_enforcement_remediation):
   - G1: Auto-detect gates from node definition text by scanning for
     gate-specific markers instead of relying on explicit user_gate:true flag.
@@ -41,7 +50,7 @@ Output (stdout): JSON
     { "status": "PASS"|"SOVEREIGNTY_BYPASS"|"ERROR",
       "node": "<node_name>",
       "user_gate": true|false|null,
-      "gate_detection_method": "explicit_flag"|"text_marker"|null,
+      "gate_detection_method": "explicit_flag"|"text_marker"|"conditional"|null,
       "matched_markers": [...],
       "cache_status": "<status>"|null,
       "was_presented": true|false|null,
@@ -140,9 +149,15 @@ def _extract_user_gate(entry_path: str, node_name: str) -> tuple[bool | None, st
     """
     Detect whether the given node requires a user gate.
 
+    v5.23.0 B3: Tri-state user_gate mechanism.
     Detection methods (in priority order):
-    1. Explicit user_gate:true field in node definition (backward compatible)
+    1. Explicit user_gate field in node definition — supports THREE states:
+       - user_gate: true   -> (True,  "explicit_flag", [])  Real sovereignty gate (e.g. EvolveStep). enforce prevents bypass.
+       - user_gate: false   -> (False, "explicit_flag", [])  Pure validation node (e.g. ValidateStep). Skip audit entirely.
+       - user_gate: "conditional" -> (False, "conditional", [])  Conditional gate (e.g. ReviewPresent). No coerce, agent_engine decides.
     2. Text-scanning for gate-specific markers in step/constraint text (G1)
+       — ONLY when user_gate field is ABSENT (backward compat, fail-closed).
+       NEVER relax text_marker detection for nodes without user_gate field.
 
     G3: Searches across all .aisop.json files in the AIAP directory,
     not just the entry_path single file.
@@ -150,7 +165,7 @@ def _extract_user_gate(entry_path: str, node_name: str) -> tuple[bool | None, st
     Returns:
         (gate_detected: bool|None, detection_method: str|None, matched_markers: list[str])
         - gate_detected: True if gate required, False if not, None if node not found
-        - detection_method: 'explicit_flag' or 'text_marker' or None
+        - detection_method: 'explicit_flag' or 'text_marker' or 'conditional' or None
         - matched_markers: list of marker patterns that matched (empty if explicit flag)
     """
     aisop_files = _collect_aisop_files(entry_path)
@@ -165,17 +180,27 @@ def _extract_user_gate(entry_path: str, node_name: str) -> tuple[bool | None, st
         if node_def is None:
             continue
 
-        # Method 1: Explicit user_gate:true flag (backward compatible)
+        # Method 1: Explicit user_gate field — tri-state (v5.23.0 B3)
         explicit_flag = node_def.get("user_gate")
         if explicit_flag is True:
+            # True: real sovereignty gate. enforce will prevent bypass.
             return (True, "explicit_flag", [])
+        if explicit_flag is False:
+            # False: pure validation node. Skip audit entirely.
+            return (False, "explicit_flag", [])
+        if explicit_flag == "conditional":
+            # "conditional": conditional gate. No coerce by user_gate_audit;
+            # agent_engine handles the gate logic (e.g. finalize_risk check).
+            return (False, "conditional", [])
 
         # Method 2: Text-scan for gate markers (G1 auto-detect)
+        # ONLY when user_gate field is ABSENT — fail-closed backward compat.
+        # NEVER relax text_marker detection for nodes without user_gate field.
         markers = _scan_text_for_gate_markers(node_def)
         if markers:
             return (True, "text_marker", markers)
 
-        # Node found but no gate detected
+        # Node found but no gate detected and no explicit flag
         return (False, None, [])
 
     # Node not found in any file

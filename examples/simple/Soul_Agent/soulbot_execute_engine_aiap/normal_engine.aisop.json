@@ -7,11 +7,12 @@
       "flow_format": "mermaid",
       "id": "soulbot_execute_engine.normal",
       "program_id": "dev.soulbot.execute_engine.normal",
-      "name": "SoulBot Normal Engine v5.17.0",
+      "name": "SoulBot Normal Engine v5.25.0",
       "output_mode": "begin with 🤖 + helpfully in User's exact language and script variant",
-      "version": "5.17.0",
-      "summary": "Normal Engine v5.17.0: node-by-node inline execution (default inline) with crash recovery, 3-state circuit breaker, NodeVerify, Decision Node gate routing, sys.* inline handling, sovereignty gate enforcement. Version sync this cycle — v5.17.0 Sovereignty Bug Protocol lives in agent_engine + main. HMAC Phase 2, OTel SDK, EU CRA + ISO 42001.",
-      "description": "SoulBot Normal Engine v5.17.0: version sync only for this module — the v5.17.0 changes (A1 sovereignty_bug_protocol shared section, B1 RULES.sovereignty_bug execution rule) live in main.aisop.json and agent_engine.aisop.json; Normal Engine execution logic unchanged this cycle. Sovereignty gate enforcement via writeCache.step3 user_gate_audit.py --enforce retained. HMAC Phase 2, OTel SDK, EU CRA + ISO 42001.",
+      "version": "5.25.0",
+      "token_estimate": "~15K",
+      "summary": "Normal Engine v5.25.0: Version sync with v5.25.0 B1-B5 changes. B1 Semantic-aware checkpointing, B2 Least-agency principle mapping, B3 D9 token_estimate field, B4 Harness verification latency tracking, B5 Parallel-wave completed_set verification are the primary changes in agent_engine/node_engine; normal_engine receives version sync + token_estimate field for module consistency. USER_LANGUAGE_CONFLICT_DETECTION retained. Sovereignty gate enforcement retained. HMAC Phase 2, OTel SDK, EU CRA + ISO 42001.",
+      "description": "SoulBot Normal Engine v5.25.0: Version sync with v5.25.0 ecosystem — B1 Semantic-aware checkpointing optimization, B2 Least-agency principle mapping, B3 D9 token_estimate field addition, B4 Harness verification latency tracking, B5 Parallel-wave completed_set integration verification are the primary changes in agent_engine and node_engine; normal_engine receives version sync + token_estimate field for module consistency. USER_LANGUAGE_CONFLICT_DETECTION (v5.21.0 B2) retained in execute.constraints. Sovereignty gate enforcement via writeCache.step3 user_gate_audit.py --enforce retained. HMAC Phase 2, OTel SDK, EU CRA + ISO 42001.",
       "loading_mode": "normal",
       "tools": [
         {
@@ -199,7 +200,7 @@
         },
         "init": {
           "step1": "[ASSERT] Normal Engine dispatched inline execution. Required: TARGET, YOUR_NODE, CONTEXT_DIR, AIAP_NAME. | [PHYSICAL READ] Read TARGET file. Read the specific function for YOUR_NODE. Read the COMPLETE function definition: all step fields, constraints, Error. Print it -- this is your execution contract. Ignore execute_mode field if present — defaults to executing all nodes inline.",
-          "step2": "Read CONTEXT_DIR/_index.json -- the global execution state. Note current_node and nodes_status (which nodes are completed).",
+          "step2": "Read CONTEXT_DIR/_index.json -- the global execution state. Note current_node and nodes_status (which nodes are completed). Read user_language from _index.json::user_language (set by prepare_cache.py at execution start). This is the persistent language anchor — user_summary and all user-facing narrative MUST be rendered in this language. Technical identifiers are preserved in original form. If user_language is absent, fall back to conversation_context detection (backward compatible).",
           "step3": "ASSERT-DRIVEN SELECTIVE READ: Scan your function definition for [ASSERT] clauses. For each [ASSERT] {NodeName} executed with Required: {fields} -- verify NodeName is PASS in nodes_status, then Read CONTEXT_DIR/{AIAP_NAME}.{NodeName}.json to get the required data. If no [ASSERT] references -- do not read any node files. Only read what you need.",
           "constraints": "All reads must be PHYSICAL file_system reads. Do NOT use memorized content. [PROHIBIT] Proceeding without reading TARGET function definition. Print it = your execution contract.",
           "Error": "retry(1) -> circuit-breaker -> fallback(writeCache with status=FAIL) -> inform. Error classification per error_taxonomy: transient [file_read_timeout, temporary_file_lock] -> retry. fatal [target_not_found, bootstrap_validation_failed, scope_guard_violation] -> no retry, write FAIL cache."
@@ -211,7 +212,7 @@
           "step4": "RULES.user_input (applied DURING step1 when USER_INPUT trigger detected): If a step describes an action where the user must make a choice, give approval, provide information, select items, or confirm before the program can proceed -- present the question to user directly and wait for response in the same conversation turn. Do NOT auto-approve. Do NOT substitute your judgment for the user's. Axiom 0: the user's sovereignty is absolute. NOTE: sys.io.confirm/input/select are handled in step3. step4 handles NATURAL LANGUAGE patterns only.",
           "step5": "RULES.user_message (applied DURING step1 when user-facing content detected): [USER_MESSAGE] handling: When a step's semantic purpose is to generate or output content intended for the user (e.g. generating a reply, compiling a response, presenting results, reporting status), output full content to the user NOW. Continue executing. Do NOT stop. This is a NOTIFICATION, not an INTERRUPT. NOTE: sys.io.notify is handled in step3. step5 handles natural language OUTPUT patterns only.",
           "step6": "RULES.on_error (applied DURING step1 when any step fails): When any step fails (sys.* error or tool failure): DUAL-KEY SUPPORT (C5 v5.3.0): Read BOTH function's 'Error' field AND 'on_error' field (if present). Prefer 'on_error' when both exist; fall back to 'Error' for backward compatibility. Error classification: transient (file read timeout, cache write failure) -> retry with backoff. fatal (target not found, permission denied, assertion_error, confirm_rejected) -> no retry, fallback per Error/on_error field routing. If neither on_error nor Error field present -> mark step FAIL, continue with remaining steps.",
-          "constraints": "Every step MUST have at least one tool call. Cognitive reasoning alone is NOT execution. [PROHIBIT] Skipping steps. [PROHIBIT] Fabricating results without tool calls. step1 is the EXECUTION LOOP. step3-6 are RULES applied inline during step1, not sequential steps. They fire when their condition is met.",
+          "constraints": "Every step MUST have at least one tool call. Cognitive reasoning alone is NOT execution. [PROHIBIT] Skipping steps. [PROHIBIT] Fabricating results without tool calls. step1 is the EXECUTION LOOP. step3-6 are RULES applied inline during step1, not sequential steps. They fire when their condition is met. USER_LANGUAGE ENFORCEMENT (v5.18.0): user_summary field MUST be written in the language specified by USER_LANGUAGE (read from _index.json::user_language). Do not re-infer language from conversation context or technical content. If USER_LANGUAGE is absent, fall back to conversation_context detection (backward compatible). USER_LANGUAGE_CONFLICT_DETECTION (v5.21.0 B2): If _index.user_language conflicts with user_message natural language (suspected mis-detection from pre-v5.21.0 caches or edge cases), node SHOULD prefer user_message natural language for user-facing output + emit structured warning in cache output: 'USER_LANGUAGE_CONFLICT: _index.user_language={anchor} but user_message detected as {detected}, using {detected}'. Detection method: count CJK vs ASCII in user_message after stripping non-NL tokens (same heuristic as _detect_user_language); if CJK ratio >= 30% of significant chars, classify as CJK language; if result differs from _index.user_language, conflict is suspected. This is a FALLBACK safety net — v5.21.0 B1 fixes the root cause in _detect_user_language so conflicts should be rare.",
           "Error": "retry(2) -> circuit-breaker -> fallback(review with partial results) -> inform. Error classification per error_taxonomy: transient [tool_timeout, temporary_file_lock] -> retry with backoff. fatal [target_not_found, permission_denied] -> no retry, proceed to review. recoverable_with_fallback [command_error, command_timeout, io_error] -> retry(1) then review."
         },
         "review": {
@@ -229,7 +230,8 @@
         },
         "inlineEnd": {
           "step1": "[ASSERT] writeCache completed. | Return to programExec node loop.",
-          "constraints": "Return control to main graph step3(c)."
+          "constraints": "Return control to main graph step3(c).",
+          "Error": "retry(1) -> circuit-breaker -> fallback(proceed with inline_warning) -> inform(User). Error types: tool_failure(agent_write_node_cache.py write error)->retry. fatal(schema_validation_failed)->no retry, write inline_warning to cache."
         }
       }
     }

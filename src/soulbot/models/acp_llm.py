@@ -156,6 +156,10 @@ class ACPLlm(BaseLlm):
     ) -> AsyncGenerator[LlmResponse, None]:
         from ..events.event import Content, Part
 
+        # change A (plan20/38 §6.6): set True on fatal subprocess exit (V8 OOM) so the
+        # final yield reports error_code="ACP_CRASH" — Runner (change B) then auto-resumes
+        # the pipeline from cache instead of surfacing a dead-end error.
+        self._crashed = False
         provider = resolve_provider(self.model)
         skip_tools = provider == "openclaw"
         prompt = self._build_prompt(llm_request, skip_tools=skip_tools)
@@ -342,17 +346,16 @@ class ACPLlm(BaseLlm):
                             "ACP error (attempt %d/%d), retrying in %.1fs: %s",
                             attempt, max_attempts, delay, ce,
                         )
-                        # Clear stale session so next acquire creates fresh connection
-                        session_id = None
-                        # Doc 10 B3: clear store on disconnect
-                        if store and user_id:
-                            try:
-                                await store.clear(user_id, provider)
-                            except Exception:
-                                pass
+                        # change A (plan20/38 §6.6): do NOT clear session_id — the
+                        # session is user-controlled, the program must not spawn a new
+                        # one. pool.acquire resumes the SAME session on a fresh subprocess;
+                        # if resume keeps failing, the exhausted path below marks _crashed
+                        # so Runner (change B) resumes the pipeline from cache.
                         await asyncio.sleep(delay)
                         continue
-                    # Last attempt — fall through to fallback/error handling
+                    # Last attempt exhausted — connection is dead; treat as crash so
+                    # Runner (change B) auto-resumes the pipeline (covers pipe-close OOM).
+                    self._crashed = True
                     primary_err = ce
                     break
                 except Exception as exc:
@@ -381,6 +384,19 @@ class ACPLlm(BaseLlm):
                                     "method": exc.method or "",
                                 },
                             )
+                        # change A (plan20/38 §6.6): fatal subprocess exit (V8 OOM) —
+                        # re-sending the same giant prompt just re-OOMs, and the session
+                        # is user-controlled (cannot rotate). Stop in-layer retry, mark
+                        # crash, hand off to Runner (change B) which resumes the pipeline
+                        # from last_completed_node via the engine's CRASH RECOVERY.
+                        if exc._is_fatal_subprocess_exit():
+                            logger.error(
+                                "ACP fatal subprocess exit (no in-layer retry, "
+                                "Runner will resume pipeline): %s", exc,
+                            )
+                            self._crashed = True
+                            primary_err = exc
+                            break
                         # Retry transient JSON-RPC codes (-32603, -32000~-32099)
                         # *unless* it is a context overflow — that needs
                         # session rotation, handled below.
@@ -394,12 +410,8 @@ class ACPLlm(BaseLlm):
                                 "ACP RPC retryable (attempt %d/%d, code=%s), retrying in %.1fs: %s",
                                 attempt, max_attempts, exc.code, delay, exc,
                             )
-                            session_id = None
-                            if store and user_id:
-                                try:
-                                    await store.clear(user_id, provider)
-                                except Exception:
-                                    pass
+                            # change A (plan20/38 §6.6): keep session_id (do NOT clear) —
+                            # session is user-controlled; pool.acquire resumes it.
                             await asyncio.sleep(delay)
                             continue
                     # --- Session rotation on "Prompt is too long" ---
@@ -459,7 +471,12 @@ class ACPLlm(BaseLlm):
         error_msg = str(primary_err)
         error_msg = _enrich_auth_error(error_msg, self.model)
         logger.error("ACP error: %s", error_msg)
-        yield LlmResponse(error_code="ACP_ERROR", error_message=error_msg)
+        # change A (plan20/38 §6.6): signal a fatal crash distinctly (ACP_CRASH) so
+        # Runner (change B) auto-resumes the pipeline; non-crash errors stay ACP_ERROR.
+        yield LlmResponse(
+            error_code="ACP_CRASH" if self._crashed else "ACP_ERROR",
+            error_message=error_msg,
+        )
 
     # ------------------------------------------------------------------
     # Fallback

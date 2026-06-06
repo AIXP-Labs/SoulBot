@@ -10,10 +10,10 @@ governance_mode: NORMAL
 
 # Project Fields (8 required)
 name: aiap_creator
-version: "2.29.0"
+version: "2.34.0"
 pattern: D
 flow_format: "mermaid"
-summary: "AIAP Creator — 18-stage pipeline for creating, evolving, validating, simulating, and managing AIAP programs. 15 modules, 213 nodes, 1167 scenarios (A-AJ). Pattern D, Grade S (4.993). Supports Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert workflows. ThreeDimTest 4.993/S, governance_hash canonical v1.0. v2.29.0: ReviewFinalize v2.28.0->v2.29.0 evolution finalization, governance_hash TRI-SYNC verified."
+summary: "AIAP Creator — 18-stage pipeline for creating, evolving, validating, simulating, and managing AIAP programs. 15 modules, 213 nodes, 1167 scenarios (A-AJ). Pattern D, Grade S (4.972). Supports Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert workflows. ThreeDimTest quality scoring, governance hash canonical v1.0. v2.34.0: A1 EvolveStep user_gate=true + A2 ValidateStep user_gate=false + A3 ReviewPresent user_gate=conditional (G1 false positive elimination). governance_hash TRI-SYNC verified."
 tools:
   - name: file_system
     required: true
@@ -131,12 +131,12 @@ modules:
     side_effects: []
 
 # Optional Fields
-governance_hash: 5463223d1d669a74c0a839fe6ef0884a8cc1f3e13c4177478bfc2d625a6f4d84
+governance_hash: 01854f9cd0c23d75b11d2b9e7be08488534c1af052ab75dcd5a6c862642a14f6
 governance_hash_canonical_version: "1.0"
 quality:
-  weighted_score: 4.993
+  weighted_score: 4.972
   grade: S
-  last_pipeline: "f85584b0-8fb1-4ec0-9675-cb28db48abd5"
+  last_pipeline: "1c17901a-a71b-42b2-8d37-fc2959fd77d1"
 tags: [aiap, creator, pipeline, governance, meta, execution, strict_mode, density_metrics, strict_semantics, self_evolution, dsm, token_efficiency, evolution_fitness, attestation, insights, quality, threedimscore]
 author: SoulBot.dev
 license: Apache-2.0
@@ -238,9 +238,9 @@ min_protocol_version: "AIAP V1.0.0"
 identity:
   program_id: "aiap.dev/aiap_creator"
   publisher: "AIXP Labs AIXP.dev | SoulBot.dev"
-  verified_on: "2026-05-28"
+  verified_on: "2026-06-04"
 benchmark:
-  threedimscore: 5.000
+  threedimscore: 4.972
   grade: "S"
   simulation_coverage: "A(16)+B(13)+C(10)+D(10)+E(13)+F(8)+G(10)+H(14)+J(4)+K(7)+L(2)+M(22)+N(5)+O(6)+P(10)+Q(12)+R(404)+S(20)+T(19)+U(14)+V(18)+W(12)+X(21)+Y(11)+Z(16)+AA(22)+AB(29)+AC(37)+AD(40)+AE(35)+AF(38)+AG(40)+AH(38)+AI(45)+AJ(2) = 1023 scenarios"
   total_nodes: 213

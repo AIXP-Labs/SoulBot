@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from typing import TYPE_CHECKING, AsyncGenerator, Optional
 
@@ -217,62 +218,124 @@ class Runner:
             )
 
         try:
-            # 5. Execute agent and yield events (all under per-turn span)
-            async for event in self.agent.run_async(ctx):
-                event.invocation_id = ctx.invocation_id
+            # change B (plan20/38 §6.6): wrap the agent loop so a fatal subprocess
+            # crash (event.error_code == "ACP_CRASH") auto-resumes the pipeline. The
+            # engine's programExec.step3 CRASH RECOVERY picks up from last_completed_node;
+            # WAITING_USER never produces ACP_CRASH, so this is fail-closed — it never
+            # auto-advances a sovereignty gate.
+            resume_count = 0
+            MAX_AUTO_RESUME = 5
+            while True:
+                crashed = False
+                # 5. Execute agent and yield events (all under per-turn span)
+                async for event in self.agent.run_async(ctx):
+                    event.invocation_id = ctx.invocation_id
 
-                # CMD processing moved to LlmAgent layer (Doc 26)
+                    # change B: fatal crash signal — do NOT surface as a final
+                    # response; the auto-resume below takes over.
+                    if event.error_code == "ACP_CRASH":
+                        crashed = True
+                        continue
 
-                # Don't persist partial (streaming) events to session history
-                if not event.partial:
-                    await self.session_service.append_event(session, event)
+                    # CMD processing moved to LlmAgent layer (Doc 26)
 
-                # Publish agent response event
-                if self.bus and event.is_final_response():
-                    from ..bus.events import BusEvent, AGENT_RESPONSE
+                    # Don't persist partial (streaming) events to session history
+                    if not event.partial:
+                        await self.session_service.append_event(session, event)
 
-                    text = ""
-                    if event.content:
-                        text = " ".join(
-                            p.text for p in event.content.parts if p.text
-                        )
-                    # trigger_type distinguishes scheduled fires from
-                    # user-triggered responses. Web SSE endpoint filters on
-                    # this to avoid double-rendering (user responses are
-                    # already delivered via /run_sse).
-                    run_context = (run_config.context if run_config else None) or {}
-                    trigger_type = run_context.get("type", "user")
-                    await self.bus.publish(BusEvent(
-                        type=AGENT_RESPONSE,
-                        data={
-                            "agent": event.author,
-                            "text": text,
-                            "session_id": session_id,
-                            "trigger_type": trigger_type,
-                        },
-                        source="runner",
-                    ))
+                    # Publish agent response event
+                    if self.bus and event.is_final_response():
+                        from ..bus.events import BusEvent, AGENT_RESPONSE
 
-                # 6. Record assistant response to chat history (Doc 22)
-                #    Split L1 (human text) / L2 (audit JSON) before saving
-                if self._history_service and event.is_final_response():
-                    final_text = ""
-                    if event.content:
-                        final_text = " ".join(
-                            p.text for p in event.content.parts if p.text
-                        )
-                    if final_text:
-                        try:
-                            from ..l2_splitter import split_l2
-                            split = split_l2(final_text)
-                            await self._history_service.add_message(
-                                user_id, self.agent_name, session_id,
-                                "assistant", split.l1, l2_json=split.l2_json,
+                        text = ""
+                        if event.content:
+                            text = " ".join(
+                                p.text for p in event.content.parts if p.text
                             )
-                        except Exception as exc:
-                            logger.warning("History write failed (assistant): %s", exc)
+                        # trigger_type distinguishes scheduled fires from
+                        # user-triggered responses. Web SSE endpoint filters on
+                        # this to avoid double-rendering (user responses are
+                        # already delivered via /run_sse).
+                        run_context = (run_config.context if run_config else None) or {}
+                        trigger_type = run_context.get("type", "user")
+                        await self.bus.publish(BusEvent(
+                            type=AGENT_RESPONSE,
+                            data={
+                                "agent": event.author,
+                                "text": text,
+                                "session_id": session_id,
+                                "trigger_type": trigger_type,
+                            },
+                            source="runner",
+                        ))
 
-                yield event
+                    # 6. Record assistant response to chat history (Doc 22)
+                    #    Split L1 (human text) / L2 (audit JSON) before saving
+                    if self._history_service and event.is_final_response():
+                        final_text = ""
+                        if event.content:
+                            final_text = " ".join(
+                                p.text for p in event.content.parts if p.text
+                            )
+                        if final_text:
+                            try:
+                                from ..l2_splitter import split_l2
+                                split = split_l2(final_text)
+                                await self._history_service.add_message(
+                                    user_id, self.agent_name, session_id,
+                                    "assistant", split.l1, l2_json=split.l2_json,
+                                )
+                            except Exception as exc:
+                                logger.warning("History write failed (assistant): %s", exc)
+
+                    yield event
+
+                # change B: after the agent loop ends, decide whether to auto-resume.
+                if not crashed:
+                    if resume_count > 0:
+                        # observability: pipeline recovered from one or more crashes
+                        logger.warning(
+                            "ACP pipeline resumed successfully after %d auto-resume(s) "
+                            "(session=%s)", resume_count, session_id,
+                        )
+                    break  # normal completion or WAITING_USER (no ACP_CRASH) → done
+                resume_count += 1
+                if resume_count > MAX_AUTO_RESUME:
+                    logger.error(
+                        "ACP pipeline still crashing after %d auto-resumes; escalating to "
+                        "human (session=%s)", MAX_AUTO_RESUME, session_id,
+                    )
+                    yield Event(
+                        author="system",
+                        content=Content(role="model", parts=[Part(text=(
+                            f"⚠️ 节点崩溃(OOM)已自动续跑 {MAX_AUTO_RESUME} 次仍未完成,"
+                            "请回复「继续执行任务」手动续跑,或考虑拆分该重节点。"
+                        ))]),
+                    )
+                    break
+                # Back off (give the V8 heap / OS time to recover), then re-trigger a
+                # normal run. Same session_id — the engine's CRASH RECOVERY resumes from
+                # last_completed_node; agent.py prepare_cache reuses the in_progress turn.
+                delay = min(5 * 2 ** (resume_count - 1), 60)
+                # observability: surface each auto-resume attempt in the log stream so a
+                # crash→resume→success/escalation sequence is visible without cache traces.
+                logger.warning(
+                    "ACP_CRASH detected; auto-resuming pipeline (attempt %d/%d) after %ds "
+                    "backoff (session=%s)", resume_count, MAX_AUTO_RESUME, delay, session_id,
+                )
+                await asyncio.sleep(delay)
+                await self.session_service.append_event(session, Event(
+                    author="user",
+                    content=Content(role="user", parts=[Part(text="继续执行任务")]),
+                ))
+                ctx = InvocationContext(
+                    session=session,
+                    agent=self.agent,
+                    session_service=self.session_service,
+                    run_config=rc,
+                    bus=self.bus,
+                    cmd_executor=self._cmd_executor,
+                )
         finally:
             # Doc 22 P3: always close the per-turn span, even on
             # GeneratorExit (client disconnect) or exception.
