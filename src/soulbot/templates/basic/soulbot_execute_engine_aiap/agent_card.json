@@ -1,10 +1,10 @@
 {
   "name": "soulbot_execute_engine",
-  "version": "5.25.0",
+  "version": "5.23.0",
   "program_id": "dev.soulbot.execute_engine",
   "protocol": "AIAP V1.0.0",
   "pattern": "B+",
-  "description": "SoulBot Execute Engine v5.25.0 -- MINOR: B1 Semantic-aware checkpointing optimization (Crab 2026, up to 87% checkpoint reduction in agent_engine). B2 Least-agency principle mapping (OWASP ASI Least Agency to tool permission boundaries in agent_engine + node_engine). B3 D9 token_estimate field addition (all 4 modules). B4 Harness verification latency tracking (pre/post_tool_use_avg_ms in agent_engine). B5 Parallel-wave completed_set integration verification (runtime serialization round-trip check in node_engine). C1-C4 version/name/history/hash sync. 4 modules, 14 nodes. 0 breaking changes.",
+  "description": "SoulBot Execute Engine v5.23.0 -- MINOR: B1 prepare_cache CJK body heuristic (absolute threshold >= 5 replaces ratio check). B2 node_engine 3-section Node Summary template (Node State + Summary + Explain). B3 user_gate tri-state mechanism (true/false/conditional). B4 agent_engine USER_SUMMARY RENDERING CONTRACT strengthened for all node types. C1-C4 version/name/history/hash sync. 4 modules, 14 nodes. 0 breaking changes. governance_hash TRI-SYNC verified.",
   "capabilities": {
     "offered": [
       "intent_matching",
@@ -59,28 +59,28 @@
       "file": "main.aisop.json",
       "nodes": 5,
       "execution_mode": "sequential",
-      "role": "Engine Router -- intent matching, engine selection, execution orchestration, WAITING_USER/MESSAGE_PENDING interrupt relay. v5.25.0: +token_estimate"
+      "role": "Engine Router -- intent matching, engine selection, execution orchestration, WAITING_USER/MESSAGE_PENDING interrupt relay"
     },
     {
       "id": "soulbot_execute_engine.node",
       "file": "node_engine.aisop.json",
       "nodes": 2,
       "execution_mode": "hybrid",
-      "role": "Node Engine -- node-by-node execution with Sub Agent dispatch, crash recovery, circuit breaker, parallel dispatch, deterministic dispatch_plan generation, dispatch_audit, bootstrap integrity enforcement, user_gate NODE VERIFY, user_gates_presented signal. v5.25.0: +token_estimate, +least-agency, +completed_set verification"
+      "role": "Node Engine -- node-by-node execution with Sub Agent dispatch, crash recovery, circuit breaker, parallel dispatch, deterministic dispatch_plan generation, dispatch_audit, bootstrap integrity enforcement (B1), user_gate NODE VERIFY (B2), user_gates_presented signal (B4)"
     },
     {
       "id": "soulbot_execute_engine.normal",
       "file": "normal_engine.aisop.json",
       "nodes": 2,
       "execution_mode": "sequential",
-      "role": "Normal Engine -- node-by-node inline execution for loading_mode=normal packages, sys.* inline handling, NodeVerify, sovereignty gate enforcement. v5.25.0: +token_estimate"
+      "role": "Normal Engine -- node-by-node inline execution for loading_mode=normal packages, sys.* inline handling, NodeVerify, sovereignty gate enforcement (B1, v5.16.0 — writeCache.step3 runs user_gate_audit.py --enforce for terminal inline nodes)"
     },
     {
       "id": "soulbot_execute_engine.agent",
       "file": "agent_engine.aisop.json",
       "nodes": 5,
       "execution_mode": "sequential",
-      "role": "Agent Engine -- Sub Agent execution contract with sovereignty gate precedence, agent-mode last_completed_node advancement, and RULES.sovereignty_bug (3-tier classification). init, execute with sys.* RULES + sovereignty_bug, review, writeCache. v5.25.0: +semantic checkpointing, +least-agency, +token_estimate, +harness latency tracking"
+      "role": "Agent Engine -- Sub Agent execution contract with sovereignty gate precedence (B3), agent-mode last_completed_node advancement (B1, v5.15.0), and RULES.sovereignty_bug (v5.17.0 — 3-tier classification for sovereignty toolset bugs). init, execute with sys.* RULES + sovereignty_bug, review, writeCache with steps_done tracking"
     }
   ],
   "limitations": [
@@ -176,17 +176,17 @@
     }
   ],
   "quality_summary": {
-    "three_dim_test_weighted": "5.000",
+    "three_dim_test_weighted": "4.955",
     "grade": "S",
     "dimensions": {
       "cognitive": "5.000",
       "intrinsic": "5.000",
-      "detail": "5.000"
+      "detail": "4.850"
     },
-    "final_adjusted_score": "5.000",
-    "note": "v5.25.0 FINALIZED by ReviewFinalize (cache/83). B1-B5 quality infrastructure consolidation. ThreeDimTest partial: C=4.79 I=4.85 D=4.75 weighted=4.805 Grade S (partial scope: agent_engine only; whole-program baseline preserved at 5.000). governance_hash TRI-SYNC sha256:9f58b558. Previous: v5.24.0 FINALIZED (cache/82) weighted=5.000 Grade S.",
-    "status": "finalized"
+    "final_adjusted_score": "4.985",
+    "note": "v5.23.0 FINALIZED by ReviewFinalize (cache/80). B1 CJK body heuristic + B2 3-section Node Summary + B3 user_gate tri-state + B4 USER_SUMMARY RENDERING CONTRACT. ThreeDimTest: C=5.00 I=5.00 D=4.85 weighted=4.955 Grade S. Post-Finalize D6/D10 reconciled 4.5->5.0, final adjusted=4.985. Previous: v5.21.0 FINALIZED weighted=5.000 Grade S.",
+    "status": "final"
   },
-  "governance_hash": "sha256:9f58b5582d1af7cfb824714fc75b4bf3aca4b2c9e614b0c3465fb1e63c3d3c4e",
+  "governance_hash": "sha256:88a590c866beb0c034e3298528e6b270f7b530908b778e7d529c602d059bc69a",
   "hash_algorithm_version": "v1.0"
 }

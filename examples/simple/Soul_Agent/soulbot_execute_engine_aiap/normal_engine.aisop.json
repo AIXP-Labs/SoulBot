@@ -7,12 +7,11 @@
       "flow_format": "mermaid",
       "id": "soulbot_execute_engine.normal",
       "program_id": "dev.soulbot.execute_engine.normal",
-      "name": "SoulBot Normal Engine v5.25.0",
+      "name": "SoulBot Normal Engine v5.23.0",
       "output_mode": "begin with 🤖 + helpfully in User's exact language and script variant",
-      "version": "5.25.0",
-      "token_estimate": "~15K",
-      "summary": "Normal Engine v5.25.0: Version sync with v5.25.0 B1-B5 changes. B1 Semantic-aware checkpointing, B2 Least-agency principle mapping, B3 D9 token_estimate field, B4 Harness verification latency tracking, B5 Parallel-wave completed_set verification are the primary changes in agent_engine/node_engine; normal_engine receives version sync + token_estimate field for module consistency. USER_LANGUAGE_CONFLICT_DETECTION retained. Sovereignty gate enforcement retained. HMAC Phase 2, OTel SDK, EU CRA + ISO 42001.",
-      "description": "SoulBot Normal Engine v5.25.0: Version sync with v5.25.0 ecosystem — B1 Semantic-aware checkpointing optimization, B2 Least-agency principle mapping, B3 D9 token_estimate field addition, B4 Harness verification latency tracking, B5 Parallel-wave completed_set integration verification are the primary changes in agent_engine and node_engine; normal_engine receives version sync + token_estimate field for module consistency. USER_LANGUAGE_CONFLICT_DETECTION (v5.21.0 B2) retained in execute.constraints. Sovereignty gate enforcement via writeCache.step3 user_gate_audit.py --enforce retained. HMAC Phase 2, OTel SDK, EU CRA + ISO 42001.",
+      "version": "5.23.0",
+      "summary": "Normal Engine v5.23.0: Version sync with v5.23.0 B1-B4 changes. USER_LANGUAGE_CONFLICT_DETECTION retained. Node-by-node inline execution with crash recovery, 3-state circuit breaker, NodeVerify, Decision Node gate routing, sys.* inline handling, sovereignty gate enforcement. HMAC Phase 2, OTel SDK, EU CRA + ISO 42001.",
+      "description": "SoulBot Normal Engine v5.23.0: Version sync with v5.23.0 ecosystem — B1 prepare_cache CJK body heuristic, B2 node_engine 3-section template, B3 user_gate tri-state, B4 agent_engine USER_SUMMARY CONTRACT are the primary changes; normal_engine receives version sync for module consistency. USER_LANGUAGE_CONFLICT_DETECTION (v5.21.0 B2) retained in execute.constraints. Sovereignty gate enforcement via writeCache.step3 user_gate_audit.py --enforce retained. HMAC Phase 2, OTel SDK, EU CRA + ISO 42001.",
       "loading_mode": "normal",
       "tools": [
         {

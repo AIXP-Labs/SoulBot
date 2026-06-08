@@ -10,13 +10,13 @@ governance_mode: NORMAL
 
 # Project Fields (8 required)
 name: soulbot_execute_engine
-version: "5.25.0"
+version: "5.23.0"
 pattern: B+
 tool_dirs: []                # No tool packages embedded; python_tools/ is executor_shim only
 executor_shim: true          # python_tools/ contains executor-internal shims (prepare_cache.py, etc.) — NOT registered tools per AIAP Pattern G. See 'executor_shim note' below.
 flow_format: "mermaid"
-summary: "SoulBot Execute Engine v5.25.0 -- MINOR: B1 Semantic-aware checkpointing optimization (Crab 2026, up to 87% reduction). B2 Least-agency principle mapping (OWASP ASI, QR-005). B3 D9 token_estimate field addition (all 4 modules). B4 Harness verification latency tracking (pre/post_tool_use_avg_ms). B5 Parallel-wave completed_set integration verification. C1-C4 version/name/history/hash sync. 0 breaking changes. 4 modules, 14 nodes. Pattern B+."
-governance_hash: "sha256:9f58b5582d1af7cfb824714fc75b4bf3aca4b2c9e614b0c3465fb1e63c3d3c4e"
+summary: "SoulBot Execute Engine v5.23.0 -- MINOR: B1 prepare_cache CJK body heuristic (absolute threshold >= 5 CJK chars replaces ratio-based check). B2 node_engine 3-section Node Summary template (Node State + Summary + Explain). B3 user_gate tri-state mechanism (true/false/conditional). B4 agent_engine USER_SUMMARY RENDERING CONTRACT strengthened for all node types. C1-C4 version/name/history/hash sync. 0 breaking changes. 4 modules, 14 nodes. Pattern B+. governance_hash TRI-SYNC verified (sha256:88a590c8)."
+governance_hash: "sha256:88a590c866beb0c034e3298528e6b270f7b530908b778e7d529c602d059bc69a"
 hash_algorithm_version: "v1.0"
 governance_hash_canonical_version: "1.0"
 tools:
@@ -181,13 +181,13 @@ benchmark:
   total_nodes: 14
   pass_rate: "100%"
   nihil_density: "0.7%"
-  note: "v5.25.0 FINALIZED by ReviewFinalize (cache/83). B1-B5 quality infrastructure consolidation. ThreeDimTest partial: C=4.79 I=4.85 D=4.75 weighted=4.805 Grade S (partial scope: agent_engine only; whole-program baseline preserved from v5.24.0 5.000). governance_hash TRI-SYNC verified sha256:9f58b558. Previous: v5.24.0 FINALIZED (cache/82) weighted=5.000 Grade S."
+  note: "v5.23.0 FINALIZED by ReviewFinalize (cache/80). Full scope (4/4 modules). ThreeDimTest: C=5.000 I=5.000 D=5.000 stage-weighted=4.955->reconciled=4.985 (Professional C*0.25+I*0.45+D*0.30). Post-Finalize D6/D10 reconciliation: 4.5->5.0. Final adjusted=4.985 Grade S. Previous: v5.21.0 final_adjusted=5.000 (Grade S)."
 
 # Quality
 quality:
   weighted_score: "5.000"
   grade: "S"
-  last_pipeline: "Creator Evolve pipeline v5.25.0 FINALIZED by ReviewFinalize (cache/83, 2026-06-06): v5.24.0 -> v5.25.0 MINOR. B1 Semantic-aware checkpointing. B2 Least-agency mapping. B3 token_estimate. B4 Harness latency tracking. B5 completed_set verification. ThreeDimTest partial: C=4.79 I=4.85 D=4.75 weighted=4.805 Grade S (partial scope). Whole-program weighted preserved at 5.000 (SCORE SCOPE GUARD). governance_hash TRI-SYNC verified sha256:9f58b558. Previous: v5.24.0 FINALIZED (cache/82) weighted=5.000 Grade S."
+  last_pipeline: "Creator Evolve pipeline v5.23.0 FINALIZED by ReviewFinalize (cache/80, 2026-06-05): v5.22.0 -> v5.23.0 MINOR. B1 prepare_cache CJK body heuristic (absolute threshold >= 5). B2 node_engine 3-section Node Summary template. B3 user_gate tri-state mechanism (true/false/conditional). B4 agent_engine USER_SUMMARY RENDERING CONTRACT strengthened. ThreeDimTest: C=5.00 I=5.00 D=4.85 stage-weighted=4.955 Grade S. Post-Finalize D6/D10 reconciled 4.5->5.0. Simulation: 24/24 PASS 100% coverage. Validation: 28/36 PASS 1 RED (pre-existing) + 7 YELLOW. Previous: v5.21.0 final_adjusted=5.000 Grade S."
   changes_v4_0_0: "15 items: A1(AIAP.md) + A2(quality_baseline) + B1(crash recovery) + B2(circuit breaker) + B3(parallel dispatch) + B4(execution metrics) + B5(tool annotations) + C1-C8(atomic writes, cache schema, retry classification, turn_type, ASSERT gates, version sync, json_schema, identity). ThreeDimTest: 4.43 weighted (Grade A). Created by Creator Evolve pipeline (cache/129)."
   changes_v5_0_0: "14 design items + 4 quality fixes: M1(WAITING_USER/MESSAGE_PENDING relay), A1(identity definition), A2(Print-it), A3(USER_MESSAGE), A4(sys.* 24-call handling), A5(AGENT_ID), A6(on_error routing), A7(steps_done/remaining), N1(NodeVerify), N1.5(parallel wave interrupt), N2(Decision Node gate), N3(sys.* bootstrap hint), NM1-NM3(normal_engine parity). QS-01(half-open circuit breaker), QS-04(trace_id), QS-05(bootstrap validation), QS-06(normal_engine resilience parity). ThreeDimTest: 4.72 weighted (Grade A). Created by Creator Create pipeline (cache/131). Based on 05-engine-aiap-v5-design.md."
   changes_v5_2_0: "Architecture refactor (non-Creator): prepare_cache.py dual-use module introduced at python_tools/prepare_cache.py — callable as Python library (agent.py fast path ~5ms) or Bash CLI (AISOP fallback ~300ms). agent.py reduced from ~450 to ~361 lines (-89). main.aisop.json execute.step2/step3 simplified — single source of truth for cache creation. 16 test cases added (TestLibraryAPI x8 + TestCLI x5 + TestEquivalence x3), 16/16 PASS. Portable across Agent frameworks supporting Bash. Architecture aligned with 'AISOP layer only creates new caches' principle. Based on 05-prepare-cache-dual-use-plan.md."
@@ -303,10 +303,6 @@ evolution:
   - version: "5.23.0"
     date: "2026-06-05"
     note: "MINOR evolution v5.21.0 -> v5.23.0 via Creator Evolve pipeline (cache/80) FINALIZED by ReviewFinalize. 4 B-level items + C-auto. B1 (LEVEL_B): prepare_cache.py CJK body heuristic — absolute threshold (>= 5 CJK ideograph chars) replaces ratio-based check for _detect_user_language. Prevents false en detection when CJK message contains heavy English technical terms. B2 (LEVEL_B): node_engine 3-section Node Summary template — fixed 3-section format (Node State + Summary + Explain). Summary pure-forwards user_summary VERBATIM as stable linguistic base (context-window-decay prevention). Explain provides orchestrator cross-node analysis in USER_LANGUAGE. B3 (LEVEL_B, sovereignty toolset): user_gate tri-state mechanism — user_gate_audit.py _extract_user_gate supports true/false/conditional (previously only true+text_marker). Eliminates systemic false-positive coerce of ValidateStep (false) and ReviewPresent (conditional). EvolveStep (true) sovereignty enforcement intact. B4 (LEVEL_B): agent_engine USER_SUMMARY RENDERING CONTRACT strengthened — user_summary feeds 3-section Node Summary template verbatim. Contract extended to ALL node types (inline, technical, delegation wrapper). Direction continuity HIGH (continues v5.18.0-v5.21.0 language-drift root-cause fix trajectory). ThreeDimTest: C=5.000 I=5.000 D=4.850 stage-weighted=4.955 Grade S. D6/D10 reconciled post-Finalize. Simulation: 24/24 PASS 100% coverage. governance_hash TRI-SYNC sha256:88a590c8. 0 breaking changes."
-
-  - version: "5.25.0"
-    date: "2026-06-06"
-    note: "MINOR evolution v5.24.0 -> v5.25.0 via Creator Evolve pipeline (cache/83) FINALIZED by ReviewFinalize. 5 B-level + C-auto items. B1 (LEVEL_B): Semantic-aware checkpointing optimization — based on Crab 2026 research, skip checkpoints for non-recovery-relevant steps in agent_engine, up to 87% reduction. B2 (LEVEL_B): Least-agency principle explicit mapping — OWASP ASI Least Agency to tool permission boundaries (agent_engine + node_engine), completes QR-005. B3 (LEVEL_B): D9 token_estimate field addition across all 4 modules for cost/budget forecasting. B4 (LEVEL_B): Harness verification latency tracking — pre/post_tool_use_avg_ms fields in agent_engine for QR-001 observability. B5 (LEVEL_B): Parallel-wave completed_set integration verification in node_engine. C1-C4 version/name/history/hash sync. 0 breaking changes. ThreeDimTest partial: C=4.79 I=4.85 D=4.75 weighted=4.805 Grade S (partial scope: agent_engine only). Simulation: 30 scenarios, 28 PASS, 2 YELLOW, 0 RED, 100% coverage. governance_hash TRI-SYNC verified sha256:9f58b558."
 
 ---
 
