@@ -7,13 +7,13 @@
             "flow_format": "mermaid",
             "id": "aiap_creator.advisor",
             "program_id": "dev.aiap_creator.advisor",
-            "name": "AIAP Creator v2.34.0 — Advanced Advisor",
+            "name": "AIAP Creator v2.47.0 — Advanced Advisor",
             "output_mode": {
                 "L0": "Output JSON in ENGLISH: {intent, confidence, route, state, op}",
                 "L1": "Output helpfully in User's exact language and script variant",
                 "output": "L1"
             },
-            "version": "2.34.0",
+            "version": "2.47.0",
             "token_estimate": "~35K tokens",
             "trust_level": 4,
             "summary": "Unified advanced advisor with sub_mermaid routing. Supports ecosystem design (Pattern F), memory architecture (Pattern E), protocol alignment (MCP/A2A), SKILL.md bidirectional conversion (skill_export/skill_import), and AIAP insights lifecycle management (enable/disable/consume for any AIAP program including Creator).",

@@ -224,7 +224,14 @@ class Runner:
             # WAITING_USER never produces ACP_CRASH, so this is fail-closed — it never
             # auto-advances a sovereignty gate.
             resume_count = 0
-            MAX_AUTO_RESUME = 5
+            # 2026-06-16: raised 5 -> 100 (user). soulacp max_turns=100000 removed the
+            # turn-limit stop, so this OOM/ACP_CRASH auto-resume cap is now rarely hit;
+            # 100 gives a long progressing run ample crash-recovery headroom before
+            # escalating to a human. NOTE: this is a TOTAL crash count per turn (NOT
+            # reset on progress) — a genuinely-stuck node spins up to ~100x (≈97min with
+            # the 60s-capped backoff) before escalation; acceptable since OOM is now rare.
+            # (reset-on-progress + small cap = backlog if OOM-on-long-runs recurs.)
+            MAX_AUTO_RESUME = 100
             while True:
                 crashed = False
                 # 5. Execute agent and yield events (all under per-turn span)

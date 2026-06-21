@@ -9,7 +9,7 @@
       "governance_hash_scope": "program-level SHA-256 of all 5 .aisop.json files concatenated alphabetically (CRLF→LF). Verified in AIAP.md.",
       "id": "soulbot_chat.profiler",
       "program_id": "dev.soulbot_chat.profiler",
-      "name": "SoulBot Chat v1.10.0 — User Profiler",
+      "name": "SoulBot Chat v1.11.0 — User Profiler",
       "output_mode": {
         "L0": "Output JSON in ENGLISH: {intent, confidence, route, state, op}",
         "L1": "Output helpfully in User's exact language and script variant",
@@ -20,7 +20,7 @@
         "L1": "Output helpfully in User's exact language and script variant",
         "output": "L1"
       },
-      "version": "1.10.0",
+      "version": "1.11.0",
       "fractal_exempt": {
         "enabled": true,
         "node_count": 14,
@@ -126,38 +126,47 @@
           },
           "operation_detail": {
             "type": "object",
-            "description": "Per-operation type-specific payload (B1 v1.10.0).",
+            "description": "Per-operation type-specific payload (B1 v1.10.0; A2 v1.11.0 runtime discriminator). A2 v1.11.0: upgraded to a RUNTIME DISCRIMINATOR — each subschema carries a required `kind` const for O(1) discriminator dispatch per RF-4 (const, not enum). `kind` maps from operation: analyze_turn/detect->DetectOutput, query_profile->QueryOutput, personality_insight/generate_report->PersonalityInsightOutput, all others->GenericProfilerOutput.",
+            "discriminator": { "propertyName": "kind" },
             "oneOf": [
               {
                 "title": "DetectOutput",
                 "properties": {
+                  "kind": { "const": "DetectOutput" },
                   "primary_emotion": { "type": "string" },
                   "intensity": { "type": "string", "enum": ["low", "medium", "high"] },
                   "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
                   "cause_context": { "type": ["object", "null"] }
-                }
+                },
+                "required": ["kind"]
               },
               {
                 "title": "QueryOutput",
                 "properties": {
+                  "kind": { "const": "QueryOutput" },
                   "profile_version": { "type": "string" },
                   "migration_applied": { "type": "boolean" }
-                }
+                },
+                "required": ["kind"]
               },
               {
                 "title": "PersonalityInsightOutput",
                 "properties": {
+                  "kind": { "const": "PersonalityInsightOutput" },
                   "archetype": { "type": "string" },
                   "turns_analyzed": { "type": "integer" },
                   "dimension_scores": { "type": "object" }
-                }
+                },
+                "required": ["kind"]
               },
               {
                 "title": "GenericProfilerOutput",
                 "description": "Fallback for operations without specialized output (update, edit, onboarding, reset, migrate)",
                 "properties": {
+                  "kind": { "const": "GenericProfilerOutput" },
                   "items_changed": { "type": "integer" }
-                }
+                },
+                "required": ["kind"]
               }
             ]
           }

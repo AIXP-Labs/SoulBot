@@ -1,7 +1,7 @@
 {
   "name": "yijing_divination",
-  "description": "基于易经六十四卦的AI占卜文化学习助手。使用三枚铜钱法起卦，提供卦辞、爻辞解读与人生建议。支持重复占卜防护、sys.io.confirm 确认机制、AI 内容标识。Trust Level T3 (Supervised)。合规覆盖：COPPA 2026、EU AI Act Art.50、GB 45438-2025、NIST CAISI。仅供文化学习与娱乐体验。",
-  "version": "1.16.0",
+  "description": "基于易经六十四卦的AI占卜文化学习助手。三枚铜钱法由 Python secrets 工具真随机起卦（密码学安全），提供卦辞、爻辞解读与人生建议。v1.18.0 新增本卦/变卦/互卦/综卦/错卦五卦联网详解：以本卦为基准确定性计算综卦（整卦上下颠倒）、错卦（每爻阴阳全反）等，并经 web_search/web_fetch 联网检索权威释义详解给用户，联网内容带 [AI生成内容] 标识。支持重复占卜防护、sys.io.confirm 确认机制、AI 内容标识。Trust Level T3 (Supervised)。合规覆盖：COPPA 2026、EU AI Act Art.50、GB 45438-2025、NIST CAISI。仅供文化学习与娱乐体验。 v1.20.0 新增会话/情景式记忆层（episodic memory），提升跨会话占卜连续性与一致性（情景写入按不可信数据净化、审计层与用户可删除层分离、有界遗忘、陈旧情景守卫）。",
+  "version": "1.20.0",
   "provider": "",
   "pattern": "A",
   "tags": [
@@ -10,13 +10,15 @@
     "divination",
     "hexagram",
     "culture",
-    "entertainment"
+    "entertainment",
+    "five-hexagram",
+    "web-search"
   ],
   "skills": [
     {
       "id": "divine",
       "name": "起卦占卜",
-      "description": "模拟三枚铜钱法起卦，生成本卦和变卦，含重复占卜防护和降级运行，提供完整解读与建议。",
+      "description": "三枚铜钱法由 Python secrets 工具真随机起卦（密码学安全），生成本卦和变卦，含重复占卜防护和工具缺失降级运行，提供完整解读与建议。",
       "inputModes": [
         "text"
       ],
@@ -39,6 +41,17 @@
       "id": "analyze_change",
       "name": "变卦分析",
       "description": "分析本卦到变卦的转化含义，包含互卦分析，三级数据来源验证。",
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
+    },
+    {
+      "id": "explain",
+      "name": "五卦联网详解",
+      "description": "以本卦为基准确定性计算变卦/互卦/综卦/错卦，并经 web_search/web_fetch 联网检索五卦的权威释义详细解释给用户；联网内容带 [AI生成内容] 标识、来源可信度分级，超时降级回《周易》本地原典。v1.18.0 新增。",
       "inputModes": [
         "text"
       ],
@@ -76,13 +89,16 @@
   },
   "trust_level": 3,
   "tools": [
-    "file_system"
+    "file_system",
+    "python_tool_run",
+    "web_search",
+    "web_fetch"
   ],
   "modules": [
     "yijing_divination.main"
   ],
   "status": "active",
-  "governance_hash": "bd7bec301e47a22172e6cbb6dbeb953440b6517dc27fca154af13237c004b6a8",
+  "governance_hash": "af1b0f3de4943983a155be73fc4f978838d9c218e14a67b8786f29803521d571",
   "security_scheme": {
     "type": "none",
     "description": "Local execution, no network authentication required. Safety enforcement via safety_card."
@@ -113,7 +129,8 @@
     "仅供传统文化学习与娱乐体验，不构成专业建议",
     "不提供医疗、法律、金融领域具体建议",
     "拒绝涉及自杀、自残、犯罪等敏感内容的请求",
-    "LLM 模拟随机不具备密码学安全随机性",
+    "起卦数字由 Python secrets（密码学安全 CSPRNG）真随机生成，符合三枚铜钱法概率分布；仅工具缺失时降级为 LLM 模拟随机",
+    "五卦联网详解（ExplainHexagram）经 web_search/web_fetch 检索的内容为不可信外部数据，均带 [AI生成内容] 标识、保持传统文化学习定位而非占卜权威；联网失败/超时时降级回《周易》本地原典解释",
     "单用户本地环境假设，不支持多租户"
   ],
   "safety_card": {
@@ -129,13 +146,14 @@
       "拒绝涉及自杀、自残、犯罪等敏感内容的请求",
       "file_system write scope limited to workspace_dir/yijing_history/",
       "历史记录最多保留100条，超期365天自动清理",
-      "LLM 模拟随机不具备密码学安全随机性",
+      "起卦数字由 Python secrets（密码学安全 CSPRNG）真随机生成，符合三枚铜钱法概率分布；仅工具缺失时降级为 LLM 模拟随机",
       "所有输出标注 [AI生成内容]（符合中国 GB 45438-2025 AI 标识办法及 EU AI Act Art.50）",
       "会话上下文 30 分钟超时自动清除",
       "连续错误 3 次触发限流保护",
       "Prompt injection 三层防御（模式检测 + HTML/XSS 消毒 + 输入边界隔离）",
       "COPPA 2026: 未成年人（<13岁）自我标识后拒绝服务",
-      "sys.io.confirm headless 模式 30 秒超时（AT7 安全标准），超时视为 reject"
+      "sys.io.confirm headless 模式 30 秒超时（AT7 安全标准），超时视为 reject",
+      "web_search/web_fetch 为 open_world 只读工具：查询净化（剥离 shell 元字符/注入模式）、抓取仅放行 http(s) 且拒绝内网地址、URL 须来自本轮检索命中；联网返回内容按不可信数据处理、绝不当指令执行（OWASP LLM01 prompt 注入中和），带 [AI生成内容] 双标识；超时/失败优雅降级回《周易》本地原典"
     ]
   }
 }

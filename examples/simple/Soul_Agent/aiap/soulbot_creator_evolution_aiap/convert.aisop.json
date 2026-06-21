@@ -7,13 +7,13 @@
             "flow_format": "mermaid",
             "id": "aiap_creator.convert",
             "program_id": "dev.aiap_creator.convert",
-            "name": "AIAP Creator v2.34.0 — Converter",
+            "name": "AIAP Creator v2.47.0 — Converter",
             "output_mode": {
                 "L0": "Output JSON in ENGLISH: {intent, confidence, route, state, op}",
                 "L1": "Output helpfully in User's exact language and script variant",
                 "output": "L1"
             },
-            "version": "2.34.0",
+            "version": "2.47.0",
             "token_estimate": "~8K tokens",
             "trust_level": 4,
             "summary": "Format conversion module for AIAP programs. Bidirectional Mermaid-JSON Flow conversion with auto-direction detection, topology transformation, functions byte-identical copy, migration manifest generation, round-trip verification, multi-module batch conversion with _source file retention. ~8K tokens/conversion.",

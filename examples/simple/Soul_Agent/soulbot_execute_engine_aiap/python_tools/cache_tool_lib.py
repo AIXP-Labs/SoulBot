@@ -110,17 +110,33 @@ def merge_index_field(
     value: dict,
     timeout: float = 10.0,
 ) -> None:
-    """Lock-protected merge: _index.json[field][key] = value, atomic write.
+    """Lock-protected merge: _index.json[field][key] <- value, atomic write.
 
     Solves the parallel-dispatch race where two Sub Agents simultaneously
     update _index.json::nodes_status — without lock, one update overwrites
     the other.
+
+    SIBLING-PRESERVING MERGE (2026-06-15, plan22/22): when both the existing
+    _index.json[field][key] and `value` are dicts, `value` is merged ONE LEVEL
+    INTO the existing object instead of replacing it wholesale. This preserves
+    sibling keys written by a prior call — e.g. agent_write_node_cache.py writes
+    nodes_status[node]={status,tool_calls}, which previously WIPED a
+    next_node_plan that the per-node loop (C2/B-INLINE) had written to
+    nodes_status[node].next_node_plan beforehand. Same idiom as
+    merge_index_top_level. Non-dict values (or a non-dict existing entry) still
+    replace, preserving prior behaviour for scalar/list entries.
     """
     with _FileLock(index_path, timeout=timeout):
         data = read_json_lenient(index_path)
         if field not in data or not isinstance(data[field], dict):
             data[field] = {}
-        data[field][key] = value
+        existing = data[field].get(key)
+        if isinstance(existing, dict) and isinstance(value, dict):
+            merged = dict(existing)
+            merged.update(value)
+            data[field][key] = merged
+        else:
+            data[field][key] = value
         atomic_write_json(index_path, data)
 
 
@@ -382,6 +398,13 @@ def fill_defaults_node_cache(
     if "steps_remaining" not in out:
         out["steps_remaining"] = []
         fills.append("steps_remaining=[]")
+
+    # node_summary_rendered: B1 v5.26.0 — default false.
+    # Set to true by orchestrator via agent_update_index.py after step4 output.
+    # dispatch_audit.py --completeness-check verifies this field post-hoc.
+    if "node_summary_rendered" not in out:
+        out["node_summary_rendered"] = False
+        fills.append("node_summary_rendered=false")
 
     return out, fills
 

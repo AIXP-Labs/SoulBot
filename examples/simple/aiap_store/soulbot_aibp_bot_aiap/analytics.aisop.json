@@ -6,8 +6,8 @@
       "protocol": "AIAP V1.0.0",
       "axiom_0": "Human_Sovereignty_and_Wellbeing",
       "flow_format": "mermaid",
-      "name": "soulbot_aibp_bot_analytics v2.1.0",
-      "version": "2.1.0",
+      "name": "soulbot_aibp_bot_analytics v2.2.0",
+      "version": "2.2.0",
       "output_mode": {
         "L0": "Output JSON in ENGLISH: {action, metric_type, time_range, data_points}",
         "L1": "Output helpfully in User's exact language and script variant",
@@ -27,8 +27,27 @@
             "idempotent": true,
             "open_world": false
           }
+        },
+        {
+          "name": "a2a_peer_query",
+          "required": false,
+          "description": "S6 v2.2.0: A2A v1.0 authenticated peer query for cross-agent analytics aggregation. Requests only aggregate metric summaries from consenting, trust-gated peers over a signed-Agent-Card-verified channel. Read-only with respect to local data; performs network egress to peers, so open_world. Only invoked for action=cross_agent_aggregate with permissions.network.allowed=true.",
+          "annotations": {
+            "readOnlyHint": true,
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": true
+          }
         }
       ],
+      "permissions": {
+        "network": {
+          "allowed": false,
+          "description": "S6 v2.2.0: Network egress for cross-agent analytics aggregation (A2A peer queries). Default false; operator must explicitly authorize. Only aggregate, PII-free, consented data crosses the boundary. Axiom 0.",
+          "allowed_endpoints": [],
+          "endpoint_schemes": ["https"]
+        }
+      },
       "parameters": {
         "action": {
           "type": "string",
@@ -39,9 +58,10 @@
             "reputation_trajectory",
             "group_activity",
             "commercial_metrics",
-            "dashboard_summary"
+            "dashboard_summary",
+            "cross_agent_aggregate"
           ],
-          "description": "Analytics action: compute specific metric or generate full dashboard summary",
+          "description": "Analytics action: compute specific metric, generate full dashboard summary, or aggregate metrics across trusted peer agents (cross_agent_aggregate, S6 v2.2.0)",
           "agentic_prompt": "Set by main orchestrator based on user analytics request."
         },
         "time_range": {
@@ -53,8 +73,14 @@
         "workspace_dir": {
           "type": "string",
           "required": true,
-          "description": "Directory containing social data stores (trust/, threads/, reputation/, groups/, commercial/)",
+          "description": "Directory containing social data stores (trust/, threads/, reputation/, groups/, commercial/, consent/)",
           "agentic_prompt": "Shared workspace_dir from main orchestrator."
+        },
+        "peer_scope": {
+          "type": "array",
+          "required": false,
+          "description": "S6 v2.2.0: For cross_agent_aggregate action — list of peer agent addresses to aggregate from, or the literal 'trusted_cohort' to auto-select all T3+ consenting peers. Each peer is independently consent-gated, trust-gated, and A2A-authenticated. Null/absent for self-scoped metrics.",
+          "agentic_prompt": "Set by main orchestrator when user requests cross-agent/cohort analytics. Only consenting, trusted, A2A-verified peers contribute."
         }
       },
       "json_schema": {
@@ -90,7 +116,7 @@
           }
         }
       },
-      "fractal_exempt": "8 functional nodes in single graph. Maximum single-path execution: 4 nodes (DetermineMetric -> ComputeMetric -> FormatOutput -> End). Well within 16-node threshold.",
+      "fractal_exempt": "9 functional nodes in single graph (S6 v2.2.0: +CrossAgentAggregate). Maximum single-path execution: 4 nodes (DetermineMetric -> ComputeMetric/CrossAgentAggregate -> FormatOutput -> End). Well within 16-node threshold.",
       "system_prompt": "AIBP analytics and dashboard module. Compute aggregate social metrics from existing data stores. Read-only — never modify source data. Present insights clearly to support operator decision-making.\nAlign Axiom 0: Human Sovereignty and Wellbeing."
     }
   },
@@ -99,7 +125,7 @@
     "content": {
       "instruction": "ASSERT RUN aisop.main",
       "aisop": {
-        "main": "graph TD\n    Start([Start]) --> DetermineMetric[DetermineMetric]\n    DetermineMetric -->|message_trends| MessageTrends[MessageTrends]\n    DetermineMetric -->|trust_network| TrustNetwork[TrustNetwork]\n    DetermineMetric -->|reputation_trajectory| ReputationTrajectory[ReputationTrajectory]\n    DetermineMetric -->|group_activity| GroupActivity[GroupActivity]\n    DetermineMetric -->|commercial_metrics| CommercialMetrics[CommercialMetrics]\n    DetermineMetric -->|dashboard_summary| DashboardSummary[DashboardSummary]\n    MessageTrends --> FormatOutput[FormatOutput]\n    TrustNetwork --> FormatOutput\n    ReputationTrajectory --> FormatOutput\n    GroupActivity --> FormatOutput\n    CommercialMetrics --> FormatOutput\n    DashboardSummary --> FormatOutput\n    FormatOutput --> End((End))"
+        "main": "graph TD\n    Start([Start]) --> DetermineMetric[DetermineMetric]\n    DetermineMetric -->|message_trends| MessageTrends[MessageTrends]\n    DetermineMetric -->|trust_network| TrustNetwork[TrustNetwork]\n    DetermineMetric -->|reputation_trajectory| ReputationTrajectory[ReputationTrajectory]\n    DetermineMetric -->|group_activity| GroupActivity[GroupActivity]\n    DetermineMetric -->|commercial_metrics| CommercialMetrics[CommercialMetrics]\n    DetermineMetric -->|dashboard_summary| DashboardSummary[DashboardSummary]\n    DetermineMetric -->|cross_agent_aggregate| CrossAgentAggregate[CrossAgentAggregate]\n    MessageTrends --> FormatOutput[FormatOutput]\n    TrustNetwork --> FormatOutput\n    ReputationTrajectory --> FormatOutput\n    GroupActivity --> FormatOutput\n    CommercialMetrics --> FormatOutput\n    DashboardSummary --> FormatOutput\n    CrossAgentAggregate --> FormatOutput\n    FormatOutput --> End((End))"
       },
       "functions": {
         "DetermineMetric": {
@@ -192,10 +218,27 @@
             "Recommendations are advisory only (Axiom 0 — user decides)."
           ]
         },
+        "CrossAgentAggregate": {
+          "description": "Aggregate analytics metrics across trusted peer agents (S6 v2.2.0). Currently-self-scoped metrics are extended to a cohort of trust-gated, consenting peers under strict GDPR consent, A2A authentication, and a no-PII-egress gate.",
+          "steps": [
+            "step1: [ASSERT] DetermineMetric executed. Required: action=cross_agent_aggregate, peer_scope (list of peer agent addresses or 'trusted_cohort'), workspace_dir. | CONSENT GATE — For each candidate peer, read workspace_dir/consent/registry.json (GDPR consent registry managed by the safety module via consent_register/withdraw/query) and verify an explicit, unexpired consent record permitting analytics aggregation. Peers without explicit consent are EXCLUDED. Log excluded peers as {peer_hash, reason: 'no_consent'}.",
+            "step2: TRUST GATE — For each consenting peer: python python_tools/trust_check.py --agent \"{peer}\" --get. Include only peers at trust level >= T3 (trusted). Peers below T3 are EXCLUDED (cross-agent data sharing requires established trust). Log excluded as {peer_hash, reason: 'trust_below_T3'}.",
+            "step3: A2A AUTHENTICATION — For each remaining peer, establish an A2A v1.0 authenticated channel: verify the peer's signed Agent Card (JWS-over-JCS, RFC 7515/8785) via its verification_url and require permissions.network.allowed=true on this agent. Unverifiable peers or disabled network → EXCLUDE and fall back to self-only aggregation. Request only AGGREGATE metric summaries (counts, rates, distributions) from the peer's analytics module — never raw records.",
+            "step4: NO-PII GATE — Before merging any peer contribution, run it through the 3-tier PII classifier (soulbot_aibp_bot.safety PrivacyGate, FORBIDDEN tier). Any contribution containing PII (agent addresses, message bodies, identifiers) is REJECTED — only k-anonymized aggregate counts/rates pass. Agent addresses in the merged output are hashed.",
+            "step5: AGGREGATE — Merge the consented, trust-gated, PII-free aggregate contributions with this agent's own metrics. Compute cohort statistics: cohort size, aggregate message volume, average trust distribution, aggregate reputation band. Return {data_points: [{cohort_metric, value, contributing_peer_count}], summary: 'Cohort of N consenting T3+ peers: aggregate ...', excluded_peers: [{peer_hash, reason}]}."
+          ],
+          "constraints": [
+            "CONSENT IS MANDATORY (GDPR): no peer's data is aggregated without an explicit, unexpired consent record (workspace_dir/consent/registry.json). Consent can be withdrawn at any time (Axiom 0).",
+            "TRUST-GATED: only T3+ peers participate — cross-agent aggregation requires established mutual trust.",
+            "A2A-AUTHENTICATED: peer context-sharing only over a signed-Agent-Card-authenticated A2A channel; unverifiable peers are excluded.",
+            "NO PII EGRESS: only k-anonymized aggregate counts/rates cross the boundary — never raw records, addresses, or message content. The 3-tier PII FORBIDDEN gate is enforced on every contribution.",
+            "FAIL-CLOSED: if consent, trust, A2A auth, or network permission cannot be established, fall back to self-only aggregation (never block, never over-share)."
+          ]
+        },
         "FormatOutput": {
           "description": "Format analytics output for user presentation",
           "steps": [
-            "step1: [ASSERT] Metric computation executed. Required: analytics_data. | Format data_points into human-readable presentation. Apply granularity formatting (daily: 'Mon May 10', weekly: 'Week 19', monthly: 'May 2026').",
+            "step1: [ASSERT] Metric computation executed (MessageTrends|TrustNetwork|ReputationTrajectory|GroupActivity|CommercialMetrics|DashboardSummary|CrossAgentAggregate). Required: data_points (array from upstream metric node), summary (text), action (metric type). (S4 v2.2.0: ASSERT names concrete upstream-output fields.) | Format data_points into human-readable presentation. Apply granularity formatting (daily: 'Mon May 10', weekly: 'Week 19', monthly: 'May 2026').",
             "step2: Generate text summary with key insights highlighted. Include comparison to previous period if data available."
           ],
           "constraints": [
@@ -212,6 +255,7 @@
         "GroupActivity": "Group data scan failure → return partial results. retry(1) -> circuit-breaker -> fallback(return partial with advisory) -> inform(User). OPTIONAL.",
         "CommercialMetrics": "Transaction data scan failure → return partial results. retry(1) -> circuit-breaker -> fallback(return partial with advisory) -> inform(User). OPTIONAL.",
         "DashboardSummary": "Any metric computation failure → include available metrics, mark failed as 'unavailable'. retry(1) -> circuit-breaker -> fallback(partial dashboard) -> inform(User). IMPORTANT.",
+        "CrossAgentAggregate": "Peer consent/trust/A2A verification or network failure → exclude the affected peer and fall back to self-only aggregation. retry(1) -> circuit-breaker -> fallback(self-only aggregation) -> inform(User). IMPORTANT. Error severity per taxonomy: transient(a2a_channel_timeout)->retry; recoverable(peer_unreachable|card_unverifiable)->exclude peer, continue; fatal(no_consent|network_not_permitted|pii_detected)->no retry, fail-closed to self-only.",
         "FormatOutput": "Formatting failure → return raw data as JSON fallback. retry(1) -> circuit-breaker -> fallback(return raw JSON) -> inform(User). OPTIONAL."
       },
       "endNode": {

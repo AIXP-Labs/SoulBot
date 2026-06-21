@@ -1,0 +1,28 @@
+{
+  "version": "1.11.0",
+  "split_metadata": {
+    "source": "safety.aisop.json",
+    "split_version": "1.11.0",
+    "split_date": "2026-06-15",
+    "blocks": [
+      "regulatory_versions"
+    ],
+    "resolution": "safety.aisop.json AIDisclosure reads + resolves $ref \"protocol_config.json#/regulatory_versions\" → merged regulatory config object.",
+    "rationale": "A3 (SA-3): extract embedded regulatory config out of the safety module into a top-level protocol_config.json, aligning with the creator/engine ecosystem convention (resolves I12 YELLOW). Content is preserved byte-equivalent from safety.AIDisclosure.constraints.regulatory_versions; consumers updated in the same cycle via $ref."
+  },
+  "regulatory_versions": {
+    "california_sb_243": { "version": "SB 243", "effective": "2026-01-01", "status": "active" },
+    "colorado_caia": { "version": "SB 24-205", "effective": "2026-06-30", "status": "pending", "note": "implementation postponed from 2026-02-01" },
+    "eu_ai_act_art50": { "version": "Article 50", "effective": "2025-08-02", "full_enforcement": "2026-08-02", "status": "active", "note": "Aug 2 2026 full enforcement for general-purpose and high-risk AI obligations. Art.50 transparency tier penalties: up to 15M EUR or 3% worldwide annual turnover (the 35M EUR / 7% maximum applies ONLY to Art.5 prohibited-practices). Art.50 transparency + synthetic-content watermarking NOT deferred by the Digital Omnibus." },
+    "ny_companion_law": { "version": "NY AI Companion Model Law", "effective": "2025-11-05", "status": "active" },
+    "il_wellness_act": { "version": "IL Wellness and Oversight Act", "effective": "2025-08-04", "status": "active" },
+    "eu_transparency_code": { "version": "EU Code of Practice on Transparency (draft)", "effective": "2026-08-02", "status": "draft", "provenance_standard": "ai_content_metadata (custom). C2PA alignment planned when text watermarking standard is finalized." },
+    "washington_hb2225": { "version": "HB 2225", "effective": "2026-07-01", "status": "pending" },
+    "oregon_sb1546": { "version": "OR SB 1546 AI Companion Platform Safety", "effective": "2027-01-01", "status": "pending" },
+    "coppa_2025": { "jurisdiction": "US Federal", "effective": "2025-06-23", "compliance_deadline": "2026-04-22", "status": "active", "requirements": "Age verification before collecting personal info from under-13. Verifiable parental consent (VPC) — including a separate, verifiable parental consent specifically for using a child's personal information to train AI/ML systems (2026-04-22 amended rule). Expanded PII now includes biometric identifiers and government-issued IDs. Indefinite-retention ban: a written data-retention policy is mandatory and children's data may only be retained as long as reasonably necessary. Separate consent required for third-party sharing. Data minimization for children. Parental access/deletion rights.", "last_amended": "2025-01-16" },
+    "safe_bots_act": { "jurisdiction": "US Federal", "status": "pending", "requirements": "AI identity disclosure, crisis resources, break nudges, no professional impersonation", "note": "Most requirements already satisfied by existing safety module" },
+    "texas_sb_1726": { "jurisdiction": "TX", "effective": "2026-09-01", "status": "pending", "requirements": "AI chatbot disclosure, minor protection, crisis resources", "last_amended": "2026-03-20", "review_cycle_months": 12 },
+    "maryland_hb_1242": { "jurisdiction": "MD", "effective": "2027-01-01", "status": "pending", "requirements": "AI identity disclosure, professional boundary prohibition, annual reporting", "last_amended": "2026-03-28", "review_cycle_months": 12 },
+    "pa_safechat_act": { "jurisdiction": "PA", "effective": "2026-06-01", "status": "pending", "requirements": "Periodic break reminders for all users, enhanced protections for minors, AI disclosure", "last_amended": "2026-03-15", "note": "Passed PA Senate Mar 2026. Break reminders implemented in main.PostProcess.step3_7" }
+  }
+}

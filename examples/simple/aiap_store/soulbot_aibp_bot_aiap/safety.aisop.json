@@ -6,8 +6,8 @@
       "protocol": "AIAP V1.0.0",
       "axiom_0": "Human_Sovereignty_and_Wellbeing",
       "flow_format": "mermaid",
-      "name": "soulbot_aibp_bot_safety v2.1.0",
-      "version": "2.1.0",
+      "name": "soulbot_aibp_bot_safety v2.2.0",
+      "version": "2.2.0",
       "output_mode": {
         "L0": "Output JSON in ENGLISH: {result, severity, reason, privacy_level}",
         "L1": "Output helpfully in User's exact language and script variant",

@@ -7,8 +7,8 @@
       "flow_format": "mermaid",
       "id": "stock_analyzer.features",
       "program_id": "aiap.dev/stock_analyzer.features",
-      "name": "美股分析助手功能模块 v2.0.0",
-      "version": "2.0.0",
+      "name": "美股分析助手功能模块 v2.1.0",
+      "version": "2.1.0",
       "output_mode": {
         "L0": "Output JSON in ENGLISH: {feature_type, status}",
         "L1": "Output helpfully in User's exact language and script variant",
@@ -18,7 +18,7 @@
       "description": "Features module for US stock analysis assistant v2.0.0. Extracted from main module as Pattern C upgrade (A2). Handles non-analysis user intents: watchlist management (file_system persistence), market overview (S&P 500/Nasdaq/Dow/VIX/sector heatmap), portfolio overview, earnings calendar, multi-stock comparison, analysis history, dividend tracking, price alerts, help. 12 functional nodes. Delegated from main.aisop.json FeatureEntry node.",
       "tools": [
         {
-          "name": "google_search",
+          "name": "web_search",
           "annotations": {
             "read_only": true,
             "destructive": false,
@@ -27,7 +27,7 @@
           }
         },
         {
-          "name": "web_browser",
+          "name": "web_fetch",
           "annotations": {
             "read_only": true,
             "destructive": false,
@@ -101,17 +101,17 @@
         },
         "WatchlistManager": {
           "step1": "[ASSERT] FeatureGate executed. Required: intent_type, workspace_dir. If false → go back to FeatureGate. | 使用 file_system 读取 {workspace_dir}/watchlist.json。文件结构：{ symbols: [{symbol, added_date, notes}], last_updated }。文件不存在 → 初始化空列表。",
-          "step2": "根据用户操作执行：(a) 查看：展示自选股列表，附带最新价格（使用 google_search 快速查询每只股票当前价格）。(b) 添加：验证代码 → 加入列表 → 写入文件。(c) 删除：确认 → 移除 → 写入文件。(d) 清空：二次确认 → 清空列表。",
+          "step2": "根据用户操作执行：(a) 查看：展示自选股列表，附带最新价格（使用 web_search 快速查询每只股票当前价格）。(b) 添加：验证代码 → 加入列表 → 写入文件。(c) 删除：确认 → 移除 → 写入文件。(d) 清空：二次确认 → 清空列表。",
           "step3": "展示操作结果。添加/删除后显示更新后的完整列表。提示用户可以对列表中的股票执行分析。",
           "step4": "自定义视图：支持用户对自选股列表排序和筛选。(a) 排序：按涨跌幅(升/降)、按价格、按加入日期、按代码字母序。默认按加入日期。(b) 筛选：按涨/跌/平状态筛选。(c) 展示排序后的列表，标注当前排序方式。用户未指定排序/筛选 → 使用默认，不阻塞。",
           "constraints": "watchlist.json 最多 50 只股票。添加重复代码 → 提示已存在。删除不存在的代码 → 提示未找到。写入使用 atomic write。路径在 workspace_dir 内。批量价格查询最多 10 只（防 rate limit）。",
           "Error": "retry(1) -> circuit-breaker -> fallback: inform 'watchlist temporarily unavailable' -> inform. OPTIONAL."
         },
         "MarketOverview": {
-          "step1": "[ASSERT] FeatureGate executed. Required: intent_type. If false → go back to FeatureGate. | 使用 google_search 搜索当前市场概况：(a) 三大指数：S&P 500 (SPY), Nasdaq (QQQ), Dow Jones (DIA) 的当前价格和涨跌幅。(b) 市场情绪：VIX 恐慌指数当前值。",
-          "step2": "使用 google_search 搜索热门板块和关注焦点：'US stock market sectors today movers'。提取 2-3 个表现最好和最差的板块。",
+          "step1": "[ASSERT] FeatureGate executed. Required: intent_type. If false → go back to FeatureGate. | 使用 web_search 搜索当前市场概况：(a) 三大指数：S&P 500 (SPY), Nasdaq (QQQ), Dow Jones (DIA) 的当前价格和涨跌幅。(b) 市场情绪：VIX 恐慌指数当前值。",
+          "step2": "使用 web_search 搜索热门板块和关注焦点：'US stock market sectors today movers'。提取 2-3 个表现最好和最差的板块。",
           "step3": "生成市场概览报告。格式：\n市场概览\n━━━━━━━━━━━━\n三大指数：SPY / QQQ / DIA 涨跌\n恐慌指数：VIX 数值 + 解读\n热门板块：Top gainers/losers\n今日关注：关键新闻/事件\n免责声明",
-          "step4": "板块热力图（文本模式）：使用 google_search 搜索 'S&P 500 sector performance today'。获取 11 个 GICS 板块的当日涨跌幅。按涨跌幅排序，用文本标注颜色：涨幅>1% [GREEN]，-1%到1% [NEUTRAL]，跌幅>1% [RED]。",
+          "step4": "板块热力图（文本模式）：使用 web_search 搜索 'S&P 500 sector performance today'。获取 11 个 GICS 板块的当日涨跌幅。按涨跌幅排序，用文本标注颜色：涨幅>1% [GREEN]，-1%到1% [NEUTRAL]，跌幅>1% [RED]。",
           "constraints": "市场数据来自公开搜索，可能有延迟。每次概览最多 5 次搜索。标注数据获取时间。免责声明必须包含。",
           "Error": "retry(1) -> circuit-breaker -> fallback: inform 'market data temporarily unavailable' -> inform. OPTIONAL."
         },
@@ -130,20 +130,20 @@
         },
         "PortfolioOverview": {
           "step1": "[ASSERT] FeatureGate executed AND intent is portfolio. Required: intent_type, workspace_dir. If false -> go back to FeatureGate. | 使用 file_system 读取 {workspace_dir}/watchlist.json。如果自选股列表为空或文件不存在 → 提示用户先添加自选股。",
-          "step2": "批量获取价格：对自选股列表中每只股票，使用 google_search 搜索当前价格。每次最多查询 10 只股票。",
+          "step2": "批量获取价格：对自选股列表中每只股票，使用 web_search 搜索当前价格。每次最多查询 10 只股票。",
           "step3": "生成组合概览报告，包含总览统计和每只股票的价格涨跌幅。",
           "constraints": "watchlist.json 路径限制在 workspace_dir 内。批量价格查询最多 10 只。免责声明必须包含。",
           "Error": "retry(1) -> circuit-breaker -> fallback: inform 'portfolio overview temporarily unavailable' -> inform. OPTIONAL."
         },
         "EarningsCalendar": {
-          "step1": "[ASSERT] FeatureGate executed AND intent is earnings. Required: intent_type. If false -> go back to FeatureGate. | 使用 google_search 搜索财报日期。提取下次发布日期、预期EPS、上季表现。",
+          "step1": "[ASSERT] FeatureGate executed AND intent is earnings. Required: intent_type. If false -> go back to FeatureGate. | 使用 web_search 搜索财报日期。提取下次发布日期、预期EPS、上季表现。",
           "step2": "生成财报日历报告。标注日期以官方公告为准。",
           "constraints": "财报日期搜索仅限用户指定股票或自选股（最多 10 只）。不得将财报日期作为交易时机建议。",
           "Error": "retry(1) -> circuit-breaker -> fallback: inform 'earnings calendar temporarily unavailable' -> inform. OPTIONAL."
         },
         "ComparisonView": {
           "step1": "[ASSERT] FeatureGate executed AND intent is comparison. Required: intent_type, user_input. If false -> go back to FeatureGate. | 接收 2-5 只股票代码进行对比。",
-          "step2": "使用 google_search 批量搜索每只股票关键指标。每只最多 2 次搜索。",
+          "step2": "使用 web_search 批量搜索每只股票关键指标。每只最多 2 次搜索。",
           "step3": "生成对比表格报告。标注最优者和最差者。",
           "constraints": "最多对比 5 只股票。总计最多 10 次搜索。HALLUCINATION GUARD: 不得编造财务数据。",
           "Error": "retry(1) -> circuit-breaker -> fallback: inform 'comparison temporarily unavailable' -> inform. OPTIONAL."
@@ -156,7 +156,7 @@
           "Error": "retry(1) -> circuit-breaker -> fallback: inform 'analysis history temporarily unavailable' -> inform. OPTIONAL."
         },
         "DividendTracker": {
-          "step1": "[ASSERT] FeatureGate executed AND intent is dividend. Required: intent_type, stock_symbol. If false -> go back to FeatureGate. | 使用 google_search 搜索股息信息：当前股息率、每股年度股息、下一个除息日、最近 4 次派息记录。",
+          "step1": "[ASSERT] FeatureGate executed AND intent is dividend. Required: intent_type, stock_symbol. If false -> go back to FeatureGate. | 使用 web_search 搜索股息信息：当前股息率、每股年度股息、下一个除息日、最近 4 次派息记录。",
           "step2": "生成股息追踪报告。",
           "constraints": "股息搜索仅限用户指定股票。部分股票不派息 -> 标注。不得将股息率作为投资建议。",
           "Error": "retry(1) -> circuit-breaker -> fallback: inform 'dividend data temporarily unavailable' -> inform. OPTIONAL."

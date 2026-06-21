@@ -75,6 +75,7 @@ def generate_agent_id(
     dispatch_type: str,
     parent_trace_id: str = "",
     parent_pid: int = 0,
+    resume: bool = False,
 ) -> dict:
     """Generate expected_agent_id and write dispatch_record to _index.json.
 
@@ -179,12 +180,27 @@ def generate_agent_id(
             if not isinstance(dispatch_records, dict):
                 dispatch_records = {}
             if node_name in dispatch_records:
-                result["status"] = "error"
-                result["errors"].append(
-                    f"WRITE_ONCE_VIOLATION: dispatch_records['{node_name}'] "
-                    f"already exists. agent_id_generator.py is write-once per node."
-                )
-                return result
+                if not resume:
+                    result["status"] = "error"
+                    result["errors"].append(
+                        f"WRITE_ONCE_VIOLATION: dispatch_records['{node_name}'] "
+                        f"already exists. agent_id_generator.py is write-once per node."
+                    )
+                    return result
+                # RESUME (Bug1 fix 2026-06-10, plan22/03 §12.6): a resumed dispatch is a
+                # genuinely NEW spawn that needs a fresh id AND dispatch_records updated to
+                # match (node_engine step3 mandates this; write-once made it impossible ->
+                # cache.agent_id != dispatch_records.expected on resume, e.g. cache/93
+                # auto-9a9096b3 vs auto-6f86bbba, which false-trips Fix B④). --resume
+                # OVERWRITES but preserves the prior id for audit (never silent).
+                _prior = dispatch_records.get(node_name) or {}
+                _prior_id = _prior.get("expected_agent_id")
+                _superseded = list(_prior.get("superseded_agent_ids", []))
+                if _prior_id:
+                    _superseded.append(_prior_id)
+                dispatch_record["superseded_agent_ids"] = _superseded
+                dispatch_record["resume_regenerated"] = True
+                result["resume_overwrite"] = {"prior_id": _prior_id, "new_id": expected_agent_id}
 
             # Write dispatch_record
             dispatch_records[node_name] = dispatch_record
@@ -267,6 +283,12 @@ def main() -> int:
         "--parent_pid", type=int, default=0,
         help="Parent process ID"
     )
+    parser.add_argument(
+        "--resume", action="store_true",
+        help="Resume re-dispatch (Bug1 fix): OVERWRITE an existing write-once "
+             "dispatch_records[node] with a fresh id; the prior id is preserved in "
+             "superseded_agent_ids for audit. Use ONLY on a genuine RESUME re-spawn."
+    )
     args = parser.parse_args()
 
     result = generate_agent_id(
@@ -275,6 +297,7 @@ def main() -> int:
         dispatch_type=args.dispatch_type,
         parent_trace_id=args.parent_trace_id,
         parent_pid=args.parent_pid,
+        resume=args.resume,
     )
 
     print(json.dumps(result, ensure_ascii=False, indent=2))

@@ -2,12 +2,13 @@
   "schema_version": "mcp-1.0-prep",
   "manifest_type": "aiap_tool_directory",
   "aiap_id": "aiap_creator",
-  "aiap_version": "2.27.0",
+  "aiap_version": "2.47.0",
   "aiap_pattern": "D",
   "trust_level": 4,
   "governance": {
     "protocol": "AIAP V1.0.0",
-    "governance_hash": "pending - recomputed in ReviewFinalize",
+    "governance_hash": "runtime_computed_by_governance_hash_py",
+    "governance_hash_note": "Value computed at runtime by governance_hash.py (canonical v1.0). Not stored here statically; authoritative values reside in AIAP.md, agent_card.json, and quality_baseline.json after TRI-SYNC write.",
     "governance_hash_canonical_version": "1.0"
   },
   "mcp_server": {
@@ -47,19 +48,49 @@
             "description": "Path to the source AIAP directory"
           }
         },
-        "required": ["snapshot_dir", "version", "aiap_dir"]
+        "required": [
+          "snapshot_dir",
+          "version",
+          "aiap_dir"
+        ]
       },
       "output_schema": {
         "type": "object",
         "properties": {
-          "status": { "type": "string", "enum": ["PASS", "FAIL"] },
-          "files_expected": { "type": "integer" },
-          "files_found": { "type": "integer" },
-          "missing": { "type": "array", "items": { "type": "string" } },
-          "extra": { "type": "array", "items": { "type": "string" } },
-          "hash_mismatches": { "type": "array" },
-          "meta_valid": { "type": "boolean" },
-          "timestamp": { "type": "string" }
+          "status": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL"
+            ]
+          },
+          "files_expected": {
+            "type": "integer"
+          },
+          "files_found": {
+            "type": "integer"
+          },
+          "missing": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "extra": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "hash_mismatches": {
+            "type": "array"
+          },
+          "meta_valid": {
+            "type": "boolean"
+          },
+          "timestamp": {
+            "type": "string"
+          }
         }
       },
       "exit_codes": {
@@ -68,12 +99,222 @@
       },
       "invocation": "python tool_dirs/snapshot_audit.py --snapshot_dir=<path> --version=<semver> --aiap_dir=<path> | python tool_dirs/snapshot_audit.py --emit-created-at",
       "added_in_version": "2.27.0",
-      "consumed_by": "review.aisop.json Finalize.step2 (mandatory post-snapshot audit)"
+      "consumed_by": "review.aisop.json Finalize.step5_5 (mandatory post-snapshot audit)"
+    },
+    {
+      "name": "governance_hash",
+      "description": "Deterministic governance_hash computation (canonical v1.0) and ATOMIC TRI-SYNC write. SOLE AUTHORITY for governance_hash values — LLM/ReviewFinalize MUST NOT compute or fill hash values directly. Algorithm: enumerate *.aisop.json sorted ASCII, JCS canonicalize each (json.dumps sort_keys=True, separators=(',',':'), ensure_ascii=False), UTF-8 encode, join with 0x1E Record Separator, sha256.hexdigest(). Writes to AIAP.md, AIAP_cn.md (if exists), agent_card.json, quality_baseline.json (top-level governance_hash only — attestation_chain advancement is delegated to attestation_advance.py SOLE AUTHORITY, since the on-disk attestation_chain is a dict the list-only update branch here silently no-ops on). Post-write read-back verification for byte-identical assertion.",
+      "path": "tool_dirs/governance_hash.py",
+      "language": "python",
+      "runtime": "python3",
+      "annotations": {
+        "read_only": false,
+        "destructive": false,
+        "idempotent": true,
+        "open_world": false
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "program_dir": {
+            "type": "string",
+            "description": "Absolute path to the AIAP program directory containing *.aisop.json files"
+          }
+        },
+        "required": [
+          "program_dir"
+        ]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUCCESS",
+              "FAILURE"
+            ]
+          },
+          "hash": {
+            "type": "string",
+            "description": "64-char SHA-256 hex digest"
+          },
+          "algorithm": {
+            "type": "string",
+            "enum": [
+              "canonical_v1.0"
+            ]
+          },
+          "files_hashed": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tri_sync_targets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "verification": {
+            "type": "array"
+          }
+        }
+      },
+      "exit_codes": {
+        "0": "SUCCESS — hash computed and TRI-SYNC verified",
+        "1": "FAILURE — computation error or read-back mismatch"
+      },
+      "invocation": "python tool_dirs/governance_hash.py --program_dir=<path> [--verify-only]",
+      "added_in_version": "2.36.0",
+      "consumed_by": "main.aisop.json ReviewFinalize.step1, review.aisop.json Finalize.step3 (SOLE AUTHORITY for governance_hash)"
+    },
+    {
+      "name": "resolve_target",
+      "description": "Deterministic evolution-target resolution + sovereignty guard (target != runner operand integrity). Replaces the LLM-inferred AUTHORITATIVE TARGET RESOLUTION prose rule (PipelineStart step1(b), B1 v2.30.0) that the sub-agent repeatedly ignored (cache/105). READ-ONLY of all inputs except the _index.json target fields it writes. Reads _index.user_message (authoritative operand source) + _index.target (runner/executor) + workspace_dir; deterministically extracts the explicit target (absolute-path regex first, then '{name}_aiap' name scan); resolves to the actual AISOP directory; runs SOVEREIGNTY GUARD (exit 1 OPERAND_AMBIGUITY when the user named a different explicit target yet it collapses onto the runner; ALLOW when the user explicitly named the runner itself = legitimate engine-style self-evolution); on success atomically writes authoritative _index.target_aiap_dir + pipeline_context.target_aiap_dir + creator_directory. Pure stdlib (argparse/json/os/re/sys); never touches *.aisop.json / AIAP.md / agent_card.json / quality_baseline.json / governance files.",
+      "path": "tool_dirs/resolve_target.py",
+      "language": "python",
+      "runtime": "python3",
+      "annotations": {
+        "read_only": false,
+        "destructive": false,
+        "idempotent": true,
+        "open_world": false
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "cache_dir": {
+            "type": "string",
+            "description": "Absolute path to the execution cache directory containing _index.json"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "description": "--dry-run: resolve + run sovereignty guard and print result, but do NOT write _index.json (read-only verification mode)"
+          }
+        },
+        "required": [
+          "cache_dir"
+        ]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUCCESS",
+              "OPERAND_AMBIGUITY",
+              "NO_TARGET_IN_MESSAGE",
+              "NO_MATCH",
+              "INDEX_NOT_FOUND",
+              "FAILURE"
+            ]
+          },
+          "target_aiap_dir": {
+            "type": "string"
+          },
+          "creator_directory": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "explicit_abs_path",
+              "name_scan"
+            ]
+          },
+          "runner": {
+            "type": "string"
+          },
+          "lands_on_runner": {
+            "type": "boolean"
+          },
+          "user_named_runner": {
+            "type": "boolean"
+          }
+        }
+      },
+      "exit_codes": {
+        "0": "SUCCESS — target resolved + sovereignty guard passed; _index written unless --dry-run",
+        "1": "FAILURE — OPERAND_AMBIGUITY / NO_TARGET_IN_MESSAGE / NO_MATCH / INDEX_NOT_FOUND"
+      },
+      "invocation": "python tool_dirs/resolve_target.py --cache_dir=<path> [--dry-run]",
+      "added_in_version": "2.41.0",
+      "consumed_by": "main.aisop.json PipelineStart.step1(b) Evolve branch (SOLE AUTHORITY for evolution target resolution; HARD_FAIL HALT on TOOL-MISSING or exit 1)"
+    },
+    {
+      "name": "attestation_advance",
+      "description": "Deterministic SOLE-AUTHORITY advancement of quality_baseline.json attestation_chain (dict-aware) + final_adjusted_reconciliation to the current version + current governance_hash. Root-fixes ATTESTATION_CHAIN_STALE (band-out E1 SG-10): the on-disk attestation_chain is a version-keyed DICT, which governance_hash.py's isinstance(chain,list) branch silently no-ops on, freezing the chain several versions behind. SIBLING tool to governance_hash.py — CONSUMES the canonical top-level governance_hash, NEVER recomputes it. Mirrors governance_hash.py pattern: read top-level version+governance_hash -> DICT-AWARE APPEND-ONLY INSERT 'v{current}' entry {version, from=immediately-prior semver-max key no-skip, governance_hash=current, prev pointer} leaving existing entries untouched -> advance top-level attestation_chain_length -> sync evolution_history.{current} final_adjusted/deferred_reconciled note to cite current version+hash (no stale 'synced; <old hash>') -> ATOMIC .tmp+os.replace -> read-back verify. LLM/ReviewFinalize MUST NOT fill these provenance fields directly. --verify-only emits ATTESTATION_CHAIN_STALE (read-only detector).",
+      "path": "tool_dirs/attestation_advance.py",
+      "language": "python",
+      "runtime": "python3",
+      "annotations": {
+        "read_only": false,
+        "destructive": false,
+        "idempotent": true,
+        "open_world": false
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "program_dir": {
+            "type": "string",
+            "description": "Absolute path to the AIAP program directory containing quality_baseline.json"
+          },
+          "verify_only": {
+            "type": "boolean",
+            "description": "--verify-only: READ-ONLY ATTESTATION_CHAIN_STALE detector (no writes), reused by ValidateStep.step3 MF29 QUAD-SYNC"
+          }
+        },
+        "required": [
+          "program_dir"
+        ]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUCCESS",
+              "FAILURE",
+              "ATTESTATION_CHAIN_STALE"
+            ]
+          },
+          "current_version": {
+            "type": "string"
+          },
+          "current_governance_hash": {
+            "type": "string",
+            "description": "64-char SHA-256 hex digest (consumed from governance_hash.py, not recomputed)"
+          },
+          "attestation_chain_length": {
+            "type": "integer"
+          },
+          "semver_max_key": {
+            "type": "string"
+          },
+          "verify_failures": {
+            "type": "array"
+          }
+        }
+      },
+      "exit_codes": {
+        "0": "SUCCESS — chain advanced + read-back verified (advance mode) | all-pass (verify-only)",
+        "1": "FAILURE / ATTESTATION_CHAIN_STALE — read-back mismatch, missing file, or stale chain"
+      },
+      "invocation": "python tool_dirs/attestation_advance.py --program_dir=<path> [--verify-only]",
+      "added_in_version": "2.47.0",
+      "consumed_by": "review.aisop.json Finalize.step3 (after governance_hash TRI-SYNC AND P23 deferred-score reconciliation; SOLE AUTHORITY for attestation_chain advancement; HARD_FAIL on TOOL-MISSING or exit 1); ValidateStep.step3 MF29 QUAD-SYNC (--verify-only ATTESTATION_CHAIN_STALE detector)"
     }
   ],
   "tool_metadata": {
-    "total_tools": 1,
-    "languages": ["python"],
+    "total_tools": 4,
+    "languages": [
+      "python"
+    ],
     "dependencies": []
   },
   "security": {

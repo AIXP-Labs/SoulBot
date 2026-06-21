@@ -1,10 +1,10 @@
 {
   "program": "soulbot_cognitive_cycle",
-  "version": "2.35.0",
+  "version": "2.36.0",
   "trust_level": 3,
   "scoring_scale": "1-5",
   "threedimscore": {
-    "weighted": 4.7,
+    "weighted": 4.638,
     "grade": "S",
     "dimensions": {
       "C": {
@@ -30,7 +30,7 @@
           },
           "C5_tool_annotations": {
             "score": 5,
-            "rationale": "All 3 tools (file_system, google_search, web_browser) include MCP-standard annotations: read_only, destructive, idempotent, open_world. Correctly differentiated per module: perception/reasoning/emotion/decision use file_system read-only, metacognition/consolidation/compliance use read-write. Tool availability checking added in decision module."
+            "rationale": "All 3 tools (file_system, web_search, web_fetch) include MCP-standard annotations: read_only, destructive, idempotent, open_world. Correctly differentiated per module: perception/reasoning/emotion/decision use file_system read-only, metacognition/consolidation/compliance use read-write. Tool availability checking added in decision module."
           },
           "C6_mermaid_graphs": {
             "score": 5,
@@ -150,26 +150,14 @@
       }
     },
     "final_adjusted": {
-      "weighted": 4.788,
+      "weighted": 4.665,
       "grade": "S",
       "C": 4.71,
-      "I": 4.69,
-      "D": 5.0,
-      "adjustment_from_stage11": 0.088,
-      "adjustment_explanation": "D6 (version sync 11/11 verified), D8 (agent_card 14/14 fields complete), D10 (governance_hash tri-sync verified) all confirmed at 5/5 post-Finalize, raising D dimension from 4.70 to 5.00.",
-      "reconciliation": {
-        "D6_deferred": {
-          "predicted": 5,
-          "actual": 5,
-          "accurate": true
-        },
-        "D10_deferred": {
-          "predicted": 5,
-          "actual": 5,
-          "accurate": true
-        },
-        "calibration_adjustment": "none required"
-      }
+      "I": 4.65,
+      "D": 4.65,
+      "adjustment_from_stage11": 0.027,
+      "adjustment_explanation": "D6 (version sync 11/11 loc verified 2.36.0) and D10 (governance_hash tri-sync 3/3 verified 9b8bd0c6) re-measured post-Finalize from 4.5 placeholders to 5.0, raising D dimension 4.55 -> 4.65. C/I unchanged from Generate2.",
+      "reconciliation": "deferred D6/D10 reconciled against now-current governance files per P23; generate2_full=4.638, generate2_deferred_excl=4.642, final=4.665"
     }
   },
   "simulation": {
@@ -824,7 +812,7 @@
       "c_count": 3,
       "score_delta": "+0.00 (5.00->5.00)",
       "pipeline": "soulbot_creator_evolution v5.4.0",
-      "governance_hash": "ba81ab7d10679c65546d55362afb069c6d2998a8e57cd9e05fd46b1abd9e35d7"
+      "governance_hash": "ed724bb8ca8d1fadc69f1c81db89c4d9cfb20f455525d2a2bd7dd7fd683e0262"
     },
     {
       "from": "2.33.0",
@@ -837,7 +825,7 @@
       "score_delta": "-0.51 (5.00->4.49)",
       "pipeline": "soulbot_creator_evolution",
       "pipeline_run_id": "e81cab09-a887-4890-acf4-5452d78c9e74",
-      "governance_hash": "a8d740a659379d5e5bb2da6e220f6a2a51fc6af52d11e47f5270cbcd1c489ca6"
+      "governance_hash": "ed724bb8ca8d1fadc69f1c81db89c4d9cfb20f455525d2a2bd7dd7fd683e0262"
     },
     {
       "from": "2.34.0",
@@ -862,6 +850,46 @@
       "validate": "96% (24/25, 1 YELLOW governance_hash resolved)",
       "assert_coverage": "100% (63/63)",
       "nihil_density": "2.26% GREEN"
+    },
+    {
+      "from": "2.35.0",
+      "to": "2.36.0",
+      "type": "MINOR",
+      "date": "2026-06-14",
+      "changes": "A1 MCP artifact materialization (tool_dirs README+mcp_server.json + .well-known/mcp/server-card.json SEP-2127 v2.36.0 tools[4]/resources[3]/_freshness, agent_card mcp block; runtime=not_implemented honest static-discovery scope) [A1 supersedes B1 per EvolveStep gate]; B2 ConsolidationInput context_manager bootstrap (memory/context_manager.json schema_version 1.0, max_slots 7); B3 memory-poisoning trust filters (perception+decision trust-aware retrieval; consolidation StrengthEvaluation+DecayApplication append-trust/sanitize+audit, memory_audit_log.json runtime sink); B4 MetacognitiveStateVector cross-session emit+persist (memory/msv_history.json append-only TTL+FIFO); B5 NIST MEASURE coverage (reasoning MEASURE hook+field wiring, compliance TrendAnalysis MEASURE coverage); C1 3 regression tripwires (emotion+consolidation+compliance); C4 COSAiS Q3 2026 freshness annotation. C-version sync 11 loc to 2.36.0, governance_hash recompute+tri-sync, evolution_history+attestation_chain.",
+      "a_count": 1,
+      "b_count": 4,
+      "c_count": 2,
+      "score_delta": "-0.035 (full re-score on protocol C1-C7/I1-I13/D1-D10 with 4.5 cognitive cap; methodology-artifact vs domain-checklist baseline 4.7, NOT a behavioral regression - evolution purely additive 0 removals 71/71 nodes preserved + security hardening; human-accepted at ReviewPresent gate)",
+      "pipeline": "soulbot_creator_evolution",
+      "governance_hash": "9b8bd0c600653c9d59297522b242b8f1e88bb354ea1f4f3c00fc605ba1837d95",
+      "final_scores": {
+        "C": 4.71,
+        "I": 4.65,
+        "D": 4.65,
+        "weighted": 4.665,
+        "grade": "S"
+      },
+      "deferred_reconciled": {
+        "generate2_weighted_full": 4.638,
+        "generate2_weighted_deferred_excl": 4.642,
+        "final_weighted": 4.665,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "note": "D6 version-sync (11/11 loc all 2.36.0) and D10 governance_hash tri-sync (3/3 verified 9b8bd0c6) re-measured post-Finalize: 4.5 placeholders -> 5.0, raising D_full 4.55 -> 4.65."
+      },
+      "simulation": "25/26 GREEN (1 YELLOW memory_audit producer-without-consumer advisory, 0 RED; pass_rate 96.2%, coverage 100% new wiring)",
+      "validate": "18/18 hard checks PASS (39/39 authorized leaves, 0 collateral, 0 removed, 71 nodes preserved)",
+      "assert_coverage": "preserved (71/71 nodes intact, all [ASSERT] gates retained)",
+      "nihil_density": "GREEN (7 modified .aisop.json scanned, pipeline_evolve mode)",
+      "finalize_decision": {
+        "mode": "user_gated",
+        "user_decision": "OK",
+        "gate": "ReviewPresent",
+        "question_hash": "cdf3078589e27b92"
+      }
     }
   ],
   "total": 29,
@@ -875,45 +903,64 @@
     "deferred_resolved": true,
     "note": "v2.34.0 ValidateStep: 19/23 PASS, 3 YELLOW, 1 RED (P28 summary 538>500). P28 RED resolved in ReviewFinalize (compressed to 424 chars). Effective: 20/23 PASS, 3 YELLOW post-ReviewFinalize."
   },
-  "snapshot_date": "2026-05-12",
-  "governance_hash": "519e6c2731a76571dc8a352a4b8f01db2d1cf1a87e746f1334264b1e457ad48c",
+  "snapshot_date": "2026-06-14",
+  "governance_hash": "9b8bd0c600653c9d59297522b242b8f1e88bb354ea1f4f3c00fc605ba1837d95",
   "attestation_chain": {
     "pipeline": "soulbot_creator_evolution",
-    "version": "2.35.0",
+    "version": "2.36.0",
     "status": "COMPLETED",
-    "completed_at": "2026-05-13T07:46:23Z",
+    "completed_at": "2026-06-14T11:06:20Z",
     "stages": {
       "EvolveStep": {
         "status": "PASS",
-        "tool_calls": 54,
-        "summary": "Evolution plan v2.34.0 -> v2.35.0: 14 items (2A + 5B + 7C). All accepted. 0 breaking changes. SEMVER MINOR."
+        "tool_calls": 15,
+        "summary": "Evolution plan v2.35.0 -> v2.36.0: 10 items accepted (A1+B1-B5+C1-C4); A1 supersedes B1. 0 removals, additive + security hardening. SEMVER MINOR."
       },
       "Generate1": {
         "status": "PASS",
-        "tool_calls": "N/A",
-        "summary": "Modified 11 files with new features and quality fixes."
+        "tool_calls": 30,
+        "summary": "Version sync 11 loc to 2.36.0 + MCP artifacts."
       },
       "ModifyStep": {
         "status": "PASS",
-        "tool_calls": "N/A",
-        "summary": "Modified 8 files with quality fixes."
+        "tool_calls": 32,
+        "summary": "13 step-level additive mods across 7 modules (A1/B2/B3/B4/B5/C1/C4)."
+      },
+      "Generate2": {
+        "status": "PASS",
+        "tool_calls": 12,
+        "summary": "ThreeDimTest C=4.71 I=4.65 D=4.55 full / 4.56 defexcl, weighted full=4.638 / defexcl=4.642 Grade S."
+      },
+      "ValidateStep": {
+        "status": "PASS",
+        "tool_calls": 17,
+        "summary": "18/18 hard checks PASS, 39/39 authorized leaves, 0 collateral, 71 nodes preserved."
+      },
+      "SimulateStep": {
+        "status": "PASS",
+        "tool_calls": 14,
+        "summary": "26 scenarios, 25 GREEN/0 RED/1 YELLOW, pass_rate 96.2%, coverage 100%."
       },
       "ReviewPresent": {
         "status": "PASS",
-        "tool_calls": 33,
-        "summary": "ThreeDimTest: C=4.71, I=4.69, D=4.70, weighted=4.70, grade=S. Direction continuity: 0.82 HIGH. M-score: 0.34 LOW. Simulate: 22/22 GREEN. Validate: 96% (24/25). ASSERT: 100% (63/63). Nihil density: 2.26% GREEN."
+        "tool_calls": 5,
+        "summary": "FINALIZE gate user_gated/OK; authoritative weighted defexcl=4.642/full=4.638 Grade S."
       },
       "ReviewFinalize": {
         "status": "PASS",
-        "tool_calls": "in_progress",
-        "summary": "Governance files finalized. governance_hash tri-synced. Version 2.35.0 verified 11/11 files. AIAP.md updated. bootstrap_advisory generated."
+        "summary": "governance_hash tri-sync 9b8bd0c6; evolution_history->42; final weighted=4.665 Grade S; snapshot v2.36.0 audit PASS."
       }
     },
-    "governance_hash": "519e6c2731a76571dc8a352a4b8f01db2d1cf1a87e746f1334264b1e457ad48c",
+    "governance_hash": "9b8bd0c600653c9d59297522b242b8f1e88bb354ea1f4f3c00fc605ba1837d95",
     "files_hashed": 8,
-    "version_sync": "11/11 files at 2.35.0",
-    "tri_sync": "PASS",
-    "integrity_hash": "62dafd553573113141ef1756dd1ee9e6a516d718ba596be90a7b1c9bd4dc905f"
+    "version_sync": "11/11 loc = 2.36.0",
+    "tri_sync": {
+      "AIAP.md": "9b8bd0c600653c9d59297522b242b8f1e88bb354ea1f4f3c00fc605ba1837d95",
+      "agent_card.json": "9b8bd0c600653c9d59297522b242b8f1e88bb354ea1f4f3c00fc605ba1837d95",
+      "quality_baseline.json": "9b8bd0c600653c9d59297522b242b8f1e88bb354ea1f4f3c00fc605ba1837d95",
+      "all_match": true
+    },
+    "integrity_hash": "9784ebe9101c9568d609c763a298e5c0f890745123f440c2282fcef58c8b64b4"
   },
   "evolution_direction": {
     "target_version": "2.36.0",
@@ -1086,5 +1133,6 @@
       "prediction_error + ewc_parametric (B-2, B-4) together improved I-dimension feedback and safety loops.",
       "Recommend prioritizing B-items that improve multiple dimensions simultaneously in next evolution."
     ]
-  }
+  },
+  "weighted_score": 4.665
 }

@@ -605,7 +605,7 @@ class ACPLlm(BaseLlm):
             for part in content.parts:
                 if part.text:
                     if role == "user":
-                        parts.append(f"User: {part.text}\n\nPS: Assert 1: Strictly execute the soulbot_execute_engine node-by-node; never batch, skip, or fake the audit loop.\nAssert 2: 100% complete every step with real tool invocations in .aisop.json program files.\nAssert 3: Never fabricate cache content, validation reports, or tool_calls counts.\nAssert 4: Align Axiom 0: Human Sovereignty and Wellbeing.")
+                        parts.append(f"User: {part.text}\n\nPS: Assert 1: Every time, strictly PHYSICALLY READ and execute soulbot_execute_engine_aiap at every step with real tool invocations; never execute from memory; never batch, skip, or fake the audit loop.\nAssert 2: 100% complete every step with real tool invocations in .aisop.json program files.\nAssert 3: Never auto-approve any user gate; never fabricate cache content, validation reports, or tool_calls counts; all subject to human audit and governance.\nAssert 4: Align Axiom 0: Human Sovereignty and Wellbeing.")
                     else:
                         parts.append(f"Assistant: {part.text}")
                 if part.function_call:

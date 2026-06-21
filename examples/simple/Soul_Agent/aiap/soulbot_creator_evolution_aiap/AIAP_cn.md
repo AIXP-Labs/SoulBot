@@ -10,10 +10,10 @@ governance_mode: NORMAL
 
 # 项目字段 (8 个必需)
 name: aiap_creator
-version: "2.34.0"
+version: "2.47.0"
 pattern: D
 flow_format: "mermaid"
-summary: "AIAP Creator — 通过 18 阶段 Pipeline 创建、进化、验证、模拟和管理 AIAP 程序。15 个模块，213 个节点，1167 个场景 (A-AJ)。Pattern D，Grade S (4.972)。支持 Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert 工作流。ThreeDimTest 质量评分, governance_hash canonical v1.0。v2.34.0: A1 EvolveStep user_gate=true + A2 ValidateStep user_gate=false + A3 ReviewPresent user_gate=conditional（G1 误报消除）。governance_hash TRI-SYNC 已验证。"
+summary: "AIAP Creator — 通过 18 阶段 Pipeline 创建、进化、验证、模拟和管理 AIAP 程序。15 个模块，213 个节点，1167 个场景 (A-AJ)。Pattern D，Grade S (4.987)。支持 Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert 工作流。ThreeDimTest 质量评分, governance_hash canonical v1.0 + QUAD-SYNC 校验。v2.39.0：快照时序 spec 修复 —— （A1 核心）将 snapshot_build.py + SNAPSHOT AUDIT 整块从 review.aisop.json Finalize.step2 移出，放入新增的收尾 step5_5，使其在 step3 governance_hash TRI-SYNC 与 step5 身份之后才执行，故快照==最终落盘态（cache/100 根因：快照在后续治理写之前封存、被漂移成陈旧）；step2 仅保留 NIHIL 清理 + 质量基线持久化 + 历史归档（快照输入）。（A2 终态自愈）在 ReviewFinalize 的绝对最末追加一次再审计 —— 若仍有 hash_mismatch 则用同一 --pipeline_run_id 重建快照 + 重 emit meta + 再 audit，二次失败即 HARD_FAIL halt。（A3 reconcile）将 main.aisop.json ReviewFinalize.step7_5 改写为指向 review Finalize step5_5 为快照的 SOLE 执行点，消除 main/review 两份 spec 的排序矛盾。（C-D）summary/score 基线刷新至当前 quality_baseline（4.987）。snapshot_build.py/snapshot_audit.py/governance_hash.py 工具本身未改（仅编排顺序修复）；绝对路径 {DIR_OF_PIPELINE}/tool_dirs 调用、MANDATORY BLOCKING exit1 halt 与 C-1/C-2 HARD_FAIL 规则均保留。governance_hash 已用 canonical v1.0 重算并由 tool_dirs/governance_hash.py（唯一权威）QUAD-SYNC 校验。"
 tools:
   - name: file_system
     required: true
@@ -131,12 +131,12 @@ modules:
     side_effects: []
 
 # 可选字段
-governance_hash: 01854f9cd0c23d75b11d2b9e7be08488534c1af052ab75dcd5a6c862642a14f6
+governance_hash: "38b6acc70ea48096d90d2bd1244cd73179ab812ba7ccab24cd40b54bceb0ed78"
 governance_hash_canonical_version: "1.0"
 quality:
-  weighted_score: 4.972
+  weighted_score: 4.987
   grade: S
-  last_pipeline: "1c17901a-a71b-42b2-8d37-fc2959fd77d1"
+  last_pipeline: "fbcbcf9e-25df-434d-a09f-94bfb3be8c08"
   changes_v1_95_0: "6 LEVEL_B + 8 LEVEL_C: B1 AIAP.md simulate 节点数 18->14。B2 AIAP.md modify 节点数 12->10。B3 SimulateStep 委派参数完整性 (research_context, evolution_context, quality_baseline, research_quality_context)。B4 MCP/A2A/NIST/EU AI Act 引用时间戳刷新 (ProtocolAlign + Research3)。B5 MCP Tool Annotations 最佳实践对齐。B6 总节点数 213->207 校准 (AIAP.md)。C1 版本同步 15/15, C2 名称同步 10/10, C3 AIAP.md (第 61 次), C4 agent_card.json, C5 quality_baseline, C6 governance hash, C7 protocol_config, C8 AIAP_cn.md 同步。14 项变更。MAINTENANCE 第 61 次。"
   changes_v1_94_0: "4 LEVEL_B + 6 LEVEL_C: B1 Engine v4.5 (确定性循环拒绝、WAITING_USER 冲突守卫、effort_per_step、InlineExec 透传、跨平台 os.replace、[ASSERT] 前向引用阻塞、混合程序分类)。B2 Engine Router v1.2 (match/classify/endNode constraints)。B3 Router v3.1 (match/classify/execute/endNode constraints)。B4 Engine fractal_exempt 节点数修正 (25->27, main 20 + react 7)。C1 版本同步 10/10, C2 AIAP.md (第 60 次), C3 agent_card.json, C4 quality_baseline, C5 governance hash, C6 名称同步。10 项变更。MAINTENANCE 第 60 次。"
   changes_v1_93_0: "5 LEVEL_B + 6 LEVEL_C: B1 Engine v4.4 版本引用同步 (v4.3->v4.4)。B2 Engine v4.4 normal 模式感知 (NormalResolve, NormalAgentExec/FUNCTION_LOOP, NormalResultVerify, NormalNodeComplete)。B3 Engine Router v1.1 编排协议 (CheckMode 路由)。B4 prompt_template FUNCTION_LOOP MODE 生成支持 (sys.io.confirm 中断, [ASSERT] 内存读取, 子模块检查, 循环警告)。B5 双路由器架构同步 (Router v3.0 + Engine Router v1.1)。C1 版本同步 10/10, C2 AIAP.md (第 59 次), C3 agent_card.json, C4 quality_baseline, C5 governance hash, C6 名称同步。11 项变更。MAINTENANCE 第 59 次。"

@@ -7,13 +7,13 @@
             "flow_format": "mermaid",
             "id": "aiap_creator.modify",
             "program_id": "dev.aiap_creator.modify",
-            "name": "AIAP Creator v2.34.0 — Modifier",
+            "name": "AIAP Creator v2.47.0 — Modifier",
             "output_mode": {
                 "L0": "Output JSON in ENGLISH: {intent, confidence, route, state, op}",
                 "L1": "Output helpfully in User's exact language and script variant",
                 "output": "L1"
             },
-            "version": "2.34.0",
+            "version": "2.47.0",
             "token_estimate": "~10K tokens",
             "trust_level": 4,
             "summary": "Four-dimensional quality assessment with external research context, targeted modification of existing AISOP files, I11 program identity assessment",

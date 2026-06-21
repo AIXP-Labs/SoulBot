@@ -10,10 +10,10 @@ governance_mode: NORMAL
 
 # Project Fields (8 required)
 name: aiap_creator
-version: "2.34.0"
+version: "2.47.0"
 pattern: D
 flow_format: "mermaid"
-summary: "AIAP Creator — 18-stage pipeline for creating, evolving, validating, simulating, and managing AIAP programs. 15 modules, 213 nodes, 1167 scenarios (A-AJ). Pattern D, Grade S (4.972). Supports Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert workflows. ThreeDimTest quality scoring, governance hash canonical v1.0. v2.34.0: A1 EvolveStep user_gate=true + A2 ValidateStep user_gate=false + A3 ReviewPresent user_gate=conditional (G1 false positive elimination). governance_hash TRI-SYNC verified."
+summary: "AIAP Creator — 18-stage pipeline for creating, evolving, validating, simulating, and managing AIAP programs. 15 modules, 213 nodes, 1167 scenarios (A-AJ). Pattern D, Grade S (4.987). Supports Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert workflows. ThreeDimTest quality scoring, governance hash canonical v1.0 with QUAD-SYNC verification. v2.39.0: snapshot-timing spec fix — (A1 core) the snapshot_build.py + SNAPSHOT AUDIT block was moved OUT of review.aisop.json Finalize.step2 into a NEW finishing step5_5 that runs AFTER step3 governance_hash TRI-SYNC and AFTER step5 identity, so snapshot == final disk state (cache/100 root cause: snapshot was sealed before later governance writes drifted it stale); step2 keeps only NIHIL cleanup + quality-baseline persistence + history archival (snapshot inputs). (A2 self-heal) a terminal re-audit is appended as ReviewFinalize's absolute-last action — on residual hash_mismatch it rebuilds the snapshot (same --pipeline_run_id) + re-emits meta + re-audits, HARD_FAIL halt on a 2nd failure. (A3 reconcile) main.aisop.json ReviewFinalize.step7_5 reworded to point to review Finalize step5_5 as the SOLE snapshot execution point, removing the main/review cross-spec ordering contradiction. (C-D) summary/score baseline refreshed to current quality_baseline (4.987). Tools snapshot_build.py/snapshot_audit.py/governance_hash.py UNCHANGED (orchestration-order-only fix); absolute-path {DIR_OF_PIPELINE}/tool_dirs invocation, MANDATORY BLOCKING exit1 halt and C-1/C-2 HARD_FAIL rules preserved. governance_hash recomputed canonical v1.0 + QUAD-SYNC verified by tool_dirs/governance_hash.py (SOLE AUTHORITY)."
 tools:
   - name: file_system
     required: true
@@ -131,12 +131,14 @@ modules:
     side_effects: []
 
 # Optional Fields
-governance_hash: 01854f9cd0c23d75b11d2b9e7be08488534c1af052ab75dcd5a6c862642a14f6
+governance_hash: "38b6acc70ea48096d90d2bd1244cd73179ab812ba7ccab24cd40b54bceb0ed78"
 governance_hash_canonical_version: "1.0"
 quality:
-  weighted_score: 4.972
+  weighted_score: 4.987
   grade: S
-  last_pipeline: "1c17901a-a71b-42b2-8d37-fc2959fd77d1"
+  last_pipeline: "fbcbcf9e-25df-434d-a09f-94bfb3be8c08"
+  weighted_score_note: "v2.39.0 changed review.aisop.json (Finalize snapshot block moved to finishing step5_5 + terminal self-heal re-audit) + main.aisop.json (ReviewFinalize.step7_5 A3 reconcile + line18 summary C-D refresh); Generate2 partial re-score = 4.49 (changed_file_score). Whole-program weighted_score preserved from prior baseline (4.987) per SCORE SCOPE GUARD (generate2_score_scope=partial); pending full 18-module re-score."
+  changed_file_score: 4.49
 tags: [aiap, creator, pipeline, governance, meta, execution, strict_mode, density_metrics, strict_semantics, self_evolution, dsm, token_efficiency, evolution_fitness, attestation, insights, quality, threedimscore]
 author: SoulBot.dev
 license: Apache-2.0
@@ -238,9 +240,9 @@ min_protocol_version: "AIAP V1.0.0"
 identity:
   program_id: "aiap.dev/aiap_creator"
   publisher: "AIXP Labs AIXP.dev | SoulBot.dev"
-  verified_on: "2026-06-04"
+  verified_on: "2026-06-17"
 benchmark:
-  threedimscore: 4.972
+  threedimscore: 4.987
   grade: "S"
   simulation_coverage: "A(16)+B(13)+C(10)+D(10)+E(13)+F(8)+G(10)+H(14)+J(4)+K(7)+L(2)+M(22)+N(5)+O(6)+P(10)+Q(12)+R(404)+S(20)+T(19)+U(14)+V(18)+W(12)+X(21)+Y(11)+Z(16)+AA(22)+AB(29)+AC(37)+AD(40)+AE(35)+AF(38)+AG(40)+AH(38)+AI(45)+AJ(2) = 1023 scenarios"
   total_nodes: 213

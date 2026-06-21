@@ -7,8 +7,8 @@
       "flow_format": "mermaid",
       "id": "stock_analyzer.main",
       "program_id": "aiap.dev/stock_analyzer.main",
-      "name": "美股分析助手 v2.0.0",
-      "version": "2.0.0",
+      "name": "美股分析助手 v2.1.0",
+      "version": "2.1.0",
       "trust_level": 2,
       "output_mode": {
         "L0": "Output JSON in ENGLISH: {intent, symbol, analysis_type, status}",
@@ -19,7 +19,7 @@
       "description": "Main orchestrator for US stock analysis v2.0.0. MAJOR upgrade: MCP financial data server integration (Alpha Vantage MCP, SEC EDGAR MCP via mcp_config.json), Pattern C 3-module architecture (main+analysis+features), SSE/WebSocket real-time streaming, DORA+AI Act dual compliance. Routes user intents via NLU (16 intent categories): stock analysis — technical/fundamental/full/risk/sentiment/peer/backtest/etf/options/trend/analyst/insider/health (delegates to analysis.aisop.json), watchlist management (file_system persistence), market overview, portfolio overview, earnings calendar, comparison, dividend tracking, analysis history, alerts, help. Features sub-graph extracted to features.aisop.json (Pattern C upgrade from B). 10 functional nodes in main, 19 in analysis module, 12 in features module = 41 total. Aligned with NIST AI RMF, CAISI Agent Standards Initiative 2026, OWASP Agentic AI Threat Model, DORA resilience framework, EU AI Act Omnibus (May 2026 provisional agreement), FINRA 2026 GenAI compliance, SEC 2026 examination priorities.",
       "tools": [
         {
-          "name": "google_search",
+          "name": "web_search",
           "annotations": {
             "read_only": true,
             "destructive": false,
@@ -28,7 +28,7 @@
           }
         },
         {
-          "name": "web_browser",
+          "name": "web_fetch",
           "annotations": {
             "read_only": true,
             "destructive": false,
@@ -91,7 +91,7 @@
           "server_card_path": ".well-known/mcp/server-card.json",
           "manifest_path": ".well-known/mcp"
         },
-        "fallback_policy": "MCP server unavailable → degrade to google_search/web_browser (backward compatible)"
+        "fallback_policy": "MCP server unavailable → degrade to web_search/web_fetch (backward compatible)"
       },
       "params": {
         "workspace_dir": "string, REQUIRED: directory for storing watchlist and analysis history.",
@@ -161,8 +161,8 @@
           "Error": "retry(2) -> circuit-breaker -> fallback: default to ShowHelp -> inform. IMPORTANT."
         },
         "ParseSymbol": {
-          "step1": "[ASSERT] NLU executed. Required: intent, user_input. If false → go back to NLU. | 从用户输入中提取股票代码。规则：(a) 直接代码：'AAPL' → AAPL。(b) 中文公司名：'苹果' → AAPL，'特斯拉' → TSLA，'微软' → MSFT（使用常见映射表）。(c) 英文公司名：'Apple' → AAPL。(d) 无法识别 → 使用 google_search 搜索 '{input} stock ticker symbol' 获取代码。(e) ETF 代码映射：'标普500基金' → SPY，'纳斯达克ETF' → QQQ，'罗素2000' → IWM。(f) 趋势对比多代码：提取多个代码（2-5个），如 'AAPL MSFT GOOGL 趋势对比'。",
-          "step2": "验证代码有效性：优先使用 google_search 搜索 '{symbol} stock ticker NASDAQ NYSE' 通过金融数据 API（如 FinancialModelingPrep search API）验证该代码对应真实美股。验证内容：(a) 代码存在于 NASDAQ/NYSE/AMEX 交易所，(b) 公司名称与用户意图匹配。ETF 验证：确认代码为 ETF 类型（搜索 '{symbol} ETF fund'）。无效 → 提示用户并列出相似代码建议（搜索结果中最接近的 3 个）。",
+          "step1": "[ASSERT] NLU executed. Required: intent, user_input. If false → go back to NLU. | 从用户输入中提取股票代码。规则：(a) 直接代码：'AAPL' → AAPL。(b) 中文公司名：'苹果' → AAPL，'特斯拉' → TSLA，'微软' → MSFT（使用常见映射表）。(c) 英文公司名：'Apple' → AAPL。(d) 无法识别 → 使用 web_search 搜索 '{input} stock ticker symbol' 获取代码。(e) ETF 代码映射：'标普500基金' → SPY，'纳斯达克ETF' → QQQ，'罗素2000' → IWM。(f) 趋势对比多代码：提取多个代码（2-5个），如 'AAPL MSFT GOOGL 趋势对比'。",
+          "step2": "验证代码有效性：优先使用 web_search 搜索 '{symbol} stock ticker NASDAQ NYSE' 通过金融数据 API（如 FinancialModelingPrep search API）验证该代码对应真实美股。验证内容：(a) 代码存在于 NASDAQ/NYSE/AMEX 交易所，(b) 公司名称与用户意图匹配。ETF 验证：确认代码为 ETF 类型（搜索 '{symbol} ETF fund'）。无效 → 提示用户并列出相似代码建议（搜索结果中最接近的 3 个）。",
           "step3": "确定分析类型：(a) 用户指定 '技术分析' → technical。(b) 用户指定 '基本面' → fundamental。(c) 默认或 '全面分析' → full。(d) NLU 传递 analysis_type='risk' → risk（风险分析）。(e) NLU 传递 analysis_type='sentiment' → sentiment（情绪分析）。(f) NLU 传递 analysis_type='peer' → peer（同行对比）。(g) NLU 传递 analysis_type='backtest' → backtest（历史回测）。(h) NLU 传递 analysis_type='etf' → etf（ETF分析）。(i) NLU 传递 analysis_type='options' → options（期权概览）。(j) NLU 传递 analysis_type='trend' → trend（趋势对比，需多个代码）。(k) NLU 传递 analysis_type='analyst' → analyst（分析师评级）。(l) NLU 传递 analysis_type='insider' → insider（内幕交易）。(m) NLU 传递 analysis_type='health' → health（财务健康评分）。确定 timeframe：用户指定或默认 1M。risk/backtest 分析可使用更长 timeframe（默认 3M）。1W timeframe advisory: 如用户选择 1W 时间窗口，提示 '注意：1周时间窗口数据量较少，技术指标（如 MA50、BB）可能因数据不足而不可用或可靠性降低。建议使用 1M 或更长时间窗口获取更完整分析。'",
           "constraints": "代码格式：1-5 个大写英文字母（允许 . 用于 BRK.B 等）。中文映射表覆盖 Top 50 美股 + Top 20 ETF。映射不到时必须搜索确认，不得猜测。趋势对比模式需要 2-5 个代码，不足或超出 → 提示用户调整。",
           "Error": "retry(2) -> circuit-breaker -> fallback: ask user to provide exact ticker symbol -> inform. IMPORTANT."
@@ -204,7 +204,7 @@
           "Error": "retry(1) -> circuit-breaker -> fallback: inform 'feature temporarily unavailable' -> inform. OPTIONAL."
         },
         "ErrorHandler": {
-          "step1": "[ASSERT] Error occurred in main graph. Required: error_context. | 记录错误类型和上下文。向用户说明：'处理您的请求时遇到了问题。' 结构化错误分类（5 类）：(a) network_timeout — google_search/web_browser 超时或连接失败 → 恢复建议：'网络请求超时，请检查网络连接后重试，或稍后再试。' (b) rate_limit — API 调用频率超限（搜索引擎或数据源限流）→ 恢复建议：'数据请求过于频繁，请等待 1-2 分钟后重试。' (c) data_unavailable — 请求的数据不存在或数据源无返回结果 → 恢复建议：'未找到相关数据，请确认股票代码正确或尝试其他分析类型。' (d) invalid_input — 用户输入验证失败（代码格式错误、参数不合法等）→ 恢复建议：'输入格式有误，请检查股票代码（1-5位大写字母，如 AAPL）或输入「帮助」查看使用说明。' (e) internal_error — 未预期的程序错误（解析异常、模块委托失败等）→ 恢复建议：'系统内部错误，请重试。如果问题持续，请输入「帮助」了解其他功能。'",
+          "step1": "[ASSERT] Error occurred in main graph. Required: error_context. | 记录错误类型和上下文。向用户说明：'处理您的请求时遇到了问题。' 结构化错误分类（5 类）：(a) network_timeout — web_search/web_fetch 超时或连接失败 → 恢复建议：'网络请求超时，请检查网络连接后重试，或稍后再试。' (b) rate_limit — API 调用频率超限（搜索引擎或数据源限流）→ 恢复建议：'数据请求过于频繁，请等待 1-2 分钟后重试。' (c) data_unavailable — 请求的数据不存在或数据源无返回结果 → 恢复建议：'未找到相关数据，请确认股票代码正确或尝试其他分析类型。' (d) invalid_input — 用户输入验证失败（代码格式错误、参数不合法等）→ 恢复建议：'输入格式有误，请检查股票代码（1-5位大写字母，如 AAPL）或输入「帮助」查看使用说明。' (e) internal_error — 未预期的程序错误（解析异常、模块委托失败等）→ 恢复建议：'系统内部错误，请重试。如果问题持续，请输入「帮助」了解其他功能。'",
           "step2": "根据错误分类提供针对性恢复路径：(a) network_timeout → 建议重试或切换到不依赖网络的功能（如查看自选股列表、分析历史）。(b) rate_limit → 建议等待后重试，或先使用离线功能。(c) data_unavailable → 建议检查代码、尝试相似代码、或切换分析类型。(d) invalid_input → 提供正确格式示例，引导用户修正输入。(e) internal_error → 建议重新输入请求或联系支持。兼容旧分类映射：股票代码无效 → invalid_input，数据获取失败 → network_timeout/data_unavailable，自选股操作失败 → internal_error。",
           "constraints": "不暴露内部实现细节。保持专业冷静语气。错误频率监控：同一 error_category 在单次会话中连续触发 3 次以上时，升级为 CRITICAL 级别日志，并向用户建议切换到其他功能或稍后再试，避免无效重试循环。DORA ALIGNMENT (v2.0.0): Error classification aligned with DORA ICT risk management taxonomy. (a) network_timeout → DORA ICT disruption category, resilience testing metric tracked. (b) rate_limit → DORA third-party ICT service provider monitoring, MCP server SLA compliance tracked. (c) All errors logged with DORA-compatible incident reference format for regulatory reporting. EU AI ACT TRANSPARENCY (v2.0.0): All error messages include AI-generated content disclosure per Art.50 transparency obligations.",
           "Error": "fallback: '服务暂时不可用，请稍后重试。[AI生成内容]' OPTIONAL."

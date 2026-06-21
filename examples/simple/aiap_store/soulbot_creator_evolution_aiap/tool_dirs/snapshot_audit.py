@@ -38,6 +38,7 @@ SNAPSHOT_MANIFEST_FIXED = [
 SNAPSHOT_MANIFEST_CONDITIONAL = [
     "AIAP_cn.md",
     "protocol_config.json",
+    "mcp_config.json",
 ]
 
 # meta.json canonical fields per STANDARD.version_snapshot_schema.meta_schema

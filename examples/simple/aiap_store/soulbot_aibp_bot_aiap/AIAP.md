@@ -11,10 +11,10 @@ governance_mode: NORMAL
 # Project Fields (7 required)
 name: soulbot_aibp_bot
 program_id: dev.soulbot.aibp_bot
-version: "2.1.0"
+version: "2.2.0"
 pattern: F
 insights: true
-summary: "AI Social — AIBP V1.0.0 protocol implementation enabling AI agents to discover, communicate, build trust via email, interact with the public web, form groups, conduct commercial transactions, receive event notifications, and view social analytics under governance. Pattern F, 13 modules, 124 functional nodes. AIBP V1.0.0 L3."
+summary: "AI Social — AIBP V1.0.0 protocol implementation enabling AI agents to discover, communicate, build trust via email, interact with the public web, form groups, conduct commercial transactions, receive event notifications, and view social analytics under governance. Pattern F, 13 modules, 125 functional nodes. AIBP V1.0.0 L3."
 tools:
   - name: email_smtp
     required: true
@@ -37,7 +37,7 @@ tools:
       destructive: false
       idempotent: false
       open_world: false
-  - name: web_browser
+  - name: web_fetch
     required: false
     fallback: "degrade"
     annotations:
@@ -137,7 +137,7 @@ modules:
     side_effects: [file_write]
   - id: soulbot_aibp_bot.analytics
     file: analytics.aisop.json
-    nodes: 8
+    nodes: 9
     critical: false
     idempotent: true
     side_effects: []
@@ -146,12 +146,12 @@ license: Apache-2.0
 copyright: "Copyright 2026 AIXP Labs AIXP.dev | SoulBot.dev"
 
 # Optional Fields
-governance_hash: "30d1e18997db0d7b07c1a149afb219b73404cc9c31fcba407c1b5a982940be87"
+governance_hash: "7915c8c0a8f298a2c868924522e545e78d615575f66915dfb8f41b74ba7ed485"
 governance_hash_canonical_version: "1.0"
 quality:
-  weighted_score: 4.887
+  weighted_score: 4.932
   grade: S
-  last_pipeline: "v2.1.0 EVOLVE — Hardening + compliance refresh. B1 Error handler standardization, B2 insights P28 summary cleanup, B3 EU AI Act Digital Omnibus May 7 2026, B4 notification event streaming, B5 NIST CAISI 3-pillar, B6 OWASP agentic threat refs. 13 modules, 124 nodes."
+  last_pipeline: "v2.2.0 EVOLVE — Structural + capability hardening. S1 messaging-orphan fix (main delegates compose/parse to canonical messaging), S2 Error handler completion (Group/Commercial/PostAction §20 chains), S3 AIAP.md 13-module doc sync, S4 ASSERT Required ~100% coverage, S5 notification WebSocket/A2A real-time transport (Art.50(1) + A2A signed card), S6 cross-agent analytics aggregation (GDPR consent + A2A-auth + no-PII gate). 13 modules, 125 nodes."
 tags: [aibp, social, email, trust, identity, safety, dignity, protocol, directory, reputation, ai-native, web, governance, group, commercial, owasp, signing]
 
 # Interoperability (§23)
@@ -186,7 +186,7 @@ compliance:
 # Versioning (§26-27)
 versioning:
   scheme: semver
-  current: "2.1.0"
+  current: "2.2.0"
   evolution_history:
     - "1.0.0: Initial AIBP social bot — messaging, identity, trust, safety, directory, reputation"
     - "1.1.0-1.3.0: Web presence, insights, privacy gate, AI-Native types"
@@ -198,6 +198,7 @@ versioning:
     - "1.9.0: Structure fix — system/user role separation for all 11 modules. Closing seal text corrected. endNode naming standardized to End((End)). Ed25519 key isolation constraint. Trust calibration transparency. Score: 4.79/S."
     - "2.0.0: A1 notification module, A2 analytics module, B4 GDPR consent registry, B5 message queue/retry, B6 Ed25519 key rotation, B7 contact management, B8 message search, B9 Art.50 watermarking, B10 batch operations, B11 A2A Agent Card. 13 modules, 124 nodes. Score: 4.86/S."
     - "2.1.0: B1 EU AI Act Digital Omnibus provisional agreement timeline update, B2 OWASP Agentic Top 10 2026 ClawHub + Rogue Agents coverage, B3 safety GDPR consent registry enhancement, B4 notification event streaming (file/webhook/SSE), B5 NIST CAISI 3-pillar alignment, B6 Ed25519 key rotation security hardening. C1 version bump, C2 governance hash sync, C3 quality baseline refresh, C4 description hygiene, C5 Error handler standardization. 13 modules, 124 nodes."
+    - "2.2.0: S1 messaging-orphan/duplication fix — main router delegates inline compose/parse (SendPipeline, IntroducePipeline, InboxPipeline parse, TrustManage BLOCK/UNBLOCK, PostAction WELCOME) to canonical soulbot_aibp_bot.messaging, restoring §4/§10 + Pattern F §9 star topology. S2 Error handler completion — GroupPipeline/CommercialPipeline/PostAction get full retry→circuit-breaker→fallback→inform chains with §20 severity taxonomy. S3 AIAP.md doc sync — Capabilities table + Architecture prose extended from 10 to all 13 modules (+notification +analytics). S4 ASSERT Required coverage 93.5%→~100% — routing-result gaps (PostAction, FormatOutput, PersistState) now name concrete upstream-output fields. S5 notification WebSocket/A2A real-time transport — +websocket/a2a delivery modes, realtime_transport tool with MCP annotations, permissions.network, A2A signed Agent Card (verification_url + JWS-over-JCS), Art.50(1) AI disclosure. S6 cross-agent analytics aggregation — new CrossAgentAggregate node aggregating across T3+ consenting peers under GDPR consent gate, A2A authentication, and no-PII-egress gate. 13 modules, 125 nodes (analytics +1)."
   backward_compatibility: "All v1.x versions backward compatible"
 
 # Security and Runtime Optional Fields
@@ -208,7 +209,7 @@ trust_level:
     - "email_smtp restricted to AIBP-formatted messages only (Subject must start with [AIBP/])"
     - "email_imap reads only from agent's own inbox"
     - "file_system write scope limited to workspace_dir"
-    - "web_browser restricted to operator-approved platforms only"
+    - "web_fetch restricted to operator-approved platforms only"
     - "web content publication requires human approval per §29.3"
 permissions:
   file_system:
@@ -300,6 +301,8 @@ soulbot_aibp_bot is an AIAP-governed AI Social program implementing the **AIBP V
 | **Groups** | group | §17-19: Create groups, manage membership, role hierarchy, broadcast, polls, nominations. |
 | **Commercial** | commercial | §13: 9 transaction types (PROPOSE→ARBITRATE), contract formalization, dispute resolution. |
 | **Insights** | insights | Runtime self-observation per Protocol Appendix E. 8-category finding classification. |
+| **Notification** | notification | Event-driven awareness across 6 categories (message_received, trust_changed, group_update, commercial_event, reputation_shift, safety_alert). Subscription management, priority filtering, quiet hours, batched digests. Real-time delivery via file/webhook/SSE/WebSocket/A2A (S5 v2.2.0) with Art.50(1) AI disclosure. |
+| **Analytics** | analytics | Aggregate social metrics: message trends, trust network, reputation trajectory, group activity, commercial metrics, dashboard summary. Cross-agent cohort aggregation (S6 v2.2.0) under GDPR consent, T3+ trust gate, A2A authentication, and no-PII-egress gate. Read-only. |
 
 ## Usage
 
@@ -312,7 +315,7 @@ Parameters:
 
 ## Architecture
 
-Pattern F — 13 functional modules with NLU router (main) dispatching to specialized modules via sub_mermaid pipelines. 124 functional nodes total.
+Pattern F — 13 functional modules with NLU router (main) dispatching to specialized modules via sub_mermaid pipelines. 125 functional nodes total. The 13 modules are: messaging, identity, trust, safety, directory, reputation, web_social, insights, group, commercial, notification, and analytics, coordinated by the main router. The main router contains no business logic — message compose/parse are delegated to the canonical messaging module (S1 v2.2.0, restoring §4/§10 star topology). notification (event-driven awareness, real-time WebSocket/A2A transport per S5 v2.2.0) and analytics (aggregate metrics + cross-agent cohort aggregation per S6 v2.2.0) complete the 13-module set.
 
 ## Compliance
 
@@ -325,6 +328,16 @@ Pattern F — 13 functional modules with NLU router (main) dispatching to specia
 - **PCI-DSS v4.0.1** — commercial module scope exclusion (service-level, no cardholder data)
 - **C2PA v2.2** — AI-generated content provenance for web publications
 - **Gartner TRiSM** — Trust, Risk, Security Management framework reference
+
+## Changelog
+
+### v2.2.0 (2026-06-19) — Structural conformance + capability hardening (Score 4.932/S)
+- **S1** Messaging-orphan/duplication fix: main router now delegates inline compose/parse (SendPipeline, IntroducePipeline, InboxPipeline parse, TrustManage BLOCK/UNBLOCK, PostAction WELCOME) to the canonical `messaging` module, restoring AIBP §4/§10 and Pattern F §9 star topology.
+- **S2** Error handler completion: GroupPipeline, CommercialPipeline, and PostAction gain full retry→circuit-breaker→fallback→inform chains with §20 severity taxonomy (resolves deferred Y-1/Y-2/Y-3).
+- **S3** AIAP.md doc sync: Capabilities table and Architecture prose extended from 10 to all 13 modules (+notification +analytics).
+- **S4** ASSERT Required coverage 93.5%→~100%: routing-result gaps (PostAction, FormatOutput, PersistState) now name concrete upstream-output fields.
+- **S5** Notification real-time transport: +WebSocket/A2A delivery modes, `realtime_transport` tool (MCP annotations), `permissions.network`, A2A signed Agent Card (verification_url + JWS-over-JCS), Art.50(1) AI disclosure.
+- **S6** Cross-agent analytics aggregation: new `CrossAgentAggregate` node aggregating across T3+ consenting peers under a GDPR consent gate, A2A authentication, and a no-PII-egress gate (analytics 8→9 nodes; 124→125 total).
 
 ---
 Align Axiom 0: Human Sovereignty and Wellbeing. Version: AIAP V1.0.0. <www.aiap.dev>

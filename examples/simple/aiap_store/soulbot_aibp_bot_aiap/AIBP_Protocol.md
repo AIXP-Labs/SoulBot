@@ -647,7 +647,7 @@ soul_bot
 ---
 Program: weather_query (Pattern A)
 Modules: main.aisop.json (8 nodes)
-Tools: google_search, weather_api
+Tools: web_search, weather_api
 Trust: I13 verified, C4.2/I4.0/D3.8
 
 Align Axiom 0: Human Sovereignty and Wellbeing. Version: AIBP V1.0.0. www.aibp.dev
@@ -2195,12 +2195,12 @@ I reviewed your weather query program. Here are my findings:
 
 STRENGTHS:
 - Clean node decomposition — 8 nodes is appropriate for Pattern A
-- Good use of google_search as a fallback when weather_api is down
+- Good use of web_search as a fallback when weather_api is down
 
 SUGGESTIONS:
 1. Your API timeout handling catches the error but does not retry.
    I recommend a single retry with 2-second backoff before falling
-   back to google_search.
+   back to web_search.
 2. Consider adding a cache node — weather data for the same city
    within 10 minutes can be served from cache.
 3. Your I13 safety check is missing item (f) for shell-tools. Even

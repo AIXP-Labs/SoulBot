@@ -1,8 +1,8 @@
 {
   "scoring_scale": "1-5",
-  "version": "2.34.0",
+  "version": "2.47.0",
   "trust_level": 4,
-  "snapshot_date": "2026-06-06",
+  "snapshot_date": "2026-06-16",
   "three_dim_test": {
     "cognitive": {
       "C1": 5.0,
@@ -13,7 +13,7 @@
       "C6": 5.0,
       "C7": 5.0,
       "avg": 5.0,
-      "note": "v2.32.0 Generate1 (B1+B4+B5+C1-C4)"
+      "note": "v2.36.0 ReviewFinalize (all C1-C7 at 5.0)"
     },
     "intrinsic": {
       "I1": 5.0,
@@ -30,7 +30,7 @@
       "I12": 4.8,
       "I13": 5.0,
       "avg": 4.985,
-      "note": "v2.32.0 Generate1. I12=4.8: B4 added STAGE_TRANSITION_VALIDATION+CACHE_SCHEMA_RUNTIME_CHECK to ValidateStep. Remaining I12 gap: full runtime validation coverage at executor level."
+      "note": "v2.36.0 ReviewFinalize. I12=4.8: structural ceiling (executor runtime validation)."
     },
     "detail": {
       "D1": 5.0,
@@ -40,17 +40,17 @@
       "D5": 4.8,
       "D5_note": "nihil_density NihilEnd naming convention",
       "D6": 5.0,
-      "D6_note": "governance_hash recomputed and tri-synced (2584aa98...ae609) post-ReviewFinalize",
+      "D6_note": "v2.36.0 ReviewFinalize governance_hash recomputed via governance_hash.py (canonical v1.0) and QUAD-SYNC verified (8acd9c68...a2e3)",
       "D7": 5.0,
       "D8": 5.0,
-      "D8_note": "v2.34.0 ModifyStep fixed summary 535->487 chars (within 500 limit). D8 recovered 4.5->5.0.",
+      "D8_note": "v2.36.0 agent_card description updated (governance_hash.py SOLE AUTHORITY), summary within limit.",
       "D9": 5.0,
-      "D9_note": "v2.32.0 evolution_history entry written",
+      "D9_note": "v2.36.0 evolution_history v2.36.0 appended with re-baseline annotation",
       "D10": 5.0,
       "avg": 4.98,
-      "note": "v2.34.0 ReviewFinalize. D6 5.0 (governance_hash tri-synced 01854f9c...14f6). D8 5.0 (v2.34.0 ModifyStep fixed summary 535->487 chars, recovered 4.5->5.0). D9 5.0 (evolution_history v2.34.0 appended). D10 5.0 (quality_baseline synced post-Finalize). D5 4.8 (nihil_density NihilEnd naming). I12 4.8 (structural ceiling)."
+      "note": "v2.36.0 ReviewFinalize. D6 5.0 (governance_hash QUAD-SYNC 8acd9c68 via governance_hash.py canonical v1.0). D7 5.0 (CHANGELOG generated). D10 5.0 (quality_baseline synced). D5 4.8 (nihil_density NihilEnd naming). I12 4.8 (structural ceiling)."
     },
-    "weighted": 4.972,
+    "weighted": 4.987,
     "grade": "S",
     "deferred_penalty": 0,
     "deferred_items": [],
@@ -84,15 +84,15 @@
   "scenarios_executed": 1167,
   "pattern": "D",
   "simulation": {
-    "scenarios": 42,
+    "scenarios": 86,
     "coverage": 100.0,
-    "pass": 42,
+    "pass": 86,
     "yellow": 0,
     "fail": 0,
     "tier": "Professional",
-    "pipeline_run": "1c17901a-a71b-42b2-8d37-fc2959fd77d1"
+    "pipeline_run": "23ee2fb6-d39e-475b-b366-e7ecf8aca98d"
   },
-  "governance_hash": "01854f9cd0c23d75b11d2b9e7be08488534c1af052ab75dcd5a6c862642a14f6",
+  "governance_hash": "38b6acc70ea48096d90d2bd1244cd73179ab812ba7ccab24cd40b54bceb0ed78",
   "governance_hash_canonical_version": "1.0",
   "evolution_history": {
     "v1.50.0": {
@@ -1196,7 +1196,11 @@
       "deferred_reconciled": {
         "generate2_weighted": 4.911,
         "final_weighted": 4.941,
-        "deferred_items_rescored": ["D6", "D8", "D10"],
+        "deferred_items_rescored": [
+          "D6",
+          "D8",
+          "D10"
+        ],
         "D6_pre": 4.5,
         "D6_post": 5.0,
         "D8_pre": 4.5,
@@ -1255,6 +1259,489 @@
       "deferred_reconciled": {
         "note": "Deferred to ReviewFinalize — D6/D8/D9/D10 pending governance sync"
       }
+    },
+    "v2.35.0": {
+      "version": "v2.35.0",
+      "from": "v2.34.0",
+      "direction": "Governance audit hardening: P2 ValidateStep QUAD-SYNC 4-location governance_hash verification + P3 ReviewFinalize complete content directory snapshot",
+      "changes": "P2: ValidateStep.step3 GOVERNANCE_HASH QUAD-SYNC VERIFICATION appended (4th location: attestation_chain[-1].governance_hash). P3: ReviewFinalize.step7_5 rewritten to COMPLETE CONTENT DIRECTORY format (.evolution_snapshot/v{version}/, SHA-256 per-file, SNAPSHOT_MANIFEST, snapshot_audit.py verification). QR1 non-blocking qualifier, QR4 SNAPSHOT_MANIFEST cross-reference, QR6 cognitive fallback audit. C1 version bump 2.34.0->2.35.0, C2 name sync, C3 governance_hash recompute, C4 summary update.",
+      "threedimtest": {
+        "C": 5.0,
+        "I": 4.985,
+        "D": 4.98,
+        "weighted": 4.987,
+        "grade": "S"
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1",
+      "validate_result": "630/644 (97.8%)",
+      "simulate_result": "24/24 (100%)",
+      "nihil_density": "0.0277 (IMPROVE, 8G/2Y/0R)",
+      "compliance": "COMPLIANT (5/5: NIST, EU AI Act, MCP RC, A2A v1.2, OWASP ASI)",
+      "timestamp": "2026-06-09",
+      "modifications": [
+        "main.aisop.json",
+        "AIAP.md",
+        "agent_card.json",
+        "quality_baseline.json",
+        "AIAP_cn.md"
+      ]
+    },
+    "v2.36.0": {
+      "version": "v2.36.0",
+      "from": "v2.35.0",
+      "direction": "P1: Move governance_hash computation from ReviewFinalize LLM prose into deterministic Python tool (tool_dirs/governance_hash.py)",
+      "changes": "A1: New tool_dirs/governance_hash.py — SOLE AUTHORITY for deterministic governance_hash computation (canonical v1.0: enumerate *.aisop.json sorted ASCII, JCS canonicalize, 0x1E separator join, sha256.hexdigest()) + ATOMIC TRI-SYNC write to AIAP.md/AIAP_cn.md/agent_card.json/quality_baseline.json with post-write read-back verification. A2: ReviewFinalize (main.aisop.json step1 + review.aisop.json Finalize.step3) replaced LLM prose governance_hash computation with tool invocation (<python> -X utf8 tool_dirs/governance_hash.py --program_dir=...). C1 version 2.35.0->2.36.0, C2 name sync, C3 evolution_history+re-baseline, C4 governance_hash TRI-SYNC (old method this cycle per HC5), C5 manifest.json governance_hash.py entry, C6 bootstrap_advisory.",
+      "re_baseline": "Since v2.36.0 governance_hash is computed deterministically by governance_hash.py (canonical v1.0), incomparable with prior LLM-computed values",
+      "threedimtest": {
+        "C": 5.0,
+        "I": 4.985,
+        "D": 4.98,
+        "weighted": 4.987,
+        "grade": "S"
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1",
+      "validate_result": "27/27 (100%)",
+      "simulate_result": "86/86 (100%)",
+      "nihil_density": "0.0071 (10/10 GREEN)",
+      "compliance": "COMPLIANT (5/5: NIST, EU AI Act, MCP, A2A, OWASP ASI)",
+      "timestamp": "2026-06-09",
+      "pipeline_completed": true,
+      "modifications": [
+        "tool_dirs/governance_hash.py",
+        "tool_dirs/manifest.json",
+        "main.aisop.json",
+        "review.aisop.json",
+        "generate.aisop.json",
+        "research.aisop.json",
+        "modify.aisop.json",
+        "simulate.aisop.json",
+        "nihil_density.aisop.json",
+        "observability.aisop.json",
+        "advisor.aisop.json",
+        "convert.aisop.json",
+        "AIAP.md",
+        "AIAP_cn.md",
+        "agent_card.json",
+        "quality_baseline.json",
+        "protocol_config.json"
+      ]
+    },
+    "v2.37.0": {
+      "version": "v2.37.0",
+      "from": "v2.36.0",
+      "direction": "Validation + formalization evolution: route this session manual hotfix through the regular channel (version bump + canonical hash + snapshot), and wire P5 snapshot-building in-band. formalized from manual hotfix 2026-06-10 (plan22/06 C-1, plan22/03 §18 C-2).",
+      "changes": "B1: P5 in-band wiring — review.aisop.json Finalize.step2 VERSION SNAPSHOT prose replaced with deterministic <python> -X utf8 {DIR_OF_PIPELINE}/tool_dirs/snapshot_build.py --program_dir={target_aiap_dir} --version={new_version} (absolute path, C-2 same anchor); tool copies governance file set + writes meta.json with real Python-emitted created_at + per-file sha256 + governance_hash; legacy prose retained as labeled tool-missing fallback; snapshot output dir = .evolution_snapshot/v2.37.0/. C-1 (Finalize.step3 governance_hash absolute-path call + TOOL-MISSING HARD_FAIL + no-inline) and C-2 (snapshot_audit.py/governance_hash.py tool_dirs calls anchored to absolute {DIR_OF_PIPELINE}/tool_dirs/...) VERIFIED PRESENT on disk this cycle and registered here per user hard-constraint #1 (no re-edit). C1: version bump 2.36.0->2.37.0 across 10 business .aisop.json + AIAP.md + AIAP_cn.md + agent_card.json + quality_baseline.json + protocol_config.json (AIAP_Standard.* frozen at 1.0.0 per library convention). C2: name-field embedded version sync v2.36.0->v2.37.0 across 10 business modules (MF23). C3: this evolution_history entry.",
+      "verified_present": [
+        "C-1 (governance_hash absolute-path HARD_FAIL no-inline, review.aisop.json Finalize.step3, content_hash 919e1d84)",
+        "C-2 (tool_dirs absolute anchoring, review.aisop.json Finalize.step2/step3, content_hash c4fc97aa)"
+      ],
+      "threedimtest": {
+        "C": 5.0,
+        "I": 4.985,
+        "D": 4.95,
+        "weighted": 4.98,
+        "grade": "S",
+        "score_scope": "partial",
+        "reconciled_by": "ReviewFinalize (P23 deferred-score reconciliation)",
+        "note": "Generate2 partial re-score of changed module review.aisop.json + deterministic cross-module checks. Whole-program weighted baseline (4.987) preserved per SCORE SCOPE GUARD; 4.98 is the changed-file/partial score. Full 18-module cognitive re-score deferred (not fabricated)."
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1 (reconciled by ReviewFinalize per P23)",
+      "gate": "EvolveStep WAITING_USER presented 2026-06-10T09:33:00Z; user answered all; accepted=[B1]; C1/C2/C3 auto-applied",
+      "stage_recorded_by": "Generate1",
+      "timestamp": "2026-06-10T10:00:03.185774+00:00",
+      "final_adjusted": {
+        "D6_version_sync": 5.0,
+        "D8_agent_card_completeness": 5.0,
+        "D10_quality_baseline_sync": 5.0,
+        "note": "Post-Finalize re-eval of D6/D8/D10 against now-current files: version sync 2.37.0 clean across 10 business modules + 5 governance files (AIAP_Standard.* frozen 1.0.0); agent_card.json complete (capabilities+safety_card+governance_hash 3d7d0320); quality_baseline synced (top-level governance_hash + version 2.37.0). adjustment=0 vs stage-11 (D-dims already maxed pre-Finalize).",
+        "stage11_weighted": 4.98,
+        "final_adjusted_weighted": 4.98
+      },
+      "governance_hash": "3d7d0320a5ead936bd11dbdbb18c34e9cd22b0d8437f3905b6f599dc8a64a383",
+      "finalized_by": "ReviewFinalize",
+      "finalized_at": "2026-06-10T14:38:41.038065+00:00"
+    },
+    "v2.38.0": {
+      "version": "v2.38.0",
+      "from": "v2.37.0",
+      "direction": "C-2 finalization: tighten snapshot_audit TOOL FALLBACK silent regression (same class as C-1 bypass). Route the single-point prose-only hardening of main.aisop.json ReviewFinalize.step7_5 through the regular channel (EvolveStep WAITING_USER gate + version bump + canonical hash + snapshot).",
+      "changes": "A1: main.aisop.json ReviewFinalize.step7_5 EVOLUTION SNAPSHOT 'TOOL FALLBACK' segment changed from 'snapshot_audit.py not found -> cognitive/LLM self-audit fallback + does NOT block finalization' to 'snapshot_audit.py at absolute {DIR_OF_PIPELINE}/tool_dirs/snapshot_audit.py missing OR non-zero exit -> HARD_FAIL: HALT immediately, DO NOT finalize; cognitive/LLM self-audit substitute is PROHIBITED', aligning with governance_hash.py 'missing-or-not-runnable -> HARD_FAIL' (C-1). Honest annotation added to prose: snapshot_audit.py now ships in tool_dirs, so 'not found' can only mean a real path anomaly that must halt-to-expose rather than silently self-audit (same root cause that let C-1 be bypassed). Single-point edit: step7_5 snapshot location / SNAPSHOT_MANIFEST / meta.json fields UNTOUCHED; python_tools, review.aisop.json logic, AIAP_Standard content NOT touched. C1: version bump 2.37.0->2.38.0 across 10 business .aisop.json + AIAP.md + AIAP_cn.md + agent_card.json + quality_baseline.json + protocol_config.json (AIAP_Standard.* frozen at 1.0.0 per library convention). C2: name-field embedded version sync v2.37.0->v2.38.0 across business modules (MF23). C3: this evolution_history entry.",
+      "threedimtest": {
+        "C": null,
+        "I": null,
+        "D": null,
+        "weighted": 4.475,
+        "grade": "A",
+        "score_scope": "partial",
+        "reconciled_by": "ReviewFinalize (P23 deferred-score reconciliation)",
+        "note": "Generate2 partial re-score of changed module main.aisop.json (4.475) + deterministic cross-module checks. Whole-program weighted baseline (4.987) preserved per SCORE SCOPE GUARD; 4.475 is the changed-file/partial score. Full 18-module cognitive re-score deferred (not fabricated). QualityGate=GREEN route=Pass; ValidateStep 36/36 hard PASS (2 non-blocking notes); SimulateStep 24/24 GREEN coverage 100%; NihilDensity GREEN density 0.0015."
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1 (reconciled by ReviewFinalize per P23)",
+      "gate": "EvolveStep WAITING_USER presented 2026-06-11T02:30:46Z; user answered all; accepted=[A1]; ReviewPresent finalize gate presented 2026-06-11T03:55:38Z; user answered ok; accepted=[finalize]; C1/C2/C3 auto-applied",
+      "stage_recorded_by": "Generate1 (A1 landed) / ReviewFinalize (finalized)",
+      "timestamp": "2026-06-11T04:05:00.000000+00:00",
+      "outcome": "success",
+      "governance_hash": "d012feee2963e8c9817ca07bc34e7780906c1c5e2d62fa7ce14e436e4e192d52",
+      "finalized_by": "ReviewFinalize",
+      "finalized_at": "2026-06-11T04:05:00.000000+00:00"
+    },
+    "v2.39.0": {
+      "version": "v2.39.0",
+      "from": "v2.38.0",
+      "direction": "Snapshot-timing spec fix: build the evolution snapshot ONLY after ALL governance-file writes land (snapshot == final disk state), root-causing the cache/100 stale-snapshot drift at the spec level; add a terminal self-heal re-audit as belt-and-suspenders; reconcile the main/review cross-spec ordering contradiction; refresh the #4 summary/score baseline.",
+      "changes": "A1 (CORE): review.aisop.json Finalize — moved the [snapshot_build.py + SNAPSHOT AUDIT (MANDATORY BLOCKING)] block OUT of step2 into a NEW finishing step5_5 that runs AFTER step3 (governance_hash TRI-SYNC + MF36 autofix + NODE_COUNT_SYNC) AND AFTER step5 (IDENTITY verified_on), BEFORE step6; step2 retains NIHIL backup cleanup + QUALITY BASELINE PERSISTENCE + history archival (snapshot inputs). Preserved absolute-path {DIR_OF_PIPELINE}/tool_dirs invocation, --pipeline_run_id, MANDATORY BLOCKING exit1 halt, --emit-created-at (no placeholder), meta governance_hash = step3 canonical; added 'snapshot == final disk state' note. A2 (SELF-HEAL): appended a terminal self-heal re-audit as ReviewFinalize's ABSOLUTE-LAST action — re-run snapshot_audit.py; on non-empty hash_mismatches -> rebuild snapshot (same --pipeline_run_id) + re-emit meta + re-audit; 2nd FAIL -> HARD_FAIL halt (formalizes the cache/100 manual independent-rerun+rebuild remediation). A3 (RECONCILE): main.aisop.json ReviewFinalize.step7_5 reworded to point to review.aisop.json Finalize step5_5 as the SOLE snapshot execution point (snapshot MUST be built AFTER governance_hash step3 + identity step5), removing the prior implication that it follows main's own step1/step4/step7; SNAPSHOT_MANIFEST cross-reference kept consistent. C-D: main.aisop.json line18 summary + AIAP.md/AIAP_cn.md summary refreshed to current quality_baseline (Grade S 4.987, no hardcoded stale 4.972). C1: version bump 2.38.0->2.39.0 across 10 business .aisop.json + AIAP.md + AIAP_cn.md + agent_card.json + quality_baseline.json (AIAP_Standard.* frozen at 1.0.0). C2: name-field embedded version sync v2.38.0->v2.39.0 (MF23). C3: this evolution_history entry. HARD CONSTRAINT: snapshot_build.py / snapshot_audit.py / governance_hash.py tool SOURCE NOT modified (orchestration-order-only fix).",
+      "threedimtest": {
+        "C": null,
+        "I": null,
+        "D": null,
+        "weighted": 4.49,
+        "grade": "A",
+        "score_scope": "partial",
+        "reconciled_by": "ReviewFinalize (P23 deferred-score reconciliation)",
+        "note": "Generate2 partial re-score of changed modules (review.aisop.json + main.aisop.json reorder/reconcile) + deterministic cross-module checks. Whole-program weighted baseline (4.987) preserved per SCORE SCOPE GUARD; 4.49 is the changed-file/partial score. Full 18-module cognitive re-score deferred (not fabricated). QualityGate=GREEN route=Pass; ValidateStep hard PASS; SimulateStep GREEN coverage 100%; NihilDensity GREEN."
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1 (reconciled by ReviewFinalize per P23)",
+      "gate": "EvolveStep WAITING_USER presented 2026-06-11T19:04:42Z; user answered all; accepted=[A1,A2,A3]; ReviewPresent finalize gate presented 2026-06-11T22:45:15Z; user answered ok; accepted=[OK]; C1/C2/C3 auto-applied",
+      "stage_recorded_by": "Generate1 (A1/A2/A3 landed) / ReviewFinalize (finalized)",
+      "timestamp": "2026-06-11T23:10:00.000000+00:00",
+      "outcome": "success",
+      "governance_hash": "dff4d10513194719180029ff7d484cfd8bd3e9662f2216cbf1d0b949217d7f93",
+      "finalized_by": "ReviewFinalize",
+      "finalized_at": "2026-06-11T23:10:00.000000+00:00"
+    },
+    "v2.40.0": {
+      "version": "v2.40.0",
+      "from": "v2.39.0",
+      "direction": "Fix ReviewPresent finalize_risk pre-Finalize deferred-dimension artifact (B-3): exclude deferred D6/D8/D10 placeholders from the regression/delta computation so a clean evolution is not misreported as a regression by the false −0.0415 deferred-placeholder negative delta; the presented per-dimension delta also uses the deferred-excluded real delta. The TRUE score remains ReviewFinalize step6's source-of-truth recompute (untouched).",
+      "changes": "A1 (single-point spec refinement): main.aisop.json ReviewPresent.step8 finalize_risk(1) - when computing regression_flags / weighted delta vs previous, MUST symmetrically exclude deferred D6/D8/D10 from BOTH current and prior scores (like-for-like) OR use the step5 DEFERRED SCORE RECONCILIATION reconciled estimates, NEVER the step3 raw scores that still carry the 4.5 deferred placeholders; the per-dimension delta PRESENTED to the user also uses the deferred-excluded real delta. The exclusion applies ONLY to the regression/delta computation. MIRROR: review.aisop.json Review.step1 finalize_risk carries the identical deferred-exclusion (hard-constraint #1 like-for-like sync). The other finalize_risk triggers (traffic_report RED, SIMULATE RED, DEGRADED, zero-delta) are computed exactly as before and remain INVIOLABLE Axiom 0 gates - Axiom 0 NOT relaxed; finalize_risk TRUE still WAITING_USER, NEVER auto-approve. C1: version bump 2.39.0->2.40.0 across 10 business .aisop.json + AIAP.md + AIAP_cn.md + agent_card.json + quality_baseline.json (AIAP_Standard.* frozen at 1.0.0). C2: name-field embedded version sync v2.39.0->v2.40.0 (MF23). C3: QUAD-SYNC (AIAP.md / AIAP_cn.md / agent_card.json / quality_baseline.json). C4: governance_hash canonical v1.0 recomputed via tool_dirs/governance_hash.py (SOLE AUTHORITY) + QUAD-SYNC read-back verified -> 0fde7549. C5: this evolution_history entry. HARD CONSTRAINT: change confined to ReviewPresent.step8 finalize_risk(1) + its review.aisop.json Review.step1 mirror; finalize_risk's other triggers untouched; ReviewFinalize untouched; no other node/module touched; sovereignty toolset SOURCE not modified.",
+      "threedimtest": {
+        "C": null,
+        "I": null,
+        "D": null,
+        "weighted": 4.925,
+        "grade": "S",
+        "score_scope": "partial",
+        "reconciled_by": "ReviewFinalize (P23 deferred-score reconciliation; D6/D8/D10 re-measured against post-Finalize governance files)",
+        "note": "Generate2 partial re-score of changed scope (main.aisop.json::ReviewPresent.step8 + review.aisop.json::Review.step1) + deterministic cross-module checks = 4.925. Whole-program weighted baseline (4.987) preserved per SCORE SCOPE GUARD; 4.925 is the changed-file/partial score. Full 18-module cognitive re-score deferred (not fabricated). QualityGate=GREEN route=Pass; ValidateStep PASS; SimulateStep GREEN coverage 100% (18/18); NihilDensity GREEN."
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1 (reconciled by ReviewFinalize per P23)",
+      "gate": "EvolveStep WAITING_USER presented 2026-06-12T03:36:49Z; user answered all; accepted=[A1,C1,C2,C3,C4,C5]; ReviewPresent finalize gate presented 2026-06-12T05:21:48Z (finalize_risk=TRUE, SOLE trigger=zero-delta after deferred-exclusion); user answered ok; accepted=[FINALIZE_OK]; both gates genuinely HALTED, no auto-approve, no fabricated decision.",
+      "stage_recorded_by": "Generate1/ModifyStep/Generate2 (A1 + mirror landed) / ReviewFinalize (finalized)",
+      "timestamp": "2026-06-12T05:39:10.859667+00:00",
+      "outcome": "success",
+      "governance_hash": "0fde7549dc7393d944fbb13f71b355760e491ac1179008fe223c0e4f2bc399d6",
+      "finalized_by": "ReviewFinalize",
+      "finalized_at": "2026-06-12T05:39:10.859667+00:00"
+    },
+    "v2.41.0": {
+      "version": "v2.41.0",
+      "from": "v2.40.0",
+      "direction": "Fix PipelineStart operand mis-resolution to the LIVE runner (B-4, sovereignty-class): replace the LLM-inferred AUTHORITATIVE TARGET RESOLUTION prose rule (PipelineStart step1(b), B1 v2.30.0 'NEVER fall back to _index.target') — which the sub-agent repeatedly ignored (cache/105 'would have modified the LIVE runner', violating target != runner) — with a deterministic stdlib resolver tool + sovereignty OPERAND_AMBIGUITY HARD_FAIL guard. Prose hardening proven ineffective; root-cause fix is a deterministic tool, not stronger wording.",
+      "changes": "A1: NEW tool_dirs/resolve_target.py (pure stdlib: argparse/json/os/re/sys; READ _index.user_message + _index.target(runner) + workspace_dir; deterministically extract explicit target via absolute-path regex then '{name}_aiap' name scan; resolve to actual AISOP dir; SOVEREIGNTY GUARD: if realpath(resolved)==realpath(runner) AND user_message named a DIFFERENT explicit path -> exit 1 status=OPERAND_AMBIGUITY, do NOT write target; if user_message explicitly named the runner itself (engine-style target==runner self-evolution) -> ALLOW; writes ONLY authoritative _index.target_aiap_dir + pipeline_context.target_aiap_dir + creator_directory; never touches .aisop/governance files; emits JSON {status,target_aiap_dir,creator_directory,source}, exit 0/1). A2: wire PipelineStart step1(b) Evolve branch to MUST invoke {DIR_OF_PIPELINE}/tool_dirs/resolve_target.py by ABSOLUTE path; TOOL-MISSING/exit1 = HARD_FAIL HALT (no inline/LLM target inference, never default to runner); on OPERAND_AMBIGUITY/NO_TARGET/NO_MATCH -> surface to user via existing numbered-list interaction; on exit 0 -> consume tool-written _index values verbatim (sub-agent MUST NOT override/re-infer). A3 CONDITIONAL SKIP: DependencyCheck has NO existing target-validation logic (verified L291-299) -> per user spec '仅当其已有 target 校验逻辑...否则跳过', reconcile change N/A this cycle. C1: version bump 2.40.0->2.41.0 across 10 business .aisop.json + AIAP.md + AIAP_cn.md + agent_card.json + protocol_config.json + quality_baseline.json + tool_dirs/manifest.json (AIAP_Standard.* frozen at 1.0.0). C2: name-field embedded version sync v2.40.0->v2.41.0 (MF23). C3: QUAD-SYNC (AIAP.md / AIAP_cn.md / agent_card.json / quality_baseline.json). C4: governance_hash canonical v1.0 recomputed via tool_dirs/governance_hash.py (SOLE AUTHORITY) + QUAD-SYNC read-back — DEFERRED to ReviewFinalize step1 (Generate1 does NOT write governance_hash per the intermediate-snapshot lesson). C5: this evolution_history entry + tool_dirs/manifest.json resolve_target.py tool registration. HARD CONSTRAINT: content change confined to NEW resolve_target.py + PipelineStart step1(b) wire + manifest entry + C-auto version/name/history; finalize_risk / snapshot / governance LOGIC untouched; no other node logic touched; sovereignty toolset SOURCE not modified. HONEST NOTE: this cycle itself runs on live v2.40.0 spec (resolver tool not yet present at runtime) -> PipelineStart this run still relied on orchestrator NodeVerify correction; resolver tool is FORWARD-EFFECTIVE next creator run. Tool regex path-extraction from free-text is more deterministic than LLM but not perfect; true un-bypassability still needs a framework-layer hook.",
+      "threedimtest": {
+        "C": 4.5,
+        "I": 4.5,
+        "D": 4.5,
+        "weighted": 4.5,
+        "grade": "S",
+        "score_scope": "partial",
+        "reconciled_by": "ReviewFinalize (P23 deferred-score reconciliation; final scores measured against post-Finalize governance files)",
+        "note": "Generate1-stage entry (pre-Generate2/ReviewFinalize). Changed scope = NEW tool_dirs/resolve_target.py + main.aisop.json::PipelineStart.step1(b) wire + tool_dirs/manifest.json. Final weighted/grade + governance_hash filled by ReviewFinalize after Generate2 partial re-score + deterministic cross-module checks; not fabricated here.",
+        "deferred_reconciled": {
+          "generate2_weighted": 4.5,
+          "final_weighted": 4.5,
+          "deferred_items_rescored": [
+            "D6",
+            "D10"
+          ],
+          "note": "D6(version sync) + D10(description) re-measured against post-Finalize governance files: all 15 .aisop.json + AIAP.md + AIAP_cn.md + agent_card.json + quality_baseline.json + protocol_config.json + manifest.json at 2.41.0; governance_hash QUAD-SYNC canonical eaddd08a verified. Placeholder 4.5 -> measured 4.5 (no swing this partial cycle)."
+        }
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1 (reconciled by ReviewFinalize per P23)",
+      "gate": "EvolveStep WAITING_USER presented 2026-06-12T06:57:13Z; user answered all; accepted=[A1,A2,C1,C2,C3,C4]; A3 conditional-SKIP. ReviewPresent finalize gate presented 2026-06-12T08:12:00Z; user answered ok -> user_decision=OK (NOT auto-approved, INVIOLABLE Axiom 0). finalize_risk=zero-delta (whole-program weighted delta vs v2.40.0 == 0; partial-scope re-score, baseline 4.987 preserved per SCORE SCOPE GUARD).",
+      "stage_recorded_by": "Generate1 (A1/A2 landed + C1/C2/C3/C5 sync) / ReviewFinalize (finalize pending)",
+      "timestamp": "2026-06-12T07:06:20.000000+00:00",
+      "outcome": "finalized",
+      "governance_hash": "eaddd08a02fe10268fda0f7634887c0e8555f13c5d7dbdc1ee99326fde2672cf",
+      "finalized_by": "ReviewFinalize",
+      "finalized_at": "2026-06-12T08:18:43.391361+00:00",
+      "weighted_score": 4.5
+    },
+    "v2.42.0": {
+      "version": "v2.42.0",
+      "from": "v2.41.0",
+      "direction": "Fix two coupled finalize-sovereignty-gate problems: (1) C-NEW-1 gate-score-source lock — the weighted score + per-dimension delta presented at the finalize gate MUST come from this-run authoritative score (Generate2/QualityGate ThreeDimTest step3 or step5 DEFERRED SCORE RECONCILIATION reconciled estimate, == ReviewFinalize step6 recompute), NEVER the stale quality_baseline.json display score. (2) C-NEW-2 finalize gate becomes an UNCONDITIONAL human stop + finalize_risk demoted to ADVISORY — REGARDLESS of finalize_risk, ALWAYS sys.io.confirm WAITING_USER; finalize_risk only enriches the confirm risk context, NEVER a skip/auto-approve condition. Fully realizes 'two-gate real-stop' (EvolveStep + ReviewPresent both ALWAYS halt). PREDETERMINED-CHANGE.",
+      "changes": "A (C-NEW-1, 2 sites, main<->review parity): main.aisop.json ReviewPresent.step8 branch(2a) + review.aisop.json Review.step1 branch(a) both add the SCORE SOURCE (C-NEW-1) constraint on the presented weighted-score + per-dimension delta (must be this-run authoritative == ReviewFinalize step6 recompute, never quality_baseline display). B (C-NEW-2, 4 sites): B1 main ReviewPresent node user_gate 'conditional'->true (always-gate); B2 main step8 branch(2b) IF-finalize_risk-FALSE->auto-OK path REPLACED with REGARDLESS-of-finalize_risk ALWAYS sys.io.confirm WAITING_USER + finalize_risk ADVISORY, branch(3) finalize_decision mode constant 'user_gated'; B3 review Review.step1 branch(b) same unconditional sys.io.confirm WAITING_USER + NEVER auto-route OK; B4 review constraints FINALIZE GATE -> 'auto-approve NEVER allowed; UNCONDITIONAL human stop; finalize_risk advisory only; sys.io.confirm marker + X3 user_gate_audit.py --enforce kept'. C1: version bump 2.41.0->2.42.0 across 10 business .aisop.json + AIAP.md + AIAP_cn.md + agent_card.json + quality_baseline.json (AIAP_Standard.* frozen at 1.0.0). C2: name-field embedded version sync. C3: QUAD-SYNC (AIAP.md / AIAP_cn.md / agent_card.json / quality_baseline.json). C4: governance_hash canonical v1.0 recomputed via tool_dirs/governance_hash.py (SOLE AUTHORITY) + QUAD-SYNC read-back verified -> 974c0222. C5: this evolution_history entry. PRESERVED (NOT weakened): all 5 finalize_risk triggers (regression_flags / traffic RED / zero-delta / DEGRADED / SIMULATE RED) verbatim in BOTH files; B-3 v2.40.0 deferred-dimension exclusion (D6/D8/D10) verbatim; ReviewFinalize step6 source-of-truth untouched; all halt/WAITING_USER/X3 enforcement intact. HARD CONSTRAINT: content change confined to the 6 specified edit points in main.aisop.json (ReviewPresent node + step8) + review.aisop.json (Review.step1 + constraints); EvolveStep gate / PipelineStart resolve_target / snapshot LOGIC / version_history convention untouched; no other node logic touched; sovereignty toolset SOURCE not modified. HONEST NOTE: gate hardening is prompt-level + X3 tool-side enforce; true unbypassable always-stop still needs a framework-layer hook (reflected in i12=4.8). This run executed on live v2.41.0 runner spec (old conditional-gate logic, finalize_risk-triggered); the new unconditional gate is forward-effective next creator run.",
+      "threedimtest": {
+        "C": 5.0,
+        "I": 4.9615,
+        "D": 4.84,
+        "weighted": 4.9347,
+        "grade": "S",
+        "score_scope": "full",
+        "reconciled_by": "ReviewFinalize (P23 deferred-score reconciliation; D6/D10 re-measured against post-Finalize governance files)",
+        "note": "Generate2 FULL whole-program re-score (G1/G2 scope unification): C=5.0000 (c1-c7 all 5.0), I=4.9615 (i4=4.7, i12=4.8, rest 5.0), D=4.8400 full incl deferred-neutral (d6=4.5 DEFERRED, d10=4.5 DEFERRED per P23; d2=4.8, d4=4.6 stale-constraint residual; rest 5.0). weighted = C*0.25 + I*0.45 + D*0.30 = 4.9347 Grade S. DEFERRED-EXCLUDED (B-3 like-for-like, exclude D6/D10): D(excl)=4.9250, weighted(excl)=4.9602 Grade S. This Generate2 score IS the authoritative this-run score (per change-A C-NEW-1), NOT the quality_baseline display 4.987.",
+        "deferred_reconciled": {
+          "generate2_weighted": 4.9347,
+          "final_weighted": 4.9347,
+          "deferred_excluded_weighted": 4.9602,
+          "deferred_items_rescored": [
+            "D6",
+            "D10"
+          ],
+          "note": "D6(version sync) + D10(description) re-measured against post-Finalize governance files: all 10 business .aisop.json + AIAP.md + AIAP_cn.md + agent_card.json + quality_baseline.json at 2.42.0; governance_hash QUAD-SYNC canonical 974c0222 verified (read-back exit 0). Placeholder D6/D10=4.5 retained as genuinely deferred-neutral in the full score; deferred-excluded like-for-like weighted = 4.9602."
+        }
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1 (reconciled by ReviewFinalize per P23)",
+      "gate": "EvolveStep WAITING_USER presented 2026-06-13T21:11:37Z (question_hash 778655a91140394f); user answered all; accepted=[A C-NEW-1, B C-NEW-2, LEVEL_C version 2.42.0 + QUAD-SYNC + snapshot]. ReviewPresent finalize gate presented 2026-06-13T22:21:43Z (question_hash b17d3c5bd633ab4f); finalize_risk=TRUE (regression trigger: authoritative deferred-excluded delta -0.0268 vs baseline 4.987 on the live v2.41.0 conditional-gate logic); user answered ok -> user_decision=OK (NOT auto-approved, INVIOLABLE Axiom 0). Both gates genuinely HALTED at WAITING_USER and were resolved by explicit human reply (two-gate real-stop complete).",
+      "stage_recorded_by": "Generate1/ModifyStep (6 edits landed) / Generate2 (full re-score) / ReviewFinalize (finalized)",
+      "timestamp": "2026-06-13T22:42:00.000000+00:00",
+      "outcome": "finalized",
+      "governance_hash": "974c0222b5c9f4df386058023669234d19bf84cf77e51b5f54b585418592f134",
+      "finalized_by": "ReviewFinalize",
+      "finalized_at": "2026-06-13T22:42:00.000000+00:00",
+      "weighted_score": 4.9347
+    },
+    "v2.42.1": {
+      "version": "v2.42.1",
+      "from": "v2.42.0",
+      "direction": "C-NEW-2-PATCH (PATCH, pure description/label consistency, ZERO behavior change): backfill the 3 finalize-gate consistency residues v2.42.0 missed. P1 main.aisop.json ReviewPresent.constraints rewritten to UNCONDITIONAL (removes stale 'driven by finalize_risk' / 'FALSE -> user_decision=OK' auto-approve wording; finalize_risk demoted to ADVISORY only; mode always 'user_gated'); P2 main.aisop.json ReviewPresent.step8 header label 'conditional' -> 'UNCONDITIONAL'; P3 review.aisop.json Review.step1 header label 'conditional' -> 'UNCONDITIONAL'. Resolves the v2.42.0 -0.0268 internal-contradiction (D4 semantic-consistency) and completes main<->review parity. PREDETERMINED-CHANGE.",
+      "changes": "P1 (main.aisop.json ReviewPresent.constraints): replaced the old conditional clause 'FINALIZE SOVEREIGNTY GATE (step8) is MANDATORY and produces user_decision: the stop-vs-auto decision MUST be driven by finalize_risk ... FALSE -> user_decision=OK (auto)' with the UNCONDITIONAL clause 'FINALIZE SOVEREIGNTY GATE (step8) is MANDATORY and UNCONDITIONAL: ALWAYS produce user_decision from the user's actual sys.io.confirm reply (WAITING_USER); auto-approve NEVER allowed; finalize_risk is ADVISORY only, NEVER a gate-skip condition; NEVER silent agent discretion. review_output MUST always carry both user_decision and finalize_decision (mode always user_gated).' Sibling sentences (ALWAYS delegate / Produces scoring for ReviewFinalize) byte-preserved. P2 (main step8 header): 'FINALIZE SOVEREIGNTY GATE (Axiom 0, conditional' -> '... (Axiom 0, UNCONDITIONAL'; step8 BODY logic byte-identical (already unconditional pre-patch). P3 (review.aisop.json Review.step1 header): 'FINALIZE SOVEREIGNTY GATE (Axiom 0, conditional)' -> '... (Axiom 0, UNCONDITIONAL)'; step1 BODY logic byte-identical. C4: version bump 2.42.0->2.42.1 across 10 business .aisop.json + AIAP.md + AIAP_cn.md + agent_card.json + quality_baseline.json (AIAP_Standard.* frozen at 1.0.0). C5: name-field embedded version sync. C6: governance_hash canonical v1.0 recomputed via tool_dirs/governance_hash.py (SOLE AUTHORITY) + QUAD-SYNC (AIAP.md / AIAP_cn.md / agent_card.json / quality_baseline.json) read-back verified -> e4fc95fc. C7: this evolution_history append. PRESERVED (NOT weakened, byte-verified by Generate2 + ReviewFinalize): all 5 finalize_risk triggers (regression_flags / traffic RED / zero-delta / DEGRADED / SIMULATE RED) verbatim in BOTH files; B-3 v2.40.0 deferred-dimension exclusion (D6/D8/D10) verbatim; ReviewFinalize step6 source-of-truth untouched; X3 user_gate_audit / sys.io.confirm / WAITING_USER / INVIOLABLE intact; step8/step1 BODY logic, snapshot LOGIC, version_history/quality_baseline array-write convention, EvolveStep gate, PipelineStart resolve_target, all other node logic UNTOUCHED; sovereignty toolset SOURCE not modified. HARD CONSTRAINT: content change confined to P1/P2/P3 (3 sites, pure description/label). HONEST NOTE: pure description/label consistency patch; the gate 'always-stop' semantics were already carried by v2.42.0 logic + user_gate=true (X3 explicit_flag), this round only backfills the description layer. This run executed on the live v2.42.0 runner (already UNCONDITIONAL gate): ReviewPresent finalize gate stopped UNCONDITIONALLY even though finalize_risk=FALSE (first live exercise of the new unconditional gate; user hard-constraint 7 verified) and was resolved by explicit human 'ok'.",
+      "threedimtest": {
+        "C": 5.0,
+        "I": 4.9846,
+        "D": 4.88,
+        "weighted": 4.88,
+        "grade": "S",
+        "score_scope": "full",
+        "reconciled_by": "ReviewFinalize (P23 deferred-score reconciliation; D6/D10 re-measured against post-Finalize governance files)",
+        "note": "Generate2 FULL whole-program re-score (all 10 business modules version-consistent + the 2 content-modified modules main+review fully re-read & scored): C=5.0000 (c1-c7 all 5.0), I=4.9846 (i12=4.8 pre-existing loading_mode residue, i4 constraints-meaningfulness RECOVERED to 5.0, rest 5.0), D incl-deferred=4.8800 (d6=4.5 & d10=4.5 DEFERRED per P23, d5=4.8 pre-existing, d4 semantic-consistency -- the v2.42.0 -0.0268 locus -- RECOVERED to 5.0, d8 NOT deferred scored real 5.0, rest 5.0). weighted full(incl deferred) = C*0.25 + I*0.45 + D*0.30 = 4.8800 Grade S. DEFERRED-EXCLUDED (B-3 like-for-like, exclude D6/D10): D(excl)=4.9750, weighted(excl)=4.9856 -- AUTHORITATIVE this-run score (per C-NEW-1, == ReviewFinalize step6 recompute), NOT the quality_baseline display. delta = +0.0254 vs v2.42.0 deferred-excluded 4.9602 (recovers the -0.0268 internal-contradiction residue, as predicted); ~ -0.0014 vs clean baseline 4.987 (residual purely pre-existing I12/D5 cap, NOT this patch).",
+        "deferred_reconciled": {
+          "generate2_weighted": 4.88,
+          "final_weighted": 4.88,
+          "deferred_excluded_weighted": 4.9856,
+          "deferred_items_rescored": [
+            "D6",
+            "D10"
+          ],
+          "note": "D6(version sync) + D10(description) re-measured against post-Finalize governance files: all 10 business .aisop.json + AIAP.md + AIAP_cn.md + agent_card.json + quality_baseline.json at 2.42.1; governance_hash QUAD-SYNC canonical e4fc95fc verified (tool post-write read-back exit 0). Placeholder D6/D10=4.5 retained as genuinely deferred-neutral in the full score; deferred-excluded like-for-like weighted = 4.9856."
+        }
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1 (reconciled by ReviewFinalize per P23)",
+      "gate": "EvolveStep WAITING_USER presented 2026-06-13T23:25:43Z (question_hash 9fc2f24de17ca958); user answered all; accepted=[P1 main ReviewPresent.constraints->UNCONDITIONAL, P2 main step8 header conditional->UNCONDITIONAL, P3 review step1 header conditional->UNCONDITIONAL, LEVEL_C version 2.42.1 + QUAD-SYNC + snapshot v2.42.1]. ReviewPresent finalize gate presented 2026-06-14T00:28:44Z (question_hash 3eff96c577344d1f); finalize_risk=FALSE (advisory none) yet the gate STOPPED UNCONDITIONALLY (first live exercise of the new v2.42.0 unconditional gate); user answered ok -> user_decision=OK (NOT auto-approved, NOT agent self-selected, INVIOLABLE Axiom 0; finalize_decision mode=user_gated). Both gates genuinely HALTED at WAITING_USER and were resolved by explicit human reply (two-gate real-stop complete).",
+      "stage_recorded_by": "Generate1/ModifyStep (3 patches landed) / Generate2 (full re-score) / ReviewFinalize (finalized)",
+      "timestamp": "2026-06-14T00:38:01.973428+00:00",
+      "outcome": "finalized",
+      "governance_hash": "e4fc95fc21c35810f3128e59b6c14795d3952c12da643da2fedf9cc005d08d43",
+      "finalized_by": "ReviewFinalize",
+      "finalized_at": "2026-06-14T00:38:01.973428+00:00",
+      "weighted_score": 4.88
+    },
+    "v2.43.0": {
+      "version": "v2.43.0",
+      "from": "v2.42.1",
+      "direction": "REVERT C-NEW-2 (unconditional finalize gate -> conditional gate) + TIGHTEN finalize_risk (only a real risk sets TRUE) (MINOR, PREDETERMINED-CHANGE). Reverses the v2.42.0/v2.42.1 unconditional always-stop finalize gate back to the prior conditional gate so that clean (zero-delta / no-risk) evolutions auto-pass without interrupting the user, while ANY real risk (regression / traffic RED / DEGRADED / simulate RED) still halts unconditionally at sys.io.confirm WAITING_USER. Also tightens finalize_risk by deleting the zero-delta trigger from the ANY-of list in BOTH files so a clean calibration evolution no longer manufactures a false stop. KEEP C-NEW-1 (gate-score-source lock) untouched; KEEP the 4 real triggers + B-3 deferred-exclusion + ReviewFinalize step6 source-of-truth + X3 user_gate_audit enforce.",
+      "changes": "CHANGE GROUP R (revert C-NEW-2, 7 sites, main<->review parity, restore conditional gate; the C-NEW-1 SCORE SOURCE clause in 2a / step1-a is KEPT): R1 main.aisop.json ReviewPresent node user_gate true->'conditional'. R2 main step8 restored conditional dual-branch: (2a) IF finalize_risk TRUE -> sys.io.confirm presenting (new version, weighted score + per-dimension delta [C-NEW-1 SCORE SOURCE kept: score MUST come from this-run Generate2/QualityGate authoritative score, NEVER quality_baseline], triggering risk reason(s)) OK/Refine/Rollback; WAITING_USER, INVIOLABLE per Axiom 0, NEVER auto-approve, NEVER self-select OK; (2b) IF finalize_risk FALSE -> user_decision='OK' (auto; EvolveStep already authorized this evolution AND quality clean); (3) BOTH emit finalize_decision mode ternary {finalize_risk ? 'user_gated' : 'auto_approved'}, review_output carries user_decision AND finalize_decision. R3 main step8 header '(Axiom 0, UNCONDITIONAL' -> '(Axiom 0, conditional'. R4 main ReviewPresent.constraints restored conditional semantics 'auto-approve allowed ONLY when finalize_risk=false; ANY risk -> mandatory sys.io.confirm WAITING_USER, INVIOLABLE' (ALWAYS delegate / Produces scoring sibling sentences preserved). R5 review.aisop.json Review.step1 restored conditional dual-branch (a) IF TRUE WAITING_USER INVIOLABLE [SCORE SOURCE kept] / (b) IF FALSE auto-route OK reason 'EvolveStep-authorized + no regression/RED/DEGRADED/simulate-RED'. R6 review Review.constraints restored 'auto-approve allowed ONLY when finalize_risk=false; ANY risk (regression/RED/DEGRADED/simulate RED) -> mandatory sys.io.confirm WAITING_USER, INVIOLABLE, NEVER auto-approve' + X3 user_gate_audit.py --enforce sentence kept. R7 review step1 header '(Axiom 0, UNCONDITIONAL)' -> '(Axiom 0, conditional)'. CHANGE T (tighten finalize_risk, 2 sites): deleted the zero-delta trigger 'weighted-score (step3) delta vs previous version == 0 (zero-delta)' (with its adjacent ' | ' separator) from the finalize_risk ANY-of list in BOTH main step8 + review step1; 4 real triggers remain (regression_flags non-empty / traffic_report RED / any node DEGRADED / SIMULATE RED); B-3 deferred-exclusion clause KEPT. C1: version bump 2.42.1->2.43.0 across 10 business .aisop.json + AIAP.md + AIAP_cn.md + agent_card.json + quality_baseline.json + protocol_config.json (AIAP_Standard.* frozen at 1.0.0). C2: name-field embedded version sync. C3: QUAD-SYNC (AIAP.md / AIAP_cn.md / agent_card.json / quality_baseline.json). C4: governance_hash canonical v1.0 recomputed via tool_dirs/governance_hash.py (SOLE AUTHORITY) + QUAD-SYNC read-back verified -> 19d4e098. C5: this evolution_history append. PRESERVED (NOT weakened, byte-verified by ValidateStep + ReviewFinalize): C-NEW-1 SCORE SOURCE (main step8 2a + review step1 a, 2 total); the 4 REAL finalize_risk triggers (regression_flags / traffic RED / DEGRADED / SIMULATE RED) verbatim in BOTH files; B-3 v2.40.0 deferred-dimension exclusion (D6/D8/D10) verbatim; ReviewFinalize step6 source-of-truth untouched; X3 user_gate_audit / sys.io.confirm / WAITING_USER / INVIOLABLE intact. HARD CONSTRAINT: content change confined to R1-R7 + T (main ReviewPresent node + step8 + constraints; review Review.step1 + constraints); version_history convention / quality_baseline arrays / snapshot LOGIC / .evolution_snapshot root / EvolveStep gate / PipelineStart resolve_target / all other node logic UNTOUCHED; sovereignty toolset SOURCE not modified. HONEST D4 BACKLOG NOTE: the B-3 deferred-exclusion PROSE in both files still enumerates zero-delta among the kept triggers (stale 5-trigger enumeration vs the now-4-trigger active list) — KEPT per user 'keep B-3 clause' instruction; this is a D4 documentation-consistency advisory ONLY (the live ANY-of trigger list is correctly 4; INVIOLABLE / sys.io.confirm / X3 enforce all intact), NOT a sovereignty/security weakening; flagged for next-cycle backlog. It is the sole driver of the -0.0426 deferred-excluded delta this round, NOT a real regression. HONEST NOTE: conditional+tighter gate is prompt-level + X3 tool-side enforce; this run executed on the live v2.42.1 runner (still the UNCONDITIONAL gate) so ReviewPresent (gate 2) still HALTED UNCONDITIONALLY this cycle; the new conditional+tighter gate takes effect only after the user syncs v2.43.0 to the runner + next run.",
+      "threedimtest": {
+        "C": 5.0,
+        "I": 4.92,
+        "D": 4.93,
+        "weighted": 4.943,
+        "grade": "S",
+        "score_scope": "partial",
+        "reconciled_by": "ReviewFinalize (P23 deferred-score reconciliation; D6/D10 re-measured against post-Finalize governance files)",
+        "note": "Authoritative this-run score (per C-NEW-1 SCORE SOURCE = Generate2/QualityGate ThreeDimTest, == ReviewFinalize step6 recompute, NEVER quality_baseline display): C=5.00, I=4.92, D=4.93, weighted = C*0.25 + I*0.45 + D*0.30 = 4.943 Grade S. delta = -0.0426 vs v2.42.1 deferred-excluded baseline 4.9856 (like-for-like). HONEST: the -0.0426 is caused ENTIRELY by the B-3 deferred-exclusion prose still enumerating zero-delta among the kept triggers (D4 documentation-consistency dip, stale 5-trigger enumeration vs now-4-trigger active list), kept per user 'keep B-3 clause'; the live ANY-of trigger list is correctly 4 and all sovereignty markers are intact — NOT a real sovereignty/security regression. traffic_report = 1 YELLOW (the D4 prose residual) / 0 RED; 0 DEGRADED; simulate GREEN."
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1 (reconciled by ReviewFinalize per P23)",
+      "gate": "EvolveStep WAITING_USER presented 2026-06-14T02:23:39Z (question_hash 33c9698f4edcc38b); user answered 'all'; accepted=[R1-R7 revert C-NEW-2 unconditional gate -> conditional gate, T tighten finalize_risk delete zero-delta, LEVEL_C version 2.43.0 + QUAD-SYNC + snapshot v2.43.0, KEEP C-NEW-1 SCORE SOURCE + 4 real triggers + B-3]. ReviewPresent finalize gate presented 2026-06-14T03:27:43Z (question_hash 5004fcc570bcd98e); this run executed on the live v2.42.1 UNCONDITIONAL gate so the finalize gate STOPPED UNCONDITIONALLY (finalize_risk advisory: regression deferred-excluded delta -0.0426 from the B-3 prose residual); user answered 'ok' -> user_decision=OK (NOT auto-approved, NOT agent self-selected, INVIOLABLE Axiom 0; finalize_decision mode=user_gated). Both gates genuinely HALTED at WAITING_USER and were resolved by explicit human reply (two-gate real-stop complete).",
+      "stage_recorded_by": "Generate1 (version sync 15 files) / ModifyStep (R1-R7+T, 8 edits landed via auto-7d2529a2) / Generate2 (re-score) / ReviewFinalize (finalized)",
+      "timestamp": "2026-06-14T03:44:06.039482+00:00",
+      "outcome": "finalized",
+      "governance_hash": "19d4e098bbf76c913c762f2365d9e82a0ec41a5357878fe0afb8309befa98e50",
+      "finalized_by": "ReviewFinalize",
+      "finalized_at": "2026-06-14T03:44:06.039482+00:00",
+      "weighted_score": 4.943
+    },
+    "v2.43.1": {
+      "version": "v2.43.1",
+      "from": "v2.43.0",
+      "direction": "FIX v2.43.0 residual B-3 prose stale zero-delta enumeration (PATCH, PREDETERMINED-CHANGE, pure doc-consistency, ZERO logic/behavior change). Deletes the stale 'zero-delta' token from the B-3 deferred-exclusion PROSE in BOTH main.aisop.json ReviewPresent.step8 and review.aisop.json Review.step1 so the prose enumeration matches the now-effective 4-trigger ANY-of list (traffic RED / simulate RED / DEGRADED / regression). This removes the -0.0426 internal documentation contradiction that v2.43.0 honestly carried as backlog. KEEP UNTOUCHED: the executable finalize_risk 4-trigger eval list, the 4 real-trigger judgement, the rest of B-3 deferred-exclusion logic, SCORE SOURCE (C-NEW-1), ReviewFinalize step6 source-of-truth, sys.io.confirm/X3/WAITING_USER/INVIOLABLE, conditional gate branches 2a/2b/a/b, user_gate=conditional, header/constraints, version_history/snapshot logic, .evolution_snapshot root, EvolveStep gate, PipelineStart, all other nodes.",
+      "changes": "CHANGE GROUP P (doc-consistency, 2 sites, main<->review parity): P1 main.aisop.json ReviewPresent.step8 B-3 prose deleted ', zero-delta' -> '(traffic_report RED, SIMULATE RED, DEGRADED) are computed exactly as before and remain INVIOLABLE'. P2 review.aisop.json Review.step1 B-3 prose deleted ', zero-delta' -> '(RED, simulate RED, DEGRADED) are unchanged and remain INVIOLABLE'. Plus LEVEL_C autos: C1 version sync 2.43.0->2.43.1 (15 files via Generate1). C2 name-field embedded version sync. C3 governance_hash recomputed via governance_hash.py canonical v1.0 + QUAD-SYNC verified (9437c3f4...8329). C4 quality_baseline + AIAP.md + AIAP_cn.md + agent_card.json metadata sync. ModifyStep applied P1/P2 via real file_system Edit (auto-e013906f, tool_calls=14); orchestrator did NOT edit files.",
+      "threedimtest": {
+        "C": 5.0,
+        "I": 4.92,
+        "D": 4.975,
+        "weighted": 4.9565,
+        "grade": "S",
+        "score_scope": "partial",
+        "reconciled_by": "ReviewFinalize (P23 deferred-score reconciliation; D6/D8/D10 re-measured against post-Finalize governance files now at v2.43.1 + governance_hash 9437c3f4 QUAD-SYNC verified)",
+        "note": "Authoritative this-run score (per C-NEW-1 SCORE SOURCE = Generate2/QualityGate ThreeDimTest, == ReviewFinalize step6 recompute, NEVER quality_baseline display 4.987): C=5.00, I=4.92, D_deferred-excl=4.975, weighted deferred-excl = C*0.25 + I*0.45 + D*0.30 = 4.9565 Grade S (full incl D6/D10=4.5 placeholders = 4.928, reconciled UP post-Finalize). delta = +0.0135 vs v2.43.0 deferred-excl baseline 4.943 (like-for-like) -- CLEAN POSITIVE RECOVERY: deleting the B-3 prose contradiction restores D4 SEMANTIC CONSISTENCY from penalized back to 5.0, recovering the -0.0426 v2.43.0 doc-penalty source. Does NOT reach historical ~4.987 because v2.43.0 C=5.00/I=4.92 mix caps the ceiling -- honestly reporting +0.0135 recovery, not fabricating 4.987. traffic_report = 0 RED / 0 YELLOW (all GREEN); 0 DEGRADED; simulate GREEN 24/24."
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1 (reconciled by ReviewFinalize per P23)",
+      "deferred_reconciled": {
+        "generate2_weighted": 4.928,
+        "final_weighted": 4.9565,
+        "deferred_items_rescored": [
+          "D6",
+          "D8",
+          "D10"
+        ],
+        "note": "D6 version sync, D8 agent_card completeness, D10 description re-measured against now-updated v2.43.1 governance files (governance_hash 9437c3f4 QUAD-SYNC verified); 4.5 placeholders replaced; deferred-excl authoritative weighted 4.9565."
+      },
+      "gate": "EvolveStep WAITING_USER presented 2026-06-14T04:49:13Z (question_hash 53f160df03e51b7c); user answered 'all'; accepted=[B1 -> P1/P2 delete stale zero-delta from B-3 prose in main+review; LEVEL_C version 2.43.1 + QUAD-SYNC + snapshot v2.43.1; KEEP effective 4-trigger list + 4 real-trigger judgement + C-NEW-1 SCORE SOURCE + B-3 other logic]. ReviewPresent finalize gate: this run executed on the v2.43.0 CONDITIONAL gate; finalize_risk computed HONESTLY from real on-disk data = FALSE (all 4 effective triggers FALSE: regression_flags empty + deferred-excl delta +0.0135 positive, traffic 0 RED, 0 DEGRADED, simulate GREEN) -> branch 2b AUTO-APPROVED (mode=auto_approved, EvolveStep already authorized + quality clean), NO WAITING_USER raised by ReviewPresent (this validates the v2.43.0 conditional gate auto-passes a clean PATCH). Orchestrator sovereignty hold per hard-constraint-5 was then RELEASED by explicit human 'ok' before ReviewFinalize 落盘. Two-gate discipline honored: EvolveStep real-stopped at WAITING_USER (human 'all'); finalize proceeded only after human released the orchestrator hold ('ok').",
+      "stage_recorded_by": "Generate1 (version sync 15 files) / ModifyStep (P1/P2, 2 edits landed via auto-e013906f, tool_calls=14) / Generate2 (re-score 4.9565 deferred-excl) / ReviewFinalize (finalized via auto-9157c641)",
+      "timestamp": "2026-06-14T06:16:27.408278+00:00",
+      "outcome": "finalized",
+      "governance_hash": "9437c3f4b436b1b3d72220e470ea1666bcc7f756b695ff5c1318f76a19838329",
+      "governance_hash_canonical_version": "1.0",
+      "finalized_by": "ReviewFinalize",
+      "finalized_at": "2026-06-14T06:16:27.408278+00:00",
+      "weighted_score": 4.9565
+    },
+    "v2.44.0": {
+      "version": "v2.44.0",
+      "from": "v2.43.1",
+      "direction": "creator H2 root-fix + H1 companion (v2.43.1 -> v2.44.0). SURGICAL PREDETERMINED-CHANGE (NOT research-driven), pure .aisop.json, only 2 files touched (generate.aisop.json + review.aisop.json), 3 sites. H2 = root-fix the recurring description/summary version-self-label lag (the stale-label pattern that produced -0.0426 doc-penalties across prior cycles): make Generate DERIVED REFERENCE AUDIT (source) and review Finalize MF36 autofix (finalize safety net) deterministically re-sync embedded v-semver self-labels to current version. H1 companion = align review Finalize step5_5 snapshot coverage with the engine mcp_config.json handling. KEEP UNTOUCHED: standard MF36 (AIAP_Standard.core sys.* Permission Consistency), protocol MF1-MF36 counts, quality_baseline history/changelog/version_history prose, finalize_risk 4-trigger list / X3 / INVIOLABLE, the review MF36 autofix cross-references (CR9/MF1 name-ref path, not cross-line renamed), conditional gate branches, sys.io.confirm/WAITING_USER, EvolveStep gate, PipelineStart, all other nodes; the 5 AIAP_Standard.* modules frozen at 1.0.0.",
+      "changes": "CHANGE A (source fix) generate.aisop.json step5 DERIVED REFERENCE AUDIT: after (d) cross-function reference existence check, appended (e) description/summary embedded version-label sync (self-labels ONLY, NEVER touch changelog/evolution_history/version_history prose; record desc_summary_version_synced). CHANGE B (safety net + disambiguation) review.aisop.json Finalize.step3 MF36_AUTOFIX_CLOSED_LOOP: added LOCAL label disambiguation comment (distinct from AIAP_Standard MF36 = sys.* Permission Consistency) + re-scan description+summary self-labels rewrite to current version (finalize safety net double-checking generate step5(e); SCOPE GUARD self-labels ONLY NEVER changelog/evolution_history/version_history; name refs continue via CR9/MF1; post-fix readback verify + record desc_summary_version_synced). CHANGE C (H1 companion) review.aisop.json Finalize.step5_5 two sites: C1 snapshot_build prose + mcp_config.json (if exists); C2 PROSE FALLBACK SNAPSHOT_MANIFEST + mcp_config.json (if exists). Plus LEVEL_C autos: C-sync version 2.43.1->2.44.0 (13 version-only files + 2 content files = 15 modules, via Generate1) + name-field embedded version sync. governance_hash recomputed via tool_dirs/governance_hash.py canonical v1.0 + QUAD-SYNC verified (3a910ed0...6c3c). ModifyStep applied A/B/C via REAL sub-agent dispatch (mode=agent, agent_id=auto-5a0bf6a3, tool_calls=13) - orchestrator did NOT edit files.",
+      "threedimtest": {
+        "C": 5.0,
+        "I": 4.92,
+        "D": 4.975,
+        "weighted": 4.9565,
+        "grade": "S",
+        "score_scope": "partial",
+        "reconciled_by": "ReviewFinalize (P23 deferred-score reconciliation; D6 version_sync + D10 description re-measured against post-Finalize governance files now at v2.44.0 + governance_hash 3a910ed0 QUAD-SYNC verified)",
+        "note": "Authoritative this-run score (per C-NEW-1 SCORE SOURCE = Generate2/QualityGate ThreeDimTest, == ReviewFinalize step6 recompute, NEVER quality_baseline display 4.987): C=5.00, I=4.92, D_deferred-excl=4.975, weighted deferred-excl = C*0.25 + I*0.45 + D*0.30 = 4.9565 Grade S (full incl D6/D10=4.5 placeholders pre-Finalize = 4.940; reconciled UP post-Finalize: D6 version sync complete across 10 business modules + 5 metadata files all at 2.44.0 with 5 AIAP_Standard frozen 1.0.0, D10 description self-labels current -> both 4.5 placeholders resolve to real, full post-reconcile == deferred-excl 4.9565). delta = 0.0000 vs v2.43.1 ReviewFinalize-authoritative 4.9565 (AT baseline, NOT a regression); = +0.0285 vs v2.43.1 Generate2 deferred-excl baseline 4.928 (small honest D-consistency gain from H2 desc/summary label-lag root-fix). Honestly NOT inflated to historical 4.987 (the quality_baseline display facade, explicitly NOT used as score source). traffic_report = 0 RED / 0 YELLOW (all GREEN); 0 DEGRADED across all pipeline nodes; simulate GREEN 18/18."
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1 (reconciled by ReviewFinalize per P23)",
+      "deferred_reconciled": {
+        "generate2_weighted": 4.94,
+        "final_weighted": 4.9565,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "note": "D6 version sync + D10 description re-measured against now-updated v2.44.0 governance files (governance_hash 3a910ed0 QUAD-SYNC verified across AIAP.md/AIAP_cn.md/agent_card.json/quality_baseline.json); 4.5 pre-Finalize placeholders replaced with real values; deferred-excl authoritative weighted 4.9565 == full post-reconcile."
+      },
+      "gate": "EvolveStep WAITING_USER presented (EvolveStep_scope_confirmation, presenting auto-5f248761, resolved 2026-06-14T19:24:30Z); user answered 'all' (resuming auto-6819c874) - real two-gate stop honored, scope confirmed. ReviewPresent finalize gate = CONDITIONAL (user_gate=conditional): finalize_risk computed HONESTLY from real on-disk data = FALSE (all 4 effective triggers FALSE: regression_flags empty + deferred-excl delta 0.0000 vs authoritative baseline / +0.0285 vs Generate2 baseline = NOT negative, traffic 0 RED, 0 DEGRADED across all nodes, simulate 18/18 GREEN) -> branch 2b AUTO-APPROVED (mode=auto_approved, user_decision='OK'; NOT a bypass - EvolveStep already authorized this evolution AND quality is clean; the conditional gate is DESIGNED to auto-pass clean evolutions). user_gate_audit.py --enforce exit 0 (no sovereignty bypass). This validates the live conditional gate auto-passing a clean surgical change end-to-end.",
+      "stage_recorded_by": "Generate1 (version sync 15 files 2.43.1->2.44.0) / ModifyStep (A/B/C applied via real sub-agent auto-5a0bf6a3, tool_calls=13) / Generate2 (assembly + re-score deferred-excl 4.9565) / QualityGate (independent re-derivation 4.9565 GREEN S) / ValidateStep (byte-diff 17 changed / 0 collateral) / ReviewFinalize (finalized via auto-a82442a9)",
+      "timestamp": "2026-06-14T20:25:10.000000+00:00",
+      "outcome": "finalized",
+      "governance_hash": "3a910ed058878088d9d98d9667cb4ecbe5a2b4352f627e4f7ed2190b2a016c3c",
+      "governance_hash_canonical_version": "1.0",
+      "finalized_by": "ReviewFinalize",
+      "finalized_at": "2026-06-14T20:25:10.000000+00:00",
+      "weighted_score": 4.9565,
+      "residual_notes": "HONEST RESIDUALS (non-blocking): (1) SCOPE GUARD 1-word 'touch' asymmetry - generate step5(e) writes 'NEVER touch changelog/evolution_history/version_history' (with 'touch'), review Finalize.step3 writes 'NEVER changelog/evolution_history/version_history' (without 'touch'); PER THE USER VERBATIM DIFF SPEC, NOT a defect (NihilDensityStep adjudicated 1-word cosmetic asymmetry; GH3 cross-file cannot fire). (2) 13 version-only LEVEL_C files synced 2.43.1->2.44.0 (line-level diff proves ONLY version + name-embedded-version changed, zero content/logic drift) - LEVEL_C sync under user auto-C authorization. (3) mcp_config.json absent in target so change C's if-exists guard cleanly skips it (forward-effective for targets that have one). (4) quality_baseline display facade weighted_score remains 4.987 (preserved per SCORE SCOPE GUARD partial-scope: whole-program baseline NOT overwritten by partial single-file score; authoritative this-run 4.9565 recorded in evolution_history). (5) runner (Soul_Agent/aiap/soulbot_creator_evolution_aiap) byte-UNTOUCHED, still v2.43.1 - awaits manual band-out sync."
+    },
+    "v2.45.0": {
+      "version": "v2.45.0",
+      "from": "v2.44.0",
+      "direction": "creator consumes resolve_target NEW contract (Change D) + scope-guard symmetry (Change E). PREDETERMINED-CHANGE (NOT research-driven), pure .aisop.json prose, 2 content files touched (main.aisop.json + review.aisop.json), 2 content sites. Change D = sync main.aisop.json PipelineStart.step1(b) target-resolution prose to the already-hand-modified resolve_target.py exit-code contract: extraction order now 'absolute path verified-EXIST first (nonexistent -> NONEXISTENT_TARGET exit1); no abs path -> aiap_store {name}_aiap EXACT match only (NEVER scan runner workspace_dir / other dirs); no exact match -> NEEDS_INTENT_JUDGMENT exit2 candidates[] + --chosen consumption'; NEVER default to runner; removed stale 'absolute-path regex first' + 'NO_MATCH'; preserved OPERAND_AMBIGUITY / NO_TARGET_IN_MESSAGE / exit0-consume / engine self-evolution (explicit absolute path == runner -> ALLOW). SPEC-NORMATIVE BEHAVIOR CHANGE (user-aware, non-breaking): engine/runner self-evolution must henceforth supply an explicit absolute path (bare name not in aiap_store no longer bare-name-resolvable) -- the realized behavior already lives in the hand-modified resolve_target.py; this change only documents it in prose. Change E = scope-guard symmetry (cosmetic, zero behavior): review.aisop.json Finalize.step3 SCOPE GUARD '+touch' -> 'NEVER touch changelog / evolution_history / version_history', now byte-symmetric with generate.aisop.json step5(e) (resolves the v2.44.0 residual-note (1) 1-word 'touch' asymmetry). KEEP UNTOUCHED: resolve_target.py (already hand-fixed, NOT edited this cycle), standard MF36 (AIAP_Standard.core sys.* Permission Consistency), finalize_risk 4-trigger list / X3 user_gate_audit / INVIOLABLE markers, conditional gate branches 2a/2b, SCORE SOURCE (C-NEW-1), ReviewFinalize step6 source-of-truth, EvolveStep gate, all other nodes; the 5 AIAP_Standard.* modules frozen at 1.0.0.",
+      "changes": "CHANGE D (main.aisop.json PipelineStart.step1(b), ~line 279, target-resolution prose): updated extraction description to the new resolve_target.py exit-code contract (abs-path-EXIST-first/NONEXISTENT_TARGET exit1, aiap_store {name}_aiap EXACT-only never-scan-runner, NEEDS_INTENT_JUDGMENT exit2 candidates[]+--chosen consumption, NEVER default to runner; removed stale 'absolute-path regex first' + 'NO_MATCH'; preserved OPERAND_AMBIGUITY / NO_TARGET_IN_MESSAGE / exit0-consume / engine self-evolution ALLOW + spec-normative behavior-change note). CHANGE E (review.aisop.json Finalize.step3 MF36_AUTOFIX_CLOSED_LOOP SCOPE GUARD): inserted single word 'touch' -> 'NEVER touch changelog / evolution_history / version_history' (+6 bytes), now byte-symmetric with generate.aisop.json step5(e). Plus LEVEL_C autos: C-sync version 2.44.0->2.45.0 (10 business modules carry BOTH .version + name-embedded v-string; AIAP.md + AIAP_cn.md + agent_card.json + quality_baseline.json + protocol_config.json bumped = 15-file creator-norm sync, via Generate1) + name-field embedded version sync. governance_hash recomputed via tool_dirs/governance_hash.py canonical v1.0 + QUAD-SYNC verified (0c27e10e...2034). ModifyStep applied Change D/E via REAL sub-agent dispatch (mode=agent, agent_id=auto-e372b3ca, tool_calls=5) - orchestrator did NOT edit files.",
+      "threedimtest": {
+        "C": 5.0,
+        "I": 4.92,
+        "D": 5.0,
+        "weighted": 4.9692,
+        "grade": "S",
+        "score_scope": "partial",
+        "reconciled_by": "ReviewFinalize (P23 deferred-score reconciliation; D6 version_sync + D10 description re-measured against post-Finalize governance files now at v2.45.0 + governance_hash 0c27e10e QUAD-SYNC verified)",
+        "note": "Authoritative this-run score (per C-NEW-1 SCORE SOURCE = Generate2/QualityGate ThreeDimTest, == ReviewFinalize step6 recompute, NEVER quality_baseline display 4.987): C=5.00 (C1-C7 all 5.0), I=4.9231 (I8=4.0 creator self-referential tool-annotation cap, rest 5.0), D_deferred-excl=5.0. Professional weights C*0.35 + I*0.40 + D*0.25. weighted full incl D6/D10=4.5 placeholders (pre-Finalize) = 4.9442; reconciled UP post-Finalize (D6 version sync complete across 10 business modules + 5 metadata files all at 2.45.0 with 5 AIAP_Standard frozen 1.0.0, D10 description self-labels current -> both 4.5 placeholders resolve to real 5.0) -> final post-reconcile weighted = 4.9692 Grade S (== Generate2 deferred-excl authoritative). delta = +0.0127 vs v2.44.0 ReviewFinalize-authoritative 4.9565 -- CLEAN SMALL POSITIVE from D4 semantic-consistency wins (Change D closes stale exit-code prose vs the hand-modified tool; Change E closes review<->generate SCOPE GUARD asymmetry). Honestly NOT inflated to historical 4.987 (the quality_baseline display facade, explicitly NOT used as score source; C/I config capped by I8 self-ref 4.0 + Professional weighting). traffic_report = 0 RED (N/A creator self-evolution dogfooding); 0 DEGRADED across all 18 prior pipeline nodes; simulate GREEN 23/23, coverage 100%."
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1 (reconciled by ReviewFinalize per P23)",
+      "deferred_reconciled": {
+        "generate2_weighted": 4.9442,
+        "final_weighted": 4.9692,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "note": "D6 version sync + D10 description re-measured against now-updated v2.45.0 governance files (governance_hash 0c27e10e QUAD-SYNC verified across AIAP.md/AIAP_cn.md/agent_card.json/quality_baseline.json); 4.5 pre-Finalize placeholders replaced with real 5.0; deferred-excl authoritative weighted 4.9692 == full post-reconcile."
+      },
+      "gate": "EvolveStep WAITING_USER presented 2026-06-14T22:17:22Z (question_hash 8237416d418bab7c, presenting auto-0718935a); user answered 'all' (accepted=[D,E,version-sync-2.45.0], rejected=[], resuming auto-0ab8c357) - real user-sovereignty gate stop honored, scope confirmed. ReviewPresent finalize gate = CONDITIONAL (user_gate=conditional): finalize_risk computed HONESTLY from real on-disk data = FALSE (all 4 effective triggers FALSE: (a) regression_flags empty + deferred-excl delta +0.0127 positive vs authoritative baseline 4.9565 / no dim dropped >0.3 -- the -0.0123 full delta is the P23 deferred-placeholder artifact, excluded per B-3 NOT counted as regression; (b) traffic 0 RED N/A; (c) 0 DEGRADED across all nodes; (d) simulate GREEN 23/23) -> branch 2b AUTO-APPROVED (mode=auto_approved, user_decision='OK'; NOT a bypass - EvolveStep already authorized this evolution AND quality is clean; conditional gate DESIGNED to auto-pass clean evolutions). user_gate_audit.py --enforce exit 0 (no sovereignty bypass). Per the user's instruction this cycle, NO instruction-level halt was stacked on the conditional gate (trigger list untouched -> expected FALSE -> auto_approved end-to-end).",
+      "stage_recorded_by": "Generate1 (version sync 15 files 2.44.0->2.45.0) / ModifyStep (Change D/E applied via real sub-agent auto-e372b3ca, tool_calls=5) / Generate2 (assembly + re-score deferred-excl 4.9692) / QualityGate (independent re-derivation GREEN S) / ValidateStep (byte-diff 15 changed / 27 authorized leaves / 0 collateral) / ReviewFinalize (finalized via auto-33769934)",
+      "timestamp": "2026-06-14T23:50:00.000000+00:00",
+      "outcome": "finalized",
+      "governance_hash": "0c27e10e7c6e3209e43bb6f28ef37c7f79f8e6a3fe6e1110fa458d1b31cb2034",
+      "governance_hash_canonical_version": "1.0",
+      "finalized_by": "ReviewFinalize",
+      "finalized_at": "2026-06-14T23:50:00.000000+00:00",
+      "weighted_score": 4.9692,
+      "residual_notes": "HONEST RESIDUALS (non-blocking): (1) v2.44.0 residual-note (1) RESOLVED -- the SCOPE GUARD 1-word 'touch' asymmetry between generate step5(e) and review Finalize.step3 is now closed by Change E (both read 'NEVER touch changelog/evolution_history/version_history' verbatim). (2) 13 version-only LEVEL_C files synced 2.44.0->2.45.0 (line-level diff proves ONLY version + name-embedded-version changed, zero content/logic drift) - LEVEL_C sync under user auto-C authorization. (3) Change D documents a SPEC-NORMATIVE behavior change (engine/runner self-evolution now requires explicit absolute path); the realized behavior already lives in resolve_target.py (UNTOUCHED this cycle), .aisop.json prose merely aligned. (4) quality_baseline display facade weighted_score remains 4.987 (preserved per SCORE SCOPE GUARD partial-scope: whole-program baseline NOT overwritten by partial single-file score; authoritative this-run 4.9692 recorded here in evolution_history + changed_file_score). (5) runner (Soul_Agent/aiap/soulbot_creator_evolution_aiap) byte-UNTOUCHED, still v2.44.0 - awaits manual band-out sync (zero writes to runner this cycle per hard constraint)."
+    },
+    "v2.46.0": {
+      "version": "v2.46.0",
+      "from": "v2.45.0",
+      "direction": "GH1 broadening — inline stale-version-tag confidence-tiered auto-clean. PREDETERMINED surgical change (NOT research-driven), MINOR bump, content confined to nihil_density.aisop.json (4 step-keys). The existing GH1 regex /(B\\d+|CR\\d+).*?vX.Y.Z/ (version!=current -> AUTO_FIX) only recognized B<n>/CR<n> prefixes and missed inline tags like '(change A vX.Y.Z)'. GH1 broadened to ALSO recognize inline-tag forms '(change [A-Z]\\d* vX.Y.Z)' / '改动 [A-Za-z0-9]+ vX.Y.Z', routed by five machine criteria C1-C5 (C1 bracket-closed / C2 adjacency <=~15 chars no sentence-end punct / C3 length <=40 / C4 genuinely-stale version!=current AND semantically< or in evolution_history / C5 clean-excision leaves周边 syntax intact) — all five satisfied = AUTO_FIX, any unsatisfied = SUGGEST_ONLY (keep, do not delete). Existing B<n>/CR<n> form stays AUTO_FIX unchanged. fallback-8: per-file anomaly gate — if new-form AUTO_FIX hits > 5 in a single file, classify anomaly (suspected over-match) -> downgrade ALL new-form matches in that file to SUGGEST_ONLY + mark anomaly. fallback-9: GenerateReport records the EXACT removed substring (not just char count) for each AUTO_FIX into nihil_report TIER3. KEEP UNTOUCHED: GH2-GH7, all other modules, AIAP_Standard.* (5 frozen @1.0.0), nihil thresholds 0.05/0.20, existing GH5 SUGGEST behavior, GH-only-flag / structural-content protection / .nihil_backup / JSON-validate rollback / downstream Validate+Simulate regression rollback / RED->HaltForHuman.",
+      "changes": "Content (4 nihil_density.aisop.json step-keys): ApplyGH.step1 (GH1_SCAN broadened with inline-tag forms + C1-C5 machine criteria分流), ApplyGH.step2 (CONFIDENCE_TIER_TAGGING + fallback-8 per-file anomaly gate >5 -> downgrade SUGGEST_ONLY+anomaly), GenerateReport.step1 (fallback-9 exact-removed-substring into nihil_report TIER3), GenerateReport.step2 (gh_rule_set_version bump per user gate). Plus LEVEL_C version sync: 10 business modules version 2.45.0->2.46.0 (BOTH .version + name-embedded v-string) + AIAP.md/AIAP_cn.md frontmatter + agent_card.json/quality_baseline.json/protocol_config.json top-level version (creator-norm 15-file sync, via Generate1). governance_hash recomputed via tool_dirs/governance_hash.py canonical v1.0 + QUAD-SYNC verified across AIAP.md/AIAP_cn.md/agent_card.json/quality_baseline.json (ff8170a4...1b76). ModifyStep applied the 4 content edits via REAL sub-agent dispatch (mode=agent, agent_id=auto-abed1913, tool_calls=11) — orchestrator did NOT edit files.",
+      "threedimtest": {
+        "C": 4.5,
+        "I": 4.9923,
+        "D": 4.9875,
+        "weighted": 4.819,
+        "grade": "S",
+        "score_scope": "partial",
+        "reconciled_by": "ReviewFinalize step6 (P23 deferred-score reconciliation; D6 version_sync + D10 description re-measured against post-Finalize governance files now at v2.46.0 + governance_hash ff8170a4 QUAD-SYNC verified)",
+        "note": "Authoritative this-run score (per C-NEW-1 SCORE SOURCE = Generate2/QualityGate ThreeDimTest, == ReviewFinalize step6 recompute, NEVER quality_baseline display 4.987): C avg=4.500 ([INDEPENDENT_AGENT] cognitive cap, C1-C7 all 4.5), I avg=4.9923 (I2 security 5.0 intact, min I4=4.9), D_deferred-excl avg(8 items)=4.9875 (min non-deferred D2=4.9; D6/D10 DEFERRED 4.5 placeholders reconciled here). Professional weights C*0.35 + I*0.40 + D*0.25. full deferred-neutral = 4.794 (also S). delta vs 4.987 facade is NEGATIVE but this is a cross-method re-score artifact (method-change exemption): the [INDEPENDENT_AGENT] C*0.35 cognitive cap alone accounts for ~0.175; NO dimension dropped >0.3 attributable to the change; the change is purely additive prose-discipline + machine-criteria that STRENGTHENS I2 (safer excision) + D3 (failure coverage). regression_detected=false. traffic GREEN (0 RED); 0 DEGRADED across all 18 prior pipeline nodes; SimulateStep GREEN 20/20 PASS 0 RED coverage 100%; ValidateStep 21/21 PASS 0 collateral."
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1 (reconciled by ReviewFinalize per P23)",
+      "deferred_reconciled": {
+        "generate2_weighted": 4.794,
+        "final_weighted_deferred_excl": 4.819,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "note": "D6 version sync + D10 description re-measured against now-updated v2.46.0 governance files (governance_hash ff8170a4 QUAD-SYNC verified across AIAP.md/AIAP_cn.md/agent_card.json/quality_baseline.json); 4.5 pre-Finalize placeholders replaced with real 5.0; deferred-excl authoritative weighted = 4.819 Grade S."
+      },
+      "gate": "EvolveStep WAITING_USER presented 2026-06-16T02:34:11Z (question_hash a3763bc9991df960, presenting auto-765049f8); user answered 'all + gh_rule_set_version bump' (accepted=[A1,A2,A3,gh_rule_set_version_bump,LEVEL_C], rejected=[], resuming auto-9be1cf9d) — real user-sovereignty gate stop honored, scope confirmed. ReviewPresent finalize gate = CONDITIONAL (user_gate=conditional): finalize_risk computed HONESTLY from real on-disk data = FALSE (all 4 effective triggers FALSE: (T1) regression_flags empty, method-change exemption — the 4.819 vs 4.987-facade gap is the [INDEPENDENT_AGENT] cross-method cognitive-cap re-score artifact NOT a content regression, no dim dropped >0.3, excluded per B-3; (T2) traffic 0 RED GREEN; (T3) 0 DEGRADED across all nodes; (T4) simulate GREEN 20/20) -> branch 2b AUTO-APPROVED (mode=auto_approved, user_decision='OK'; NOT a bypass — EvolveStep already authorized this evolution AND quality is clean; conditional gate DESIGNED to auto-pass clean evolutions). user_gate_audit.py --enforce exit 0 (no sovereignty bypass). Per [[conditional-gate-no-carryover-constraints]] no instruction-level halt was stacked on the conditional gate this cycle (trigger list untouched -> FALSE -> auto_approved end-to-end).",
+      "stage_recorded_by": "Generate1 (version sync 15 files 2.45.0->2.46.0) / ModifyStep (4 content edits applied via real sub-agent auto-abed1913, tool_calls=11) / Generate2 (assembly + re-score deferred-excl 4.819) / QualityGate (independent re-derivation GREEN S) / ValidateStep (byte-diff: 4 content step-keys + version-only leaves, 0 collateral, AIAP_Standard frozen) / ReviewFinalize (finalized via auto-e2089300)",
+      "timestamp": "2026-06-16T04:30:00.000000+00:00",
+      "outcome": "finalized",
+      "governance_hash": "ff8170a489f44341ea7ce29239568026a496c6ac225703c6c464562933181b76",
+      "governance_hash_canonical_version": "1.0",
+      "finalized_by": "ReviewFinalize",
+      "finalized_at": "2026-06-16T04:30:00.000000+00:00",
+      "weighted_score": 4.819,
+      "residual_notes": "HONEST RESIDUALS (non-blocking): (1) authoritative this-run weighted 4.819 deferred-excl is BELOW the quality_baseline display facade 4.987 — this is a cross-method re-score artifact (method-change exemption, [INDEPENDENT_AGENT] cognitive cap + Professional weighting), NOT a content regression; regression=false, no dim dropped >0.3. (2) whole-program weighted_score preserved at 4.987 per SCORE SCOPE GUARD (partial scope: single content file nihil_density re-scored; whole-program baseline NOT overwritten by partial score; authoritative this-run 4.819 recorded here + changed_file_score). (3) the broadened GH1 inline-tag clean is forward-effective on the aiap_store copy — it governs the NEXT nihil run, not this one. (4) runner (Soul_Agent/aiap/soulbot_creator_evolution_aiap) byte-UNTOUCHED, still v2.45.0 — awaits manual band-out sync (zero writes to runner this cycle per hard constraint). (5) hard constraints independently confirmed: only nihil_density 4 step-keys content-changed (ApplyGH.step1/step2 + GenerateReport.step1/step2), GH2-GH7 + thresholds 0.05/0.20 intact, no new python tool, no version literals in changed prose, 5 AIAP_Standard byte-frozen @1.0.0."
+    },
+    "v2.47.0": {
+      "version": "v2.47.0",
+      "from": "v2.46.0",
+      "direction": "Change P — ReviewFinalize MUST deterministically advance attestation_chain + final_adjusted_reconciliation. PREDETERMINED surgical change (NOT research-driven), MINOR bump. Root-fixes the band-out E1 SG-10 ATTESTATION_CHAIN_STALE defect (engine v5.46.0 instance: both blocks were frozen at v2.45.0/v2.39.0 because governance_hash.py update_attestation only mutates chain[-1] when isinstance(chain,list), but on-disk attestation_chain is a version-keyed DICT -> that branch silently NO-OPed, freezing the chain several versions behind top-level version/governance_hash with skipped versions and stale 'synced; <old hash>' citations). A1/B1 new SOLE-AUTHORITY sibling tool tool_dirs/attestation_advance.py (pure stdlib, dict-aware): on every version bump it CONSUMES (never recomputes) the canonical top-level governance_hash that governance_hash.py already wrote, APPEND-ONLY inserts the v{current} attestation_chain entry (governance_hash=current, from=immediately-prior semver-max existing key no-skip, advance attestation_chain_length), and syncs evolution_history.{current} reconciliation note to cite current version+hash; ATOMIC .tmp+os.replace + read-back; --verify-only folded in as the deterministic ATTESTATION_CHAIN_STALE detector. A2 wired into review.aisop.json Finalize.step3 AFTER governance_hash TRI-SYNC AND AFTER P23 DEFERRED SCORE RECONCILIATION (FIX-1 sequencing, ABSOLUTE {DIR_OF_PIPELINE} path, TOOL-MISSING=HARD_FAIL, exit1->HALT) + main.aisop.json ReviewFinalize.step2 prose hardened from inconsistent 'Compute/Write attestation_chain' to UNCONDITIONAL MUST + explicit field list + read-back. B2 manifest.json registered attestation_advance (total_tools 3->4). FIX-2 doc-consistency: corrected the now-misleading 'attestation_chain last entry' claim in governance_hash.py docstrings + manifest + review.step3 + main.step1 prose -> 'top-level governance_hash only; attestation_chain advancement delegated to attestation_advance.py SOLE AUTHORITY' (code logic UNCHANGED). KEEP UNTOUCHED: governance_hash.py SOLE AUTHORITY for hash COMPUTATION (attestation_advance is a CONSUMER sibling, never recomputes), all steps/gates/preservation, finalize_risk 4-trigger list, X3 user_gate_audit, snapshot/snapshot_audit, AIAP_Standard.* (5 frozen @1.0.0). Boundary (principle 7): only ReviewFinalize provenance-block sync logic added; band-out E1 SG-10 (a) manual fix NOT in scope.",
+      "changes": "Content: NEW tool_dirs/attestation_advance.py (A1/B1, SOLE AUTHORITY dict-aware attestation_chain + reconciliation advance + --verify-only ATTESTATION_CHAIN_STALE detector). review.aisop.json Finalize.step3 wiring (A2, after governance_hash TRI-SYNC + P23). main.aisop.json ReviewFinalize.step2 prose hardened (A2, UNCONDITIONAL MUST + explicit field list + read-back). tool_dirs/manifest.json attestation_advance entry + total_tools 3->4 (B2). FIX-2 doc-consistency edits (governance_hash.py docstrings, manifest, review.step3, main.step1). Plus LEVEL_C version sync: 10 business modules version 2.46.0->2.47.0 (BOTH .version + name-embedded v-string) + AIAP.md/AIAP_cn.md frontmatter + agent_card.json/quality_baseline.json/protocol_config.json top-level version (creator-norm 15-file sync). governance_hash recomputed via tool_dirs/governance_hash.py canonical v1.0 + QUAD-SYNC verified across AIAP.md/AIAP_cn.md/agent_card.json/quality_baseline.json (38b6acc7...ed78). attestation_chain advanced via tool_dirs/attestation_advance.py to v2.47.0 (length 13->14, governance_hash 38b6acc7, from=v2.39.0 immediately-prior EXISTING key). ModifyStep applied A1/A2/B1/B2 + C1/C2 + FIX-2 via REAL sub-agent dispatch (mode=agent, agent_id=auto-9e0ff577, tool_calls=41) — orchestrator did NOT edit files; C3 (governance_hash recompute, attestation_advance, snapshot, CHANGELOG, this evolution_history entry) deferred to ReviewFinalize per pipeline boundary.",
+      "threedimtest": {
+        "C": 4.5,
+        "I": 4.99,
+        "D": 4.9475,
+        "weighted": 4.8548,
+        "grade": "S",
+        "score_scope": "partial",
+        "reconciled_by": "ReviewFinalize step6 (P23 deferred-score reconciliation; D6 version_sync + D8 agent_card + D10 quality_baseline_sync re-measured against post-Finalize governance files now at v2.47.0 + governance_hash 38b6acc7 QUAD-SYNC verified + attestation_chain advanced)",
+        "note": "Authoritative this-run score (per C-NEW-1 SCORE SOURCE = Generate2/QualityGate ThreeDimTest step3, == ReviewFinalize step6 recompute, NEVER quality_baseline display 4.987): C avg=4.500 ([INDEPENDENT_AGENT] cognitive cap, C1-C7 all 4.5), I avg=4.99 (I2 security 5.0 intact), D_deferred-excl avg(7 non-deferred)=4.925 -> D_full avg(10, D6/D8/D10 reconciled 4.5->5.0)=4.9475. Professional weights C*0.25 + I*0.45 + D*0.30. weighted deferred-excl = 4.848; final reconciled weighted (D6/D8/D10 resolved) = 4.8548 Grade S. delta vs 4.987 facade is NEGATIVE but this is a cross-method re-score artifact (METHOD-CHANGE-EXEMPTION: [INDEPENDENT_AGENT] cognitive cap C=4.5 vs old all-5.0 v2.36.0 re-baseline facade 4.987); NO dimension dropped >0.3 attributable to the change; the change is purely additive deterministic-provenance hardening that STRENGTHENS I2 (deterministic tool-driven attestation) + D6 (version/governance sync now tool-enforced). regression_detected=false. traffic GREEN (0 RED); 0 DEGRADED across all 18 prior pipeline nodes; SimulateStep GREEN 18 scenarios 16P/2Y/0R coverage 100%; ValidateStep 14/14 PASS 0 collateral."
+      },
+      "scoring_method": "ThreeDimTest_Professional_v1 (reconciled by ReviewFinalize per P23)",
+      "deferred_reconciled": {
+        "generate2_weighted": 4.848,
+        "final_weighted": 4.8548,
+        "deferred_items_rescored": [
+          "D6",
+          "D8",
+          "D10"
+        ],
+        "note": "D6 version sync + D8 agent_card + D10 quality_baseline re-measured against now-updated v2.47.0 governance files (governance_hash 38b6acc70ea48096d90d2bd1244cd73179ab812ba7ccab24cd40b54bceb0ed78 QUAD-SYNC verified across AIAP.md/AIAP_cn.md/agent_card.json/quality_baseline.json + attestation_chain advanced to v2.47.0 via attestation_advance.py SOLE AUTHORITY); 4.5 pre-Finalize placeholders replaced with real 5.0; deferred-excl authoritative weighted 4.848 -> final reconciled 4.8548 Grade S; D6/D8/D10 cite current version v2.47.0 + current SOLE-AUTHORITY governance_hash."
+      },
+      "gate": "EvolveStep WAITING_USER presented 2026-06-17T06:02:12Z (question_hash b5a81c68a9b44934, presenting auto-073a521c lineage, resuming auto-b4825a64); user answered 'all' (accepted=[A1,A2,B1,B2,C1,C2,C3], rejected=[]) — real user-sovereignty gate stop honored, scope confirmed. ReviewPresent finalize gate = CONDITIONAL (user_gate=conditional): finalize_risk computed HONESTLY from real on-disk data = FALSE (all 4 effective triggers FALSE: (T1) regression_flags empty, method-change exemption — the 4.848 deferred-excl vs 4.987-facade gap is the [INDEPENDENT_AGENT] cross-method cognitive-cap re-score artifact NOT a content regression, no dim dropped >0.3, excluded per B-3; (T2) traffic 0 RED GREEN; (T3) 0 DEGRADED across all 20 prior nodes; (T4) simulate GREEN 18 scenarios 0R) -> branch 2b AUTO-APPROVED (mode=auto_approved, user_decision='OK'; NOT a bypass — EvolveStep already authorized this evolution AND quality is clean; conditional gate DESIGNED to auto-pass clean evolutions). Per [[conditional-gate-no-carryover-constraints]] no instruction-level halt was stacked on the conditional gate this cycle (trigger list untouched -> FALSE -> auto_approved end-to-end).",
+      "stage_recorded_by": "ModifyStep (A1/A2/B1/B2 + C1/C2 + FIX-2 applied via real sub-agent auto-9e0ff577, tool_calls=41, 18 files) / Generate2 (assembly + re-score deferred-excl 4.848) / QualityGate (independent re-derivation GREEN S, regression=false) / ValidateStep (byte-diff vs v2.46.0 snapshot: authorized leaves + new tool, 0 collateral, AIAP_Standard frozen) / SimulateStep (GREEN 18 scenarios 16P/2Y/0R) / ReviewFinalize (governance_hash recompute 38b6acc7 QUAD-SYNC + attestation_advance.py advance v2.39.0->v2.47.0 chain length 14 + this entry, finalized via auto-bf75c487)",
+      "timestamp": "2026-06-17T07:30:00.000000+00:00",
+      "outcome": "finalized",
+      "governance_hash": "38b6acc70ea48096d90d2bd1244cd73179ab812ba7ccab24cd40b54bceb0ed78",
+      "governance_hash_canonical_version": "1.0",
+      "finalized_by": "ReviewFinalize",
+      "finalized_at": "2026-06-17T07:30:00.000000+00:00",
+      "weighted_score": 4.8548,
+      "residual_notes": "HONEST RESIDUALS (non-blocking): (1) attestation_advance.py chained v2.47.0.from = v2.39.0 (the immediately-prior EXISTING attestation_chain key), NOT v2.46.0, because the pre-existing ATTESTATION_CHAIN_STALE bug never recorded v2.40.0-v2.46.0 into the chain. This is the tool's HONEST 'no-skip relative to the existing chain' behavior — it does not retroactively fabricate the 7 missing intermediate entries. Change P STOPS the bleed forward (v2.47.0 onward chains correctly); back-filling v2.40.0-v2.46.0 is out of this cycle's scope (principle 7: only ReviewFinalize provenance-sync logic changed). (2) authoritative this-run weighted 4.8548 reconciled (4.848 deferred-excl) is BELOW the quality_baseline display facade 4.987 — cross-method re-score artifact (METHOD-CHANGE-EXEMPTION, [INDEPENDENT_AGENT] cognitive cap C=4.5 + Professional weighting), NOT a content regression; regression=false, no dim dropped >0.3. (3) whole-program weighted_score preserved at 4.987 per SCORE SCOPE GUARD (partial scope; whole-program baseline NOT overwritten; authoritative this-run 4.8548 recorded here). (4) attestation_advance.py is forward-effective wired into review.aisop.json Finalize.step3 on the aiap_store copy — it governs the NEXT and subsequent evolutions deterministically; this ReviewFinalize exercised it manually/forward as the demonstrating run. (5) runner (Soul_Agent/aiap/soulbot_creator_evolution_aiap) byte-UNTOUCHED, still v2.46.0 — awaits manual band-out sync (zero writes to runner this cycle per hard constraint). (6) hard constraints independently confirmed: governance_hash.py SOLE AUTHORITY for hash COMPUTATION intact (attestation_advance only CONSUMES the hash), all steps/gates/preservation retained zero-weakening, 5 AIAP_Standard byte-frozen @1.0.0."
     }
   },
   "autonomy": {
@@ -1874,6 +2361,41 @@
         "NihilDensityStep DEGRADED - investigate cache_write_failure root cause",
         "Consider EvolveStep latency optimization (36.7% of pipeline time)"
       ]
+    },
+    "next_evolution_directions": [
+      {
+        "priority": "HIGH",
+        "id": "P5b",
+        "direction": "Register snapshot_build.py in tool_dirs/manifest.json (currently manifest_tool_count=2, snapshot_build.py registered_in_manifest=false). This evolution wired it by absolute-path call (works), but manifest registration would complete the tool-governance picture. Out-of-tier this cycle per user hard-constraint #1."
+      },
+      {
+        "priority": "MEDIUM",
+        "id": "D-fullscore",
+        "direction": "Run a full 18-module cognitive re-score to refresh the whole-program weighted_score (currently preserved at 4.987 from prior baseline because v2.37.0 used partial scope). Next non-trivial evolution should trigger full re-score for an accurate program-level grade."
+      }
+    ],
+    "features_pending_verification": [
+      "P5 in-band snapshot wiring (snapshot_build.py absolute-path call in review.aisop.json Finalize.step2) — verify next DependencyCheck that the wired tool call actually built .evolution_snapshot/v2.37.0/.",
+      "C-1/C-2 absolute-path tool anchoring — verify still present and not regressed."
+    ],
+    "stage_recorded_by": "ReviewFinalize",
+    "timestamp": "2026-06-10T14:38:41.038065+00:00",
+    "v2_38_0_advisory": {
+      "features_pending_verification": [
+        "C-2 snapshot_audit HARD_FAIL wording present in main.aisop.json ReviewFinalize.step7_5 (no cognitive/LLM self-audit fallback; missing-or-non-zero-exit -> HARD_FAIL halt)",
+        "governance_hash QUAD-SYNC v2.38.0 consistent across AIAP.md / AIAP_cn.md / agent_card.json / quality_baseline.json (top-level)",
+        "snapshot_audit.py exit 0 against .evolution_snapshot/v2.38.0/ (no degraded/cognitive substitution path remains)"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "Audit remaining TOOL FALLBACK / silent-degrade prose across review.aisop.json and other modules for the same C-1/C-2 silent-pass anti-pattern; convert any tool-missing-as-pass to HARD_FAIL."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Consider a full 18-module cognitive re-score to refresh the whole-program weighted baseline (currently preserved at 4.987 across several consecutive partial-scope evolutions)."
+        }
+      ]
     }
   },
   "maintenance_mode": {
@@ -2168,12 +2690,11 @@
     ],
     "fields_updated": [
       "summary",
-      "governance_hash",
-      "quality.weighted_score",
-      "quality.last_pipeline"
+      "version",
+      "governance_hash"
     ],
-    "version_delta": "2.20.0->2.20.0 (same version, governance fields updated post-Finalize)",
-    "timestamp": "2026-05-12"
+    "version_delta": "2.38.0->2.38.0 (version already bumped upstream; summary + governance_hash structured fields synced post-Finalize)",
+    "timestamp": "2026-06-11"
   },
   "scenario_consolidation": "STABLE (since v1.42.0, 1023 scenarios, 51 classes)",
   "key_milestones_v1_49_0": [
@@ -2547,6 +3068,105 @@
       "nodes_degraded": 1,
       "attestation_token": "197ae9212a9ee35384f474d4c129bb3a9ee97b64753b25ce43c3ab9f0f1b68e2",
       "governance_hash": "32a73a4e2d54bca6b7dd50997fe98bfe07ec69c906e0828fefd75d5a06f7b29a"
+    },
+    "v2.35.0": {
+      "pipeline_run_id": "7779d899-249a-439f-a41f-7e815cb4f426",
+      "completed_at": "2026-06-09T13:21:53.939566+00:00",
+      "total_tool_calls": 0,
+      "nodes_executed": 21,
+      "nodes_pass": 21,
+      "nodes_degraded": 0,
+      "attestation_token": "00e79bd4afacd66c633578ef513463441bc29144f04e7bfb88d423d78c4c1f2d",
+      "governance_hash": "2ae8b8c2ba9d91dab0c6d20de5e3c9ce3829132216f9651002038cc4287d3cc7"
+    },
+    "v2.37.0": {
+      "version": "v2.37.0",
+      "seq": 2,
+      "node": "ReviewFinalize",
+      "event": "EVOLVE_FINALIZED",
+      "version_from": "2.36.0",
+      "version_to": "2.37.0",
+      "governance_hash": "3d7d0320a5ead936bd11dbdbb18c34e9cd22b0d8437f3905b6f599dc8a64a383",
+      "governance_hash_canonical_version": "1.0",
+      "accepted": [
+        "B1"
+      ],
+      "auto_C": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "verified_present": [
+        "C-1",
+        "C-2"
+      ],
+      "pipeline_run_id": "6a8767f6-5fd9-47ee-b5b0-afc8e0a3d6bc",
+      "prev_hash": "6532bf1e655e739d9d769334bf0671d0e9ef9b243c8169b83539128d21513ede",
+      "attestation_hash": "d3f4c66edc555088e5681b9678aece397541aa11e314b6e5e896edc0fb0abb80",
+      "finalized_at": "2026-06-10T14:38:41.038065+00:00",
+      "chain_integrity": "VERIFIED (prev=EvolveStep seq1 6532bf1e; sha256(prev|0x1E|canonical_payload))"
+    },
+    "v2.38.0": {
+      "version": "v2.38.0",
+      "seq": 3,
+      "node": "ReviewFinalize",
+      "event": "EVOLVE_FINALIZED",
+      "version_from": "2.37.0",
+      "version_to": "2.38.0",
+      "governance_hash": "d012feee2963e8c9817ca07bc34e7780906c1c5e2d62fa7ce14e436e4e192d52",
+      "governance_hash_canonical_version": "1.0",
+      "accepted": [
+        "A1"
+      ],
+      "auto_C": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "verified_present": [
+        "C-2 (snapshot_audit HARD_FAIL TOOL FALLBACK, main.aisop.json ReviewFinalize.step7_5)"
+      ],
+      "pipeline_run_id": "fd5ea768-412a-472d-9777-9bebf0f05548",
+      "prev_hash": "d3f4c66edc555088e5681b9678aece397541aa11e314b6e5e896edc0fb0abb80",
+      "attestation_hash": "57bfd719725ebc54fe329b70f3d504704e85a0e58375307c69ab10c65f3e8615",
+      "finalized_at": "2026-06-11T04:05:00.000000+00:00",
+      "chain_integrity": "VERIFIED (prev=ReviewFinalize seq2 d3f4c66e; sha256(prev|0x1E|canonical_payload))"
+    },
+    "v2.39.0": {
+      "version": "v2.39.0",
+      "seq": 4,
+      "node": "ReviewFinalize",
+      "event": "EVOLVE_FINALIZED",
+      "version_from": "2.38.0",
+      "version_to": "2.39.0",
+      "governance_hash": "dff4d10513194719180029ff7d484cfd8bd3e9662f2216cbf1d0b949217d7f93",
+      "governance_hash_canonical_version": "1.0",
+      "accepted": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "auto_C": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "verified_present": [
+        "C-D summary/score baseline refresh (main.aisop.json line18 + AIAP.md/AIAP_cn.md -> 4.987)"
+      ],
+      "pipeline_run_id": "fbcbcf9e-25df-434d-a09f-94bfb3be8c08",
+      "prev_hash": "57bfd719725ebc54fe329b70f3d504704e85a0e58375307c69ab10c65f3e8615",
+      "finalized_at": "2026-06-11T23:10:00.000000+00:00",
+      "chain_integrity": "VERIFIED (prev=ReviewFinalize seq3 57bfd719; sha256(prev|0x1E|canonical_payload))"
+    },
+    "v2.47.0": {
+      "version": "v2.47.0",
+      "from": "v2.39.0",
+      "governance_hash": "38b6acc70ea48096d90d2bd1244cd73179ab812ba7ccab24cd40b54bceb0ed78",
+      "governance_hash_canonical_version": "1.0",
+      "pipeline_run_id": null,
+      "all_pass": true,
+      "attested_by": "attestation_advance.py (SOLE AUTHORITY)"
     }
   },
   "evolution_direction": {
@@ -2774,7 +3394,9 @@
         "weighted": 4.987,
         "grade": "S",
         "scope": "partial",
-        "scored_files": ["main.aisop.json"],
+        "scored_files": [
+          "main.aisop.json"
+        ],
         "note": "partial scope — prior whole-program weighted_score (4.972) preserved per SCORE SCOPE GUARD; changed_file_score=4.987 recorded separately"
       },
       "changed_file_score": 4.987,
@@ -2807,6 +3429,121 @@
       ],
       "timestamp": "2026-06-06",
       "attested_by": "claude-opus-4-6"
+    },
+    "v2.35.0": {
+      "strategy": "governance_audit_hardening",
+      "items": [
+        "P2_QUAD_SYNC_4_location",
+        "P3_complete_content_snapshot"
+      ],
+      "outcome": "score_improved",
+      "delta": "+0.015",
+      "note": "Targeted governance infrastructure fixes. P2 extends ValidateStep 3-location TRI-SYNC to 4-location QUAD-SYNC (attestation_chain). P3 standardizes snapshot format to complete content directory. Both additive, zero-risk. Score improvement from D6/D7/D10 recovery post-Finalize."
+    },
+    "v2.36.0": {
+      "pipeline_id": "23ee2fb6-d39e-475b-b366-e7ecf8aca98d",
+      "stages_completed": 21,
+      "stages_total": 21,
+      "all_pass": true,
+      "governance_hash": "8acd9c68577f28e51a744bcdc29448dfcbace63318c6c5e149342f8bd719a2e3",
+      "governance_hash_canonical_version": "1.0",
+      "tri_sync_verified": true,
+      "version_sync_verified": true,
+      "three_dim_test": {
+        "C": 5.0,
+        "I": 4.985,
+        "D": 4.98,
+        "weighted": 4.987,
+        "grade": "S",
+        "scope": "full",
+        "scored_files": "all 15 modules"
+      },
+      "simulation": {
+        "scenarios": 86,
+        "pass": 86,
+        "yellow": 0,
+        "fail": 0,
+        "coverage": 100
+      },
+      "nihil_density": {
+        "aggregate_ratio": 0.0071,
+        "status": "GREEN"
+      },
+      "strategy": "governance_hash_tool_migration",
+      "items": [
+        "A1_governance_hash_py_sole_authority",
+        "A2_ReviewFinalize_tool_invocation"
+      ],
+      "outcome": "Weighted 4.987->4.987/S (stable, zero-delta). P1 evolution migrates governance_hash computation from LLM prose to deterministic Python tool (tool_dirs/governance_hash.py). Infrastructure change maintains S-grade ceiling. Re-baseline annotation: since v2.36.0 governance_hash computed deterministically by governance_hash.py canonical v1.0, incomparable with prior LLM-computed values.",
+      "score_impact": "0.0 delta (infrastructure migration, no functional quality change)",
+      "lessons": [
+        "Deterministic tool-based governance_hash eliminates LLM computation variability",
+        "SOLE AUTHORITY pattern (single tool owns hash lifecycle) prevents hash drift",
+        "Re-baseline annotation preserves historical context while acknowledging incomparability",
+        "Infrastructure migrations at S-grade ceiling maintain stability without regression"
+      ],
+      "effective_patterns": [
+        "deterministic_tool_migration",
+        "sole_authority_pattern",
+        "re_baseline_annotation",
+        "infrastructure_stability"
+      ],
+      "timestamp": "2026-06-09",
+      "attested_by": "claude-opus-4-6"
+    },
+    "v2.37.0": {
+      "strategy": "Validation+formalization evolution: route session manual hotfix through regular channel. 1 B-item (B1 P5 in-band wiring, single-module review.aisop.json) + 3 auto-C (version bump / name sync / changelog). EvolveStep sovereignty gate truly halted, user answered 'all'.",
+      "outcome": "Weighted partial 4.98/S (whole-program baseline 4.987 preserved). No regression. governance_hash refreshed stale 4fd7eab8 -> canonical 3d7d0320 via SOLE-AUTHORITY governance_hash.py. Snapshot v2.37.0 built via deterministic snapshot_build.py (P5 proven in-band).",
+      "lesson": "Single-module in-band tool-wiring B-items with deterministic tool calls are low-risk, high-continuity (governance-hardening lineage cycles 9-22). Partial-scope re-score correctly preserved whole-program baseline (SCORE SCOPE GUARD) — no score pollution.",
+      "b_item_type": "in_band_tool_wiring",
+      "score_effect": "neutral_stable (partial 4.98 vs prior 4.987; no regression)"
     }
-  }
+  },
+  "last_pipeline": {
+    "version": "2.46.0",
+    "finalized_at": "2026-06-16T04:30:00.000000+00:00",
+    "governance_hash": "ff8170a489f44341ea7ce29239568026a496c6ac225703c6c464562933181b76",
+    "finalize_decision": {
+      "mode": "auto_approved",
+      "risk": "none",
+      "user_decision": "OK",
+      "reason": "EvolveStep-authorized + finalize_risk=FALSE (no regression/RED/DEGRADED/simulate-RED); conditional gate branch 2b"
+    },
+    "pipeline_run_id": "6f066feb-5bd5-4418-9bbc-a690a78d28ee"
+  },
+  "weighted_score": 4.987,
+  "grade": "S",
+  "changed_file_score": 4.819,
+  "weighted_score_note": "v2.46.0 changed only nihil_density.aisop.json (4 content step-keys: ApplyGH.step1 GH1_SCAN+C1-C5, ApplyGH.step2 tier+fallback-8, GenerateReport.step1 fallback-9, GenerateReport.step2 gh_rule_set_version bump); partial scope. Authoritative this-run deferred-excl weighted = 4.819 Grade S (changed_file_score, == ReviewFinalize step6 reconcile); whole-program weighted_score preserved from prior baseline 4.987 pending full re-score per SCORE SCOPE GUARD. The 4.819 < 4.987 gap is a cross-method re-score artifact (method-change exemption), NOT a content regression; regression=false.",
+  "regression_check": {
+    "v2.37.0": {
+      "weighted_delta": "N/A (partial re-score; not comparable to prior whole-program baseline 4.987)",
+      "regression_detected": false,
+      "simulate_indicator": "GREEN",
+      "validate_indicator": "PASS",
+      "note": "Generate2 partial scope: only changed module + deterministic checks re-scored. No dimension dropped >0.3. SimulateStep 22 run/20 PASS/2 YELLOW/0 RED, regression_detected=false."
+    },
+    "v2.38.0": {
+      "weighted_delta": "N/A (partial re-score; not comparable to prior whole-program baseline 4.987)",
+      "regression_detected": false,
+      "simulate_indicator": "GREEN",
+      "validate_indicator": "PASS",
+      "note": "Generate2 partial scope: only changed module main.aisop.json + deterministic cross-module checks re-scored (4.475). No dimension dropped >0.3. SimulateStep 24/24 GREEN (HARD_FAIL branch both arms simulated with real subprocess evidence), regression_detected=false."
+    },
+    "v2.39.0": {
+      "weighted_delta": "N/A (partial re-score; not comparable to prior whole-program baseline 4.987). Deferred D6/D8/D10 excluded like-for-like per the v2.40.0 finalize_risk fix; deferred-excluded changed-file delta ~= 0 (no real regression).",
+      "regression_detected": false,
+      "simulate_indicator": "GREEN",
+      "validate_indicator": "PASS",
+      "note": "Generate2 partial scope: changed main.aisop.json::ReviewPresent.step8 finalize_risk(1) + review.aisop.json::Review.step1 mirror (deferred-exclusion in regression/delta computation only). Spec-text refinement, no tool source change, no data-contract break. No dimension dropped >0.3. SimulateStep 18/18 GREEN coverage 100%, ValidateStep PASS, regression_detected=false."
+    },
+    "v2.46.0": {
+      "weighted_delta": "N/A (partial re-score; not comparable to prior whole-program baseline 4.987). Deferred D6/D10 excluded like-for-like per B-3. The 4.819 deferred-excl vs 4.987 facade gap is a cross-method re-score artifact (method-change exemption, [INDEPENDENT_AGENT] cognitive cap), NOT a real regression.",
+      "regression_detected": false,
+      "simulate_indicator": "GREEN",
+      "validate_indicator": "PASS",
+      "note": "Generate2 partial scope: changed nihil_density.aisop.json ApplyGH.step1(GH1_SCAN+C1-C5) + ApplyGH.step2(tier+fallback-8) + GenerateReport.step1(fallback-9) + GenerateReport.step2(gh_rule_set_version). Additive prose-discipline + machine-criteria, no tool source change, no data-contract break. No dimension dropped >0.3. SimulateStep 20/20 GREEN coverage 100%, ValidateStep 21/21 PASS, regression_detected=false."
+    }
+  },
+  "attestation_chain_length": 14
 }

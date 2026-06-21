@@ -7,13 +7,13 @@
             "flow_format": "mermaid",
             "id": "aiap_creator.generate",
             "program_id": "dev.aiap_creator.generate",
-            "name": "AIAP Creator v2.34.0 — Generator",
+            "name": "AIAP Creator v2.47.0 — Generator",
             "output_mode": {
                 "L0": "Output JSON in ENGLISH: {intent, confidence, route, state, op}",
                 "L1": "Output helpfully in User's exact language and script variant",
                 "output": "L1"
             },
-            "version": "2.34.0",
+            "version": "2.47.0",
             "token_estimate": "~25K tokens",
             "trust_level": 4,
             "summary": "Generates AISOP files with sub_mermaid architecture (scaffold/content/tooling). ThreeDimTest (C1-C7, I1-I13, D1-D10) with MF1-MF38 multi-file audit, FORMAT_DETECT for parsing, traffic light classification, I-SELF-REFERENTIAL scoring, TOOL-COMPUTED deterministic checks, semantic regression detection, fractal exempt drift verification, ASSERT_REQUIRED_ASSIGNMENT auto-generation for target programs. ~25K tokens/invocation.",
@@ -293,7 +293,7 @@
                     "step2": "SUB_MERMAID DECOMPOSITION APPLY (when traffic_report has RED_WITH_FIX, fix_type='sub_mermaid_decomposition', human approved): (1) Backup current aisop. (2) Replace main Mermaid. (3) Add sub_mermaid graphs with entry functions. (4) Add delegate functions to main. (5) Set fractal_exempt. (6) Migrate handler functions from main to sub-graph. (7) Verify all graphs <=15 nodes — fail → rollback. POST-SPLIT: verify each graph <=16 nodes, recursive check for nested sub-delegates. Log sub_mermaid_applied results.",
                     "step3": "FIX ORDER: isolated → local per-function → cross-function one-at-a-time. MULTI-FILE: sub-modules first, main last.",
                     "step4": "VERSION RULES: modify_only→patch+1, level_c_only→patch+1, level_b→minor+1, level_a→major+1, mixed→highest wins. NAME FIELD VERSION SYNC: update version pattern in name field to match new version. Record name_version_synced in pipeline_metadata.",
-                    "step5": "DESCRIPTION HYGIENE: >2 version history entries → compress (keep current, collapse older). SUMMARY CONSISTENCY: verify summary reflects current capabilities, <=500 chars. DERIVED REFERENCE AUDIT: (a) name version sync, (b) Error text hardcoded counts vs actual, (c) menu/feature count sync, (d) cross-function reference existence check. SMART DESCRIPTION UPDATE: extract current capabilities → compute delta from LEVEL_B changes → update description + module descriptions. Safety gate: >50% change → YELLOW for human review.",
+                    "step5": "DESCRIPTION HYGIENE: >2 version history entries → compress (keep current, collapse older). SUMMARY CONSISTENCY: verify summary reflects current capabilities, <=500 chars. DERIVED REFERENCE AUDIT: (a) name version sync, (b) Error text hardcoded counts vs actual, (c) menu/feature count sync, (d) cross-function reference existence check, (e) description/summary embedded version-label sync: rewrite any v{semver} self-label inside description/summary to the new version; SCOPE GUARD — self-labels ONLY, NEVER touch changelog / evolution_history / version_history; record desc_summary_version_synced in pipeline_metadata. SMART DESCRIPTION UPDATE: extract current capabilities → compute delta from LEVEL_B changes → update description + module descriptions. Safety gate: >50% change → YELLOW for human review.",
                     "step6": "CUSTOM FIELD SEMANTIC CHECK: preserve verified_on, author, tags. If content changed beyond cosmetic, append advisory to description.",
                     "constraints": "WRITE SAFETY: in-memory backup. ATOMIC: .tmp rename. Max 3 fix cycles.",
                     "Error": "retry(1) -> circuit-breaker -> fallback(SaveDraft) -> inform(User). IMPORTANT. Error types: timeout(operation_timeout)->retry with backoff. parse_error(data_malformed)->retry(1) then fallback. io_error(file_write_failure)->retry(1) then fallback."

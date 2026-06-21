@@ -1,70 +1,73 @@
 {
   "scoring_scale": "1-5",
-  "version": "1.16.0",
+  "version": "1.20.0",
   "trust_level": 3,
-  "snapshot_date": "2026-05-12",
-  "pipeline_run_id": "d6557f94-8d7a-4403-bb01-c7adf04e8ad5",
+  "snapshot_date": "2026-06-13",
+  "pipeline_run_id": "3bd8e42a-b4d7-4860-a3d9-cc3ccf108a8e",
   "cache_schema_version": "1.0",
   "three_dim_test": {
+    "tier": "Standard",
+    "weights": "C*0.35+I*0.35+D*0.30",
     "cognitive": {
-      "C1": 5,
-      "C2": 5,
-      "C3": 5,
-      "C4": 5,
-      "C5": 5,
-      "C6": 5,
-      "C7": 5,
-      "avg": 5.0
+      "avg": 4.929,
+      "note": "Cognitive 4.929 (Generate2 run 3bd8e42a, THIS v1.20.0 cycle): c1 5.0/c2 5.0/c3 5.0/c4 4.5/c5 5.0/c6 5.0-NA/c7 5.0. B3 session/episodic memory layer additive on already-mature Pattern A program; no Cognitive recovery claimed this cycle (the v1.18.0->v1.19.0 ExplainHexagram recovery is a PRIOR cycle and is NOT re-counted here). Non-deferred dimension."
     },
     "intrinsic": {
-      "I1": 5,
-      "I2": 5,
-      "I3": 5,
-      "I4": 5,
-      "I5": 5,
-      "I6": 5,
-      "I7": 5,
-      "I8": 5,
-      "I11": 5,
-      "I13": 5,
-      "avg": 5.0
+      "avg": 4.923,
+      "note": "Intrinsic 4.923 (Generate2 run 3bd8e42a): i1-i11 all 5.0, i12 4.5 (open_world_tool_justification), i13 4.5 (web_fetch FETCH GUARD + sanitization). Non-deferred dimension. B3 memory edits are additive, no new Intrinsic deduction beyond the standing i12/i13 web-tool advisory."
     },
     "detail": {
-      "D1": 5,
-      "D2": 5,
-      "D3": 5,
-      "D4": 5,
-      "D5": 5,
-      "D6": 5,
-      "D7": 5,
-      "D8": 5,
-      "D9": 5,
-      "D10": 5,
-      "avg": 5.0
+      "avg": 4.95,
+      "generate2_avg": 4.85,
+      "note": "Detail reconciled to 4.95 by ReviewFinalize (P23 DEFERRED SCORE RECONCILIATION). Generate2 raw D=4.85 with D6 VERSION SYNC + D10 DESCRIPTION marked deferred=true at neutral 4.5 (governance files still held old v1.19.0 hash 5bfb88cf at Generate2 time). After ReviewFinalize step1/step3 wrote v1.20.0 governance files + recomputed canonical hash af1b0f3d (QUAD-SYNC), D6 and D10 re-measured against now-current files -> 5.0/5.0; d4 4.5 remains. D final avg = (5+5+5+4.5+5+5+5+5+5+5)/10 = 4.95. Run 3bd8e42a (Pattern A Standard tier)."
     },
-    "weighted": 5.000,
+    "weighted_score": 4.933,
     "grade": "S",
-    "final_adjusted": true,
-    "scoring_method": "ThreeDimTest_v1_Professional"
+    "generate2_weighted_pre_finalize": 4.903,
+    "final_adjusted_weighted": 4.933,
+    "score_scope": "full",
+    "scored_files": [
+      "main.aisop.json"
+    ],
+    "run_id": "3bd8e42a-b4d7-4860-a3d9-cc3ccf108a8e"
   },
   "simulation": {
-    "scenarios_run": 12,
-    "pass_count": 12,
+    "scenarios_run": 18,
+    "pass_count": 18,
     "fail_count": 0,
+    "yellow_count": 0,
     "coverage_pct": 100,
-    "simulate_quality_indicator": "GREEN"
+    "path_coverage": "6/6",
+    "node_coverage": "11/11",
+    "tier": "Standard",
+    "simulate_quality_indicator": "GREEN",
+    "regression_detected": false,
+    "run_id": "3bd8e42a-b4d7-4860-a3d9-cc3ccf108a8e"
   },
   "validation": {
-    "pass_count": 33,
-    "total_checks": 34,
+    "pass_count": 14,
+    "total_checks": 14,
+    "blocking_schema_type_errors": 0,
+    "red_blocking": 0,
+    "yellow_nonblocking": 2,
     "issues": [
-      {"id": "SCHEMA_TYPE_program_id_format", "severity": "YELLOW", "description": "program_id uses slash separator vs dot-separated pattern (advisory only)"}
-    ]
+      {
+        "id": "SCHEMA_TYPE_program_id_format",
+        "severity": "YELLOW",
+        "description": "RESOLVED in v1.19.0 (program_id slash->dot 'aiap.dev.yijing_divination'); listed YELLOW carryover cleared this cycle"
+      },
+      {
+        "id": "attestation_chain_empty",
+        "severity": "YELLOW",
+        "description": "attestation_chain empty (non-blocking advisory)"
+      }
+    ],
+    "run_id": "3bd8e42a-b4d7-4860-a3d9-cc3ccf108a8e"
   },
   "modules": 1,
-  "nodes": 10,
+  "nodes": 11,
   "pattern": "A",
-  "governance_hash": "bd7bec301e47a22172e6cbb6dbeb953440b6517dc27fca154af13237c004b6a8",
+  "governance_hash": "af1b0f3de4943983a155be73fc4f978838d9c218e14a67b8786f29803521d571",
   "governance_hash_verified": true,
   "evolution_history": {
     "v1.0.0": {
@@ -233,22 +236,140 @@
       "direction": "B1 TAKE IT DOWN Act FTC enforcement guidance update (Chairman Ferguson compliance letters to 15+ tech companies, $53,088/violation civil penalty), C1 version sync 1.15.0->1.16.0, C2 name field sync v1.16.0, C3 Art.50 CoP timeline precision (May-June -> early June 2026), C4 governance_hash recompute, C5 evolution_history update",
       "score_delta": "+0.028",
       "grade_change": "S->S",
-      "weighted_score": 5.000,
+      "weighted_score": 5.0,
       "deferred_reconciled": {
-        "generate2_weighted": 4.970,
-        "final_weighted": 5.000,
-        "deferred_items_rescored": ["D6", "D10"],
+        "generate2_weighted": 4.97,
+        "final_weighted": 5.0,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
         "reconciliation_stage": "ReviewFinalize.step6"
       },
       "pipeline_run_id": "d6557f94-8d7a-4403-bb01-c7adf04e8ad5"
+    },
+    "v1.17.0": {
+      "changes": 8,
+      "effective": 8,
+      "effectiveness_rate": 1.0,
+      "has_level_a": true,
+      "mode": "EVOLVE",
+      "direction": "A1 new tool_dirs/cast_hexagram.py (pure-stdlib secrets/json/argparse/sys, READ-only CSPRNG three-coin caster; 6x cast of 3 coins each secrets.choice([2,3]); line value 6/7/8/9; natural P(6)=1/8,P(7)=3/8,P(8)=3/8,P(9)=1/8; stdout JSON only, zero file write, zero network; optional --seed for reproducible SimulateStep test). B1 CastHexagram.step3 wire to absolute-path <python> {DIR_OF_PROGRAM}/tool_dirs/cast_hexagram.py + degrade-to-LLM-sim fallback on tool missing/exit!=0 + randomness disclaimer flip (LLM-sim-randomness -> Python secrets CSPRNG true-random, degrade only when tool absent). C1 version sync 1.16.0->1.17.0, C2 name field sync v1.17.0, C3 tools[]/capability add python_tool_run, C4 doc sync summary/description/agent_card (three-coin simulation -> Python secrets true-random casting), C5 governance_hash recompute + QUAD-SYNC, C6 snapshot v1.17.0 + snapshot_audit.",
+      "score_delta": "-0.051",
+      "grade_change": "S->S",
+      "weighted_score": 4.949,
+      "deferred_reconciled": {
+        "generate2_weighted": 4.919,
+        "final_weighted": 4.949,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "reconciliation_stage": "ReviewFinalize.step6",
+        "note": "D6/D10 deferred placeholders (4.5) reconciled to 5.0 against now-updated v1.17.0 governance files (D 4.85->4.95). The residual negative delta vs prior 5.0 is driven by the NON-deferred I12/I13 new-tool advisory (Intrinsic 5.0->4.92) which does NOT reconcile upward — expected and honest for a new-tool addition cycle (cf. ReviewPresent finalize_risk deferred-excluded delta -0.0346, user-gated OK)."
+      },
+      "pipeline_run_id": "fc4b32b0-d91e-4a02-a11a-d3e4b505b0e2"
+    },
+    "v1.18.0": {
+      "changes": 11,
+      "effective": 11,
+      "effectiveness_rate": 1.0,
+      "has_level_a": true,
+      "mode": "EVOLVE",
+      "direction": "A1 new open_world web tools (web_search + web_fetch) for ExplainHexagram five-hexagram authoritative-meaning retrieval (read-only, query sanitization, source credibility tiering, http(s)-only fetch guard rejecting internal IPs, untrusted-data treatment + OWASP LLM01 prompt-injection neutralization). B1 new 综卦/Zong Gua deterministic computation (whole-hexagram 180-degree reversal; correctly handles the 8 symmetric hexagrams 乾坤坎离+大过小过颐中孚 whose 综卦==本卦; exactly 8 self-reverse among all 64 per spec). B2 new 错卦/Cuo Gua deterministic computation (flip all yin/yang; all 64 hexagrams, always != 本卦, exhaustively verified). B3 new ExplainHexagram node: computes 变卦/互卦/综卦/错卦 from 本卦 then web-searches authoritative meanings and explains all five to the user; [AI生成内容]/AI-summary labeling + cultural-learning (non-divination-authority) positioning per GB45438-2025 §4.1 / EU AI Act Art.50; graceful degradation to local 《周易》 source on web timeout/failure. C1 version sync 1.17.0->1.18.0 (5 files), C2 name field sync v1.18.0, C3 web tool annotations (read_only:true,destructive:false,idempotent:true,open_world:true), C4 AI-content compliance labeling (GB45438 dual-labeling + Art.50 machine-readable + web-source attribution tiers + 'AI retrieval summary may be biased / not divination authority' disclaimer), C5 query sanitization + source credibility tiers + fetch guard, C6 ExplainHexagram [ASSERT] gate + full Error chain inject, C7 governance_hash recompute + TRI-SYNC doc sync.",
+      "score_delta": "-0.048",
+      "grade_change": "S->S",
+      "weighted_score": 4.901,
+      "deferred_reconciled": {
+        "generate2_weighted": 4.89,
+        "final_weighted": 4.901,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "reconciliation_stage": "ReviewFinalize.step6",
+        "note": "D6/D10 deferred placeholders reconciled to 5.0 against now-updated v1.18.0 governance files (Detail avg = 5.0). The residual negative delta vs prior v1.17.0 4.949 is driven by the NON-deferred Cognitive dip (C 5.0->4.786, new web-search feature cognitive surface under Generate-agent self-score cap) plus the new-tool I12/I13 advisory (Intrinsic ~4.90), neither of which reconciles upward — expected and honest for a new-feature + new-tool addition cycle (cf. ReviewPresent finalize_risk deferred-excluded delta -0.0475, user-gated OK via EvolveStep 'all' + ReviewPresent 'ok')."
+      },
+      "pipeline_run_id": "390f5af1-a441-4407-93c4-5c51a119f538"
+    },
+    "v1.19.0": {
+      "changes": 9,
+      "effective": 9,
+      "effectiveness_rate": 1.0,
+      "has_level_a": false,
+      "mode": "EVOLVE",
+      "direction": "User request: 'fix yellow + web-search recent practices'. B1 recover I12/I13 (formal open_world_tool_justification block for the existing web_search/web_fetch tools: retry-backoff, source-credibility tiering academic>encyclopedia>general, OWASP LLM01 untrusted-data handling, loading_mode rationale; hardened by M1 hint_rationale_mapping). B2 recover Cognitive (ExplainHexagram worked five-hexagram ben/bian/hu/zong/cuo example fixtures + explicit untrusted-source synthesis policy with named PRIMARY DEFENSES 0a INPUT ISOLATION + 0b CONTENT SEPARATION per arXiv 2506.08837 / IEEE S&P 2026). B3 EU AI Act Art.50 Code of Practice FINAL alignment (published 2026-06-10; cross-checked Art.50 refs across main/AIAP.md/AIAP_cn.md/agent_card describe FINAL not draft + official AI-content label icons). C1 program_id slash->dot 'aiap.dev/yijing_divination'->'aiap.dev.yijing_divination' (resolves the persistent YELLOW since v1.16.0 = the user's 'fix yellow' intent). C2 version sync 1.18.0->1.19.0 (5 files). C3 name field embedded version sync. C4 evolution_history v1.19.0 append-only. C5 governance_hash recompute + QUAD-SYNC (canonical 5bfb88cf). C6 bootstrap_advisory refresh.",
+      "score_delta": "+0.049",
+      "grade_change": "S->S",
+      "weighted_score": 4.95,
+      "deferred_reconciled": {
+        "generate2_weighted": 4.92,
+        "final_weighted": 4.95,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "reconciliation_stage": "ReviewFinalize.step6",
+        "note": "D6/D10 deferred placeholders (4.5) reconciled to 5.0 against now-updated v1.19.0 governance files (Detail 4.830->4.930). UNLIKE the new-feature/new-tool cycles v1.17.0/v1.18.0 (which carried EXPECTED negative deltas from non-recovering C/I advisories), this is a quality-recovery cycle: B1 recovers Intrinsic I12/I13 (4.90->4.946) and B2 recovers Cognitive (4.786->4.971), producing a GENUINE positive delta. No regression, no RED, no DEGRADED node, SIMULATE GREEN 18/18. ReviewPresent finalize_risk evaluated FALSE (deferred-excluded delta +0.044), gate ORCHESTRATOR-ENFORCED as two-门-real-stop and EXPLICITLY APPROVED by the human (user reply '确认') before this irreversible finalize."
+      },
+      "pipeline_run_id": "c49ecb34-c39a-4c5a-8d90-027e091cb1d8"
+    },
+    "v1.20.0": {
+      "changes": 6,
+      "effective": 6,
+      "effectiveness_rate": 1.0,
+      "has_level_a": false,
+      "mode": "EVOLVE",
+      "direction": "User request: '使用creator进化易经占卜'. EvolveStep sovereignty gate: user explicitly selected B3 (session/episodic multi-scope memory layer), rejected B1 (C2PA provenance), B2 (GB45438 implicit metadata labels), B4 (Art.50 final-CoP text audit). B3 adds episodic-continuity memory to the Pattern A divination flow (node_count unchanged 11). ModifyStep applied Q1-Q5 (episodic-write untrusted-validation, audit-vs-user-deletable tier separation, bounded-forgetting inline rationale, stale-context recency guard, retention rationale+provenance), skipped Q6 (nihil GH3 consolidation, SUGGEST_ONLY, deferred to NihilDensityStep). C1 version sync 1.19.0->1.20.0 (5 files). C2 name-field embedded version sync. C3 evolution_history/version_history append-only. C4 governance_hash TRI-SYNC/QUAD-SYNC recompute (canonical v1.0 af1b0f3d). C5 bootstrap_advisory refresh.",
+      "weighted_score": 4.933,
+      "grade": "S",
+      "dim_scores": {
+        "cognitive": 4.929,
+        "intrinsic": 4.923,
+        "detail": 4.95
+      },
+      "deferred_reconciled": {
+        "generate2_weighted": 4.903,
+        "final_weighted": 4.933,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "reconciliation_stage": "ReviewFinalize (review.aisop.json Finalize.step3 P23)",
+        "note": "Generate2 pre-Finalize weighted 4.903 used D6=4.5/D10=4.5 deferred placeholders. After v1.20.0 governance files written + canonical hash af1b0f3d recomputed, D6/D10 re-measured to 5.0/5.0 -> D 4.85->4.95 -> final weighted 4.933. delta vs v1.19.0 baseline (4.95) = -0.017 (small negative; B3 is additive memory capability on a ceiling-mature S program, NO regression, 0 RED, 0 DEGRADED, SIMULATE 18/18 GREEN, VALIDATE 14/14). HONEST CORRECTION: ReviewPresent's gate display used the STALE three_dim_test block (C4.971/I4.946/D4.93, run c49ecb34 = PRIOR v1.19.0 cycle) and reported zero-delta 4.95==4.95; the authoritative THIS-run scores are Generate2's (C4.929/I4.923/D4.85->4.95), giving 4.933 and a -0.017 delta. The finalize decision (user 'ok') is unaffected -- user approved finalize regardless of exact delta."
+      },
+      "traffic": "all GREEN, 0 RED",
+      "simulate": "18/18 GREEN, 100% coverage, 6/6 path, 11/11 node",
+      "validate": "14/14 core checks, 0 RED-blocking, 2 non-blocking YELLOW",
+      "nihil_density": "GREEN 0.0174",
+      "governance_hash": "af1b0f3de4943983a155be73fc4f978838d9c218e14a67b8786f29803521d571",
+      "pipeline_run_id": "3bd8e42a-b4d7-4860-a3d9-cc3ccf108a8e",
+      "user_gate": "EvolveStep B3 user-selected + ReviewPresent finalize user-approved ('ok')"
     }
   },
   "evolution_directions": {
-    "next_version": "1.17.0",
+    "next_version": "1.21.0",
     "suggestions": [
-      {"priority": "HIGH", "title": "Art.50 Code of Practice final publication alignment", "description": "Once final CoP is published (expected early June 2026), update all Art.50 references from 'draft guidelines' to 'final code'. Verify compliance demonstration mechanism aligns with final requirements."},
-      {"priority": "MEDIUM", "title": "Nihil density reduction via shared_constraints consolidation", "description": "Consolidate regulatory compliance text (COPPA, EU AI Act, GB 45438, NIST, TAKE IT DOWN) currently duplicated across functions into shared_constraints. Reduce nihil density from 10.82% toward <5%."},
-      {"priority": "MEDIUM", "title": "program_id format normalization", "description": "Consider updating program_id from 'aiap.dev/yijing_divination' (URI-style) to 'aiap.dev.yijing_divination' (dot-separated) to resolve persistent YELLOW advisory."}
+      {
+        "priority": "HIGH",
+        "title": "Art.50 Code of Practice final publication alignment",
+        "description": "The Art.50 Code of Practice FINAL version was published 2026-06-10 (obligations applicable from 2 Aug 2026, undergoing Commission/AI Board adequacy assessment). Verify all Art.50 references across main.aisop.json/AIAP.md/agent_card describe the FINAL code (not draft guidelines) and that the compliance demonstration mechanism aligns with the final requirements and official EU AI-content label icons."
+      },
+      {
+        "priority": "MEDIUM",
+        "title": "Mature web_search/web_fetch tool-annotation surface (recover I12/I13)",
+        "description": "The new open_world web tools carry an I12/I13 new-tool advisory deduction (Intrinsic ~5.0->4.90). Add explicit runtime annotations/justification (loading_mode rationale, formal annotation block detailing search/fetch retry-backoff, source-credibility tiering policy, and untrusted-data handling) to recover the Intrinsic ceiling on the next cycle."
+      },
+      {
+        "priority": "MEDIUM",
+        "title": "Recover Cognitive ceiling on the five-hexagram explanation feature (C 4.786->5.0)",
+        "description": "The Cognitive dimension dipped to 4.786 from the new ExplainHexagram web-synthesis cognitive surface under the Generate-agent self-score cap. A follow-up cycle can add worked five-hexagram example fixtures + explicit untrusted-source synthesis policy to lift the subjective Cognitive score back toward ceiling."
+      },
+      {
+        "priority": "MEDIUM",
+        "title": "program_id format normalization",
+        "description": "Consider updating program_id from 'aiap.dev/yijing_divination' (URI-style) to 'aiap.dev.yijing_divination' (dot-separated) to resolve persistent YELLOW advisory (pre-existing since v1.16.0)."
+      }
     ]
   },
   "strategy_memory": {
@@ -259,8 +380,42 @@
       "a_items_applied": 0,
       "score_outcome": "+0.028 (deferred reconciliation)",
       "regression_detected": false,
-      "effective_strategies": ["regulatory_text_refresh", "metadata_sync"],
+      "effective_strategies": [
+        "regulatory_text_refresh",
+        "metadata_sync"
+      ],
       "note": "Targeted maintenance B-item (TAKE IT DOWN Act enforcement update) + C-items (version sync, governance hash) continues stable S-grade ceiling pattern. Deferred D6/D10 reconciliation recovered 0.030 points."
+    },
+    "v1.17.0_strategy": {
+      "pattern": "new_tool_integration",
+      "b_items_applied": 1,
+      "c_items_applied": 6,
+      "a_items_applied": 1,
+      "score_outcome": "-0.051 (new-tool I12/I13 advisory; D6/D10 reconciled up)",
+      "regression_detected": false,
+      "regression_note": "Negative delta is an EXPECTED new-tool advisory cost (I12/I13 Intrinsic 5.0->4.92), NOT a structural regression: SIMULATE GREEN 16/16 100%, VALIDATE PASS, 0 node deletion/edge change, all 9 non-CastHexagram nodes + compliance framework frozen and unchanged. User-gated OK at ReviewPresent finalize gate.",
+      "effective_strategies": [
+        "stdlib_csprng_tool_extraction",
+        "node_wire_with_degrade_fallback",
+        "disclaimer_flip_truthful_annotation"
+      ],
+      "note": "First tool-integration cycle for a previously zero-tool Pattern A normal-mode program: replaced LLM-simulated random casting with Python secrets CSPRNG via a new READ-only stdlib tool wired into CastHexagram.step3 with graceful degrade. Lesson: adding a tool incurs a temporary I12/I13 annotation-completeness cost recoverable next cycle by formalizing tool-run annotations. Honest: weighted dipped 5.0->4.949 by design (true-random correctness gain > cosmetic Intrinsic dip)."
+    },
+    "v1.18.0_strategy": {
+      "pattern": "new_feature_plus_open_world_tools",
+      "b_items_applied": 3,
+      "c_items_applied": 7,
+      "a_items_applied": 1,
+      "score_outcome": "-0.048 (new-feature Cognitive dip C 5.0->4.786 + new open_world web-tool I12/I13 advisory; D6/D10 reconciled up to 5.0)",
+      "regression_detected": false,
+      "regression_note": "Negative delta is an EXPECTED new-feature + new-tool advisory cost, NOT a structural regression: SIMULATE GREEN 16/16 100% (path coverage 6/6, +1 new explain path), VALIDATE 20/20 0 blocking RED, NihilDensity 0.0 GREEN, 0 node deletion, all 10 prior nodes + compliance framework preserved, +1 additive ExplainHexagram node, 0 breaking changes (MINOR). Per-dimension drops C-0.214/I-0.020/D+0.050 all < 0.3 regression threshold; SimulateStep |drop|=0.059 < 0.1 RED threshold. User-gated OK at EvolveStep ('all') + ReviewPresent finalize gate ('ok', real human reply).",
+      "effective_strategies": [
+        "deterministic_five_hexagram_algorithm_with_symmetric_edge_case",
+        "open_world_web_tool_with_untrusted_data_treatment",
+        "additive_node_with_graceful_degrade_fallback",
+        "dual_ai_content_labeling_compliance"
+      ],
+      "note": "First open_world (web_search/web_fetch) integration cycle for this program. Added a deterministic five-hexagram (本/变/互/综/错) computation layer (independently re-verified: 8 symmetric self-reverse hexagrams, all-64 错卦!=本卦) plus a web-research explanation node with full injection guardrails (query sanitization, http(s)-only fetch, untrusted-data treatment, OWASP LLM01) and graceful degrade to local 《周易》. Lesson: a feature that adds both cognitive surface AND a new open_world tool incurs a combined C + I12/I13 advisory dip that is recoverable by formalizing tool annotations and adding worked-example fixtures next cycle; the additive correctness/utility gain (five-hexagram detailed explanation) justifies the cosmetic score dip by design."
     }
   },
   "bootstrap_advisory": {
@@ -272,7 +427,69 @@
       "Art.50 compliance readiness before August 2026 — visible [AI生成内容] + machine-readable SaveRecord metadata implemented; verify final CoP once published",
       "CastHexagram ASCII visualization runtime rendering verification — functional specification complete in v1.9.0, pending runtime rendering test across terminal types",
       "TAKE IT DOWN Act FTC enforcement provisions (effective May 19 2026) — verify compliance applicability to AI-generated content platforms after enforcement begins",
-      "GB 45438-2025 Qinglang campaign cultural learning positioning — defensive positioning implemented; monitor CAC enforcement actions and Religious Affairs Office AI divination guidance for ongoing compliance"
+      "GB 45438-2025 Qinglang campaign cultural learning positioning — defensive positioning implemented; monitor CAC enforcement actions and Religious Affairs Office AI divination guidance for ongoing compliance",
+      "cast_hexagram.py three-coin CSPRNG runtime invocation verification (v1.17.0 NEW) — pure-stdlib READ-only tool wired into CastHexagram.step3 via absolute-path shell python; verify executor python_tool_run capability + degrade-to-LLM-sim fallback path across host environments; probability distribution P(6)=1/8,P(7)=3/8,P(8)=3/8,P(9)=1/8 confirmed in SimulateStep (60000-line sample within ~0.001), pending broad production runtime verification",
+      "ExplainHexagram five-hexagram web-search runtime verification (v1.18.0 NEW) — web_search/web_fetch open_world tools wired into the new ExplainHexagram node; verify executor web tool capability + graceful degrade to local 《周易》 source on timeout/failure across host environments; verify query sanitization, http(s)-only + internal-IP-reject fetch guard, untrusted-data treatment (OWASP LLM01), and dual [AI生成内容]+machine-readable labeling on retrieved content in production runtime",
+      "Five-hexagram deterministic algorithm production verification (v1.18.0 NEW) — 综卦 (180-deg reversal, 8 symmetric self-reverse hexagrams) + 错卦 (flip-all, all-64 != 本卦) + 互卦 (2-3-4/3-4-5) + 变卦 (changing-line flip) independently re-derived and verified at Generate2/SimulateStep; pending broad production runtime verification across user-supplied hexagram inputs",
+      "EU AI Act Art.50 Code of Practice FINAL alignment (published 2026-06-10) — verify all Art.50 references describe the final code (not draft guidelines), obligations applicable from 2 Aug 2026, official EU AI-content label icons adopted; CoP currently undergoing Commission/AI Board adequacy assessment"
     ]
-  }
+  },
+  "nihil_data": {
+    "version": "1.19.0",
+    "gh_rule_set_version": "GH1-GH7",
+    "baseline_reset": false,
+    "scan_mode": "pipeline_evolve",
+    "files": {
+      "main.aisop.json": {
+        "nihil_density": 0.0174,
+        "status": "GREEN",
+        "gh_contribution": {
+          "primary": "GH3",
+          "GH3": {
+            "chars": 603,
+            "pct_of_gap": 1.0
+          },
+          "note": "pipeline_evolve scan of the single modified file (Pattern A). total_execution_content_chars=34573. GH3 residual=603 chars = verbatim duplication of EU AI Act Art.50 / COPPA 2026 / Digital Omnibus regulatory-provenance prose across system.description, GiveAdvice.constraints, SaveRecord.constraints (5 phrases x2 occurrences each). density=603/34573=0.0174 <= 0.05 => GREEN. GH1 version annotations (B1/B2/B3 v1.18/v1.19 + B4/B5 v1.14.0) are inline provenance on live execution content (综卦/错卦/ExplainHexagram node, teen-safety, Art.50 watermarking) — frozen per v1.18.0 precedent, GH5-protected, execution-bearing, not counted. GH6=0 (no expired branches). GH7 Error fields are protocol-mandated retry/circuit-breaker/fallback/inform structure (validate.aisop.json checks these keywords) — not residual. Methodology note: prior v1.18.0 recorded 0.0 by fully excluding the GH3 regulatory duplication as frozen; this cycle counts it as a SUGGEST_ONLY consolidation advisory (still GREEN). Not a genuine degradation."
+        }
+      }
+    },
+    "suggestions": [
+      {
+        "file": "main.aisop.json",
+        "function": "GiveAdvice/SaveRecord/system.description",
+        "field": "constraints/description",
+        "rule": "GH3",
+        "matched_text": "EU AI Act Art.50 / COPPA 2026 / Digital Omnibus / TAKE IT DOWN Act regulatory-provenance prose duplicated verbatim across 3 fields (603 chars)",
+        "suggestion": "consolidate regulatory-provenance dates into shared_constraints.compliance_provenance (single source) and reference it, to cut ~600 chars of verbatim duplication",
+        "persistence_count": 1,
+        "status": "PENDING",
+        "tier": "SUGGEST_ONLY"
+      }
+    ],
+    "timestamp": "2026-06-12T23:55:00Z"
+  },
+  "deferred_advisories": [
+    {
+      "source": "Research2",
+      "id": "C-adv-2",
+      "severity": "LOW",
+      "description": "SimulateStep tool-missing degrade scenario directive — verified live during SimulateStep (missing-tool exit nonzero -> degrade-to-LLM-sim + WARNING). Was a downstream-node directive, not a target-draft fix; recorded for traceability.",
+      "target_module": "main.aisop.json::CastHexagram",
+      "first_seen_cycle": "fc4b32b0-d91e-4a02-a11a-d3e4b505b0e2",
+      "cycles_deferred": 1,
+      "disposition": "out_of_scope_handled_downstream"
+    },
+    {
+      "source": "Research2",
+      "id": "C-adv-3",
+      "severity": "LOW",
+      "description": "Optional tool stderr diagnostics + nonzero internal-error exit for cast_hexagram.py — cosmetic/non-blocking; OUT OF SCOPE of user-frozen A1 spec (hard-constraint 1 scope freeze). Candidate for a future polish cycle.",
+      "target_module": "tool_dirs/cast_hexagram.py",
+      "first_seen_cycle": "fc4b32b0-d91e-4a02-a11a-d3e4b505b0e2",
+      "cycles_deferred": 1,
+      "disposition": "deferred_scope_freeze"
+    }
+  ],
+  "weighted_score": 4.933,
+  "grade": "S"
 }

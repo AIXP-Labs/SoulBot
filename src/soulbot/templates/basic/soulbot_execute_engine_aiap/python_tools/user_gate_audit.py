@@ -274,9 +274,10 @@ def _manufacture_question(cache: dict, node: str) -> str:
         summ = cache.get("user_summary") or cache.get("output") or ""
         detail = summ[:600] if isinstance(summ, str) else ""
     return (
-        f"[公理 0 人类主权与福祉] 节点 '{node}' 到达终态却未经 WAITING_USER "
-        f"呈现给你确认（sovereignty bypass）。以下内容被自批准、未经你确认："
-        f"{detail}。请回复：批准 / 修改 / 拒绝。"
+        f"[Axiom 0 Human Sovereignty & Wellbeing] Node '{node}' reached a terminal "
+        f"state WITHOUT a WAITING_USER gate presented to you for confirmation "
+        f"(sovereignty bypass). The following was auto-approved without your "
+        f"confirmation: {detail}. Please reply: approve / modify / reject."
     )
 
 
@@ -431,7 +432,20 @@ def audit(cache_dir: str, aiap: str, node: str, entry_path: str) -> dict:
         was_presented = node in presented
     result["was_presented"] = was_presented
 
-    if was_presented:
+    # E3 (2026-06-10, plan22/03 §13.2): a user_gates_presented entry ALONE does NOT
+    # prove a real human stop — the orchestrator can self-fabricate it (cache/90:
+    # EvolveStep was "presented" with self-filled user_answer + sovereignty_gate
+    # "auto-approved", so the old `node in presented` test wrongly passed it — this is
+    # exactly why X3 --enforce had 0 live triggers). If the node cache's
+    # sovereignty_gate FIELD asserts auto/self-approval, the presentation is fake ->
+    # bypass even when was_presented=True. Match the FIELD only (not prose output) to
+    # avoid false-positives on runs that merely narrate "no auto-approve" (cache/92·93).
+    # Mirrors run_integrity_audit.py C2.
+    _sg = cache.get("sovereignty_gate")
+    auto_fp = bool(isinstance(_sg, str) and re.search(r"auto[-_ ]?approv|self[-_ ]?approv", _sg, re.IGNORECASE))
+    result["auto_approve_fingerprint"] = auto_fp
+
+    if was_presented and not auto_fp:
         gate_desc = (
             f"user_gate=true (detected via {detection_method})"
             if detection_method
@@ -452,15 +466,24 @@ def audit(cache_dir: str, aiap: str, node: str, entry_path: str) -> dict:
         else "user_gate=true"
     )
     result["status"] = "SOVEREIGNTY_BYPASS"
-    result["reason"] = (
-        f"SOVEREIGNTY_BYPASS: Node '{node}' requires user gate "
-        f"({gate_desc}) "
-        f"and reached terminal status '{cache_status}' "
-        "WITHOUT ever presenting WAITING_USER to the user. "
-        "This violates Axiom 0 (Human Sovereignty). "
-        "The node must present a WAITING_USER gate before "
-        "reaching a terminal status."
-    )
+    if auto_fp:
+        result["reason"] = (
+            f"SOVEREIGNTY_BYPASS: Node '{node}' requires user gate ({gate_desc}) "
+            f"and reached terminal '{cache_status}'. A user_gates_presented entry exists "
+            f"BUT the node cache sovereignty_gate field asserts AUTO/SELF-APPROVAL "
+            f"(\"{str(_sg)[:90]}\") — the human stop was FABRICATED, not real (E3). "
+            "Violates Axiom 0 (Human Sovereignty)."
+        )
+    else:
+        result["reason"] = (
+            f"SOVEREIGNTY_BYPASS: Node '{node}' requires user gate "
+            f"({gate_desc}) "
+            f"and reached terminal status '{cache_status}' "
+            "WITHOUT ever presenting WAITING_USER to the user. "
+            "This violates Axiom 0 (Human Sovereignty). "
+            "The node must present a WAITING_USER gate before "
+            "reaching a terminal status."
+        )
     return result
 
 

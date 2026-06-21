@@ -494,6 +494,7 @@ def verify_nodes_in_path_completeness(
     violations: List[Dict] = []
     completeness_violations = 0
     gate_omissions = 0
+    entry_path_omissions = 0   # P0 fix: unconditional main-path/entry node omissions (BLOCK-worthy)
     branches_walked = 0
     branches_exempt = 0
 
@@ -629,6 +630,7 @@ def verify_nodes_in_path_completeness(
             is_gate = _is_gate_node(node_name)
             severity_level = "CRITICAL" if is_gate else "WARN"
             completeness_violations += 1
+            entry_path_omissions += 1   # P0 fix: unconditional main-path node (e.g. Start/NLU/PipelineEntry) missing = hard error -> BLOCK
             if is_gate:
                 gate_omissions += 1
 
@@ -647,16 +649,60 @@ def verify_nodes_in_path_completeness(
                 ),
             })
 
+    # NODE_SUMMARY_RENDERED CHECK (B1b v5.26.0):
+    # For each node in nodes_in_path that has been executed (present in
+    # nodes_status), verify node_summary_rendered==true. Missing or false
+    # means the orchestrator skipped step4 node info output for that node.
+    # Gate nodes -> CRITICAL (NODE_SUMMARY_OMITTED). Other nodes -> WARN.
+    nodes_status = index.get("nodes_status", {})
+    node_summary_omissions = 0
+    node_summary_gate_omissions = 0
+    if isinstance(nodes_status, dict):
+        for node_name in nodes_in_path:
+            if node_name == "endNode":
+                continue
+            ns_entry = nodes_status.get(node_name)
+            if not isinstance(ns_entry, dict):
+                continue  # Node not yet executed — skip
+            # Node was executed; check node_summary_rendered
+            rendered = ns_entry.get("node_summary_rendered", False)
+            if rendered is not True:
+                is_gate = _is_gate_node(node_name)
+                severity_level = "CRITICAL" if is_gate else "WARN"
+                node_summary_omissions += 1
+                completeness_violations += 1
+                if is_gate:
+                    node_summary_gate_omissions += 1
+                    gate_omissions += 1
+                violations.append({
+                    "node": node_name,
+                    "violation_type": "NODE_SUMMARY_OMITTED",
+                    "severity": severity_level,
+                    "is_gate_node": is_gate,
+                    "branch_decision": None,
+                    "branch_label": "node_summary_rendered",
+                    "branch_walked": True,
+                    "detail": (
+                        f"Node '{node_name}' was executed (status={ns_entry.get('status')}) "
+                        f"but node_summary_rendered is not true — orchestrator skipped or "
+                        f"degraded step4 node info output. "
+                        f"{'GATE NODE — sovereignty enforcement visibility bypassed!' if is_gate else 'Node info not rendered for user.'}"
+                    ),
+                })
+
     counts = {
         "total_graph_nodes": len(all_graph_nodes),
         "nodes_in_path_count": len(nodes_in_path),
         "completeness_violations": completeness_violations,
         "gate_omissions": gate_omissions,
+        "entry_path_omissions": entry_path_omissions,
         "decision_nodes_exempt": len(all_decision_nodes),
         "branches_walked": branches_walked,
         "branches_exempt": branches_exempt,
+        "node_summary_omissions": node_summary_omissions,
+        "node_summary_gate_omissions": node_summary_gate_omissions,
         "audit_stage": "completeness-check",
-        "audit_version": "5.13.1",
+        "audit_version": "5.26.0",
     }
     return counts, violations
 
@@ -1034,7 +1080,7 @@ def main() -> int:
 
         summary: Dict = {
             "cache_dir": cache_dir,
-            "audit_version": "5.13.1",
+            "audit_version": "5.26.0",
             "audit_stage": "completeness-check",
             "total_graph_nodes": counts.get("total_graph_nodes", 0),
             "nodes_in_path_count": counts.get("nodes_in_path_count", 0),
@@ -1043,6 +1089,8 @@ def main() -> int:
             "decision_nodes_exempt": counts.get("decision_nodes_exempt", 0),
             "branches_walked": counts.get("branches_walked", 0),
             "branches_exempt": counts.get("branches_exempt", 0),
+            "node_summary_omissions": counts.get("node_summary_omissions", 0),
+            "node_summary_gate_omissions": counts.get("node_summary_gate_omissions", 0),
             "severity": sev,
         }
         if violations:
@@ -1051,7 +1099,7 @@ def main() -> int:
         if args.json:
             print(json.dumps(summary, ensure_ascii=False))
         else:
-            print(f"=== Dispatch Audit v5.13.1 [COMPLETENESS-CHECK]: {cache_dir} ===")
+            print(f"=== Dispatch Audit v5.26.0 [COMPLETENESS-CHECK]: {cache_dir} ===")
             print(f"Total graph nodes:             {counts.get('total_graph_nodes', 0)}")
             print(f"nodes_in_path count:           {counts.get('nodes_in_path_count', 0)}")
             print(f"Completeness violations:       {comp_violations}")
@@ -1059,6 +1107,8 @@ def main() -> int:
             print(f"Decision nodes (exempt):       {counts.get('decision_nodes_exempt', 0)}")
             print(f"Branches walked:               {counts.get('branches_walked', 0)}")
             print(f"Branches exempt (unwalked):    {counts.get('branches_exempt', 0)}")
+            print(f"Node summary omissions:        {counts.get('node_summary_omissions', 0)}")
+            print(f"Node summary gate omissions:   {counts.get('node_summary_gate_omissions', 0)}")
             print(f"RESULT: [{sev}]")
             if violations:
                 print()
@@ -1066,6 +1116,7 @@ def main() -> int:
                 for v in violations:
                     print(
                         f"  {v['node']}: severity={v.get('severity', '')}, "
+                        f"type={v.get('violation_type', '')}, "
                         f"is_gate={v.get('is_gate_node', False)}, "
                         f"detail={v.get('detail', '')}"
                     )

@@ -105,6 +105,11 @@
     "retry_count": {
       "type": ["integer", "null"],
       "minimum": 0
+    },
+    "node_summary_rendered": {
+      "type": "boolean",
+      "default": false,
+      "description": "B1 v5.26.0: Machine-verifiable evidence that the orchestrator output the six-section node info (step4) for this node. Default false; set to true by orchestrator via agent_update_index.py merge after step4 output. dispatch_audit.py --completeness-check verifies this field for each executed node."
     }
   },
   "additionalProperties": true

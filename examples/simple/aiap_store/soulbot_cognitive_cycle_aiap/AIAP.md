@@ -9,7 +9,7 @@ governance_mode: NORMAL
 
 # Project Fields
 name: soulbot_cognitive_cycle
-version: "2.35.0"
+version: "2.36.0"
 pattern: E
 flow_format: mermaid
 summary: "Biologically-inspired cognitive cycle: Perceive-Reason-Feel-Decide-Act loop with metacognitive self-monitoring, memory consolidation, EU AI Act/NIST compliance. 8 modules, 71 nodes, 22 scenarios. Metacognitive state vector framework, GWT adaptive broadcast frequency, EWC catastrophic forgetting prevention, COGITATE dual-pathway ignition, emotion regulation RL integration. ThreeDimTest 4.70 (S). Pattern E architecture. Axiom 0 aligned. Protocol: AIAP V1.0.0."
@@ -21,7 +21,7 @@ tools:
       destructive: false
       idempotent: false
       open_world: false
-  - name: google_search
+  - name: web_search
     required: false
     fallback: "degrade"
     annotations:
@@ -29,7 +29,7 @@ tools:
       destructive: false
       idempotent: true
       open_world: true
-  - name: web_browser
+  - name: web_fetch
     required: false
     fallback: "degrade"
     annotations:
@@ -91,12 +91,12 @@ modules:
 identity:
   program_id: "soulbot.dev/soulbot_cognitive_cycle"
   publisher: "AIXP Labs AIXP.dev | SoulBot.dev"
-  verified_on: "2026-03-27"
-governance_hash: "519e6c2731a76571dc8a352a4b8f01db2d1cf1a87e746f1334264b1e457ad48c"
+  verified_on: "2026-06-14"
+governance_hash: "9b8bd0c600653c9d59297522b242b8f1e88bb354ea1f4f3c00fc605ba1837d95"
 quality:
-  weighted_score: 4.70
+  weighted_score: 4.665
   grade: S
-  last_pipeline: "v2.35.0"
+  last_pipeline: "v2.36.0"
 tags: [cognitive-cycle, perception, reasoning, emotion, decision, metacognition, consolidation, memory, attention, biologically-inspired]
 author: SoulBot.dev
 license: Apache-2.0
@@ -105,10 +105,10 @@ copyright: "Copyright 2026 AIXP Labs AIXP.dev | SoulBot.dev"
 # Security & Runtime Optional Fields
 trust_level:
   level: 3
-  justification: "file_system read/write limited to memory_dir (./memory/). Network access limited to user-initiated google_search and web_browser queries for factual grounding during reasoning. No autonomous destructive operations. Consolidation writes only to schema.json and context_manager.json within memory_dir."
+  justification: "file_system read/write limited to memory_dir (./memory/). Network access limited to user-initiated web_search and web_fetch queries for factual grounding during reasoning. No autonomous destructive operations. Consolidation writes only to schema.json and context_manager.json within memory_dir."
   constraints:
     - "file_system write scope limited to memory_dir (./memory/)"
-    - "network access limited to google_search and web_browser for reasoning grounding"
+    - "network access limited to web_search and web_fetch for reasoning grounding"
     - "no autonomous file deletion -- pruning only applies to internal schema entries"
     - "Axiom 0 safety veto is absolute in decision module"
     - "cycle_count hard limit of 10000 prevents runaway loops"
@@ -206,9 +206,9 @@ The Cognitive Cycle operates through 8 specialized modules in Pattern E (Package
 
 | Module | Responsibility | Tools |
 |--------|---------------|-------|
-| **main.aisop.json** | Cyclic orchestrator (12 nodes) -- Perceive->Attention->WorkingMemory->Reasoning->Emotional->Decision->Action->MetaCognition->Compliance->Consolidation->SleepCheck with back-edge to Perceive or DeepConsolidation->Halt. 6 NLU intents. | file_system, google_search, web_browser |
+| **main.aisop.json** | Cyclic orchestrator (12 nodes) -- Perceive->Attention->WorkingMemory->Reasoning->Emotional->Decision->Action->MetaCognition->Compliance->Consolidation->SleepCheck with back-edge to Perceive or DeepConsolidation->Halt. 6 NLU intents. | file_system, web_search, web_fetch |
 | **perception.aisop.json** | Sensory processing (8 nodes) -- feature extraction, salience computation (dual-pathway), novelty detection, goal-directed relevance, attention gating, multi-modal integration | file_system (read-only) |
-| **reasoning.aisop.json** | Inference engine (11 nodes) -- deductive/inductive/abductive/analogical inference, causal analysis, hypothesis formation, evidence evaluation, Bayesian belief update, goal decomposition, plan generation | file_system (read-only), google_search, web_browser |
+| **reasoning.aisop.json** | Inference engine (11 nodes) -- deductive/inductive/abductive/analogical inference, causal analysis, hypothesis formation, evidence evaluation, Bayesian belief update, goal decomposition, plan generation | file_system (read-only), web_search, web_fetch |
 | **emotion.aisop.json** | Emotional appraisal (9 nodes) -- Scherer CPM appraisal (relevance, congruence, coping, normative significance), 17 predefined emotions, emotion generation, mood regulation with inertia dampening, affective tagging, somatic markers | file_system (read-only) |
 | **decision.aisop.json** | Action selection (9 nodes) -- candidate generation, utility computation, risk assessment, emotional modulation, conflict detection/resolution, inhibitory control (Axiom 0 veto, tool availability check), action selection | file_system (read-only) |
 | **metacognition.aisop.json** | Self-monitoring (8 nodes) -- confidence calibration, reasoning quality assessment, strategy evaluation, anomaly detection (8 types), learning signal extraction, adaptive parameter tuning | file_system |
@@ -244,9 +244,15 @@ Total: 12 (main) + 8 + 11 + 9 + 9 + 8 + 5 + 9 = 71 nodes across 8 modules.
 ```
 tool_dirs/
   README.md              -- Tool directory overview, interface description, security constraints
+  mcp_server.json        -- Declarative MCP server manifest (static; mirrors the discovery card)
+.well-known/
+  mcp/
+    server-card.json     -- Static MCP Server Card (SEP-2127), served at /.well-known/mcp/server-card.json
 ```
 
-Tool directories provide MCP Server Card discovery for external tooling integration. Each tool_dirs/ entry follows AIAP Protocol Pattern E conventions for package-level tool declarations. The tool_dirs directory is optional and enables automated discovery of tool implementations by MCP-compatible runtimes.
+Tool directories provide MCP Server Card discovery for external tooling integration. Each tool_dirs/ entry follows AIAP Protocol Pattern E conventions for package-level tool declarations. The tool_dirs directory enables automated discovery of the tool surface by MCP-compatible runtimes.
+
+**v2.36.0 (A1) — claim made real (closes Y1).** The `tool_dirs/` directory and the MCP Server Card are now materialized on disk, reconciling the prior `agent_card.json` `tool_dirs` declaration with a backing artifact. The discovery card follows **SEP-2127** at the canonical path `/.well-known/mcp/server-card.json` (NOT the stale SEP-1649 `/.well-known/mcp.json`) and advertises 4 tools (start_cognitive_cycle, inspect_state, trigger_sleep, inject_stimulus) plus the memory resources. **Honest scope:** this is **static discovery metadata only** — no live MCP JSON-RPC/SSE runtime is bundled, and the card carries a `_freshness` annotation because SEP-2127 is still draft/RC as of 2026-06-14 (RC target mid-2026). The card MUST be read as discovery metadata, not as proof of a reachable MCP server.
 
 ### Memory Architecture (Pattern E)
 
@@ -268,8 +274,8 @@ memory/
 | Tool | Required | Purpose | Annotations (v2.35.0 A-1 QS-4 verified) |
 |------|----------|---------|-------------------------------------------|
 | file_system | Yes | Memory persistence (read/write schema, decay config, context) | read_only:false, destructive:false, idempotent:false, open_world:false |
-| google_search | No | Factual grounding during reasoning when working memory is insufficient | read_only:true, destructive:false, idempotent:true, open_world:true |
-| web_browser | No | Detailed content extraction for evidence evaluation | read_only:true, destructive:false, idempotent:true, open_world:true |
+| web_search | No | Factual grounding during reasoning when working memory is insufficient | read_only:true, destructive:false, idempotent:true, open_world:true |
+| web_fetch | No | Detailed content extraction for evidence evaluation | read_only:true, destructive:false, idempotent:true, open_world:true |
 
 ### Preconditions
 
@@ -308,7 +314,7 @@ memory/
 **Mitigations**:
 - Bounded parameters prevent runaway loops (cycle_count hard limit 10000)
 - Axiom 0 safety veto ensures no harm to user wellbeing (harm_risk > 0.7 threshold)
-- Read-only access to external resources (google_search, web_browser)
+- Read-only access to external resources (web_search, web_fetch)
 - Fatigue-based self-regulation with automatic sleep/consolidation
 
 ## Incident Response

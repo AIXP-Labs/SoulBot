@@ -7,19 +7,19 @@ axiom_0: Human_Sovereignty_and_Wellbeing
 governance_mode: NORMAL
 
 name: stock_analyzer
-version: "2.0.0"
+version: "2.1.0"
 pattern: C
 flow_format: "mermaid"
 summary: "美股股票分析助手 v2.0.0。MCP金融数据服务器集成(Alpha Vantage/SEC EDGAR)、Pattern C三模块架构(main+analysis+features)、SSE/WebSocket实时流数据、SEC EDGAR XBRL API直连、置信度校准、宏观经济指标(MacroContext)、DORA+AI Act双合规。技术指标(MA/RSI/MACD/BB/VWAP)、基本面(PE/EPS/Revenue)、风险(Sharpe/VaR)、情绪(Twitter/Reddit/StockTwits)、同行对比、回测、ETF、期权、趋势对比、分析师评级、内幕交易、财务健康、AI综合评估与智能追问建议、自选股管理、组合概览。10+19+12=41节点。仅供参考学习，不构成投资建议。"
 tools:
-  - name: google_search
+  - name: web_search
     required: true
     annotations:
       read_only: true
       destructive: false
       idempotent: true
       open_world: true
-  - name: web_browser
+  - name: web_fetch
     required: true
     annotations:
       read_only: true
@@ -71,11 +71,11 @@ modules:
     idempotent: false
     side_effects: [file_write]
 
-governance_hash: "82f7de5cf97b23a99be5428a27026de7f35fad121e630085a872b5488f9bbe1e"
+governance_hash: "883364030854f61e447b130f84c9a196b72fe3fb86e5ca2541a0bb228135d920"
 quality:
-  weighted_score: 4.96
+  weighted_score: 5.0
   grade: "S"
-  last_pipeline: "v2.0.0"
+  last_pipeline: "v2.1.0"
 tags: [stock, analysis, technical, fundamental, risk, sentiment, peer, backtest, ETF, options, implied-volatility, max-pain, social-sentiment, smart-followup, sector-rotation, trend-comparison, analyst-ratings, insider-trading, financial-health, finance, investment, mcp, streaming, sec-edgar, macro-economics, confidence-calibration, dora-compliance]
 author: ""
 license: Apache-2.0
@@ -86,10 +86,10 @@ trust_level:
   justification: "Financial analysis tool using public data via search and MCP servers. No user authentication. file_system limited to workspace_dir for watchlist and history storage. MCP servers are read-only data sources."
   constraints:
     - "file_system write scope limited to workspace_dir"
-    - "google_search/web_browser/mcp_* are read-only"
+    - "web_search/web_fetch/mcp_* are read-only"
     - "No personalized investment advice"
     - "No trade execution capability"
-    - "MCP servers degradable — google_search fallback"
+    - "MCP servers degradable — web_search fallback"
 permissions:
   file_system:
     scope: "./"
@@ -121,7 +121,7 @@ applicability_condition:
     - "用户查看市场概览或大盘指数"
   preconditions:
     - "workspace_dir writable"
-    - "google_search tool available"
+    - "web_search tool available"
   exclusions:
     - "提供具体买入/卖出建议"
     - "承诺或暗示投资收益"
@@ -149,7 +149,7 @@ discovery_keywords: [stock, analysis, technical, fundamental, risk, sentiment, p
 identity:
   program_id: "aiap.dev/stock_analyzer"
   publisher: ""
-  verified_on: "2026-05-12"
+  verified_on: "2026-06-14"
 ---
 
 ## 治理声明
@@ -187,7 +187,7 @@ identity:
 ### v2.0.0 变更 (MAJOR)
 
 **结构性变更 (Level A):**
-- A1: MCP Tool Integration — 添加 mcp_config.json，集成 Alpha Vantage MCP（实时行情）和 SEC EDGAR MCP（XBRL结构化数据）。MCP-first数据获取策略，google_search/web_browser作为降级后备。
+- A1: MCP Tool Integration — 添加 mcp_config.json，集成 Alpha Vantage MCP（实时行情）和 SEC EDGAR MCP（XBRL结构化数据）。MCP-first数据获取策略，web_search/web_fetch作为降级后备。
 - A2: Pattern C Upgrade — features 子图(12节点)提取为独立 features.aisop.json 模块。主模块从21节点精简至10节点。2模块→3模块。
 - A3: Real-time Streaming — agent_card.json streaming:false→true。SSE/WebSocket实时流数据架构。MCP Streamable HTTP传输协议启用。
 
@@ -235,15 +235,15 @@ identity:
 
 | 工具 | 必需 | 用途 |
 |------|------|------|
-| google_search | 是 | 搜索股票行情和市场数据 |
-| web_browser | 是 | 访问金融数据源获取详细数据 |
+| web_search | 是 | 搜索股票行情和市场数据 |
+| web_fetch | 是 | 访问金融数据源获取详细数据 |
 | file_system | 是 | 存储自选股和分析历史 |
-| mcp_alpha_vantage | 否 | Alpha Vantage MCP实时行情（降级到google_search） |
-| mcp_sec_edgar | 否 | SEC EDGAR MCP结构化数据（降级到google_search） |
+| mcp_alpha_vantage | 否 | Alpha Vantage MCP实时行情（降级到web_search） |
+| mcp_sec_edgar | 否 | SEC EDGAR MCP结构化数据（降级到web_search） |
 
 ### MCP 配置
 
-详见 `mcp_config.json`。MCP 服务器为可选依赖，不可用时自动降级到 google_search/web_browser。
+详见 `mcp_config.json`。MCP 服务器为可选依赖，不可用时自动降级到 web_search/web_fetch。
 
 ## 风险提示
 

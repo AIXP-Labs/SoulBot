@@ -1,0 +1,31 @@
+{
+  "name": "soulbot_cognitive_cycle",
+  "version": "2.36.0",
+  "protocol_version": "2026-03-26",
+  "description": "Declarative MCP server manifest for the soulbot_cognitive_cycle agent tool surface. Mirrors the static discovery card at /.well-known/mcp/server-card.json. STATIC declaration — no live runtime is bundled.",
+  "_freshness": {
+    "spec": "SEP-2127 (MCP Server Card)",
+    "spec_status": "draft/RC — NOT final as of 2026-06-14",
+    "manifest_kind": "static_declaration",
+    "discovery_card": "../.well-known/mcp/server-card.json",
+    "runtime_status": "not_implemented (static manifest only; do NOT advertise as a full MCP runtime)",
+    "generated_by": "AIAP Creator ModifyStep (A1) v2.36.0",
+    "last_reviewed": "2026-06-14"
+  },
+  "server": {
+    "type": "static",
+    "transport": ["none — static declaration"],
+    "well_known_card": "/.well-known/mcp/server-card.json"
+  },
+  "tools": [
+    { "name": "start_cognitive_cycle", "module": "soulbot_cognitive_cycle.main", "entry": "../main.aisop.json" },
+    { "name": "inspect_state", "module": "soulbot_cognitive_cycle.metacognition", "entry": "../metacognition.aisop.json" },
+    { "name": "trigger_sleep", "module": "soulbot_cognitive_cycle.consolidation", "entry": "../consolidation.aisop.json" },
+    { "name": "inject_stimulus", "module": "soulbot_cognitive_cycle.perception", "entry": "../perception.aisop.json" }
+  ],
+  "resources": [
+    { "uri": "file://memory/schema.json", "kind": "long_term_schema" },
+    { "uri": "file://memory/decay_config.json", "kind": "decay_config" },
+    { "uri": "file://memory/context_manager.json", "kind": "runtime_context" }
+  ]
+}

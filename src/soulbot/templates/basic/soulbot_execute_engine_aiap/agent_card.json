@@ -1,10 +1,10 @@
 {
   "name": "soulbot_execute_engine",
-  "version": "5.23.0",
+  "version": "5.48.0",
   "program_id": "dev.soulbot.execute_engine",
   "protocol": "AIAP V1.0.0",
   "pattern": "B+",
-  "description": "SoulBot Execute Engine v5.23.0 -- MINOR: B1 prepare_cache CJK body heuristic (absolute threshold >= 5 replaces ratio check). B2 node_engine 3-section Node Summary template (Node State + Summary + Explain). B3 user_gate tri-state mechanism (true/false/conditional). B4 agent_engine USER_SUMMARY RENDERING CONTRACT strengthened for all node types. C1-C4 version/name/history/hash sync. 4 modules, 14 nodes. 0 breaking changes. governance_hash TRI-SYNC verified.",
+  "description": "SoulBot Execute Engine — 4-module AISOP runtime (main Router + node_engine + agent_engine + normal_engine) providing intent matching, engine routing, sub-agent orchestration, crash recovery, 3-state circuit breaker, parallel dispatch, sys.* handling, NodeVerify/Decision-gate routing, interrupt relay, six-section node-info rendering, server-side agent_id, OTel SDK + OWASP ASI threat mapping, and a canonical governance hash with TRI-SYNC verification. Pattern B+ engine self-evolution lifecycle (target=runner=live, highest risk) with deterministic dispatch_plan generation, dispatch_audit, user-gate sovereignty enforcement, and version-synchronized modules. See version_history / evolution_history for the per-version changelog.",
   "capabilities": {
     "offered": [
       "intent_matching",
@@ -47,7 +47,9 @@
       "agent_mode_last_completed_advancement",
       "sovereignty_bug_protocol",
       "user_language_anchor",
-      "user_language_conflict_detection"
+      "user_language_conflict_detection",
+      "engine_self_node_info_rendering",
+      "engine_self_render_claim_audit"
     ],
     "required": [
       "file_system"
@@ -111,7 +113,7 @@
         "Plausible interaction standard applied: disclosure triggered where AI interaction is 'plausible' not just 'certain', per Commission draft Art.50 guidelines interpretation for autonomous agents"
       ],
       "watermarking_status": "NOT_REQUIRED — produces structured orchestration output, not synthetic media. Art.50(4) watermarking applies to image/audio/video.",
-      "penalties_context": "Up to 35M EUR or 7% global turnover for non-compliance",
+      "penalties_context": "Up to 15M EUR or 3% of worldwide annual turnover for non-compliance",
       "current_mitigations": "Axiom 0 forced-blocking, output_mode transparency disclosure, trust_level=3, safety_card audit trail"
     },
     "threat_mapping": {
@@ -176,17 +178,17 @@
     }
   ],
   "quality_summary": {
-    "three_dim_test_weighted": "4.955",
+    "three_dim_test_weighted": "4.949",
     "grade": "S",
     "dimensions": {
-      "cognitive": "5.000",
-      "intrinsic": "5.000",
-      "detail": "4.850"
+      "cognitive": "5.00",
+      "intrinsic": "4.92",
+      "detail": "4.95"
     },
-    "final_adjusted_score": "4.985",
-    "note": "v5.23.0 FINALIZED by ReviewFinalize (cache/80). B1 CJK body heuristic + B2 3-section Node Summary + B3 user_gate tri-state + B4 USER_SUMMARY RENDERING CONTRACT. ThreeDimTest: C=5.00 I=5.00 D=4.85 weighted=4.955 Grade S. Post-Finalize D6/D10 reconciled 4.5->5.0, final adjusted=4.985. Previous: v5.21.0 FINALIZED weighted=5.000 Grade S.",
+    "final_adjusted_score": "4.949",
+    "note": "Engine baseline scoring convention (weighted = C*0.25 + I*0.45 + D*0.30; Generate2 authoritative; dimensions reported deferred-excluded). Grade S on the long-standing high-quality plateau. Per-version changelog, regression flags, and finalize reconciliation are recorded in version_history / evolution_history, not duplicated here.",
     "status": "final"
   },
-  "governance_hash": "sha256:88a590c866beb0c034e3298528e6b270f7b530908b778e7d529c602d059bc69a",
+  "governance_hash": "97ebfb711b41321eb4f6eb023cab2fd5cfc1a210cbb90b0e6c152f2bc418a2fb",
   "hash_algorithm_version": "v1.0"
 }

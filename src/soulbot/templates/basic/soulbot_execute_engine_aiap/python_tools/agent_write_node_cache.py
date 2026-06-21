@@ -6,7 +6,20 @@ Replaces AI's manual file_system.write of node cache.
 USAGE
 =====
 
-Stdin JSON (recommended — avoids shell escape issues):
+PREFERRED — JSON from a file (zero command-line escaping risk):
+
+    python agent_write_node_cache.py \\
+      --cache_dir=cache/8 \\
+      --aiap=soulbot_creator_evolution \\
+      --node=DependencyCheck \\
+      --data-file=cache/8/_tmp_DependencyCheck.json
+
+  Write the node payload to a UTF-8 file first (e.g. with the Write tool),
+  then pass its path. The JSON NEVER touches the command line, so the
+  Windows inline-JSON failure mode (printf/echo '{...}' | python silently
+  dropping the payload) cannot occur. Priority: --data-file > --data > stdin.
+
+Stdin JSON (also avoids shell escape issues):
 
     cat <<'EOF' | python agent_write_node_cache.py \\
       --cache_dir=examples/.../cache/8 \\
@@ -21,7 +34,7 @@ Stdin JSON (recommended — avoids shell escape issues):
     }
     EOF
 
---data CLI arg (alternative):
+--data CLI arg (inline, small payloads only):
 
     python agent_write_node_cache.py \\
       --cache_dir=cache/8 \\
@@ -479,14 +492,29 @@ def main() -> int:
     parser.add_argument("--cache_dir", required=True, help="Path to the turn cache dir (e.g. .execution_cache/8/).")
     parser.add_argument("--aiap", required=True, help="AIAP name (e.g. soulbot_creator_evolution).")
     parser.add_argument("--node", required=True, help="Node name (e.g. DependencyCheck).")
-    parser.add_argument("--data", default=None, help="JSON string. If omitted, read from stdin.")
+    parser.add_argument("--data-file", default=None, help="Path to a UTF-8 file containing the JSON payload. PREFERRED over --data/stdin: the JSON never touches the command line, eliminating shell-escaping failures (the Windows inline-JSON stall).")
+    parser.add_argument("--data", default=None, help="JSON string inline (small payloads only). If omitted, read from stdin.")
     parser.add_argument("--agent_id", default=None, help="DEPRECATED (v5.5.0): agent_id is now auto-read from _index.json. This flag is ignored.")
     parser.add_argument("--dry-run", action="store_true", help="Validate + auto-fill but don't write.")
     parser.add_argument("--quiet", action="store_true", help="Only print exit code.")
     args = parser.parse_args()
 
-    # Get data from --data or stdin
-    if args.data:
+    # Get data — priority: --data-file > --data > stdin.
+    # --data-file is the canonical path: the JSON lives in a file, so the command
+    # line carries only a path. This sidesteps the Windows failure mode where
+    # `printf '{...}' | python` (or inline --data with embedded quotes) silently
+    # dropped the payload.
+    if args.data_file:
+        try:
+            _text = Path(args.data_file).read_text(encoding="utf-8")
+            data = json.loads(_text) if _text.strip() else {}
+        except FileNotFoundError:
+            print(json.dumps({"status": "error", "errors": [f"--data-file not found: {args.data_file}"]}, ensure_ascii=False))
+            return 2
+        except (OSError, json.JSONDecodeError) as e:
+            print(json.dumps({"status": "error", "errors": [f"--data-file read/parse failed: {e}"]}, ensure_ascii=False))
+            return 2
+    elif args.data:
         try:
             data = json.loads(args.data)
         except json.JSONDecodeError as e:

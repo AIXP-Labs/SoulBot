@@ -6,8 +6,8 @@
       "protocol": "AIAP V1.0.0",
       "axiom_0": "Human_Sovereignty_and_Wellbeing",
       "flow_format": "mermaid",
-      "name": "soulbot_aibp_bot_notification v2.1.0",
-      "version": "2.1.0",
+      "name": "soulbot_aibp_bot_notification v2.2.0",
+      "version": "2.2.0",
       "output_mode": {
         "L0": "Output JSON in ENGLISH: {action, event_type, subscription_id, delivery_status}",
         "L1": "Output helpfully in User's exact language and script variant",
@@ -27,8 +27,27 @@
             "idempotent": false,
             "open_world": false
           }
+        },
+        {
+          "name": "realtime_transport",
+          "required": false,
+          "description": "S5 v2.2.0: Real-time event transport for WebSocket and A2A delivery modes. Establishes a wss:// duplex channel or an A2A v1.0 JSON-RPC channel and pushes notification events to the configured peer/endpoint. Only invoked when event_streaming_config.mode in {websocket, a2a} AND permissions.network.allowed=true.",
+          "annotations": {
+            "readOnlyHint": false,
+            "destructiveHint": false,
+            "idempotentHint": false,
+            "openWorldHint": true
+          }
         }
       ],
+      "permissions": {
+        "network": {
+          "allowed": false,
+          "description": "S5 v2.2.0: Network egress for real-time event streaming. Default false (file mode is offline). Must be explicitly set true by operator to enable webhook/sse/websocket/a2a delivery. Axiom 0: operator authorizes all network egress.",
+          "allowed_endpoints": [],
+          "endpoint_schemes": ["https", "wss"]
+        }
+      },
       "parameters": {
         "action": {
           "type": "string",
@@ -82,25 +101,29 @@
           "type": "object",
           "required": false,
           "default": {"mode": "file"},
-          "description": "Event delivery configuration. Modes: 'file' (default, current behavior — writes to workspace_dir/notifications/), 'webhook' (HTTP POST to configured endpoint), 'sse' (Server-Sent Events stream). File mode is backward compatible default. Webhook and SSE are opt-in for real-time event streaming.",
-          "agentic_prompt": "Optional. Set by orchestrator or user preferences to enable real-time event delivery beyond file-based notifications. Default 'file' preserves existing behavior.",
+          "description": "Event delivery configuration. Modes: 'file' (default, current behavior — writes to workspace_dir/notifications/), 'webhook' (HTTP POST to configured endpoint), 'sse' (Server-Sent Events stream), 'websocket' (full-duplex real-time channel, S5 v2.2.0), 'a2a' (A2A v1.0 direct agent-to-agent real-time channel with signed Agent Card, S5 v2.2.0). File mode is backward compatible default. Webhook, SSE, WebSocket and A2A are opt-in for real-time event streaming.",
+          "agentic_prompt": "Optional. Set by orchestrator or user preferences to enable real-time event delivery beyond file-based notifications. Default 'file' preserves existing behavior. WebSocket and A2A modes require permissions.network.allowed=true and (for a2a) a signed Agent Card per agent_card.json a2a_v1.",
           "properties": {
             "mode": {
               "type": "string",
-              "enum": ["file", "webhook", "sse"],
+              "enum": ["file", "webhook", "sse", "websocket", "a2a"],
               "default": "file"
             },
             "endpoint_url": {
               "type": "string",
-              "description": "Required for webhook/sse modes. URL for event delivery."
+              "description": "Required for webhook/sse/websocket/a2a modes. URL for event delivery (wss:// for websocket, https:// for a2a JSON-RPC endpoint)."
             },
             "auth_token": {
               "type": "string",
-              "description": "Optional bearer token for authenticated webhook/sse endpoints."
+              "description": "Optional bearer token for authenticated webhook/sse/websocket endpoints. For a2a mode, authentication is via the JWS-signed Agent Card (not a static bearer token)."
+            },
+            "a2a_card_verification_url": {
+              "type": "string",
+              "description": "S5 v2.2.0: Required for a2a mode. URL where the peer can fetch and verify this agent's signed Agent Card (mirrors agent_card.json a2a_v1.signing.verification_url). Used for cryptographic identity verification per A2A v1.0 (JWS-over-JCS, RFC 7515/8785)."
             },
             "retry_policy": {
               "type": "object",
-              "description": "Retry configuration for webhook delivery failures.",
+              "description": "Retry configuration for webhook/websocket/a2a delivery failures.",
               "default": {"max_retries": 3, "backoff_ms": 1000}
             }
           }
@@ -208,13 +231,17 @@
           "description": "Deliver notification to operator awareness",
           "steps": [
             "step1: [ASSERT] PriorityFilter executed. Required: event, delivery_mode. | If delivery_mode = 'immediate': format notification message with event summary, source, priority badge. Return as user_message for main orchestrator to display.",
+            "step1b: REAL-TIME TRANSPORT (S5 v2.2.0) — If delivery_mode = 'immediate' AND event_streaming_config.mode in {websocket, a2a}: GUARD — require permissions.network.allowed=true (else fall back to file/user_message delivery and log 'realtime_disabled: network not permitted'). For mode='websocket': establish/reuse wss:// channel to endpoint_url via realtime_transport tool and push the formatted event payload. For mode='a2a': verify the peer's signed Agent Card (JWS-over-JCS, RFC 7515/8785) via a2a_card_verification_url and only deliver over an authenticated A2A v1.0 channel; attach this agent's signed card reference. ART.50(1) DISCLOSURE — every real-time payload MUST include an AI-system disclosure header {x_ai_disclosure: 'Automated AIBP agent notification — generated by an AI system', x_aibp_axiom_0: 'Human Sovereignty and Wellbeing'} so the receiving party knows it is interacting with AI (EU AI Act Art.50(1)). On transport failure: apply event_streaming_config.retry_policy, then fall back to file/user_message delivery.",
             "step2: If delivery_mode = 'batch': append to workspace_dir/notifications/batch_queue.json. Return {queued: true, batch_delivery_at: next_batch_time}.",
             "step3: If delivery_mode = 'deferred': append to workspace_dir/notifications/deferred_queue.json with delivery_after timestamp. Return {deferred: true, delivery_after: quiet_hours_end}.",
-            "step4: Update event status from 'pending' to 'delivered' or 'queued' or 'deferred' in events/ directory."
+            "step4: Update event status from 'pending' to 'delivered' or 'queued' or 'deferred' in events/ directory. For real-time deliveries, record transport_mode and transport_status (delivered|fell_back) in the event record."
           ],
           "constraints": [
             "Notification delivery is best-effort — failure to deliver does not block the emitting module.",
-            "All delivered notifications are logged for audit trail (Axiom 0)."
+            "All delivered notifications are logged for audit trail (Axiom 0).",
+            "REAL-TIME TRANSPORT (S5 v2.2.0): WebSocket/A2A delivery requires permissions.network.allowed=true; without it, silently fall back to file/user_message delivery — never egress to the network without explicit operator authorization.",
+            "A2A mode (S5 v2.2.0): peer identity MUST be verified via signed Agent Card (JWS-over-JCS) before any event is pushed; unverifiable peers are denied.",
+            "ART.50(1) (S5 v2.2.0): every real-time payload carries an AI-system disclosure marker — the receiving party must be informed it is interacting with an AI agent."
           ]
         },
         "GetPending": {
@@ -265,7 +292,7 @@
         "PersistState": {
           "description": "Persist notification state changes to file system",
           "steps": [
-            "step1: [ASSERT] Handler executed (ManageSubscription, MarkRead, ConfigurePreferences, or DeliverNotification). Required: state_changes, workspace_dir. | Atomic write: write to .tmp file first, then rename to final path.",
+            "step1: [ASSERT] Handler executed (ManageSubscription, MarkRead, ConfigurePreferences, or DeliverNotification). Required: target_file (path to subscriptions.json|preferences.json|events/{id}.json), updated_content (the merged/modified state object), workspace_dir. (S4 v2.2.0: ASSERT names concrete upstream-output fields.) | Atomic write: write to .tmp file first, then rename to final path.",
             "step2: Verify write success by re-reading the file."
           ],
           "constraints": [

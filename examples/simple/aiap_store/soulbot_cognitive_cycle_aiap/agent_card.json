@@ -1,7 +1,7 @@
 {
   "name": "soulbot_cognitive_cycle",
   "description": "Biologically-inspired cognitive cycle: Perceive-Reason-Feel-Decide-Act loop with metacognitive self-monitoring, memory consolidation, EU AI Act/NIST compliance. Metacognitive state vector framework, GWT adaptive broadcast frequency, EWC catastrophic forgetting prevention, COGITATE dual-pathway ignition, emotion regulation RL integration. 71 nodes across 8 modules, 22 scenarios. ThreeDimTest 4.70 (S). Pattern E architecture. Protocol: AIAP V1.0.0.",
-  "version": "2.35.0",
+  "version": "2.36.0",
   "provider": "AIXP Labs AIXP.dev | SoulBot.dev",
   "pattern": "E",
   "tags": [
@@ -104,7 +104,7 @@
       }
     },
     {
-      "name": "google_search",
+      "name": "web_search",
       "annotations": {
         "read_only": true,
         "destructive": false,
@@ -113,7 +113,7 @@
       }
     },
     {
-      "name": "web_browser",
+      "name": "web_fetch",
       "annotations": {
         "read_only": true,
         "destructive": false,
@@ -132,7 +132,18 @@
     "soulbot_cognitive_cycle.compliance",
     "soulbot_cognitive_cycle.consolidation"
   ],
-  "tool_dirs": ["tool_dirs/"],
+  "tool_dirs": [
+    "tool_dirs/"
+  ],
+  "mcp": {
+    "server_card": "/.well-known/mcp/server-card.json",
+    "server_manifest": "tool_dirs/mcp_server.json",
+    "card_kind": "static_discovery_metadata",
+    "spec": "SEP-2127",
+    "spec_status": "draft/RC (not final as of 2026-06-14)",
+    "runtime": "not_implemented (static discovery card only; not a live MCP runtime)",
+    "note": "tool_dirs/ directory + MCP discovery card materialized in v2.36.0 (A1), closing the prior tool_dirs claim-vs-artifact gap (Y1)."
+  },
   "status": "active",
   "safety_card": {
     "risk_level": "moderate",
@@ -144,5 +155,5 @@
     "generator": "AIAP Creator v1.0.0",
     "timestamp": "2026-03-29T00:00:00Z"
   },
-  "governance_hash": "519e6c2731a76571dc8a352a4b8f01db2d1cf1a87e746f1334264b1e457ad48c"
+  "governance_hash": "9b8bd0c600653c9d59297522b242b8f1e88bb354ea1f4f3c00fc605ba1837d95"
 }

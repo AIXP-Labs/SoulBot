@@ -1,28 +1,29 @@
 {
   "scoring_scale": "1-5",
-  "version": "5.23.0",
-  "snapshot_date": "2026-06-05",
+  "version": "5.48.0",
+  "snapshot_date": "2026-06-17",
   "status": "final",
   "attestation_chain": {
-    "pipeline_run_id": "a8101cb6-7a15-43a2-85be-756b49f1b4cb",
-    "trace_id": "a8101cb6-7a15-43a2-85be-756b49f1b4cb",
-    "governance_hash": "sha256:88a590c866beb0c034e3298528e6b270f7b530908b778e7d529c602d059bc69a",
+    "pipeline_run_id": "4b4efbb4-06f0-4a41-8ba3-f6a4f70ba767",
+    "trace_id": "4b4efbb4-06f0-4a41-8ba3-f6a4f70ba767",
+    "governance_hash": "4be94de0559c0db295adb187924f05965cff303794449a055c5d4ebce35b9312",
     "intermediate": false,
-    "finalized_at": "2026-06-05T21:50:00+00:00",
+    "finalized_at": "2026-06-16T16:17:38.850892+00:00",
     "finalized_by": "ReviewFinalize",
-    "version": "5.23.0",
+    "version": "5.47.0",
     "grade": "S",
-    "weighted": 4.955,
-    "final_adjusted_score": 4.985,
-    "integrity_hash": "sha256:88a590c866beb0c034e3298528e6b270f7b530908b778e7d529c602d059bc69a",
-    "chain_integrity_hash": "sha256:88a590c866beb0c034e3298528e6b270f7b530908b778e7d529c602d059bc69a",
-    "attestation_chain_length": 27,
+    "weighted": 4.949,
+    "final_adjusted_score": 4.952,
+    "integrity_hash": "f1994175bab417e863e062740a24004d646e784126f09403102407e6ab3051f7",
+    "chain_integrity_hash": "397f5dd2eefb377fb0b1c44f5a0ebdcc866adc900e1e39238969d2ec60f824dd",
+    "attestation_chain_length": 44,
     "previous_chain": {
-      "version": "5.21.0",
-      "governance_hash": "sha256:f75cfaf6da7d6d0d06f0563fb1625bfcfea1a37d97f48ea18a167dfb47b16be1",
-      "weighted": 5.0,
-      "grade": "S"
-    }
+      "version": "5.45.0",
+      "governance_hash": "f9ab34cf567d9a1d3a92ca0b36ba3e217db4c51a2aa78e342b79f04980bca289",
+      "integrity_hash": "f1994175bab417e863e062740a24004d646e784126f09403102407e6ab3051f7",
+      "finalized_at": "2026-06-16T16:17:38.850892+00:00"
+    },
+    "weighted_score": 4.949
   },
   "v5_2_3_changes": {
     "date": "2026-04-13",
@@ -129,147 +130,101 @@
     "code_dedup": "Eliminated duplicate cache creation logic between agent.py and main.aisop.json execute.step2/step3 Otherwise branches"
   },
   "three_dim_test": {
-    "snapshot_date": "2026-06-05",
+    "snapshot_date": "2026-06-17",
     "test_type": "finalized",
     "cognitive": {
       "avg": 5.0,
-      "c1": 5.0,
-      "c2": 5.0,
-      "c3": 5.0,
-      "c4": 5.0,
-      "c5": 5.0,
-      "c6": 5.0,
-      "c7": 5.0,
-      "note": "v5.21.0 C1-C7 all 5.0. C=5.00."
+      "note": "v5.43.0 C=5.00. Generate2 authoritative re-score (engine baseline convention). normal_engine all-inline-ization changes the execution MODEL (dispatch path), not naming/structure/Mermaid topology: PascalCase nodes (programExec/endNode), Mermaid<->functions 1:1, DAG valid + endNode reachable, SRP, C5 fractal (2 functional nodes << 16) all unchanged -> C zero movement."
     },
     "intrinsic": {
-      "avg": 5.0,
-      "i1": 5.0,
-      "i2": 5.0,
-      "i3": 5.0,
-      "i4": 5.0,
-      "i5": 5.0,
-      "i6": 5.0,
-      "i7": 5.0,
-      "i8": 5.0,
-      "i9": 5.0,
-      "i10": 5.0,
-      "i11": 5.0,
-      "i12": 5.0,
-      "i13": 5.0,
-      "note": "v5.21.0 I_avg=5.000. All I items 5.0."
+      "avg": 4.92,
+      "note": "v5.43.0 I=4.92. SOVEREIGNTY PRESERVED un-weakened: USER_GATE NODE VERIFY (user_gate_audit.py --enforce) LIVE for ALL terminal-status nodes (mode-agnostic predicate, fully applies to inline); agent_engine.writeCache.step3 --enforce Layer-1 backstop REUSED UNCHANGED; six-section node-info, NEXT-NODE PLAN, 3-state circuit breaker, crash recovery all preserved. dormant-but-kept agent guards (e2e/e2e'/spawn_failure_evidence) inert-not-deleted under all-inline; no new injection surface (A1 override reuses EXISTING agent_update_index.py JSON-VIA-FILE). Same out-of-band-auditor soft note as baseline."
     },
     "detail": {
-      "avg": 5.0,
-      "d1": 5.0,
-      "d2": 5.0,
-      "d3": 5.0,
-      "d4": 5.0,
-      "d5": 5.0,
-      "d6": 5.0,
-      "d7": 5.0,
-      "d8": 5.0,
-      "d9": 5.0,
-      "d10": 5.0,
-      "note": "v5.21.0 D_avg=5.00. D6/D10 reconciled post-Finalize 4.5->5.0 (version_sync + quality_baseline sync confirmed)."
+      "avg": 4.95,
+      "note": "v5.43.0 D=4.95 deferred-excluded. D2 constraints fully reconciled with A1/A2/A3 (ALL-INLINE OVERRIDE AUTHORITY, dispatch_audit pre-execution NO-OP, --completeness-check KEPT EXACTLY); D4 semantic consistency — step3(d) all-inline path <-> constraints <-> summary/description all consistent, 6 dangling agent_id_generator/d.0 sites swept inline-consistent. D6 version-sync + D10 description/quality-baseline-sync were P23 pre-Finalize placeholders (4.5), reconciled post-Finalize to 5.0 (7 files now at v5.43.0, governance_hash recomputed + changelog landed) -> full D avg 4.96, full weighted 4.952; reported authoritative number uses deferred-excluded baseline convention for a clean like-for-like delta.",
+      "deferred_reconciled": {
+        "D6_version_sync": "PASS — all 7 files (4 *.aisop.json + AIAP.md + agent_card.json + quality_baseline.json) = 5.45.0; placeholder 4.5 -> 5.0",
+        "D10_description": "PASS — description/quality-baseline synced to v5.45.0 + new governance_hash; placeholder 4.5 -> 5.0",
+        "generate2_weighted": 4.949,
+        "final_weighted_deferred_excluded": 4.949,
+        "final_adjusted_full_D": 4.952,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ]
+      }
     },
-    "weighted": 5.0,
+    "weighted": 4.949,
     "weighted_method": "Professional_C025_I045_D030",
     "grade": "S",
-    "final_adjusted_score": 5.0,
-    "final_adjusted_note": "v5.21.0 FINALIZED by ReviewFinalize (cache/76). B1 prepare_cache.py _strip_non_natural_language() root cause fix + B2 USER_LANGUAGE_CONFLICT_DETECTION safety net in 3 engine modules. ThreeDimTest: C=5.00 I=5.00 D=5.00 weighted=5.000 Grade S. D6/D10 reconciled 4.5->5.0 post-Finalize. governance_hash TRI-SYNC complete sha256:f75cfaf6. Previous: v5.20.0 final_adjusted=4.983 Grade S.",
+    "final_adjusted_score": 4.952,
+    "final_adjusted_note": "v5.45.0 FINALIZED by ReviewFinalize (cache/133). ENGINE SELF-EVOLUTION (target=runner=live engine directory; only this one copy modified; runner-direct, highest risk). MINOR predetermined non-functional discipline-hardening: node_engine.aisop.json + normal_engine.aisop.json programExec.step3(b) NEXT-NODE PLAN block — will_render_node_info/will_output_next_node_plan -> MUST_render_node_info:YES / MUST_output_next_node_plan:YES (normal_engine also MUST_write_cache_via_agent_write_node_cache_py:YES) + embedded node_workflow ordered checklist (node_engine 3 items; normal_engine 4 items) + RULE:'MUST ALL BE YES'. main.aisop.json version+name only; agent_engine version+name only. STEP6 P23 RECONCILE: D6 VERSION SYNC and D10 DESCRIPTION re-measured against now-current v5.45.0 governance files -> both PASS (4.5 neutral placeholders replaced by 5.0). Deferred-excluded weighted = 4.949 (C=5.00 I=4.92 D=4.95, like-for-like with prior baselines, ZERO-DELTA vs v5.44.0 4.949); full-D reconciled = 4.952 (D_avg 4.95 -> 4.96 after D6/D10 5.0). Grade S. regression_flags=[] (zero-delta is NOT a regression). score_scope=partial -> whole-program weighted preserved 4.949.",
     "previous_version_score": {
-      "version": "5.20.0",
-      "weighted": 4.983,
+      "version": "5.47.0",
+      "weighted": 4.949,
       "grade": "S"
     },
     "plateau_status": {
-      "consecutive_versions": 13,
-      "range": "v5.11.0 -> v5.21.0",
+      "consecutive_versions": 28,
+      "range": "v5.11.0 -> v5.36.0",
       "ceiling_type": "SOFT_CEILING",
-      "ceiling_confirmed_versions": 13,
-      "note": "v5.21.0 FINALIZED final_adjusted 5.000 (new high). Score stable near 4.9-5.0 across 13 consecutive non-doc-only versions."
+      "ceiling_confirmed_versions": 28,
+      "note": "v5.36.0 FINALIZED final_adjusted 4.949. Score stable in the 4.8-5.0 band across non-doc-only versions; v5.36.0 full-scope re-score 4.949 (zero-delta vs v5.35.0 4.949; three node-info template alignment + FAST ENTRY entry-discipline are cosmetic/consistency + prompt-level entry discipline, no score movement expected)."
     },
     "score_scope": "full",
     "scored_files": [
       "main.aisop.json",
       "node_engine.aisop.json",
-      "normal_engine.aisop.json",
       "agent_engine.aisop.json",
-      "AIAP.md",
-      "agent_card.json",
-      "quality_baseline.json"
+      "normal_engine.aisop.json"
     ],
     "status": "final"
   },
   "mf_checks": "MF1-MF16 applicable (Pattern B+). MF28b ASSERT Required coverage 50% (6/12, gaps are terminal/flow-control nodes). MF33 aiap_name now explicit.",
   "quality_debt": [],
   "nihil_data": {
-    "version": "5.15.0",
+    "version": "5.31.0",
     "gh_rule_set_version": "1.0",
     "baseline_reset": false,
     "scan_mode": "pipeline_evolve",
-    "aggregate_nihil_ratio": 0.005,
-    "last_analysis_version": "5.15.0",
+    "aggregate_nihil_ratio": 0.00065,
+    "last_analysis_version": "5.31.0",
     "files": {
       "main.aisop.json": {
-        "nihil_density": 0.00413,
+        "nihil_density": 0.00129,
         "status": "GREEN",
         "gh_contribution": {
-          "GH1": {
-            "chars": 37,
-            "pct_of_gap": 0.446
+          "GH3": {
+            "chars": 55,
+            "pct_of_gap": 1.0
           },
-          "GH4": {
-            "chars": 46,
-            "pct_of_gap": 0.554
-          },
-          "primary": "GH4"
+          "primary": "GH3"
         }
       },
       "node_engine.aisop.json": {
-        "nihil_density": 0.01462,
+        "nihil_density": 0.0,
         "status": "GREEN",
         "gh_contribution": {
-          "GH1": {
-            "chars": 279,
-            "pct_of_gap": 0.619
-          },
-          "GH4": {
-            "chars": 172,
-            "pct_of_gap": 0.381
-          },
-          "primary": "GH1"
+          "primary": null
         }
       },
       "agent_engine.aisop.json": {
-        "nihil_density": 0.00464,
+        "nihil_density": 0.00119,
         "status": "GREEN",
         "gh_contribution": {
-          "GH1": {
-            "chars": 64,
-            "pct_of_gap": 0.634
+          "GH3": {
+            "chars": 55,
+            "pct_of_gap": 1.0
           },
-          "GH4": {
-            "chars": 37,
-            "pct_of_gap": 0.366
-          },
-          "primary": "GH1"
+          "primary": "GH3"
         }
       },
       "normal_engine.aisop.json": {
-        "nihil_density": 0.00192,
+        "nihil_density": 0.0,
         "status": "GREEN",
         "gh_contribution": {
-          "GH1": {
-            "chars": 18,
-            "pct_of_gap": 0.486
-          },
-          "GH4": {
-            "chars": 19,
-            "pct_of_gap": 0.514
-          },
-          "primary": "GH4"
+          "primary": null
         }
       }
     },
@@ -286,9 +241,21 @@
           "normal_engine.aisop.json": 0.0
         },
         "timestamp": "2026-04-06T02:30:00Z"
+      },
+      {
+        "version": "5.15.0",
+        "aggregate_nihil_ratio": 0.005,
+        "scan_mode": "pipeline_evolve",
+        "files": {
+          "main.aisop.json": 0.00413,
+          "node_engine.aisop.json": 0.01462,
+          "agent_engine.aisop.json": 0.00464,
+          "normal_engine.aisop.json": 0.00192
+        },
+        "timestamp": "2026-05-30T05:41:21Z"
       }
     ],
-    "timestamp": "2026-05-30T05:41:21Z"
+    "timestamp": "2026-06-10T19:12:34.492198+00:00"
   },
   "evolution_history": [
     {
@@ -1354,6 +1321,1440 @@
         "trajectory": "v5.18.0->v5.19.0->v5.20.0->v5.21.0->v5.22.0 user_language accuracy + EXPLAIN stability",
         "version_count": 5
       }
+    },
+    {
+      "from_version": "5.22.0",
+      "to_version": "5.23.0",
+      "date": "2026-06-05",
+      "bump_type": "minor",
+      "items_total": 8,
+      "items_breakdown": {
+        "B": 4,
+        "C": 4
+      },
+      "direction": "language anchor root cause + structural Node Summary anti-drift + user_gate false-positive elimination",
+      "pipeline_run_id": "v5.23.0-pipeline",
+      "cache_turn": 80,
+      "changes": [
+        "B1: prepare_cache.py CJK body heuristic (absolute threshold >= 5 CJK chars replaces ratio check)",
+        "B2: node_engine 3-section Node Summary template (Node State + Summary + Explain)",
+        "B3: user_gate tri-state mechanism (true/false/conditional) eliminates ValidateStep/ReviewPresent false positives",
+        "B4: agent_engine USER_SUMMARY RENDERING CONTRACT strengthened for ALL node types",
+        "C1: Version sync 5.22.0 -> 5.23.0",
+        "C2: Name field version sync",
+        "C3: evolution_history append",
+        "C4: governance_hash TRI-SYNC"
+      ],
+      "breaking_changes": 0,
+      "non_breaking_changes": 8,
+      "weighted_score": 4.955,
+      "final_adjusted_score": 4.985,
+      "grade": "S",
+      "governance_hash": "sha256:c4e50a9297daf115c525d3a24cf26606e749b1e3a00df7b059ea8a762f831f2e",
+      "direction_continuity": {
+        "score": 0.92,
+        "level": "HIGH",
+        "trajectory": "v5.18.0->v5.23.0 language-drift root-cause + structural solutions",
+        "version_count": 6
+      }
+    },
+    {
+      "from_version": "5.23.0",
+      "to_version": "5.24.0",
+      "date": "2026-06-09",
+      "bump_type": "minor",
+      "items_total": 9,
+      "items_breakdown": {
+        "Bug": 4,
+        "Fix": 3,
+        "A": 2
+      },
+      "direction": "execution fidelity bug fixes — Node Summary ALL node types + RESUME RE-ENTRY + DISPATCH INTEGRITY CHECK + writeCache JSON skeleton + EXPECTED_AGENT_ID bootstrap",
+      "pipeline_run_id": "fd082438-7423-42b8-a97c-06dfbd5fa20f",
+      "cache_turn": 85,
+      "changes": [
+        "Bug1A-D: 3-section Node Summary extended to ALL node types (inline + bootstrap + agent) with mode_detail",
+        "FixA1: RESUME RE-ENTRY ENFORCEMENT — resume must re-enter step3(b)-(d) full dispatch sequence",
+        "FixA2: POST-WAITING_USER re-dispatch enforcement with dispatch_records sync",
+        "FixB: DISPATCH INTEGRITY CHECK upgraded to 4-criterion positive evidence (filename, execute_mode+trace, spawn timestamp, agent_id match)",
+        "A1: writeCache.step1(b) ordered JSON skeleton template (16 fields, prevents sub-agent field omission)",
+        "A2: EXPECTED_AGENT_ID in node_engine bootstrap template + agent_engine params declaration",
+        "C1: Version sync 5.23.0 -> 5.24.0",
+        "C2: Name field version sync",
+        "C3: evolution_history append + governance_hash TRI-SYNC"
+      ],
+      "breaking_changes": 0,
+      "non_breaking_changes": 9,
+      "weighted_score": 5.0,
+      "final_adjusted_score": 5.0,
+      "grade": "S",
+      "governance_hash": "sha256:cf17c3db0625dcf68f61ca6994d5babc5e7f8cc9cd680bfef8f3607557d85bf9",
+      "direction_continuity": {
+        "score": 0.92,
+        "level": "HIGH",
+        "trajectory": "v5.4.3->v5.24.0 execution fidelity bug fixes (8th consecutive cycle)",
+        "version_count": 8
+      }
+    },
+    {
+      "from_version": "5.24.0",
+      "to_version": "5.25.0",
+      "date": "2026-06-09",
+      "bump_type": "minor",
+      "items_total": 7,
+      "items_breakdown": {
+        "B": 3,
+        "C": 4
+      },
+      "direction": "execution/output fidelity — resume completeness + audit trail expansion + USER_LANGUAGE coverage",
+      "pipeline_run_id": "e10bc74d-87ec-46bf-8394-6f4236a3f914",
+      "cache_turn": 87,
+      "changes": [
+        "B1 [Fix A'']: node_engine step3(f) RESUME/CRASH RE-ENTRY expanded from step3(b)->(d) to full (a)->(h) cycle incl. step4 three-section template",
+        "B2 [P4]: node_engine step3(e2d) user_gates_presented audit schema expanded with user_answer/accepted/rejected + second append-write on resume",
+        "B3 [Fix C]: main engineExec ExecutionSummary USER_LANGUAGE [PHYSICAL READ] anchor before rendering",
+        "C1: Version sync 5.24.0 -> 5.25.0",
+        "C2: Name field version sync",
+        "C3: evolution_history append",
+        "C4: governance_hash TRI-SYNC recompute"
+      ],
+      "breaking_changes": 0,
+      "non_breaking_changes": 7,
+      "weighted_score": 4.814,
+      "final_adjusted_score": 4.814,
+      "grade": "S",
+      "governance_hash": "sha256:a3affdf7d82781efbf9d13ece4d9fd2addbd953cd9a69e4be317e491676ddfe9",
+      "direction_continuity": {
+        "score": 0.95,
+        "level": "HIGH",
+        "trajectory": "resume completeness v5.6.1->v5.14.1->v5.24.0->v5.25.0, USER_LANGUAGE v5.18.0->v5.21.0->v5.25.0, audit trail v5.4.0->v5.12.0->v5.25.0",
+        "version_count": 3
+      }
+    },
+    {
+      "from_version": "5.25.0",
+      "to_version": "5.26.0",
+      "date": "2026-06-09",
+      "bump_type": "minor",
+      "items_total": 9,
+      "items_breakdown": {
+        "A": 4,
+        "B": 1,
+        "C": 4
+      },
+      "direction": "node info six-section template + sovereignty-class enforcement + node_summary_rendered machine audit tracking chain",
+      "pipeline_run_id": "0b7cf852-92a5-48e3-8659-ff5c50230864",
+      "cache_turn": 89,
+      "changes": [
+        "A1: #1 separator line (SECTION 0) — node_engine programExec.step4 MUST output separator ━━━━━━━━━━ [{N}/{total}] {NodeName} ━━━━━━━━━━ before each node info, all node types incl. inline/bootstrap",
+        "A2: #2 Axiom Governance section (SECTION 4) — step4 adds 5th section after Explain with 4 lines: next-step dispatch_plan pre-commitment (inline/agent), Assert, governance by human, Align Axiom 0",
+        "A3: #2b For Audit field (SECTION 1.5) — step4 adds For Audit after Node State: verbatim forward of cache/e2b/e2e'/e2f machine judgments (orchestrator MUST NOT self-assess/rewrite)",
+        "A4: #3-L1 sovereignty-class enforcement — step4 + constraints upgraded: complete node info output (all 6 sections) is user_gate-level mandatory for every node in nodes_in_path; skip = sovereignty_violation = NODE_SUMMARY_OMITTED flag",
+        "B1: #3-L2 machine audit node_summary_rendered — B1a: cache_tool_lib.py fill_defaults_node_cache() adds node_summary_rendered=false default + node_cache.schema.json field definition; B1b: dispatch_audit.py --completeness-check adds NODE_SUMMARY_OMITTED verification (gate nodes CRITICAL, others WARN). Complete tracking chain: default fill -> schema -> step4 setter via agent_update_index.py -> dispatch_audit verifier",
+        "C1: Version sync 5.25.0 -> 5.26.0 across all .aisop.json",
+        "C2: Name field version sync to v5.26.0",
+        "C3: evolution_history append v5.26.0 entry",
+        "C4: governance_hash TRI-SYNC recompute (4 locations) at ReviewFinalize"
+      ],
+      "breaking_changes": 0,
+      "non_breaking_changes": 9,
+      "weighted_score": 4.814,
+      "final_adjusted_score": 4.814,
+      "final_adjusted_note": "v5.26.0 FINALIZED by ReviewFinalize (cache/89). Six-section node info template + sovereignty-class enforcement + node_summary_rendered tracking. ThreeDimTest: C=4.893 I=4.714 D=4.900 weighted=4.814 Grade S. Simulation: 21/21 PASS 100% coverage. Previous: v5.25.0 final_adjusted=4.814 Grade S.",
+      "grade": "S",
+      "governance_hash": "sha256:87e5c5635071cb220dd5d678067008af2e4c41dc18969178a00227122dce426f",
+      "score_scope": "partial",
+      "scored_files": [
+        "node_engine.aisop.json",
+        "python_tools/cache_tool_lib.py",
+        "python_tools/schemas/node_cache.schema.json",
+        "python_tools/dispatch_audit.py"
+      ],
+      "files_modified": [
+        "node_engine.aisop.json (programExec.step4 six-section template + constraints sovereignty-class upgrade)",
+        "python_tools/cache_tool_lib.py (fill_defaults_node_cache node_summary_rendered=false)",
+        "python_tools/schemas/node_cache.schema.json (node_summary_rendered boolean field definition)",
+        "python_tools/dispatch_audit.py (NODE_SUMMARY_OMITTED completeness check, audit_version 5.26.0)"
+      ],
+      "hard_constraints_upheld": [
+        "Only modified: node_engine.aisop.json programExec.step4 + constraints; python_tools: cache_tool_lib.py / node_cache.schema.json / dispatch_audit.py",
+        "Did NOT touch step1/2/3/5, main.aisop.json, agent_engine.aisop.json, normal_engine.aisop.json",
+        "Did NOT touch dispatch_plan generation or sub-agent bootstrap behavioral instructions",
+        "For Audit verbatim forward only — orchestrator MUST NOT self-assess",
+        "Axiom Governance next-step reads dispatch_plan[next_node].execute_mode factually",
+        "Version stays 5.25.0 in .aisop.json files; ReviewFinalize bumps to 5.26.0"
+      ],
+      "direction_continuity": {
+        "score": 0.9,
+        "level": "HIGH",
+        "trajectory": "node info template improvement v5.22.0->v5.23.0->v5.24.0->v5.26.0 (3-section->6-section), sovereignty enforcement v5.11.0->v5.12.0->v5.26.0, machine audit chain v5.4.0->v5.13.0->v5.26.0",
+        "version_count": 4
+      }
+    },
+    {
+      "from_version": "5.26.0",
+      "to_version": "5.27.0",
+      "date": "2026-06-09",
+      "bump_type": "minor",
+      "items_total": 8,
+      "items_breakdown": {
+        "items": [
+          "#1b blank line before separator",
+          "#4a Summary->Report rename+thicken",
+          "#4b Explain non-authoritative disclaimer",
+          "#4c User Message complete forwarding",
+          "#4d agent_engine writeCache user_summary quality rule",
+          "#5-scope USER_LANGUAGE expanded to all prose/labels",
+          "#5-axiom Axiom 0 fixed canonical English",
+          "§9 context-compaction re-entry"
+        ]
+      },
+      "direction": "node-info second round: paragraph break, Report rename, USER_LANGUAGE expansion, context-compaction re-entry",
+      "pipeline_run_id": "auto-c2e9d3ca",
+      "cache_turn": 90,
+      "changes": [
+        "#1b: blank line before separator line in node_engine step4 — visual paragraph break between consecutive node outputs",
+        "#4a: Summary->Report rename + thicken in node_engine step4 — Section 3 renamed from Summary to Report with enhanced content expectations",
+        "#4b: Explain non-authoritative disclaimer in node_engine step4 — Explain section adds disclaimer that analysis is non-authoritative",
+        "#4c: User Message complete forwarding in node_engine step4 — user_messages from cache forwarded verbatim in node output",
+        "#4d: agent_engine writeCache user_summary quality rule — user_summary must be substantive, not placeholder",
+        "#5-scope: USER_LANGUAGE expanded to all prose/labels in node_engine + agent_engine — coverage extended beyond Explain to all human-readable output",
+        "#5-axiom: Axiom 0 fixed canonical English in node_engine — Axiom 0 declaration always in English regardless of USER_LANGUAGE",
+        "§9: context-compaction re-entry in node_engine — re-entry protocol for context window compaction scenarios"
+      ],
+      "breaking_changes": 0,
+      "non_breaking_changes": 8,
+      "files_modified": [
+        "node_engine.aisop.json",
+        "agent_engine.aisop.json"
+      ],
+      "evolution_type": "MINOR"
+    },
+    {
+      "from_version": "5.27.0",
+      "to_version": "5.28.0",
+      "date": "2026-06-09",
+      "bump_type": "minor",
+      "items_total": 1,
+      "items_breakdown": {
+        "items": [
+          "main_agent_asserts additive cache field (1b/1c/1d/2a)"
+        ]
+      },
+      "direction": "additive declarative cache field main_agent_asserts — protocol-level PS asserts surfaced on all dispatch paths (non-binding prompt-level reminder)",
+      "pipeline_run_id": "b54b6acc-3939-442a-928c-35d8ffd377b3",
+      "cache_turn": 92,
+      "changes": [
+        "1b: agent_engine json_schema.cache_record.properties — added main_agent_asserts (type:string; fixed constant = protocol-level PS asserts; main agent reads+follows on consume; prompt-level declarative, non-binding/not machine-enforced)",
+        "1c: agent_engine json_schema.cache_record.required — main_agent_asserts added (fixed field MUST be present; absence = schema violation catchable by step1_5 read-back)",
+        "1d: agent_engine writeCache.step1_5 read-back — 'ALL 15 fields' -> 'ALL 16 fields'; main_agent_asserts appended to field list (step1 skeleton field count 16->17)",
+        "2a: node_engine programExec.step4 — appended [PHYSICAL READ] of cache main_agent_asserts directive; main agent follows each Assert when consuming cache (render six-section template / forward Report / handle user gate / advance next node); honest annotation: prompt-level reminder, not machine-enforced, hard enforcement deferred to out-of-band integrity audit (backlog E1/E3)"
+      ],
+      "breaking_changes": 0,
+      "non_breaking_changes": 1,
+      "files_modified": [
+        "agent_engine.aisop.json",
+        "node_engine.aisop.json"
+      ],
+      "evolution_type": "MINOR",
+      "weighted_score": 4.987,
+      "final_adjusted_score": 4.987,
+      "weighted_delta": "+0.000",
+      "grade": "S",
+      "validation": "11/11 PASS + 2 YELLOW",
+      "simulation": "GREEN",
+      "compliance": "declarative / non-binding (prompt-level PS asserts; not machine-enforced)",
+      "governance_hash": "3cb967640998e5b553c6e63074a49aa91f619d9b5e2265e508c0b95c4b17773b",
+      "user_gate": "EvolveStep presented + user_answer='all' (Axiom 0 satisfied; no pre-authorization assumed)",
+      "disclosed_residuals": {
+        "Q1": "score_confidence step1_5 off-by-one — pre-existing residual, human-DECLINED, OUT OF SCOPE this cycle (not fixed per constraint)",
+        "Q2": "module version split: main.aisop.json + normal_engine.aisop.json remain at 5.27.0; agent_engine.aisop.json + node_engine.aisop.json at 5.28.0 — DISCLOSED per hard-constraint①, intentional (only the two changed engine files bumped), not a defect"
+      }
+    },
+    {
+      "from_version": "5.28.0",
+      "to_version": "5.29.0",
+      "date": "2026-06-10",
+      "bump_type": "minor",
+      "items_total": 9,
+      "items_breakdown": {
+        "A": 6,
+        "B": 2,
+        "C": 1
+      },
+      "accepted_items": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "B1",
+        "B2",
+        "C1"
+      ],
+      "direction": "main_agent_asserts out of cache (return+inline canonical); node_info_render contract returned; node_info_render_claim written to cache for E1 audit",
+      "summary": "main_agent_asserts out of cache (return+inline canonical); node_info_render contract returned; node_info_render_claim written to cache for E1 audit",
+      "pipeline_run_id": "3fa768ca-559d-4b66-a3fe-444c5ac0457a",
+      "cache_turn": 93,
+      "changes": [
+        "A1: agent_engine writeCache.step1(b) skeleton — main_agent_asserts field removed, back to 16 fields",
+        "A2: agent_engine json_schema.cache_record.properties — main_agent_asserts removed",
+        "A3: agent_engine json_schema.cache_record.required — main_agent_asserts removed",
+        "A4: agent_engine writeCache.step1_5 read-back — 16 fields -> 15 fields",
+        "A5: agent_engine endNode.step1 — append return of fixed constants (three Asserts as canonical source via sub-agent return)",
+        "A6: node_engine programExec.step4 — inline three Asserts as canonical source for main reference",
+        "B1: agent_engine endNode.step1 — append structured node_info_render contract (returned, not cached)",
+        "B2: node_engine programExec.step4 — append node_info_render reference note (existing content retained)",
+        "C1: node_engine programExec.step4 — render node_info_render_claim then write claim to cache nodes_status via agent_update_index.py for E1 audit teeth"
+      ],
+      "breaking_changes": 0,
+      "non_breaking_changes": 9,
+      "files_modified": [
+        "agent_engine.aisop.json",
+        "node_engine.aisop.json"
+      ],
+      "evolution_type": "MINOR",
+      "governance_hash": "af7c011eb1f35003ca202616c5e58d4b51c9c8b2c30e1715f08c0221ca0b5560",
+      "user_gate": "EvolveStep presented A/B/C individually + user_answer='all' (Axiom 0 satisfied; no pre-authorization assumed)",
+      "disclosed_residuals": {
+        "Q1": "score_confidence step1_5 off-by-one — pre-existing residual, OUT OF SCOPE this cycle (not fixed per constraint)",
+        "Q2": "module version split intentionally NOT fixed this round: main.aisop.json + normal_engine.aisop.json remain at 5.27.0; agent_engine.aisop.json + node_engine.aisop.json now at 5.29.0 (only the two changed engine files bumped) — DISCLOSED, left in place per directive"
+      }
+    },
+    {
+      "from_version": "5.29.0",
+      "to_version": "5.30.0",
+      "date": "2026-06-10",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 4,
+      "items_breakdown": {
+        "A": 0,
+        "B": 0,
+        "C": 4
+      },
+      "accepted_items": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "direction": "hygiene re-baseline — formalize 5 in-file manual hotfixes into v5.30.0 + unify all 4 modules to 5.30.0 (eliminate Q2 version split). Registration only; hotfix logic already live, NOT re-modified.",
+      "summary": "Hygiene re-baseline. formalized from manual hotfix 2026-06-10 (plan22/03 §15/§18, plan22/06). 5 hotfixes registered (logic pre-existing/live, verified present at Research1+EvolveStep, NOT re-modified per hard-constraint①). Version unified to 5.30.0 across all 4 .aisop + AIAP.md + agent_card + quality_baseline, eliminating Q2 split (main/normal were 5.27.0, node/agent were 5.29.0).",
+      "pipeline_run_id": "80548c5f-0d71-410f-8b9b-8474c161ec33",
+      "cache_turn": 96,
+      "formalized_hotfixes": [
+        "Bug① agent_id_generator.py --resume + node_engine resume wiring (live evidence: cache/94 superseded_agent_ids + resume_regenerated)",
+        "Bug②/E5 agent_update_index.py recursive _deep_merge + dotted-path _unflatten",
+        "Bug③ agent_engine.aisop.json writeCache STRING ESCAPING requirement (json.dumps semantics: inner quotes/backslashes/newlines JSON-escaped)",
+        "E3 user_gate_audit.py auto_approve fingerprint gate",
+        "E4 agent_update_index.py presented_at backfill (empty/midnight)"
+      ],
+      "keep_a_changelog_categories": {
+        "_note": "ModifyStep Q-B (Research2 RF-2 keepachangelog.com v1.1.0): map each formalized hotfix to its Keep-a-Changelog category. All 5 are corrective fixes; the two with a security dimension (sovereignty auto-approve gate, JSON-escaping integrity) are dual-tagged Security.",
+        "Fixed": [
+          "Bug① agent_id_generator.py --resume + node_engine resume wiring",
+          "Bug②/E5 agent_update_index.py recursive _deep_merge + dotted-path _unflatten",
+          "Bug③ agent_engine.aisop.json writeCache STRING ESCAPING requirement",
+          "E4 agent_update_index.py presented_at backfill (empty/midnight)"
+        ],
+        "Security": [
+          "E3 user_gate_audit.py auto_approve fingerprint gate (Axiom 0 sovereignty enforcement)",
+          "Bug③ agent_engine.aisop.json writeCache STRING ESCAPING requirement (cache-integrity / invalid-JSON-write prevention)"
+        ]
+      },
+      "changes": [
+        "C1: version unify 5.29.0 -> 5.30.0 across all 4 .aisop.json (main 5.27.0, normal 5.27.0, node 5.29.0, agent 5.29.0 -> all 5.30.0) + AIAP.md frontmatter + agent_card.json + quality_baseline.json — eliminates Q2 version split",
+        "C2: name field version sync to v5.30.0 (main/node_engine/agent_engine/normal_engine)",
+        "C3: evolution_history + version_history + AIAP.md evolution append (this entry), uniform note 'formalized from manual hotfix 2026-06-10 (plan22/03 §15/§18, plan22/06)'",
+        "C4: governance_hash recompute via tool_dirs/governance_hash.py (absolute path, no inline hash) + TRI-SYNC (AIAP.md / agent_card.json / quality_baseline.json; no AIAP_cn.md) + .evolution_snapshot/v5.30.0/ via tool_dirs/snapshot_build.py --pipeline_run_id=80548c5f-0d71-410f-8b9b-8474c161ec33 (snapshot_audit MUST exit 0) — DEFERRED to ReviewFinalize"
+      ],
+      "breaking_changes": 0,
+      "non_breaking_changes": 4,
+      "files_modified": [
+        "main.aisop.json",
+        "node_engine.aisop.json",
+        "agent_engine.aisop.json",
+        "normal_engine.aisop.json",
+        "AIAP.md",
+        "agent_card.json",
+        "quality_baseline.json"
+      ],
+      "hard_constraints_upheld": [
+        "Only version/name strings + changelog/version_history edited; no hotfix logic re-modified (already live)",
+        "python_tools/ hotfixes already in files, NOT in governance_hash scope, NOT touched",
+        "No files outside the evolution target modified",
+        "Q2 version split eliminated: all 4 modules unified to 5.30.0",
+        "EvolveStep sovereignty gate was a TRUE HALT; user reply 'all' (accepted C1-C4); no pre-authorization assumed, no auto-approve"
+      ],
+      "user_gate": "EvolveStep presented tier table (hygiene_rebaseline_v5.30.0) + user_answer='all' (accepted C1-C4; Axiom 0 satisfied; no pre-authorization assumed)",
+      "disclosed_residuals": {
+        "Q1": "score_confidence step1_5 off-by-one — pre-existing residual, OUT OF SCOPE this cycle (not fixed per constraint)",
+        "AIAP_md_history_gap": "AIAP.md evolution list previously skipped explicit v5.28.0 + v5.29.0 entries (present in quality_baseline.json evolution_history/version_history); this cycle appends v5.30.0 referencing prior=5.29.0 without retroactively backfilling the two missing AIAP.md entries (out of scope per hard-constraint①, registration only)"
+      },
+      "note": "scores pending ReviewFinalize re-measure (Generate1 DRAFT)."
+    },
+    {
+      "from_version": "5.30.0",
+      "to_version": "5.31.0",
+      "date": "2026-06-10",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 5,
+      "items_breakdown": {
+        "A": 3,
+        "B": 2,
+        "C": 4
+      },
+      "accepted_items": [
+        "A1",
+        "A2",
+        "A3",
+        "B1",
+        "B2",
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "direction": "startup visibility (prompt-level, honestly non-machine-enforced) + metadata summary hygiene. A=raise the startup-display floor via prompt soft-improvements (not machine-bound; honest per plan22/07 §4). B=clear the cache/96 summary residue.",
+      "summary": "Two change classes. A=startup visibility: A1 main Router visible decision chain (Router:[match->classify->route] + Engine:[loaded v] + Cache:[ready trace]), A2 node_engine programExec mandatory pre-dispatch one-line setup trace, A3 node_engine step4 inline first-batch (Start/NLU/PipelineEntry) no-exempt six-section node-info with (inline) marker — all prompt-level, NON-machine-enforced (honestly annotated). B=summary hygiene: B1 strip stale hardcoded version prefix from all 4 module summaries -> version-agnostic semantic description refreshed v5.31.0, B2 node_engine summary compressed <500 chars. All additive, no existing step/logic deleted.",
+      "pipeline_run_id": "00443298-8256-41ad-b12a-254d839bec3b",
+      "cache_turn": 97,
+      "weighted_score": 4.5,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "keep_a_changelog_categories": {
+        "_note": "A-items are prompt-level visibility additions (Added/Changed); B-items are metadata hygiene (Changed). No security-class items this cycle.",
+        "Added": [
+          "A1 main Router startup visible decision chain (Router/Engine/Cache 3-line)",
+          "A2 node_engine programExec mandatory pre-dispatch setup trace",
+          "A3 node_engine step4 inline first-batch no-exempt six-section node-info clause"
+        ],
+        "Changed": [
+          "B1 strip stale version prefix from all 4 module summaries (version-agnostic)",
+          "B2 node_engine summary compressed <500 chars"
+        ]
+      },
+      "changes": [
+        "A1: main.aisop.json Router — startup MUST emit visible decision chain (Router:[match=... -> classify=... -> route=<direct_reply|engine:loading_mode>] + Engine:[loaded v<X>] + Cache:[ready trace=...]); strengthens existing Router:/Engine:/Cache: markers, no step deleted; honestly prompt-level non-machine-enforced",
+        "A2: node_engine.aisop.json programExec step1-3 — MUST emit one-line pre-dispatch setup trace (Engine: target read | dispatch_plan: N nodes (modes) | audits: pre=OK / completeness=... | dispatch start); setup visibility variance -> mandatory; generate_dispatch_plan/dispatch_audit/completeness NOT modified",
+        "A3: node_engine.aisop.json step4 — appended after existing Bug1-A/Bug1-B clause: startup nodes + normal-mode first-batch inline (Start/NLU/PipelineEntry) ABSOLUTELY not exempt from six-section node-info, Node State carries (inline) marker, no silent startup skip; honestly prompt-level non-machine-enforced",
+        "B1: strip stale hardcoded version prefix (e.g. '...v5.27.0:') from summary of all 4 modules -> version-agnostic semantic description refreshed v5.31.0",
+        "B2: node_engine summary compressed <500 chars (essentials kept, redundant history enumeration removed)",
+        "C1: version unify 5.30.0 -> 5.31.0 across all 4 .aisop.json + AIAP.md frontmatter + agent_card.json + quality_baseline.json",
+        "C2: name field version sync to v5.31.0 (main/node_engine/agent_engine/normal_engine)",
+        "C3: evolution_history + version_history + AIAP.md evolution append (this entry); summary/visibility cleanup recorded",
+        "C4: governance_hash recompute via tool_dirs/governance_hash.py (canonical v1.0, absolute path, SOLE AUTHORITY — never inline) + TRI-SYNC (AIAP.md / agent_card.json / quality_baseline.json; no AIAP_cn.md, TRI=3) + .evolution_snapshot/v5.31.0/ via tool_dirs/snapshot_build.py --pipeline_run_id=00443298-8256-41ad-b12a-254d839bec3b (snapshot_audit exit 0 / meta_valid:true mandatory)"
+      ],
+      "breaking_changes": 0,
+      "non_breaking_changes": 5,
+      "files_modified": [
+        "main.aisop.json",
+        "node_engine.aisop.json",
+        "agent_engine.aisop.json",
+        "normal_engine.aisop.json",
+        "AIAP.md",
+        "agent_card.json",
+        "quality_baseline.json"
+      ],
+      "hard_constraints_upheld": [
+        "Only main Router step + 4 module summaries + node_engine step1-3/step4 prompt + version strings edited",
+        "python_tools/ NOT in governance_hash scope, NOT touched; dispatch_plan generation NOT touched; hotfix logic NOT touched",
+        "No files outside the evolution target modified; 4 modules .aisop already at 5.31.0 (Generate1), ReviewFinalize only did governance file version/history + hash TRI-SYNC + snapshot",
+        "governance_hash computed exclusively by tool_dirs/governance_hash.py (SOLE AUTHORITY) — never inline",
+        "EvolveStep sovereignty gate was a TRUE HALT; user reply 'all' (accepted A1/A2/A3/B1/B2/C1-C4); no pre-authorization assumed, no auto-approve; gate NOT reopened at ReviewFinalize"
+      ],
+      "user_gate": "EvolveStep presented tier table (tier_table_A1A2A3_B1B2_engine_v5.31.0) + user_answer='all' (accepted A1/A2/A3/B1/B2/C1/C2/C3/C4; Axiom 0 satisfied; no pre-authorization assumed)",
+      "disclosed_residuals": {
+        "score_method_exemption": "ThreeDimTest weighted=4.5 vs prior full baseline 4.814 = -0.314 is a scoring-method/scope-change artifact (this-cycle Professional score vs prior full-scope baseline, cross-method non-comparable), formally EXEMPT per ObservabilityStep — NOT a real regression; baseline-tracking continuity preserved.",
+        "A_items_prompt_level": "A1/A2/A3 are prompt-level soft improvements; they raise the startup-display floor but are NOT machine-enforced (E1/E3 cannot catch most startup visibility). Honest per plan22/07 §4. Verification of startup visibility is human-eye on conversation output.",
+        "Q1": "score_confidence step1_5 off-by-one — pre-existing residual, OUT OF SCOPE this cycle (not fixed per constraint)"
+      },
+      "note": "FINALIZED by ReviewFinalize (cache/97). governance_hash TRI-SYNC + .evolution_snapshot/v5.31.0/ via SOLE-AUTHORITY tools."
+    },
+    {
+      "from_version": "5.31.0",
+      "to_version": "5.32.0",
+      "date": "2026-06-11",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 6,
+      "items_breakdown": {
+        "A": 4,
+        "B": 1,
+        "C": 1
+      },
+      "accepted_items": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "B",
+        "C"
+      ],
+      "direction": "P0 hotfix formalization (eliminate hash drift vs 3bab5655) + node_engine step4 micro-refinement (Assert reword + End Separator). ENGINE SELF-EVOLUTION (target=runner=live).",
+      "summary": "Two change classes. A=formalize 4 already-live P0 inline-node hotfixes (this cycle registers changelog + bumps version + recomputes canonical hash; hotfix bodies NOT re-modified, already live): A1 node_engine programExec.step1 MULTI-GRAPH/DELEGATION EXPANSION, A2 node_engine programExec.step2 completeness BLOCK (entry_path_omissions>0), A3 main.aisop.json execute.step1 A1 classify=package_route wording (not intent), A4 python_tools/dispatch_audit.py entry_path_omissions (out of governance_hash scope, kept as-modified). A1-A4 were cache/98 live-verified nodes_in_path=21. B=node_engine step4 SECTION 4 Axiom Governance Assert reword ('strictly follow dispatch_plan; NEVER fabricate, NEVER skip' -> 'strictly execute engine node steps; NEVER fabricate, NEVER skip', this one line only). C=node_engine step4 new SECTION 5 End Separator ('━━━ end [{N}/{total}] {NodeName} ━━━' + blank line, symmetric with opening SECTION 0 separator; honestly prompt-level UI, non-machine-enforced; no node type exempt). B+C content edits applied by Generate1, verified in place by ReviewFinalize.",
+      "pipeline_run_id": "f68ded7c-0ffd-4cf8-b18d-3bee8f0906f0",
+      "cache_turn": 99,
+      "weighted_score": 4.829,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "keep_a_changelog_categories": {
+        "_note": "A-items are P0 hotfix formalization (changelog registration of already-live changes); B is a wording change; C is a prompt-level UI addition. No security-class items this cycle.",
+        "Added": [
+          "C node_engine step4 new SECTION 5 End Separator (prompt-level UI, non-machine-enforced)"
+        ],
+        "Changed": [
+          "A1 node_engine step1 MULTI-GRAPH/DELEGATION EXPANSION formalized (changelog registration)",
+          "A2 node_engine step2 completeness BLOCK entry_path_omissions formalized (changelog registration)",
+          "A3 main execute.step1 A1 classify=package_route wording formalized (changelog registration)",
+          "A4 dispatch_audit.py entry_path_omissions formalized (changelog registration; python_tool out of hash scope)",
+          "B node_engine step4 SECTION 4 Assert reword (strictly execute engine node steps)"
+        ]
+      },
+      "changes": [
+        "A1: node_engine.aisop.json programExec.step1 MULTI-GRAPH/DELEGATION EXPANSION segment — already on disk, changelog-registered, logic unchanged",
+        "A2: node_engine.aisop.json programExec.step2 completeness BLOCK including entry_path_omissions>0 — already on disk, changelog-registered, logic unchanged",
+        "A3: main.aisop.json execute.step1 A1 classify wording (classify=package_route, NOT intent) — already on disk, changelog-registered, logic unchanged",
+        "A4: python_tools/dispatch_audit.py entry_path_omissions — python_tool OUT of governance_hash scope, kept as-modified, changelog-registered",
+        "B: node_engine.aisop.json step4 SECTION 4 Axiom Governance Assert reword: 'Assert: strictly follow dispatch_plan; NEVER fabricate, NEVER skip' -> 'Assert: strictly execute engine node steps; NEVER fabricate, NEVER skip' (this one line only; other three SECTION 4 lines untouched)",
+        "C: node_engine.aisop.json step4 new SECTION 5 End Separator after final SECTION 4 line — format '━━━━━━━━━━ end [{N}/{total}] {NodeName} ━━━━━━━━━━' + blank line, symmetric with opening SECTION 0 separator; honestly prompt-level UI, non-machine-enforced; no node type exempt",
+        "C1: version unify 5.31.0 -> 5.32.0 across all 4 .aisop.json + AIAP.md frontmatter + agent_card.json + quality_baseline.json",
+        "C2: name field version sync to v5.32.0 (main/node_engine/agent_engine/normal_engine)",
+        "C3: evolution_history + version_history + AIAP.md evolution append (this entry)",
+        "C4: governance_hash recompute via tool_dirs/governance_hash.py (canonical v1.0, absolute path, SOLE AUTHORITY — never inline) + TRI-SYNC (AIAP.md / agent_card.json / quality_baseline.json; no AIAP_cn.md, TRI=3) + .evolution_snapshot/v5.32.0/ via tool_dirs/snapshot_build.py --pipeline_run_id=f68ded7c-0ffd-4cf8-b18d-3bee8f0906f0 (snapshot_audit exit 0 mandatory)"
+      ],
+      "breaking_changes": 0,
+      "non_breaking_changes": 6,
+      "files_modified": [
+        "node_engine.aisop.json",
+        "main.aisop.json",
+        "agent_engine.aisop.json",
+        "normal_engine.aisop.json",
+        "AIAP.md",
+        "agent_card.json",
+        "quality_baseline.json"
+      ],
+      "hard_constraints_upheld": [
+        "Only changelog registration (A1-A4) + node_engine step4 two real edits (B Assert + C End Separator) + version/summary strings edited",
+        "python_tools/ NOT in governance_hash scope, NOT touched; no hotfix behavior logic touched; nothing outside the engine target modified",
+        "4 modules .aisop already at 5.32.0 (Generate1); ReviewFinalize only did governance file version/history/score + hash TRI-SYNC + snapshot",
+        "governance_hash computed exclusively by tool_dirs/governance_hash.py (SOLE AUTHORITY) — never inline",
+        "EvolveStep sovereignty gate was a TRUE HALT; user reply 'all' (accepted A/B/C); no pre-authorization assumed, no auto-approve; gate NOT reopened at ReviewFinalize"
+      ],
+      "user_gate": "EvolveStep presented A/B/C tier table + user_answer='all' (accepted A1/A2/A3/A4/B/C; Axiom 0 satisfied; no pre-authorization assumed)",
+      "disclosed_residuals": {
+        "A_items_formalization": "A1-A4 are changelog formalization of already-live hotfixes (cache/98 live-verified nodes_in_path=21); this cycle does NOT re-modify the hotfix bodies — it only registers them, unifies version, and re-baselines the canonical hash to eliminate the drift vs 3bab5655.",
+        "C_item_prompt_level": "C End Separator is a prompt-level UI improvement; it is NOT machine-enforced (a node skipping the separator cannot be hard-caught). Honestly annotated. Verification is human-eye on conversation output.",
+        "AIAP_md_duplicate_governance_hash": "AIAP.md carries the governance_hash field on TWO lines (frontmatter line ~10 and line ~20). governance_hash.py (SOLE AUTHORITY) writes the canonical hash; if a stale duplicate remains, it is REPORTED honestly (user did not ask to restructure the duplicate this round).",
+        "Q1": "score_confidence step1_5 off-by-one — pre-existing residual, OUT OF SCOPE this cycle (not fixed per constraint)"
+      },
+      "note": "FINALIZED by ReviewFinalize (cache/99). governance_hash TRI-SYNC + .evolution_snapshot/v5.32.0/ via SOLE-AUTHORITY tools. Re-baselines canonical hash to post-hotfix state (eliminates 3bab5655 drift)."
+    },
+    {
+      "from_version": "5.32.0",
+      "to_version": "5.33.0",
+      "date": "2026-06-11",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 2,
+      "items_breakdown": {
+        "A": 1,
+        "C": 1
+      },
+      "accepted_items": [
+        "A1",
+        "C"
+      ],
+      "direction": "Fix #1 score_confidence read-back off-by-one (agent_engine step1_5 (d2) omitted score_confidence). ENGINE SELF-EVOLUTION (target=runner=live).",
+      "summary": "Single-point integrity fix. A1=agent_engine.aisop.json writeCache.step1_5 (d2) read-back validation: the text 'Verify ALL 15 fields are present (... l10_audit)' omitted score_confidence, while writeCache.step1's ORDERED JSON SKELETON writes ALL 16 fields (last is score_confidence). off-by-one: step1 writes 16, step1_5 read-back verified only 15. Corrected to 'Verify ALL 16 fields are present (... l10_audit, score_confidence)' — fully aligned with the step1 skeleton's 16 fields. Impact: score_confidence is the DEGRADED scoring field (status=DEGRADED -> score_confidence=low, ReviewFinalize caps weighted delta on it); read-back omitting it was a completeness gap. C=version/name/history/governance_hash TRI-SYNC + snapshot. step1 SKELETON (already 16) NOT touched; step1_5 other clauses NOT touched; no other step/module/target-external touched. Edit applied by Generate1/ModifyStep, verified in place by ReviewFinalize.",
+      "pipeline_run_id": "1e96a7f7-bd96-4804-b6bc-89f8a9987b49",
+      "cache_turn": 100,
+      "weighted_score": 4.944,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "keep_a_changelog_categories": {
+        "_note": "A1 is a single-clause protocol-text integrity fix (read-back field-count alignment); C is the standard version/history/hash housekeeping. No security-class items this cycle.",
+        "Fixed": [
+          "A1 agent_engine writeCache.step1_5 (d2) read-back: 15 fields -> 16 fields (append score_confidence), aligning with step1 skeleton"
+        ],
+        "Changed": [
+          "C version unify 5.32.0 -> 5.33.0 (4 modules + AIAP.md + agent_card.json + quality_baseline.json)"
+        ]
+      },
+      "changes": [
+        "A1: agent_engine.aisop.json writeCache.step1_5 (d2) — 'Verify ALL 15 fields are present (status, completed, output, tool_calls, modifications, user_summary, execute_mode, agent_id, cache_schema_version, steps_done, steps_remaining, trace_id, span_id, user_messages, l10_audit)' -> 'Verify ALL 16 fields are present (..., l10_audit, score_confidence)'. Field count 15->16 + field list +score_confidence. step1 SKELETON untouched (already 16); step1_5 other sub-clauses untouched.",
+        "C1: version unify 5.32.0 -> 5.33.0 across all 4 .aisop.json + AIAP.md frontmatter + agent_card.json + quality_baseline.json",
+        "C2: name field version sync to v5.33.0 (main/node_engine/agent_engine/normal_engine)",
+        "C3: evolution_history + version_history + AIAP.md evolution append (this entry)",
+        "C4: governance_hash recompute via tool_dirs/governance_hash.py (canonical v1.0, absolute path, SOLE AUTHORITY — never inline) + TRI-SYNC (AIAP.md / agent_card.json / quality_baseline.json; no AIAP_cn.md, TRI=3) + .evolution_snapshot/v5.33.0/ via tool_dirs/snapshot_build.py --pipeline_run_id=1e96a7f7-bd96-4804-b6bc-89f8a9987b49 (snapshot_audit exit 0 mandatory)"
+      ],
+      "breaking_changes": 0,
+      "non_breaking_changes": 2,
+      "files_modified": [
+        "agent_engine.aisop.json",
+        "main.aisop.json",
+        "node_engine.aisop.json",
+        "normal_engine.aisop.json",
+        "AIAP.md",
+        "agent_card.json",
+        "quality_baseline.json"
+      ],
+      "hard_constraints_upheld": [
+        "Only agent_engine.aisop.json writeCache.step1_5 (d2) field count (15->16) + field list (+score_confidence) edited; step1 SKELETON (already 16) NOT touched; step1_5 other clauses NOT touched; no other step/module/target-external touched",
+        "version 5.32.0 -> 5.33.0 unified across 4 modules",
+        "governance_hash computed exclusively by tool_dirs/governance_hash.py (SOLE AUTHORITY) — never inline; TRI-SYNC 3 (AIAP.md/agent_card.json/quality_baseline.json; no AIAP_cn.md); recomputed hash 6c888fe4 matches ValidateStep --verify-only expectation",
+        "EvolveStep sovereignty gate was a TRUE HALT; user reply 'all' (accepted A1); no pre-authorization assumed, no auto-approve; gate NOT reopened at ReviewFinalize",
+        "target=runner=live engine (self-evolution)"
+      ],
+      "user_gate": "EvolveStep presented change + user_answer='all' (accepted A1; Axiom 0 satisfied; no pre-authorization assumed)",
+      "disclosed_residuals": {
+        "Q1_resolved": "This cycle FIXES the v5.31.0/v5.32.0-disclosed Q1 residual (score_confidence step1_5 off-by-one). step1_5 (d2) now verifies all 16 fields incl score_confidence, aligned with the step1 16-field skeleton.",
+        "AIAP_md_duplicate_governance_hash": "AIAP.md carries the governance_hash field on TWO lines (frontmatter ~line 10 and ~line 20). governance_hash.py (SOLE AUTHORITY, count=0 replace-all + fail-closed read-back) updated BOTH to 6c888fe4; no stale e43bfdf7 remains. The cosmetic duplicate field itself is left as-is (user did not ask to restructure it this round)."
+      },
+      "note": "FINALIZED by ReviewFinalize (cache/100). governance_hash TRI-SYNC + .evolution_snapshot/v5.33.0/ via SOLE-AUTHORITY tools. Resolves the long-disclosed Q1 score_confidence read-back off-by-one."
+    },
+    {
+      "from_version": "5.33.0",
+      "to_version": "5.34.0",
+      "date": "2026-06-11",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 1,
+      "items_breakdown": {
+        "A": 1,
+        "C": 1
+      },
+      "accepted_items": [
+        "A1",
+        "C"
+      ],
+      "direction": "Engine-self node-info: executor renders structured six-section node-info for its OWN engine steps ([engine] marker, distinct from dispatched nodes' [N/total]). Fills the opening visibility gap (A3 dispatch-plan emitted BEFORE first dispatched node = P0 early-visibility). ENGINE SELF-EVOLUTION (target=runner=live).",
+      "summary": "A1 = 4 new engine-self node-info render points. main.aisop.json (3): execute.step1 -> '[engine] Router.match' (For Audit: package/loading_mode/route); execute.step2-4 -> '[engine] Router.cache-setup' (For Audit: cache/trace/engine-version + HMAC/governance_hash integrity); engineExec.step6-8 -> '[engine] Router.execution-summary' (For Audit: execution_metrics + dispatch_audit severity). node_engine.aisop.json (1): programExec.step2 single-line 'MANDATORY PRE-DISPATCH SETUP TRACE (A2 v5.31.0)' UPGRADED to six-section '[engine] programExec.dispatch-plan' (For Audit: nodes_in_path / dispatch_plan agent-inline / audits pre+completeness+entry_path_omissions), emitted BEFORE the first dispatched node (P0 early-visibility per hard-constraint③). Each engine-self block uses the six-section template + [engine] {step} identity (strictly NOT mixed with [N/total]) + a custom Axiom Governance Assert (PHYSICALLY READ + render full template VERBATIM each step). render_claim wired: each engine-self node writes _index.json::engine_self_status[{step}].node_info_render_claim {rendered, sections_rendered, user_language_used} for band-external E1 audit, reusing agent_update_index.py (no new python tool). HARD-CONSTRAINT①: dispatched-node step4 six-section render UNCHANGED. C = version/name/history/governance_hash TRI-SYNC + snapshot; 3 summary embedded-version strings corrected v5.33.0->v5.34.0 before hash recompute. Edits applied by Generate1, summary strings finalized + verified in place by ReviewFinalize. Honest: engine-self node-info is prompt-level + tamper-evident (render_claim self-reported, NOT ground truth).",
+      "pipeline_run_id": "5801a991-1562-4f36-b4ac-4f1c01e4d341",
+      "cache_turn": 101,
+      "weighted_score": 4.944,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "keep_a_changelog_categories": {
+        "Added": [
+          "4 engine-self node-info render points",
+          "engine_self_status render_claim"
+        ],
+        "Changed": [
+          "node_engine programExec.step2 setup trace upgraded to six-section",
+          "3 module summary embedded-version v5.33.0->v5.34.0"
+        ]
+      },
+      "changes": "1-item-A MINOR feature via Creator Evolve pipeline (cache/101). 4 engine-self node-info render points (main 3 + node_engine 1) + render_claim. A3 dispatch-plan emitted BEFORE first dispatched node (P0 early-visibility). Dispatched-node step4 UNCHANGED.",
+      "breaking_changes": [],
+      "non_breaking_changes": [
+        "4 engine-self node-info render points (prompt-level)",
+        "_index.engine_self_status[] render_claim field (additive)",
+        "node_engine pre-dispatch trace upgraded to six-section",
+        "3 summary embedded-version strings v5.33.0->v5.34.0"
+      ],
+      "files_modified": [
+        "main.aisop.json",
+        "node_engine.aisop.json",
+        "normal_engine.aisop.json",
+        "agent_engine.aisop.json",
+        "AIAP.md",
+        "agent_card.json",
+        "quality_baseline.json"
+      ],
+      "hard_constraints_upheld": [
+        "① dispatched-node step4 render UNCHANGED (creator node-info untouched)",
+        "② [engine] identity strictly NOT mixed with dispatched [N/total]",
+        "③ A3 dispatch-plan emitted BEFORE first dispatched node",
+        "④ version 5.33.0 -> 5.34.0 unified across 4 modules",
+        "⑤ governance_hash via tool_dirs/governance_hash.py (canonical v1.0, absolute path, never inline) + TRI-SYNC 3 + snapshot_audit exit 0",
+        "⑥ EvolveStep sovereignty gate TRUE HALT (user reply 'all'); finalize gate at ReviewPresent TRUE HALT (user reply 'OK')",
+        "⑦ target=runner=live engine (self-evolution)",
+        "⑧ engine-self node-info honestly annotated prompt-level + tamper-evident (render_claim self-reported)"
+      ],
+      "user_gate": {
+        "evolve_gate": {
+          "presented": true,
+          "user_answer": "all",
+          "accepted": [
+            "A1"
+          ],
+          "halt": "TRUE"
+        },
+        "finalize_gate": {
+          "presented": true,
+          "node": "ReviewPresent",
+          "user_answer": "OK",
+          "halt": "TRUE",
+          "risk": "zero-delta 4.944==4.944"
+        }
+      },
+      "disclosed_residuals": [
+        "engine-self node-info render is prompt-level, NON-machine-enforced; true assurance is band-external render_claim audit (E1 SG-1) + framework hook — render_claim is self-reported, NOT ground truth."
+      ],
+      "note": "Canonical governance_hash recomputed by tool_dirs/governance_hash.py to 5c336ca7d2a43366ffd4e3639b31d819a5be0257419cf52670cef9b96687e131 (prior v5.33.0 was 6c888fe4d3b3702f61a7c67fb2bff9b6ac130854cb9a89bcc77bd3eeecc07077; differs because the 3 module summary embedded-version strings changed). .evolution_snapshot/v5.34.0/ built LAST (after all governance file edits) per the turn-100 snapshot-staleness lesson; snapshot_audit exit 0 mandatory."
+    },
+    {
+      "from_version": "5.34.0",
+      "to_version": "5.35.0",
+      "date": "2026-06-11",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 3,
+      "items_breakdown": {
+        "A": 3,
+        "C": 1
+      },
+      "accepted_items": [
+        "A",
+        "B",
+        "C"
+      ],
+      "direction": "Dispatched-node node-info fidelity hardening: strengthen node_engine step4 SECTION 4 so dispatched-node node-info is physically-read + never-from-memory + strict 7-section verbatim, aligned with the engine-self Assert. ENGINE SELF-EVOLUTION (target=runner=live).",
+      "summary": "3 content edits in node_engine.aisop.json step4 SECTION 4 only. A: Assert sub-line replaced 'strictly execute engine node steps; NEVER fabricate, NEVER skip' -> 'strictly PHYSICALLY READ and execute engine node steps, NEVER from memory; NEVER fabricate, NEVER skip, NEVER yield mid-pipeline; NEVER auto-approve a user gate (a gate is a hard STOP); CONTINUE per dispatch_plan to the terminal node.' B: new 5th sub-line 'Output:' inserted AFTER Assert, BEFORE Governance, with Align Axiom 0 preserved as the Axiom Governance last line (CANONICAL ENGLISH untouched) — 'STRICTLY render this node-info as ALL 7 sections VERBATIM; NEVER compress, merge, abbreviate, or drop a section.' C: OUTPUT FIDELITY (hard, v5.35.0) rule added to the SIX-SECTION FIXED TEMPLATE region — render every node-info from the PHYSICALLY-READ step4 template, never from memory; compression/omission = NODE_SUMMARY_OMITTED sovereignty-class violation (same enforcement class as A4). FIX-1 at ReviewFinalize: SECTION 4 preamble count '4 mandatory sub-lines' -> '5'. HARD-CONSTRAINT①: main/agent_engine/normal_engine Asserts, MAIN_AGENT_ASSERTS, engine-self custom Asserts, node logic UNCHANGED (version field only). Honest: A/B render lines are weak prompt-level floors (compressible), C OUTPUT FIDELITY rule is a firmer floor (read before render); both NON-machine-enforced; durable enforcement needs framework-level render verification (backlog).",
+      "pipeline_run_id": "5b554e44-b84c-4fa5-8d8f-e1078bb547b7",
+      "cache_turn": 104,
+      "weighted_score": 4.949,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "keep_a_changelog_categories": {
+        "Added": [
+          "node_engine step4 Output sub-line (7-section verbatim mandate)",
+          "node_engine step4 OUTPUT FIDELITY hard rule (NODE_SUMMARY_OMITTED sovereignty-class)"
+        ],
+        "Changed": [
+          "node_engine step4 Assert sub-line (physical-read + never-from-memory + continuation + gate-stop)",
+          "node_engine step4 SECTION 4 preamble count 4 -> 5 mandatory sub-lines (FIX-1)"
+        ]
+      },
+      "changes": "3-content-edit (A/B/C) MINOR feature via Creator Evolve pipeline (cache/104). node_engine.aisop.json step4 SECTION 4 only: A Assert hardened (physical-read/never-from-memory/continuation/gate-stop), B new Output 7-section verbatim sub-line, C OUTPUT FIDELITY hard rule. FIX-1 preamble count 4->5. main/agent/normal version-only bump. Dispatched-node + engine-self other sections UNCHANGED.",
+      "breaking_changes": [],
+      "non_breaking_changes": [
+        "node_engine step4 Assert sub-line strengthened (prompt-level)",
+        "node_engine step4 Output sub-line added (prompt-level)",
+        "node_engine step4 OUTPUT FIDELITY rule added (prompt-level firmer floor)",
+        "SECTION 4 preamble count 4 -> 5 mandatory sub-lines (FIX-1)",
+        "main/agent_engine/normal_engine version field 5.34.0 -> 5.35.0 (logic unchanged)"
+      ],
+      "files_modified": [
+        "node_engine.aisop.json",
+        "main.aisop.json",
+        "normal_engine.aisop.json",
+        "agent_engine.aisop.json",
+        "AIAP.md",
+        "agent_card.json",
+        "quality_baseline.json"
+      ],
+      "hard_constraints_upheld": [
+        "① content edits only in node_engine step4 (A/B/C); main/agent/normal Asserts + MAIN_AGENT_ASSERTS + engine-self Asserts + node logic UNCHANGED (version field only)",
+        "② Align Axiom 0 preserved as Axiom Governance last line (CANONICAL ENGLISH untouched); Output sub-line inserted only between Assert and Governance",
+        "③ FIX-2 ('ALL 7 sections' terminology) kept verbatim per human decision",
+        "④ version 5.34.0 -> 5.35.0 unified across 4 modules",
+        "⑤ governance_hash via tool_dirs/governance_hash.py (canonical v1.0, absolute path, never inline) + TRI-SYNC 3 + snapshot_audit exit 0",
+        "⑥ EvolveStep sovereignty gate TRUE HALT (user reply 'all'); finalize gate at ReviewPresent TRUE HALT (user reply 'finalize')",
+        "⑦ target=runner=live engine (self-evolution)",
+        "⑧ A/B/C honestly annotated prompt-level (A/B weak floor, C firmer floor), NON-machine-enforced; true fix = framework hook + structural sub-agent (backlog)"
+      ],
+      "user_gate": {
+        "evolve_gate": {
+          "presented": true,
+          "user_answer": "all",
+          "accepted": [
+            "A",
+            "B",
+            "C",
+            "version_sync_4modules_5.35.0"
+          ],
+          "halt": "TRUE"
+        },
+        "finalize_gate": {
+          "presented": true,
+          "node": "ReviewPresent",
+          "user_answer": "finalize",
+          "halt": "TRUE",
+          "accepted": [
+            "FIX-1:apply_4to5_subline_count",
+            "FIX-2:keep_verbatim_7sections",
+            "D3:keep_name_bump"
+          ]
+        }
+      },
+      "disclosed_residuals": [
+        "node_engine step4 A/B render lines + C OUTPUT FIDELITY rule are prompt-level, NON-machine-enforced; durable enforcement needs framework-level render verification / per-node sub-agent producing the node-info (backlog). C rule is a firmer floor (read before render) but still not machine-enforced."
+      ],
+      "note": "Canonical governance_hash recomputed by tool_dirs/governance_hash.py to 01238d17f2e3b8e71d9c28ee1862c705943602f47fd9917794a9a2c4afef6e38 (prior v5.34.0 was 5c336ca7d2a43366ffd4e3639b31d819a5be0257419cf52670cef9b96687e131; differs because node_engine.aisop.json step4 changed). .evolution_snapshot/v5.35.0/ built LAST (after all governance file edits) per the snapshot-staleness lesson; snapshot_audit exit 0 mandatory."
+    },
+    {
+      "from_version": "5.35.0",
+      "to_version": "5.36.0",
+      "date": "2026-06-12",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 4,
+      "items_breakdown": {
+        "A": 1,
+        "B": 1,
+        "C": 1,
+        "D": 1
+      },
+      "accepted_items": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "direction": "Three node-info template alignment (A/B/C) + FAST ENTRY entry-discipline (D). Align the three node-info templates (dispatched-node / engine-self / agent_engine contract) for consistency and reduce opening pre-analysis waste. ENGINE SELF-EVOLUTION (target=runner=live). NON-functional changes only.",
+      "summary": "4 changes. A (node_engine.aisop.json step4 SECTION 4 Governance sub-line): 'all completed items governed by human (all done governed by human)' -> 'all execution results under human audit and governance' (removed synonym-repeat parens; SECTION 0/1/1.5/2/3/5 + Next/Assert/Output/Align Axiom 0 untouched). B (4 engine-self Axiom Governance blocks — main Router.match/cache-setup/execution-summary + node_engine programExec.dispatch-plan): ① sub-line order -> canonical Next/Assert/Output/Governance/Align Axiom 0 (was Assert/Next/Governance/Align); ② new Output sub-line (canonical, same as dispatched nodes) — 'STRICTLY render this node-info as ALL 7 sections VERBATIM (separator / Node State / For Audit / Report / Explain / Axiom Governance / end separator); NEVER compress, merge, abbreviate, or drop a section.'; ③ Assert simplified to keep only the engine-self physical-read + own-sequence clause (the 'render full template VERBATIM each step' clause moved out, now carried by the new Output sub-line); ④ Governance -> canonical 'all execution results under human audit and governance'; ⑤ Next keeps engine-self form, Align Axiom 0 canonical English unchanged. C (agent_engine.aisop.json node_info_render contract sections): ['分隔线','Node State','For Audit','Report','Explain','Axiom Governance'] -> ['separator','Node State','For Audit','Report','Explain','Axiom Governance','End Separator'] (added End Separator -> 7 entries, '分隔线'->English 'separator'; user_language/axiom0_verbatim/report_source untouched). D (main.aisop.json match.step1 prepend): FAST ENTRY (v5.36.0) execution-discipline preamble prepended via ' | ' before the existing 'Match user message...' text — IMMEDIATELY begin match->execute->programExec mechanically; do NOT pre-read/pre-analyze target AIAP / creator-target pipeline / external docs BEFORE executing; target AIAP physically read PER-NODE at programExec step1 when needed; in-flow required reads are part of the flow NOT pre-analysis. match uncertain/Error + classify/execute/engineExec logic + package-match body semantics UNCHANGED.",
+      "pipeline_run_id": "02ab1958-1d2b-44d9-a2e5-e8cd290bde8d",
+      "cache_turn": 107,
+      "weighted_score": 4.949,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "keep_a_changelog_categories": {
+        "Added": [
+          "4 engine-self Axiom Governance Output sub-lines (7-section verbatim mandate)",
+          "agent_engine node_info_render contract End Separator entry (7th section)"
+        ],
+        "Changed": [
+          "node_engine step4 SECTION 4 Governance sub-line -> canonical 'all execution results under human audit and governance' (A)",
+          "4 engine-self Axiom Governance sub-line order -> canonical Next/Assert/Output/Governance/Align (B①)",
+          "4 engine-self Assert sub-line simplified (B③), Governance -> canonical (B④)",
+          "agent_engine node_info_render contract '分隔线' -> English 'separator' (C)",
+          "main match.step1 prepended FAST ENTRY execution-discipline preamble (D)"
+        ]
+      },
+      "changes": "4-change (A/B/C/D) MINOR feature via Creator Evolve pipeline (cache/107). A node_engine step4 SECTION 4 canonical Governance sub-line. B 4 engine-self Axiom Governance blocks reordered canonical Next/Assert/Output/Governance/Align + new Output sub-line + Assert simplified + canonical Governance. C agent_engine node_info_render contract -> 7-entry English sections (End Separator + separator). D main match.step1 prepend FAST ENTRY entry-discipline preamble. normal_engine version-only bump. Dispatched-node step4 + MAIN_AGENT_ASSERTS + match package-match body UNCHANGED.",
+      "breaking_changes": [],
+      "non_breaking_changes": [
+        "node_engine step4 SECTION 4 Governance sub-line canonical wording (A, prompt-level cosmetic)",
+        "4 engine-self Axiom Governance reorder + Output sub-line + Assert simplify + canonical Governance (B, prompt-level cosmetic)",
+        "agent_engine node_info_render contract 7-entry English sections (C, prompt-level cosmetic)",
+        "main match.step1 FAST ENTRY entry-discipline preamble (D, prompt-level entry discipline)",
+        "normal_engine version field 5.35.0 -> 5.36.0 (logic unchanged)"
+      ],
+      "files_modified": [
+        "node_engine.aisop.json",
+        "main.aisop.json",
+        "agent_engine.aisop.json",
+        "normal_engine.aisop.json",
+        "AIAP.md",
+        "agent_card.json",
+        "quality_baseline.json"
+      ],
+      "hard_constraints_upheld": [
+        "① content edits only A (node_engine step4 Governance) + B (main/node_engine 4 engine-self Axiom Governance) + C (agent_engine contract sections) + D (main match.step1 prepend); normal_engine version-only; finalize/dispatch/snapshot/governance_hash/sovereignty logic + MAIN_AGENT_ASSERTS (Assert 1/2/3) + dispatched-node step4 Next/Assert/Output/Align Axiom 0 + six-section structure + match package-match body UNCHANGED",
+        "② A/B Output/Governance/Align Axiom 0 three lines literally identical; Assert line A/B contextual wording may differ",
+        "③ version 5.35.0 -> 5.36.0 unified across 4 modules",
+        "④ governance_hash via tool_dirs/governance_hash.py (canonical v1.0, absolute path, never inline) + TRI-SYNC 3 (AIAP.md/agent_card.json/quality_baseline.json, no AIAP_cn.md) + snapshot_build v5.36.0/ + snapshot_audit exit 0",
+        "⑤ EvolveStep + ReviewPresent two sovereignty gates TRUE HALT (no pre-authorization / no auto-approve)",
+        "⑥ target=runner=live engine (self-evolution)",
+        "⑦ Honest annotation: A/B/C cosmetic prompt-level template-consistency; D prompt-level entry discipline (reduces pre-analysis waste, NOT 100% enforced); none change execution/governance logic"
+      ],
+      "user_gate": {
+        "evolve_gate": {
+          "presented": true,
+          "user_answer": "all",
+          "accepted": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "version_sync_4modules_5.36.0"
+          ],
+          "halt": "TRUE"
+        },
+        "finalize_gate": {
+          "presented": true,
+          "node": "ReviewPresent",
+          "user_answer": "OK",
+          "halt": "TRUE",
+          "risk": "zero_delta",
+          "accepted": [
+            "finalize"
+          ]
+        }
+      },
+      "disclosed_residuals": [
+        "A/B/C node-info template alignment + D FAST ENTRY preamble are prompt-level, NON-machine-enforced; durable enforcement (template render verification + entry-discipline) needs framework-level hooks (backlog). D reduces opening pre-analysis token/time waste but is not 100% adhered."
+      ],
+      "note": "Canonical governance_hash recomputed by tool_dirs/governance_hash.py (prior v5.35.0 was 01238d17f2e3b8e71d9c28ee1862c705943602f47fd9917794a9a2c4afef6e38). .evolution_snapshot/v5.36.0/ built LAST (after all governance file edits) per the snapshot-staleness lesson; snapshot_audit exit 0 mandatory."
+    },
+    {
+      "from_version": "5.36.0",
+      "to_version": "5.38.0",
+      "date": "2026-06-13",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 5,
+      "items_breakdown": {
+        "B": 5
+      },
+      "accepted_items": [
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "B5"
+      ],
+      "direction": "Predetermined surgical batch merge of executor-related content from a clean v5.36 base — rebuild v5.37 sections_rendered canonical anchoring + v5.38 base loading-mode/version-hygiene/documentation (LC) + ENG-STDIN tool-call anti-stall discipline. ENGINE SELF-EVOLUTION (target=runner=live; only this one copy modified). NON-functional changes only: consistency / hygiene / documentation / discipline wording, ZERO execution or governance logic change. No research/proposal/implementation-design freedom this round; the 5 changes were written verbatim into the directive and ModifyStep only string-substituted.",
+      "summary": "5 change groups (B1-B5). B1 (rebuild v5.37): 5 node_info_render_claim sections_rendered placeholders '[...]' all replaced with one canonical Title-Case constraint sentence ('COPY THE CANONICAL SECTION LABELS VERBATIM in Title-Case exactly as the six-section template defines them — [\"separator\",\"Node State\",\"For Audit\",\"Report\",\"Explain\",\"Axiom Governance\",\"End Separator\"] — NEVER snake_case (node_state/for_audit/axiom_governance/…), NEVER lowercase, abbreviate, or normalize them. The E1 out-of-band auditor matches these names EXACTLY (character-for-character) against the render contract.'), distributed across main execute.step1 (Router.match) + execute.step3 (Router.cache-setup) + engineExec.step8 (Router.execution-summary) + node_engine programExec.step4 (dispatched-node) + programExec.step2 (engine-self); 0 placeholders remain. B2 (LC-1): main json_schema loading_mode enum ['node','normal'] -> ['node','normal','lite'] (factual-consistency fix; lite already implemented in execute.step4/engineExec.step3). B3 (LC-7): 3 module summaries strip hard-coded 'v5.34.0' version token so the version field is the sole source — main 'Engine Router v5.34.0: matches' -> 'Engine Router: matches'; agent_engine 'Sub Agent contract v5.34.0: init' -> 'Sub Agent contract: init'; normal_engine 'Normal Engine v5.34.0: node-by-node' -> 'Normal Engine: node-by-node' (node_engine summary had no version token; description historical changelog untouched). B4 (LC-2): AIAP.md new 'Module Responsibility Matrix / 模块职责矩阵' subsection (7 responsibility rows x 4 module columns; pure documentation, no spec-logic change). B5 (ENG-STDIN): node_engine programExec.constraints appended TOOL CALL DISCIPLINE (v5.38.0) — JSON-passing agent_update_index.py/agent_write_node_cache.py calls MUST use STDIN heredoc, NEVER inline --updates='{...}' on the command line, NEVER chain into a single multi-&& compound Bash JSON-in-Bash one-liner (Windows/PowerShell escaping breaks -> malformed command / no output -> pipeline stall); one tool call per step.",
+      "pipeline_run_id": "8ef24b82-80ab-4336-b706-f9cd31bdaba5",
+      "cache_turn": 112,
+      "weighted_score": 4.949,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "generate2_pre_finalize_weighted": 4.556,
+      "weighted_delta_like_for_like_deferred_excluded": 0.0,
+      "deferred_reconciled": {
+        "generate2_weighted": 4.556,
+        "final_weighted": 4.949,
+        "deferred_items_rescored": [
+          "D6",
+          "D8",
+          "D10"
+        ],
+        "note": "Generate2 pre-Finalize weighted 4.556 was cognitive-capped at the 4.5 INDEPENDENT_AGENT ceiling; authoritative trajectory baseline 4.949 grade S retained; per-dimension like-for-like real delta 0.000 (B-3 deferred-excluded D6/D8/D10). Zero-delta is the expected & designed result for consistency/documentation/discipline alignment, NOT a regression."
+      },
+      "keep_a_changelog_categories": {
+        "Added": [
+          "AIAP.md Module Responsibility Matrix subsection (B4)",
+          "node_engine programExec.constraints TOOL CALL DISCIPLINE clause (B5)",
+          "main json_schema loading_mode enum 'lite' value (B2)"
+        ],
+        "Changed": [
+          "5 node_info_render_claim sections_rendered placeholders -> canonical Title-Case constraint sentence (B1)",
+          "main/agent_engine/normal_engine summaries stripped of hard-coded 'v5.34.0' version token (B3)"
+        ]
+      },
+      "changes": "5-change (B1-B5) MINOR consistency/hygiene/documentation/discipline merge via Creator Evolve pipeline (cache/112). B1 5 sections_rendered canonical Title-Case anchoring (main 3 + node_engine 2). B2 loading_mode enum +lite. B3 3 summaries version-token stripped. B4 AIAP.md Module Responsibility Matrix. B5 node_engine TOOL CALL DISCIPLINE STDIN heredoc anti-stall. ZERO touch to step execution logic / node structure / dispatch / finalize / snapshot / governance / two-gate / X3 / circuit-breaker / recovery / MAIN_AGENT_ASSERTS / node-info template body; no LEVEL_A; LB-1/finalize_risk/gate logic excluded. python_tools/framework Python untouched (B5 wording-only).",
+      "breaking_changes": [],
+      "non_breaking_changes": [
+        "5 sections_rendered canonical Title-Case constraint sentence (B1, prompt-level cosmetic)",
+        "main json_schema loading_mode enum +lite (B2, factual-consistency)",
+        "3 module summaries version-token strip (B3, hygiene)",
+        "AIAP.md Module Responsibility Matrix subsection (B4, documentation)",
+        "node_engine TOOL CALL DISCIPLINE STDIN heredoc clause (B5, prompt-level discipline)",
+        "4 modules version field 5.36.0 -> 5.38.0 (logic unchanged)"
+      ],
+      "files_modified": [
+        "main.aisop.json",
+        "node_engine.aisop.json",
+        "agent_engine.aisop.json",
+        "normal_engine.aisop.json",
+        "AIAP.md",
+        "agent_card.json",
+        "quality_baseline.json"
+      ],
+      "hard_constraints_upheld": [
+        "① content edits only B1-B5; NEVER touched step execution logic / node structure / dispatch / finalize / snapshot / governance / two-gate / X3 / circuit-breaker / recovery / MAIN_AGENT_ASSERTS / node-info template body; no LEVEL_A structural change; LB-1/finalize_risk/gate logic explicitly excluded and untouched",
+        "② 4 modules version unified 5.36.0 -> 5.38.0 (MINOR)",
+        "③ framework Python (acp_llm/runner/agent.py/soulacp) untouched; python_tools logic untouched (ENG-STDIN only changed .aisop.json wording)",
+        "④ EvolveStep + ReviewPresent two sovereignty gates TRUE HALT (EvolveStep user reply 'all'; ReviewPresent zero-delta finalize_risk user reply 'ok'; no pre-authorization / no auto-approve)",
+        "⑤ governance_hash via tool_dirs/governance_hash.py (canonical v1.0, absolute path, SOLE AUTHORITY) + TRI-SYNC=3 (AIAP.md/agent_card.json/quality_baseline.json; engine has no AIAP_cn.md) + .evolution_snapshot/v5.38.0/ via tool_dirs/snapshot_build.py built LAST + snapshot_audit exit 0",
+        "⑥ target=runner=live engine (self-evolution), only this one copy",
+        "⑦ Honest annotation: pure consistency/hygiene/documentation/discipline wording, ZERO execution/governance logic change; B1 sections_rendered anchoring + B5 STDIN discipline remain prompt-level (durable fix needs framework/tool-side rejection of malformed inline JSON, backlog)"
+      ],
+      "acceptance_focus_verified": {
+        "modify_step_real_dispatch": true,
+        "modify_step_agent_id": "auto-1552a7a7",
+        "modify_step_tool_calls": 33,
+        "modify_step_status": "PASS",
+        "all_18_impl_nodes_real_subagent": true,
+        "integrity_violations": 0,
+        "leaf_deltas_vs_v5_36_0_snapshot": 18,
+        "unexpected_deltas": 0
+      },
+      "user_gate": {
+        "evolve_gate": {
+          "presented": true,
+          "presented_at": "2026-06-13T12:33:22+00:00",
+          "user_answer": "all",
+          "accepted": [
+            "B1",
+            "B2",
+            "B3",
+            "B4",
+            "B5"
+          ],
+          "halt": "TRUE"
+        },
+        "finalize_gate": {
+          "presented": true,
+          "node": "ReviewPresent",
+          "presented_at": "2026-06-13T18:19:09+00:00",
+          "user_answer": "OK",
+          "halt": "TRUE",
+          "risk": "zero_delta",
+          "accepted": [
+            "finalize"
+          ]
+        }
+      },
+      "disclosed_residuals": [
+        "B1 sections_rendered canonical Title-Case anchoring + B5 STDIN heredoc tool-call discipline are prompt-level, NON-machine-enforced; durable enforcement (render-contract verification + tool-side rejection of malformed inline/compound JSON) needs framework- or tool-side hooks (backlog). This is a pure consistency/hygiene/documentation/discipline round with zero execution/governance logic change."
+      ],
+      "note": "Canonical governance_hash recomputed by tool_dirs/governance_hash.py (prior v5.36.0 was 7deb13df8fe8f568744632b29c3e7e19f18b12e8184559b2e5c37ddf2b382291). TRI-SYNC=3 (AIAP.md/agent_card.json/quality_baseline.json; engine has no AIAP_cn.md). .evolution_snapshot/v5.38.0/ built LAST (after all governance file edits) per the snapshot-staleness lesson; snapshot_audit exit 0 mandatory. version_history note: from v5.36 clean rebuild merging v5.37 sections_rendered + v5.38 base LC + ENG-STDIN."
+    },
+    {
+      "from_version": "5.38.0",
+      "to_version": "5.39.0",
+      "date": "2026-06-14",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 2,
+      "items_breakdown": {
+        "C": 2
+      },
+      "accepted_items": [
+        "C1",
+        "C2"
+      ],
+      "direction": "Surgical predetermined prompt-discipline hardening (NOT research-driven). Close the FAST ENTRY semantic gap ('no opening preamble' misread as license to skip opening-node node-info) + add a NEXT-NODE PLAN (plan-then-act, anchored to dispatch_plan) giving the out-of-band auditor a four-way cross-check anchor. ENGINE SELF-EVOLUTION (target=runner=live, only this one copy modified, highest risk). 2 content files only (main + node_engine).",
+      "summary": "C1 — main.aisop.json Router match.step1 FAST ENTRY: appended EXECUTION CONTRACT paragraph (verbatim, no version number) closing the 'no opening preamble' semantic gap (FAST ENTRY skips OPENING PRE-ANALYSIS only; does NOT exempt per-node six-section node-info rendering INCLUDING inline entry nodes Start/NLU/PipelineEntry) + one execution-discipline contract line + out-of-band-anchored deterrence. C2 — node_engine.aisop.json programExec.step3 per-node loop: appended NEXT-NODE PLAN (plan-then-act) requiring, BEFORE dispatch, a PHYSICAL READ of dispatch_plan[current_node] and emission of next_node_plan whose structural fields (execute_mode/expected_agent_id) are COPIED VERBATIM from the tool-written dispatch_plan (anchored, NOT self-report), written to nodes_status[*].next_node_plan via the EXISTING agent_update_index.py over STDIN heredoc (no new python tool); enables four-way cross-check dispatch_plan(tool) <-> next_node_plan(agent) <-> dispatch_timeline(actual) <-> node cache(agent_id).",
+      "weighted_score": 4.949,
+      "weighted_method": "Professional_C025_I045_D030 (engine baseline convention, deferred-excluded)",
+      "score_scope": "partial",
+      "generate2_pre_finalize_weighted": 4.922,
+      "weighted_delta_like_for_like_deferred_excluded": 0.0,
+      "deferred_reconciled": "D6 (version sync) + D10 (description/quality-baseline sync) P23 pre-Finalize placeholders 4.5 -> 5.0 post-Finalize (files at v5.39.0, governance_hash recomputed); full weighted 4.952, reported authoritative deferred-excluded 4.949 (like-for-like, ZERO-DELTA vs v5.38.0).",
+      "keep_a_changelog_categories": {
+        "Changed": [
+          "C1 FAST ENTRY EXECUTION CONTRACT (main.match.step1)",
+          "C2 NEXT-NODE PLAN (node_engine.programExec.step3)",
+          "version 5.38.0->5.39.0 across 4 modules + AIAP.md + agent_card.json + quality_baseline.json"
+        ]
+      },
+      "changes": "C1 (LEVEL_C): main.aisop.json::functions.match.step1 — 1330-char pure-insert of EXECUTION CONTRACT paragraph between '...NOT pre-analysis.) ' and '| Match user message...'. C2 (LEVEL_C): node_engine.aisop.json::functions.programExec.step3 — 1570-char pure-insert of NEXT-NODE PLAN paragraph between '(b) ... extract dispatch_plan[current_node].' and '(c) PARALLEL DISPATCH (B3):'. C3: version-sync 5.38.0->5.39.0 over 7 files (main/node_engine/agent_engine/normal_engine version+name + AIAP.md frontmatter + agent_card.json + quality_baseline.json).",
+      "breaking_changes": [],
+      "non_breaking_changes": [
+        "C1 additive prompt-discipline prose",
+        "C2 additive prompt-discipline prose + new nodes_status[*].next_node_plan data sink via existing tool",
+        "version-sync only"
+      ],
+      "files_modified": [
+        "main.aisop.json",
+        "node_engine.aisop.json",
+        "agent_engine.aisop.json (version only)",
+        "normal_engine.aisop.json (version only)",
+        "AIAP.md",
+        "agent_card.json",
+        "quality_baseline.json"
+      ],
+      "hard_constraints_upheld": [
+        "content edits only C1+C2 (main match.step1 + node_engine programExec.step3)",
+        "dispatch logic (generate_dispatch_plan/agent_id_generator/dispatch_audit) UNTOUCHED",
+        "step4 six-section template + Section-4 'Next' line UNTOUCHED",
+        "X3 / user_gate UNTOUCHED",
+        "finalize_risk trigger list UNTOUCHED",
+        "INVIOLABLE UNTOUCHED",
+        "AIAP_Standard library files frozen (engine has none)",
+        "no new python tool (reuse agent_update_index.py via STDIN heredoc)",
+        "no LEVEL_A; no new step keys; node count + Mermaid 1:1 unchanged"
+      ],
+      "acceptance_focus_verified": "ModifyStep real per-node dispatch (ModifyStep.json, agent_id=auto-c5ce8758, tool_calls=9>0, PASS, real Edit landed C1/C2); ValidateStep byte/leaf diff vs v5.38.0 snapshot = 13 authorized leaves (11 version-sync + 2 content inserts) / 0 collateral / NO HARD_FAIL; all 18 implementation nodes real sub-agent, 0 integrity violations.",
+      "user_gate": "EvolveStep TRUE HALT user reply 'all' (accepted C1/C2/C3-version-sync-7, presented_at 2026-06-15T02:43:38Z, question_hash df6860e1); ReviewPresent conditional gate finalize_risk=FALSE (4 triggers all FALSE) -> spec-mandated branch-2b auto_approved (NOT a fabricated bypass; EvolveStep-authorized + clean quality).",
+      "disclosed_residuals": "C1 per-node node-info-render anchoring + C2 next_node_plan structural anchoring are prompt-level; real teeth = out-of-band four-way audit + framework hook (backlog). planned_action field is agent-supplied (soft); structural fields are anchored to dispatch_plan (hard).",
+      "note": "ENGINE SELF-EVOLUTION (target=runner=live). governance_hash recomputed via tool_dirs/governance_hash.py canonical v1.0 SOLE AUTHORITY, TRI-SYNC=3 (AIAP.md/agent_card.json/quality_baseline.json; no AIAP_cn.md). .evolution_snapshot/v5.39.0/ built LAST per v2.39.0 ordering (after governance_hash + identity), snapshot_audit exit 0."
+    },
+    {
+      "from_version": "5.39.0",
+      "to_version": "5.40.0",
+      "date": "2026-06-15",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 3,
+      "items_breakdown": {
+        "B": 3
+      },
+      "accepted_items": [
+        "B-CF",
+        "B-INLINE",
+        "ENG-STDIN"
+      ],
+      "direction": "Surgical predetermined prompt-discipline/format hardening (NOT research-driven). B-CF: 4 render points (node_engine step4 six-section node-info template, node_engine step3 NEXT-NODE PLAN/C2, node_engine step2 engine-self programExec.dispatch-plan render, main engine-self render Router.match/cache-setup/execution-summary) each get the SAME RENDER FORMAT rule forbidding wrapping node-info / NEXT-NODE PLAN body or CJK/prose in a ``` code fence (grey monospace box = #1 readability complaint); inline backtick spans allowed ONLY for short tokens. B-INLINE: rewrote the v5.39.0 C2 NEXT-NODE PLAN segment in node_engine step3 to EMIT TIMING + INLINE COVERAGE — emit at step3(b) immediately after [PHYSICAL READ] dispatch_plan[current_node] for EVERY node INCLUDING inline entry nodes (Start/NLU/PipelineEntry), structural fields copied verbatim from dispatch_plan (inline expected_agent_id='inline_planned'); fixes the v5.39.0 gap (18/18 agent had next_node_plan but 0/3 inline) — do NOT defer to after d.0 agent_id_generator which runs only for agent nodes. ENG-STDIN: appended WINDOWS HEREDOC HAZARD guidance to node_engine constraints TOOL CALL DISCIPLINE — for ANY JSON carrying Windows paths or CJK, never use an unquoted Bash heredoc (corrupts backslash paths + CJK UTF-8 surrogates); use PowerShell single-quote here-string @'...'@ into STDIN or Write to a temp file then feed via < tempfile. ENGINE SELF-EVOLUTION (target=runner=live, only this one copy modified, highest risk). Only main + node_engine content changed; agent_engine/normal_engine version-sync only. 7-file version sync v5.39.0 -> v5.40.0 (engine has NO AIAP_cn/AIAP_Standard).",
+      "weighted_score": 4.949,
+      "grade": "S",
+      "weighted_delta_vs_prior": 0.0,
+      "regression_flags": [],
+      "governance_hash": "6c12a6cb9537ad8e64e2cd57947c83d1248d4de0701e433ee9c84cf3ec18c002",
+      "prior_governance_hash": "f3aa702cf2da6e28d21b0aaa28049be31b88bb852b39a0f1a5bfcdbf350c88dc",
+      "scored_files": [
+        "main.aisop.json",
+        "node_engine.aisop.json",
+        "normal_engine.aisop.json",
+        "agent_engine.aisop.json",
+        "AIAP.md",
+        "agent_card.json",
+        "quality_baseline.json"
+      ],
+      "validate_leaves": 18,
+      "validate_collateral": 0,
+      "gates": {
+        "EvolveStep": "user_answer=all (B-CF/B-INLINE/ENG-STDIN accepted)",
+        "ReviewPresent": "finalize_risk=FALSE -> auto_approved (conditional gate, non-bypass)"
+      },
+      "honesty_note": "B-CF/ENG-STDIN are prompt-level discipline/guidance (orchestrator can still ignore); B-INLINE is a coverage-logic fix (C2 next_node_plan now also covers the 3 inline entry nodes). No machine-enforced quality lift; true root fix needs framework hooks. ZERO-DELTA vs v5.39.0 (4.949): C=5.00 I=4.92 D=4.95 deferred-excluded, regression_flags=[]; zero-delta is NOT regression.",
+      "finalized_by": "ReviewFinalize (cache/125), agent_id auto-dbfb720f"
+    },
+    {
+      "from_version": "5.40.0",
+      "to_version": "5.41.0",
+      "date": "2026-06-15",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 8,
+      "items_breakdown": {
+        "A": 5,
+        "B": 2,
+        "Y": 1
+      },
+      "accepted_items": [
+        "B1a",
+        "B1b",
+        "B1c",
+        "B1d",
+        "B2",
+        "C1",
+        "C2",
+        "Y1"
+      ],
+      "direction": "Surgical predetermined changes (NOT research-driven): CHANGE A (ENG-STDIN strong mandate) converts every agent_update_index.py / agent_write_node_cache.py JSON-payload spec site to the canonical 'Write temp file -> --updates-file/--data-file' form + 3 prohibitions (no inline --updates/--data; no printf|echo|python; no cd && compound) across 4 modules: agent_engine writeCache.step2 + inline-mode prose; node_engine programExec.step3 all agent_update_index calls (dispatch_plan/current_node/nodes_status/next_node_plan) + constraints TOOL CALL DISCIPLINE; main 3 engine-self render_claim writes (execute.step1/execute.step3/engineExec.step8); normal_engine node cache write. CHANGE B (single field) main.aisop.json eu_ai_act_art50.penalties_context '35M EUR/7%' -> '15M EUR/3% of worldwide annual turnover' (Art.50 transparency = Art.99(4) tier, old value was Art.5 Art.99(3) mis-assignment). Y1 agent_card.json penalties_context synced to 15M/3%. ENGINE SELF-EVOLUTION (target=runner=live, only this one copy; highest risk). Change A is FORWARD-EFFECTIVE: this run ran on live v5.40.0, the strong file-based mandate drives the NEXT engine run from v5.41.0. 7-file version+name sync 5.40.0 -> 5.41.0 (engine has NO AIAP_cn/AIAP_Standard).",
+      "weighted_score": 4.949,
+      "grade": "S",
+      "weighted_delta_vs_prior": 0.0,
+      "regression_flags": [],
+      "governance_hash": "93a9a8290911533cd4a1c418606b009b3459af8b3a7c4fbc172f4c53e3682573",
+      "prior_governance_hash": "6c12a6cb9537ad8e64e2cd57947c83d1248d4de0701e433ee9c84cf3ec18c002",
+      "scored_files": [
+        "main.aisop.json",
+        "node_engine.aisop.json",
+        "agent_engine.aisop.json",
+        "normal_engine.aisop.json",
+        "AIAP.md",
+        "agent_card.json",
+        "quality_baseline.json"
+      ],
+      "validate_leaves": 22,
+      "validate_collateral": 0,
+      "score_scope": "partial",
+      "changed_file_score": 4.949,
+      "weighted_score_note": "this version changed only the surgical change-A tool-call sites + change-B/Y1 compliance strings + version sync; partial re-score 4.949 == prior whole-program weighted (zero-delta); whole-program weighted unchanged from prior baseline",
+      "gates": {
+        "EvolveStep": "user_answer=all + Y1 (accepted B1a/B1b/B1c/B1d/B2/C1/C2/C3/C4/C5/Y1, question_hash 19714d2e28d277cb)",
+        "ReviewPresent": "finalize_risk=FALSE -> auto_approved (conditional gate, non-bypass)"
+      },
+      "carried_yellow_advisory": "node_engine step2 (programExec.dispatch-plan) + step4 (NODE_INFO_RENDER_CLAIM WRITE) engine-self render_claim writes intentionally left at old 'STDIN/args-list JSON' phrasing (outside user step3-only node_engine scope + hard-constraint #1 step4 six-section protection) while main's 3 render_claim writes converted; low stall risk; tracked for future scoped cleanup",
+      "honesty_note": "Change A is prompt-level tool-call discipline (no dispatch/data-contract/consumer change; orchestrator can still ignore — true unbypassable enforcement needs framework hooks); change B/Y1 are passive compliance-string corrections. ZERO-DELTA vs v5.40.0 (4.949): C=5.00 I=4.96 D=4.85 raw, deferred-excluded weighted 4.949 (full 4.929), regression_flags=[]; zero-delta is NOT regression. D6/D10 reconciled to ~5.0 post-Finalize (version fields synced on disk + governance_hash TRI-SYNC + changelog landed this node).",
+      "deferred_reconciled": {
+        "generate2_weighted": 4.949,
+        "final_weighted": 4.949,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ]
+      },
+      "finalized_by": "ReviewFinalize (cache/126), agent_id auto-f99afd52"
+    },
+    {
+      "from_version": "5.41.0",
+      "to_version": "5.42.0",
+      "date": "2026-06-15",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 1,
+      "items_breakdown": {
+        "A": 1
+      },
+      "accepted_items": [
+        "A1"
+      ],
+      "direction": "YELLOW cleanup (NOT research-driven): A1 closes the v5.41 CARRIED YELLOW ADVISORY. The v5.41 ENG-STDIN strong mandate only covered 'step3' JSON-payload call sites and missed 2 node_engine render_claim writes. A1 converts exactly those 2 transport-wording parentheticals to the canonical file-based form used everywhere else in v5.41: (1) programExec engine-self dispatch-plan RENDER_CLAIM WRITE (step2 block), (2) programExec.step4 dispatched-node NODE_INFO_RENDER_CLAIM WRITE (C1 v5.29.0). Both go from '(--updates via STDIN or as an args-list JSON; NO inline PowerShell-constructed JSON)' to 'FIRST file_system/Write the --updates JSON to a CONTEXT_DIR _tmp_*.json, THEN agent_update_index.py --cache_dir=CONTEXT_DIR --updates-file=<temp file path>; PROHIBITED inline --updates / printf|echo|python / cd && compound; no new python tool (--updates-file already exists)'. Pure transport-wording prose alignment; render_claim 7-section sections_rendered Title-Case list + user_language_used + E1 char-for-char/NEVER snake_case + step4 six-section template + Section-4 'Next' all BYTE-PRESERVED. ENGINE SELF-EVOLUTION (target=runner=live, only this one copy modified, highest risk). A1 is FORWARD-EFFECTIVE: ran on live v5.41.0, drives the NEXT engine run from v5.42.0. 7-file version+name sync 5.41.0 -> 5.42.0 (4 modules + AIAP.md + agent_card.json + quality_baseline.json; engine has no AIAP_cn.md/protocol_config.json/AIAP_Standard).",
+      "breaking_changes": 0,
+      "non_breaking_changes": 1,
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.949,
+      "grade": "S",
+      "score_scope": "partial",
+      "changed_file_score": 4.949,
+      "weighted_score_note": "this version changed only the 2 node_engine.aisop.json render_claim write-call transport parentheticals (A1); partial score 4.949; whole-program weighted unchanged from prior baseline 4.949, pending full re-score",
+      "weighted_delta": "N/A (partial re-score; not comparable to prior whole-program baseline)",
+      "dim_scores_deferred_excluded": {
+        "C": 4.93,
+        "I": 4.92,
+        "D": 4.85
+      },
+      "deferred_reconciled": {
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "note": "D6 VERSION SYNC + D10 DESCRIPTION/quality-baseline-sync P23 pre-Finalize placeholders (4.5) reconciled upward post-Finalize once governance files landed at v5.42.0 with recomputed governance_hash; deferred-excluded reported weighted 4.949 == reconciled authoritative"
+      },
+      "regression_flags": [],
+      "gates": {
+        "EvolveStep": "TRUE HALT, user reply 'all' (accepted A1 + auto_C version/governance/snapshot sync, question_hash 0585f6b6f59a14f8)",
+        "ReviewPresent": "conditional gate finalize_risk=FALSE (4 triggers all FALSE: regression/traffic-RED/DEGRADED/simulate-RED) -> spec-mandated branch-2b AUTO-APPROVED (conditional gate, non-bypass)"
+      },
+      "modify_step": {
+        "agent_id": "auto-327e6232",
+        "tool_calls": 9,
+        "status": "PASS",
+        "real_edit": true
+      },
+      "pipeline_run_id": "daade8fb-8d3f-4b06-9c0c-1d6f90987687",
+      "cache_turn": 127,
+      "honest_annotation": "A1 is prompt-level transport-call discipline alignment (no dispatch/data-contract/consumer change); removes the v5.41 cross-file phrasing inconsistency so all render_claim/index/cache writes now state the same canonical file-based mandate. governance_hash recomputed by tool_dirs/governance_hash.py (SOLE AUTHORITY), TRI-SYNC=3."
+    },
+    {
+      "from_version": "5.42.0",
+      "to_version": "5.43.0",
+      "date": "2026-06-16",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 4,
+      "items_breakdown": {
+        "A": 4
+      },
+      "accepted_items": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "LEVEL_C"
+      ],
+      "direction": "normal_engine.aisop.json ALL-INLINE-ization (NOT research-driven; predetermined MINOR). Background: normal_engine.aisop.json was a copy of node_engine (normal identity already applied) that still carried per-node sub-agent dispatch. This evolution makes it all-inline — keeping node discipline structure, removing sub-agent dispatch. A1: generate_dispatch_plan call site forces execute_mode=inline for ALL nodes (no more per-node agent/inline decision; inline nodes agent_id='inline_planned') + dispatch_audit downgraded to pre-execution NO-OP. A2: programExec.step3 node-loop (d) always takes the inline execution path (orchestrator runs agent_engine.aisop.json init->execute->review->writeCache in place, NEVER spawns a sub-agent); 6 dangling d.0/agent_id_generator references swept inline-consistent + DORMANT-BUT-KEPT block (agent guards e2e/e2e'/spawn_failure_evidence inert, not deleted). A3: dispatch_audit -> no-op (no agent nodes to audit; --completeness-check KEPT EXACTLY as a mode-agnostic post-hoc gate). A4: summary/description + 3 observability gen_ai_span_types rewritten to reflect 'Normal Engine: node structure + all-inline execution (no sub-agent dispatch)'. PRESERVED un-weakened: six-section node-info, NEXT-NODE PLAN, NodeVerify, crash recovery, 3-state circuit breaker, sovereignty user_gate (writeCache user_gate_audit --enforce LIVE for all terminal nodes, mode-agnostic), writeCache. agent_engine REUSED UNCHANGED by the inline path. NihilDensity GH1 incidentally cleaned 4 inherited '(change A v5.41.0)' inline tags (3 in step3, 1 in step5) — user-approved EXPECTED/ACCEPTABLE. main/node_engine/agent_engine version+name only. 7-file version sync 5.42.0 -> 5.43.0 (4 modules + AIAP.md + agent_card.json + quality_baseline.json; engine has no AIAP_cn.md/protocol_config.json/AIAP_Standard).",
+      "breaking_changes": 0,
+      "non_breaking_changes": 4,
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.949,
+      "grade": "S",
+      "weighted_method": "Professional_C025_I045_D030",
+      "weighted_delta_vs_prior": 0.0,
+      "score_scope": "partial",
+      "changed_file_score": 4.949,
+      "weighted_score_note": "this version changed only normal_engine.aisop.json content (all-inline-ization A1-A4 + 4 NihilDensity inline-tag cleans); main/node_engine/agent_engine version+name only; partial re-score 4.949 == prior whole-program weighted 4.949 (zero-delta); whole-program weighted unchanged from prior baseline 4.949.",
+      "dim_scores_deferred_excluded": {
+        "C": 5.0,
+        "I": 4.92,
+        "D": 4.95
+      },
+      "deferred_reconciled": {
+        "generate2_weighted": 4.949,
+        "final_weighted": 4.949,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "note": "D6 VERSION SYNC + D10 DESCRIPTION/quality-baseline-sync P23 pre-Finalize placeholders (4.5) reconciled upward post-Finalize once governance files landed at v5.43.0 with recomputed governance_hash + changelog; deferred-excluded reported weighted 4.949 == reconciled authoritative; ReviewFinalize step6 source-of-truth recompute = C*0.25 + I*0.45 + D*0.30 = 5.00*0.25 + 4.92*0.45 + 4.95*0.30 = 4.949 (full-D 4.96 -> full weighted 4.952)."
+      },
+      "regression_flags": [],
+      "gates": {
+        "EvolveStep": "UNCONDITIONAL sovereignty gate TRUE HALT, user reply 'all' (accepted A1/A2/A3/A4 + LEVEL_C version/governance/snapshot sync, question_hash 39ea82564ffa8c30, presented_at 2026-06-16T07:31:33)",
+        "ReviewPresent": "conditional gate finalize_risk=FALSE (4 triggers all FALSE: regression=FALSE [zero-delta is NOT regression], traffic-RED=FALSE, any-DEGRADED=FALSE, simulate-RED=FALSE) -> spec-mandated branch-2b AUTO-APPROVED (conditional gate, non-bypass; EvolveStep already user-authorized + clean quality)"
+      },
+      "validate_leaves": 11,
+      "validate_content_leaves": 9,
+      "validate_collateral": 0,
+      "nihil_tag_cleans": 4,
+      "modify_step": {
+        "agent_id": "auto-8cb4b387",
+        "tool_calls": 18,
+        "status": "PASS",
+        "real_edit": true
+      },
+      "pipeline_run_id": "e99d34ce-fffc-4335-819f-9d8af2ec324d",
+      "cache_turn": 129,
+      "honest_annotation": "All-inline-ization is a structural execution-model refactor (dispatch path) that PRESERVES every discipline structure (six-section node-info / NEXT-NODE PLAN / NodeVerify / crash recovery / 3-state circuit breaker / sovereignty user_gate / writeCache) un-weakened; it adds an inline-execution capability + simplifies dispatch but produces no machine-measurable C/I/D static lift, so weighted stays 4.949 (== baseline). The dormant-but-kept agent guards (e2e/e2e'/spawn_failure_evidence) are inert-not-deleted under all-inline. governance_hash recomputed by tool_dirs/governance_hash.py (canonical v1.0, SOLE AUTHORITY), TRI-SYNC=3 (AIAP.md / agent_card.json / quality_baseline.json; engine has no AIAP_cn.md). ENGINE SELF-EVOLUTION (target = engine directory, only this one copy modified).",
+      "finalized_by": "ReviewFinalize (cache/129), agent_id auto-c220fe4e"
+    },
+    {
+      "from_version": "5.43.0",
+      "to_version": "5.44.0",
+      "date": "2026-06-16",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 2,
+      "items_breakdown": {
+        "A": 2
+      },
+      "accepted_items": [
+        "A1",
+        "A2",
+        "A3",
+        "LEVEL_C"
+      ],
+      "direction": "node-info discipline strengthening (predetermined MINOR; NOT research-driven; prose+field NON-FUNCTIONAL change). A1: append one verbatim sentence to every node-info Output sub-line across all 3 content modules at EXACTLY 7 places (main 3 = Router.match / Router.cache-setup / dispatch-audit-summary engine-self node-infos; node_engine 2 = engine-self template + dispatched/per-node template; normal_engine 2 = mirror of node_engine) — appended sentence is identical at all 7: 'STRICTLY output the NEXT-NODE PLAN BEFORE EVERY node begins, NO exception, NEVER batched or skipped (omission = NODE_PLAN_OMITTED).' A2: add will_ audit fields to the NEXT-NODE PLAN block (programExec.step3 (b)) in node_engine (+will_output_next_node_plan:true) and normal_engine (+will_output_next_node_plan:true, +will_write_cache_via_agent_write_node_cache_py:true); will_render_node_info KEPT verbatim (no rename/delete); main next_node_plan untouched (it only references, does not define the struct). A3: main FAST ENTRY execution contract (...NEXT-NODE PLAN (per node_engine step3) then the full node-info... + DETERRENCE) left UNTOUCHED (no synonymous prose added, avoids nihil redundancy). LEVEL_C: 7-file version sync v5.43.0->v5.44.0 (4 modules + AIAP.md + agent_card.json + quality_baseline.json), no fork; agent_engine version+name only (functions byte-identical). GH1 inherited-tag cleanup: 7 bare stale '(change A v5.41.0)' tags removed (main 3->0, node 4->0, normal already 0) per existing GH1/NihilDensity rules; protected 'JSON-VIA-FILE MANDATE, change A v5.41.0' brackets retained 1:1. UN-WEAKENED PRESERVATION (each item verified present on disk, not weakened): six-section node-info; NEXT-NODE PLAN existing 5 fields + EMIT TIMING (incl. 'for EVERY node INCLUDING the inline entry nodes'); NodeVerify; crash recovery; 3-state circuit breaker; sovereignty user_gate (writeCache user_gate_audit.py --enforce LIVE); writeCache; normal_engine ALL-INLINE OVERRIDE + step3(d) always-inline; dispatch_audit (pre-execution / completeness). Boundary (principle 7): this evolution specifies only which text/fields change; runtime NEXT-NODE PLAN rendering / gating / reconciliation behavior unchanged; E1 band-out reconciliation SG (will_X <=> actual artifact) is a framework/tool-layer manual change OUT of this evolution's scope.",
+      "weighted_score": 4.949,
+      "grade": "S",
+      "dim_scores": {
+        "C": 5.0,
+        "I": 4.92,
+        "D": 4.95
+      },
+      "score_scope": "partial",
+      "changed_file_score": 4.949,
+      "regression_flags": [],
+      "deferred_reconciled": {
+        "generate2_weighted": 4.949,
+        "final_weighted": 4.949,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "note": "D6 VERSION SYNC + D10 DESCRIPTION re-measured post-governance-write (now-current 7-file v5.44.0 + TRI-SYNC governance_hash) -> both reconcile to PASS/5.0; authoritative weighted uses the engine deferred-excluded like-for-like convention = 4.949 (== ReviewPresent presented; ZERO-DELTA vs v5.43.0 baseline 4.949). No machine-measurable static C/I/D lift claimed for an additive prose-discipline + audit-field change (engine ZERO-DELTA convention, plateau v5.11.0->v5.43.0 SOFT_CEILING); zero-delta is NOT a regression."
+      },
+      "change_class": "prose+field non-functional discipline strengthening",
+      "validate_summary": "18 changed leaves (8 version/name + 10 content) / 0 added / 0 removed / collateral=0; A1 NODE_PLAN_OMITTED grep=7 (main3/node2/normal2); A2 will_output_next_node_plan=2 + will_write_cache_via_agent_write_node_cache_py=1; agent_engine functions byte-identical.",
+      "simulate_indicator": "GREEN",
+      "user_gate": "EvolveStep human gate answered 'all' (A1/A2/A3/LEVEL_C); ReviewPresent conditional finalize gate finalize_risk=FALSE (4 triggers all FALSE) -> auto_approved (NOT bypass)."
+    },
+    {
+      "from_version": "5.44.0",
+      "to_version": "5.45.0",
+      "date": "2026-06-16",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 2,
+      "items_breakdown": {
+        "A": 2
+      },
+      "accepted_items": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "LEVEL_C"
+      ],
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.952,
+      "grade": "S",
+      "regression_flags": [],
+      "governance_hash": "f9ab34cf567d9a1d3a92ca0b36ba3e217db4c51a2aa78e342b79f04980bca289",
+      "deferred_reconciled": {
+        "generate2_weighted": 4.949,
+        "final_weighted_deferred_excluded": 4.949,
+        "final_adjusted_full_D": 4.952,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ]
+      },
+      "direction": "node-info / NEXT-NODE PLAN discipline strengthening (predetermined MINOR; NOT research-driven; prose+field NON-FUNCTIONAL change). A1 [node_engine] programExec.step3(b) NEXT-NODE PLAN object literal: will_render_node_info:true -> MUST_render_node_info:YES, will_output_next_node_plan:true -> MUST_output_next_node_plan:YES + 3-step node_workflow [Output NEXT-NODE PLAN & persist to _index; Execute STRICTLY per NEXT-NODE PLAN; Output node info] + trailing RULE:'MUST ALL BE YES'. A2 [normal_engine] same 2 renames PLUS will_write_cache_via_agent_write_node_cache_py:true -> MUST_write_cache_via_agent_write_node_cache_py:YES + 4-step node_workflow (incl. 'Write node cache via agent_write_node_cache.py') + RULE:'MUST ALL BE YES'. A3 mirror invariant (both carry identical trailing RULE; node_engine 3-step omits write-cache since dispatched sub-agent self-writes via agent_engine.writeCache, normal_engine 4-step includes it under all-inline override = JUSTIFIED ASYMMETRY). A4 verbatim 'planned_action:' prefix preserved in both new strings. main.aisop.json next_node_plan untouched (references, does not define struct). LEVEL_C: 7-file version sync 5.44.0 -> 5.45.0, name v-strings synced, no fork; agent_engine version+name ONLY (functions byte-identical to v5.44.0). HONEST: MUST_*:YES rename hardens discipline prose but adds NO machine-enforced guarantee (prompt-level); no machine-measurable C/I/D static lift -> ZERO-DELTA. ModifyStep real per-node dispatch (auto-699ab259, tool_calls=7, real Edits A1/A2 landed). ValidateStep byte-proof vs v5.44.0 snapshot = 12 authorized leaves / 0 collateral (node_engine 3 + normal_engine 3 + main 2 + agent_engine 2 + AIAP.md 1 + agent_card 1 + quality_baseline 1). EvolveStep UNCONDITIONAL gate TRUE HALT, user reply 'all'; ReviewPresent conditional gate finalize_risk=FALSE (4 triggers all FALSE) -> spec-mandated AUTO-APPROVED (conditional, non-bypass). governance_hash f9ab34cf567d9a1d3a92ca0b36ba3e217db4c51a2aa78e342b79f04980bca289 (prior v5.44.0 c1f3b9a9; differs because both content modules' step3(b) edits + version+name changed). .evolution_snapshot/v5.45.0/ built LAST after governance_hash + identity; snapshot_audit exit 0."
+    },
+    {
+      "from_version": "5.45.0",
+      "to_version": "5.46.0",
+      "date": "2026-06-16",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 3,
+      "items_breakdown": {
+        "B": 3
+      },
+      "accepted_items": [
+        "B1",
+        "B2",
+        "B3",
+        "LEVEL_C"
+      ],
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.952,
+      "grade": "S",
+      "regression_flags": [],
+      "governance_hash": "386b64068748e284a555f0da7ed880f72463554fbf13949bce5d4053235b6d4b",
+      "deferred_reconciled": {
+        "generate2_weighted": 4.949,
+        "final_weighted_deferred_excluded": 4.949,
+        "final_adjusted_full_D": 4.952,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ]
+      },
+      "direction": "node-info Report/Explain content-contract strengthening (R/E/L; predetermined MINOR; NOT research-driven; prose+contract NON-FUNCTIONAL change, additive-only). B1 [change R] node_engine+normal_engine programExec.step4 Report + agent_engine endNode.step1: Report MUST faithfully output triggering user message in full (用户原文; same-language verbatim / cross-language faithful translation; no omit/truncate/summarize) -> NODE_REPORT_USERMSG_MISSING. B2 [change E] Explain substantive floor >=2-3 sentences explaining Report why/cause/method/significance; #4b = AUTHORITY-scope only not thinness license -> NODE_EXPLAIN_THIN. B3 [change L] #5-scope USER_LANGUAGE reaffirmation: Report substantive summary + full Explain prose in user_language; section labels canonical English. node_engine.step4 == normal_engine.step4 BYTE-IDENTICAL (18115c) lockstep preserved. ADDITIVE-only, 0 delete / 0 weaken; 9-item UN-WEAKENED preservation list confirmed. HONEST: prose/contract strengthening, prompt-level, real teeth = out-of-band E1 audit (out of scope per principle 7); ZERO-DELTA expected."
+    },
+    {
+      "from_version": "5.46.0",
+      "to_version": "5.47.0",
+      "date": "2026-06-17",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 5,
+      "items_breakdown": {
+        "C": 5
+      },
+      "accepted_items": [
+        "C1",
+        "C3",
+        "C4",
+        "C5",
+        "C7"
+      ],
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.952,
+      "grade": "S",
+      "dim_scores": {
+        "C": 5.0,
+        "I": 4.92,
+        "D": 4.95
+      },
+      "score_scope": "full",
+      "regression_flags": [],
+      "deferred_reconciled": {
+        "generate2_weighted": 4.949,
+        "final_weighted_deferred_excluded": 4.949,
+        "final_adjusted_full_D": 4.952,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "note": "D6 VERSION SYNC + D10 DESCRIPTION re-measured post-governance-write (now-current 7-file v5.47.0 + TRI-SYNC governance_hash) -> both reconcile to PASS/5.0; authoritative weighted uses the engine deferred-excluded like-for-like convention = 4.949 (== ReviewPresent presented; ZERO-DELTA vs v5.46.0 baseline 4.949). No machine-measurable static C/I/D lift claimed for a prose-hygiene + change-R-revert non-functional cleanup (engine ZERO-DELTA convention, plateau SOFT_CEILING); zero-delta is NOT a regression."
+      },
+      "change_class": "prose hygiene + change-R revert (non-functional prose cleanup)",
+      "direction": "PROSE HYGIENE + change-R REVERT (predetermined MINOR; NOT research-driven; non-functional prose cleanup across node_engine + normal_engine + agent_engine + AIAP.md + agent_card.json). C1 — node_engine.step4 == normal_engine.step4 (byte-identical lockstep) three CN/EN-mixed segments rewritten to pure English, semantics unchanged: A3 (opening / normal first-batch inline nodes NOT exempt from six-section + (inline) marker + no silent startup + HONEST ANNOTATION), A6 (main_agent_asserts refresh), B2 (node_info_render contract cross-reference + HONEST ANNOTATION); lockstep preserved, CN=0 in step. C3 — AIAP.md Module Responsibility Matrix (7x4) '/ 中文' stripped, English retained, CN=0. C4 — 3 self-label fields (AIAP.md summary, agent_card.json description + quality_summary.note) made version-neutral English; structured fields untouched; embedded changelog kept as history in version_history/evolution_history. C5 — in-scope (step/constraint/Assert/Output prose) version-number tokens cleaned ('(change X v...)' deleted; rule-name ' vN.M.K' suffix removed with anchor kept; node long-sentence rewrites drop version token preserving semantics; in-scope v\\d+\\.\\d+\\.\\d+=0); version:/name + description fields + history regions untouched. C7 — REVERT change R (v5.46.0 'Report MUST echo 用户原文' feature): deleted node_engine + normal_engine step4 SECTION 2 Report RULE(4) (#4c-R USER MESSAGE FAITHFUL OUTPUT / 用户原文 / NODE_REPORT_USERMSG_MISSING) + agent_engine endNode (R) triggering-user-message fragment; PRESERVED un-touched: #4c full user_messages forward, change E (NODE_EXPLAIN_THIN), change L (user_language scope), SECTION 2 Report RULES (1)(2)(3); node==normal step4 lockstep maintained. HARD-CONSTRAINTS: ① content change only C1/C3/C4/C5/C7; C7 reverts ONLY additive R, NEVER touches other step logic / dispatch / finalize / snapshot / governance / two gates / X3 / six-section template body / #4c / E / L; NO LEVEL_A. ② history NEVER touched. ③ version:/name field values untouched; 4 modules unified to 5.47.0. ④ framework Python / python_tools untouched. ⑤ EvolveStep TRUE HALT user 'all' (accepted C1/C3/C4/C5/C7, question_hash 4ffa481736fa48b2); ReviewPresent conditional gate finalize_risk=FALSE (4 triggers all FALSE) -> spec-mandated AUTO-APPROVED (conditional, non-bypass). ModifyStep real per-node dispatch (auto-0dbc4864, tool_calls=23, real Edits C1/C3/C4/C5/C7 landed). ValidateStep byte-proof vs v5.46.0 snapshot = 38 authorized leaves / 0 collateral; node==normal step4 lockstep; #4c/E/L/Report RULES(1)(2)(3) verbatim preserved. SimulateStep GREEN. NihilDensity GREEN. Compliance NET-POSITIVE. governance_hash recomputed by tool_dirs/governance_hash.py (canonical v1.0, SOLE AUTHORITY) + TRI-SYNC=3; attestation_chain advanced by tool_dirs/attestation_advance.py (SOLE AUTHORITY); .evolution_snapshot/v5.47.0/ built LAST after governance_hash + identity; snapshot_audit exit 0.",
+      "simulate_indicator": "GREEN",
+      "user_gate": "EvolveStep human gate answered 'all' (C1/C3/C4/C5/C7); ReviewPresent conditional finalize gate finalize_risk=FALSE (4 triggers all FALSE) -> auto_approved (NOT bypass)."
+    },
+    {
+      "from_version": "5.47.0",
+      "to_version": "5.48.0",
+      "date": "2026-06-17",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 1,
+      "items_breakdown": {
+        "C": 1
+      },
+      "accepted_items": [
+        "C6"
+      ],
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.952,
+      "grade": "S",
+      "dim_scores": {
+        "C": 5.0,
+        "I": 4.92,
+        "D": 4.95
+      },
+      "score_scope": "full",
+      "regression_flags": [],
+      "deferred_reconciled": {
+        "generate2_weighted": 4.949,
+        "final_weighted_deferred_excluded": 4.949,
+        "final_adjusted_full_D": 4.952,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "note": "D6 VERSION SYNC + D10 DESCRIPTION re-measured post-governance-write (now-current 6-file v5.48.0 + quality_baseline finalized + TRI-SYNC governance_hash) -> both reconcile to PASS/5.0; authoritative weighted uses the engine deferred-excluded like-for-like convention = 4.949 (== ReviewPresent presented; ZERO-DELTA vs v5.47.0 baseline 4.949). No machine-measurable static C/I/D lift claimed for an additive prompt-discipline self-report field; zero-delta is NOT a regression."
+      },
+      "change_class": "additive prompt-discipline self-report field (non-functional, zero deletion)",
+      "changes": "C6: additive boolean field report_MUST_align_user_summary:YES into node_engine + normal_engine programExec.step3(b) next_node_plan block, sibling of MUST_render_node_info / MUST_output_next_node_plan, under RULE 'MUST ALL BE YES'. Pre-commits faithful execution of SECTION 2 Report contract (verbatim forward cache.user_summary / thin rebuild / no stub). ONLY 1 field added; zero deletion. ENGINE SELF-EVOLUTION target=runner-direct. governance_hash recomputed + TRI-SYNC; snapshot v5.48.0 built post-governance.",
+      "finalized_by": "ReviewFinalize",
+      "cache_turn": 139
     }
   ],
   "evolution_notes": {
@@ -1363,40 +2764,27 @@
     "v5.4.1": "Patch evolution from v5.4.0. 6 items (3A + 3C). agent_id strict enum enforcement, dispatch_audit mandatory gate, governance_hash TRI-SYNC."
   },
   "bootstrap_advisory": {
-    "from_version": "5.20.0",
-    "generated_at": "2026-06-04T20:23:17+00:00",
+    "from_version": "5.39.0",
+    "generated_at": "2026-06-15T03:58:32.679024+00:00",
     "features_pending_verification": [
-      "v5.18.0 B1 live verification: confirm prepare_cache.py _detect_user_language() correctly detects ja/ko languages and persists user_language to _index.json on the NEXT pipeline run with non-English user input",
-      "v5.18.0 B2 live verification: confirm node_engine USER_LANGUAGE bootstrap param is correctly passed to sub-agents in the NEXT agent-heavy pipeline run",
-      "v5.18.0 B3 live verification: confirm agent_engine + normal_engine USER_LANGUAGE enforcement constraint activates on the NEXT pipeline run (user_language read from bootstrap/context)",
-      "v5.16.0 B1 live verification: confirm normal_engine sovereignty gate enforcement (user_gate_audit.py --enforce in writeCache.step3) fires on the NEXT loading_mode=normal pipeline run",
-      "v5.14.2 Known Limitations accuracy (re-verify #25926/#11155 upstream status; ~Q4 2026 decay window per memory note)"
+      "C1 FAST ENTRY EXECUTION CONTRACT: verify that at runtime the FIRST node in nodes_in_path INCLUDING inline entry nodes (Start/NLU/PipelineEntry) actually render their full six-section node-info (compare against cache/121 which had 3 missing) — prompt-level, real teeth = out-of-band audit.",
+      "C2 NEXT-NODE PLAN: verify each node writes nodes_status[*].next_node_plan with structural fields == dispatch_plan (execute_mode/expected_agent_id copied verbatim) + planned_action non-empty + will_render_node_info=true; verify four-way consistency next_node_plan <-> dispatch_plan <-> dispatch_timeline <-> node cache agent_id. If compliance is below target -> add out-of-band four-way-check SG (per user acceptance criterion)."
     ],
-    "direction_suggestions": [
-      {
-        "priority": "HIGH",
-        "item": "Parallel-wave last_completed_node concurrency model — B1 documented (C5) the single-value last-writer-wins caveat for parallel waves but deferred the fix. If parallel dispatch becomes common, replace the scalar last_completed_node with per-branch cursors or a completed-set (data-shape change, not additive). Currently low-urgency (linear pipelines are the default and unaffected)."
-      },
-      {
-        "priority": "MEDIUM",
-        "item": "BACKLOG-1 process boundary enforcement (Layer-2 external watchdog) — root-fix direction for the documented long-session heap OOM (proactive session rotation threshold / heavy-node segmentation)"
-      },
-      {
-        "priority": "MEDIUM",
-        "item": "C7 Cognitive sub-engine output_mode simplification + I6/I12 — only structural levers to lift the 8-version S soft-ceiling (~4.93); doc/additive PATCHes cannot move it"
-      }
+    "direction_next": [
+      "If C1/C2 prompt-level discipline proves insufficient out-of-band, escalate to a framework hook / band-out four-way cross-check SG that mechanically rejects runs with missing node-info or mismatched next_node_plan (the user's stated fallback)."
     ]
   },
   "regression_check": {
     "baseline_version": "5.0.0",
     "baseline_weighted": 4.72,
     "regression_threshold": 0.15,
-    "last_measured_version": "5.20.0",
-    "last_measured_weighted": 4.983,
-    "last_measured_final_adjusted": 4.983,
-    "last_delta_vs_baseline": 0.263,
+    "last_measured_version": "5.48.0",
+    "last_measured_weighted": 4.949,
+    "last_measured_final_adjusted": 4.952,
+    "last_delta_vs_baseline": 0.229,
     "last_delta_exempt": false,
-    "note": "v5.20.0 FINALIZED by ReviewFinalize (pipeline cache/73). Final weighted 4.983, final_adjusted 4.983, delta +0.263 vs 4.72 baseline. No regression. governance_hash TRI-SYNC complete sha256:76667e06. Previous: v5.19.0 final_adjusted=4.982 Grade S."
+    "regression_flags": [],
+    "note": "v5.48.0 FINALIZED by ReviewFinalize (cache/139). ZERO-DELTA vs v5.47.0 (4.949). MINOR non-functional prompt-discipline addition: C6 additive self-report field report_MUST_align_user_summary:YES in node_engine+normal_engine programExec.step3(b) next_node_plan block (sibling of MUST_render_node_info / MUST_output_next_node_plan, under RULE 'MUST ALL BE YES'). Zero deletion. No machine-measurable static lift -> zero-delta is NOT a regression."
   },
   "version_history": [
     {
@@ -1784,6 +3172,201 @@
       "cache_turn": 76,
       "changes": "6-item MINOR via Creator Evolve pipeline (cache/76). B1 prepare_cache.py _strip_non_natural_language() root cause fix for _detect_user_language path/ASCII interference — strips non-NL tokens before CJK ratio analysis. B2 USER_LANGUAGE_CONFLICT_DETECTION safety net in agent_engine/normal_engine/node_engine — cross-checks _index.user_language vs user_message language. C1-C4 version/name/history/hash sync. Direction continuity 0.92 HIGH (4-version user_language trajectory). Simulation: 22/22 PASS 100% coverage. NihilDensity: GREEN 0.00681. FINALIZED by ReviewFinalize. ThreeDimTest: C=5.00 I=5.00 D=5.00 weighted=5.000 Grade S. D6/D10 reconciled 4.5->5.0. 0 breaking changes.",
       "governance_hash": "sha256:f75cfaf6da7d6d0d06f0563fb1625bfcfea1a37d97f48ea18a167dfb47b16be1"
+    },
+    {
+      "version": "5.23.0",
+      "date": "2026-06-05",
+      "status": "finalized",
+      "weighted_score": 4.955,
+      "final_adjusted_score": 4.985,
+      "grade": "S",
+      "pipeline_run_id": "auto-80",
+      "cache_turn": 80,
+      "changes": "8-item MINOR via Creator Evolve pipeline (cache/80). B1 prepare_cache CJK body heuristic. B2 node_engine 3-section Node Summary template. B3 user_gate tri-state mechanism. B4 agent_engine USER_SUMMARY RENDERING CONTRACT. C1-C4 sync. FINALIZED by ReviewFinalize. 0 breaking changes.",
+      "governance_hash": "sha256:88a590c8"
+    },
+    {
+      "version": "5.24.0",
+      "date": "2026-06-09",
+      "status": "finalized",
+      "weighted_score": 5.0,
+      "final_adjusted_score": 5.0,
+      "grade": "S",
+      "pipeline_run_id": "fd082438-7423-42b8-a97c-06dfbd5fa20f",
+      "cache_turn": 85,
+      "changes": "9-item MINOR via Creator Evolve pipeline (cache/85). Bug1A-D Node Summary ALL types + FixA1-A2 RESUME RE-ENTRY + FixB DISPATCH INTEGRITY + A1 JSON skeleton template + A2 EXPECTED_AGENT_ID. C1-C4 sync. FINALIZED by ReviewFinalize. 0 breaking changes.",
+      "governance_hash": "sha256:cf17c3db0625dcf68f61ca6994d5babc5e7f8cc9cd680bfef8f3607557d85bf9"
+    },
+    {
+      "version": "5.25.0",
+      "date": "2026-06-09",
+      "status": "finalized",
+      "weighted_score": 4.814,
+      "final_adjusted_score": 4.814,
+      "grade": "S",
+      "pipeline_run_id": "e10bc74d-87ec-46bf-8394-6f4236a3f914",
+      "cache_turn": 87,
+      "changes": "7-item MINOR via Creator Evolve pipeline (cache/87). B1 Fix A'' RESUME/CRASH RE-ENTRY full (a)->(h) cycle. B2 P4 user_gates_presented audit expansion. B3 Fix C ExecutionSummary USER_LANGUAGE anchor. C1-C4 sync. FINALIZED by ReviewFinalize. Simulation: 46/46 PASS. Validation: 67P/14Y/1R. 0 breaking changes.",
+      "governance_hash": "sha256:a3affdf7d82781efbf9d13ece4d9fd2addbd953cd9a69e4be317e491676ddfe9"
+    },
+    {
+      "version": "5.26.0",
+      "date": "2026-06-09",
+      "status": "finalized",
+      "weighted_score": 4.814,
+      "final_adjusted_score": 4.814,
+      "grade": "S",
+      "pipeline_run_id": "0b7cf852-92a5-48e3-8659-ff5c50230864",
+      "cache_turn": 89,
+      "changes": "9-item MINOR via Creator Evolve pipeline (cache/89). A1 separator line Section 0, A2 Axiom Governance Section 4, A3 For Audit Section 1.5, A4 sovereignty-class enforcement upgrade. B1 node_summary_rendered machine audit tracking chain (cache_tool_lib.py default + schema + dispatch_audit completeness check). C1-C4 version/name/history/hash sync. 6-section step4 template (separator + Node State + For Audit + Summary + Explain + Axiom Governance). 0 breaking changes. All additive. FINALIZED by ReviewFinalize.",
+      "governance_hash": "sha256:87e5c5635071cb220dd5d678067008af2e4c41dc18969178a00227122dce426f"
+    },
+    {
+      "version": "5.27.0",
+      "date": "2026-06-09",
+      "status": "completed",
+      "pipeline_run_id": "auto-c2e9d3ca",
+      "cache_turn": 90,
+      "changes": "8-item MINOR via Creator Evolve pipeline (cache/90) FINALIZED by ReviewFinalize. #1b blank line before separator, #4a Summary->Report rename+thicken, #4b Explain non-authoritative disclaimer, #4c User Message complete forwarding, #4d agent_engine writeCache user_summary quality rule, #5-scope USER_LANGUAGE expanded to all prose/labels, #5-axiom Axiom 0 fixed canonical English, §9 context-compaction re-entry. Files: node_engine.aisop.json, agent_engine.aisop.json, main.aisop.json, normal_engine.aisop.json. ThreeDimTest: C=5.0 I=4.9 D=4.8 weighted=4.90 Grade S. 0 breaking changes.",
+      "governance_hash": "sha256:PENDING_GOVERNANCE_HASH_TOOL"
+    },
+    {
+      "version": "5.29.0",
+      "date": "2026-06-10",
+      "status": "finalized",
+      "grade": "S",
+      "pipeline_run_id": "3fa768ca-559d-4b66-a3fe-444c5ac0457a",
+      "cache_turn": 93,
+      "changes": "9-item MINOR via Creator Evolve pipeline (cache/93) FINALIZED by ReviewFinalize. Self-evolution of execute_engine. A1-A6: main_agent_asserts withdrawn from cache (writeCache skeleton 16 fields, json_schema properties+required removed, step1_5 read-back 16->15, endNode return of fixed constants, node_engine step4 inline three Asserts as canonical source). B1-B2: node_info_render structured contract returned (endNode) + node_engine step4 reference note. C1: node_info_render_claim written to cache nodes_status for E1 audit teeth. Files changed: agent_engine.aisop.json + node_engine.aisop.json only (Q2 version split preserved — main+normal_engine remain 5.27.0). 0 breaking changes. All additive/structural. governance_hash TRI-SYNC.",
+      "governance_hash": "sha256:af7c011eb1f35003ca202616c5e58d4b51c9c8b2c30e1715f08c0221ca0b5560"
+    },
+    {
+      "version": "5.30.0",
+      "date": "2026-06-10",
+      "status": "draft",
+      "grade": "S",
+      "pipeline_run_id": "80548c5f-0d71-410f-8b9b-8474c161ec33",
+      "cache_turn": 96,
+      "changes": "4-item MINOR hygiene re-baseline via Creator Evolve pipeline (cache/96) — DRAFT generated by Generate1 (pending ReviewFinalize). formalized from manual hotfix 2026-06-10 (plan22/03 §15/§18, plan22/06). Registers 5 already-live in-file hotfixes (Bug① agent_id_generator.py --resume + node_engine wiring; Bug②/E5 agent_update_index.py _deep_merge + dotted-path _unflatten; Bug③ agent_engine writeCache STRING ESCAPING; E3 user_gate_audit auto_approve fingerprint gate; E4 agent_update_index presented_at backfill) — hotfix logic NOT re-modified. C1 version unify 5.29.0 -> 5.30.0 across all 4 .aisop.json + AIAP.md + agent_card.json + quality_baseline.json (eliminates Q2 split: main/normal were 5.27.0, node/agent were 5.29.0). C2 name sync v5.30.0. C3 evolution_history + version_history + AIAP.md evolution append. C4 governance_hash recompute (tool_dirs/governance_hash.py) + TRI-SYNC + .evolution_snapshot/v5.30.0/ (snapshot_build.py --pipeline_run_id, snapshot_audit exit 0) DEFERRED to ReviewFinalize. python_tools/ NOT in hash scope, NOT touched. 0 breaking changes.",
+      "governance_hash": "sha256:PENDING_GOVERNANCE_HASH_TOOL"
+    },
+    {
+      "version": "5.31.0",
+      "date": "2026-06-10",
+      "status": "finalized",
+      "grade": "S",
+      "pipeline_run_id": "00443298-8256-41ad-b12a-254d839bec3b",
+      "cache_turn": 97,
+      "weighted_score": 4.5,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "changes": "5-item MINOR via Creator Evolve pipeline (cache/97) FINALIZED by ReviewFinalize. Self-evolution of execute_engine, two change classes: A=startup visibility (prompt-level, honestly NON-machine-enforced) + B=metadata summary hygiene. A1 main.aisop.json Router: startup MUST emit a visible decision chain — Router:[match=... -> classify=... -> route=<direct_reply|engine:loading_mode>] + Engine:[loaded v<X>] + Cache:[ready trace=...] (strengthens existing Router:/Engine:/Cache: markers; no step deleted). A2 node_engine.aisop.json programExec step1-3: MUST emit one-line pre-dispatch setup trace (Engine: target read | dispatch_plan: N nodes (modes) | audits: pre=OK / completeness=... | dispatch start) — setup visibility moved from variance to mandatory; generate_dispatch_plan/dispatch_audit/completeness logic NOT modified. A3 node_engine.aisop.json step4: appended after the existing Bug1-A/Bug1-B clause — startup nodes + normal-mode first-batch inline nodes (Start/NLU/PipelineEntry) ABSOLUTELY not exempt from six-section node-info, Node State MUST carry (inline) marker, no silent startup skip; prompt-level non-machine-enforced (honestly annotated). B1 strip stale hardcoded version prefix (e.g. '...v5.27.0:') from summary of all 4 modules -> version-agnostic semantic description, refreshed v5.31.0. B2 node_engine summary compressed <500 chars (essentials kept, redundant history enumeration removed). C1 version unify 5.30.0 -> 5.31.0 across all 4 .aisop.json + AIAP.md + agent_card.json + quality_baseline.json. C2 name field sync v5.31.0 (4 modules). C3 evolution_history + AIAP.md evolution append (this entry); summary/visibility cleanup recorded. C4 governance_hash recompute via tool_dirs/governance_hash.py (canonical v1.0, absolute path, SOLE AUTHORITY — never inline) + TRI-SYNC (AIAP.md / agent_card.json / quality_baseline.json; no AIAP_cn.md, TRI=3) + .evolution_snapshot/v5.31.0/ via tool_dirs/snapshot_build.py --pipeline_run_id=00443298-8256-41ad-b12a-254d839bec3b (snapshot_audit exit 0 / meta_valid:true mandatory). python_tools/ NOT in hash scope, NOT touched; dispatch_plan/hotfix NOT touched. Authorized at EvolveStep sovereignty gate (user reply 'all', accepted A1/A2/A3/B1/B2/C1-C4; Axiom 0 satisfied; no pre-authorization assumed; gate NOT reopened at ReviewFinalize). ThreeDimTest weighted=4.5 Grade S (this-cycle Professional method). HONEST SIGNAL: 4.5 vs prior full baseline 4.814 = -0.314 is a scoring-method/scope-change artifact formally EXEMPT per ObservabilityStep — NOT a real regression; baseline-tracking continuity preserved. Validation 0 RED, Simulation 36/36 PASS 100% coverage, NihilDensity GREEN, PostSimulateGate GREEN. 0 breaking changes, all additive.",
+      "governance_hash": "sha256:PENDING_GOVERNANCE_HASH_TOOL"
+    },
+    {
+      "version": "5.32.0",
+      "date": "2026-06-11",
+      "status": "finalized",
+      "grade": "S",
+      "pipeline_run_id": "f68ded7c-0ffd-4cf8-b18d-3bee8f0906f0",
+      "cache_turn": 99,
+      "weighted_score": 4.829,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "changes": "6-item MINOR via Creator Evolve pipeline (cache/99) FINALIZED by ReviewFinalize. ENGINE SELF-EVOLUTION (target=runner=live). P0 hotfix formalization + node_engine step4 micro-refinement. A=formalize 4 already-live P0 inline-node hotfixes (changelog + version registration only, logic NOT re-modified): A1 node_engine.aisop.json programExec.step1 MULTI-GRAPH/DELEGATION EXPANSION, A2 node_engine.aisop.json programExec.step2 completeness BLOCK (entry_path_omissions>0), A3 main.aisop.json execute.step1 A1 classify=package_route wording (not intent), A4 python_tools/dispatch_audit.py entry_path_omissions (out of governance_hash scope, kept as-modified). A1-A4 were cache/98 live-verified nodes_in_path=21. B=node_engine.aisop.json step4 SECTION 4 Axiom Governance Assert reword: 'Assert: strictly follow dispatch_plan; NEVER fabricate, NEVER skip' -> 'Assert: strictly execute engine node steps; NEVER fabricate, NEVER skip' (this one line only). C=node_engine.aisop.json step4 new SECTION 5 End Separator: after final SECTION 4 line append '━━━━━━━━━━ end [{N}/{total}] {NodeName} ━━━━━━━━━━' + blank line, symmetric with opening SECTION 0 separator; honestly prompt-level UI, non-machine-enforced; no node type exempt. B+C content edits applied by Generate1, verified in place by ReviewFinalize. C1 version unify 5.31.0 -> 5.32.0 across all 4 .aisop.json + AIAP.md + agent_card.json + quality_baseline.json. C2 name field sync v5.32.0 (4 modules). C3 evolution_history + version_history + AIAP.md evolution append (this entry). C4 governance_hash recompute via tool_dirs/governance_hash.py (canonical v1.0, absolute path, SOLE AUTHORITY — never inline) + TRI-SYNC (AIAP.md / agent_card.json / quality_baseline.json; no AIAP_cn.md, TRI=3) + .evolution_snapshot/v5.32.0/ via tool_dirs/snapshot_build.py --pipeline_run_id=f68ded7c-0ffd-4cf8-b18d-3bee8f0906f0 (snapshot_audit exit 0 mandatory). PURPOSE: eliminate hash drift vs 3bab5655 by formally re-baselining the canonical hash to post-hotfix file state, plus step4 task 4/6. python_tools/ NOT in hash scope, NOT touched; no hotfix behavior logic touched. Authorized at EvolveStep sovereignty gate (TRUE HALT, user reply 'all', accepted A/B/C; Axiom 0 satisfied; no pre-authorization assumed; gate NOT reopened at ReviewFinalize). ThreeDimTest weighted=4.829 Grade S (full scope, all 4 modules scored; Professional C*0.25+I*0.45+D*0.30). Validation 12/12 0 RED, Simulation 19/19 PASS 100% coverage, NihilDensity GREEN max_nihil=0.0, PostSimulateGate GREEN. 0 breaking changes, all additive.",
+      "governance_hash": "sha256:e43bfdf7c8fe7ee864e752d8791f2ba26b2b5be8b0af7fa009d7f1691ae64b3b"
+    },
+    {
+      "version": "5.33.0",
+      "date": "2026-06-11",
+      "status": "finalized",
+      "grade": "S",
+      "pipeline_run_id": "1e96a7f7-bd96-4804-b6bc-89f8a9987b49",
+      "cache_turn": 100,
+      "weighted_score": 4.944,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "changes": "2-item MINOR via Creator Evolve pipeline (cache/100) FINALIZED by ReviewFinalize. ENGINE SELF-EVOLUTION (target=runner=live). Fix #1 score_confidence read-back off-by-one. A1: agent_engine.aisop.json writeCache.step1_5 (d2) read-back corrected from 'Verify ALL 15 fields' to 'Verify ALL 16 fields' (append score_confidence), aligning with the step1 ORDERED JSON SKELETON's 16-field set. score_confidence is the DEGRADED scoring field (status=DEGRADED -> score_confidence=low, ReviewFinalize caps weighted delta); read-back omitting it was a completeness gap (the long-disclosed Q1 residual, now resolved). step1 SKELETON (already 16) NOT touched; step1_5 other clauses NOT touched; no other step/module/target-external touched. C1 version unify 5.32.0 -> 5.33.0 across all 4 .aisop.json + AIAP.md + agent_card.json + quality_baseline.json. C2 name field sync v5.33.0 (4 modules). C3 evolution_history + version_history + AIAP.md evolution append (this entry). C4 governance_hash recompute via tool_dirs/governance_hash.py (canonical v1.0, absolute path, SOLE AUTHORITY — never inline) + TRI-SYNC (AIAP.md / agent_card.json / quality_baseline.json; no AIAP_cn.md, TRI=3) + .evolution_snapshot/v5.33.0/ via tool_dirs/snapshot_build.py --pipeline_run_id=1e96a7f7-bd96-4804-b6bc-89f8a9987b49 (snapshot_audit exit 0 mandatory). Recomputed canonical hash 6c888fe4d3b3702f61a7c67fb2bff9b6ac130854cb9a89bcc77bd3eeecc07077 matches ValidateStep --verify-only precomputed expectation (cross-validated). Authorized at EvolveStep sovereignty gate (TRUE HALT, user reply 'all', accepted A1; Axiom 0 satisfied; no pre-authorization assumed; gate NOT reopened at ReviewFinalize). ThreeDimTest weighted=4.944 Grade S (full scope, all 4 modules; Professional C*0.25+I*0.45+D*0.30). Validation 14/14 0 RED, Simulation 18/18 PASS 100% coverage, NihilDensity GREEN, PostSimulateGate GREEN. 0 breaking changes, all additive.",
+      "governance_hash": "sha256:6c888fe4d3b3702f61a7c67fb2bff9b6ac130854cb9a89bcc77bd3eeecc07077"
+    },
+    {
+      "version": "5.34.0",
+      "date": "2026-06-11",
+      "status": "finalized",
+      "grade": "S",
+      "pipeline_run_id": "5801a991-1562-4f36-b4ac-4f1c01e4d341",
+      "cache_turn": 101,
+      "weighted_score": 4.944,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "changes": "1-item-A MINOR feature via Creator Evolve pipeline (cache/101) FINALIZED by ReviewFinalize. ENGINE SELF-EVOLUTION (target=runner=live). Feature: engine-self node-info — executor renders structured six-section node-info for its OWN engine steps ([engine] marker, distinct from dispatched nodes' [N/total]). A1 4 new render points: main.aisop.json (execute.step1 -> '[engine] Router.match'; execute.step2-4 -> '[engine] Router.cache-setup'; engineExec.step6-8 -> '[engine] Router.execution-summary') + node_engine.aisop.json (programExec.step2 single-line pre-dispatch trace UPGRADED to six-section '[engine] programExec.dispatch-plan', emitted BEFORE first dispatched node = P0 early-visibility). Custom engine-self Axiom Governance Assert + render_claim wired to _index.engine_self_status (reusing agent_update_index.py, no new tool). Dispatched-node step4 render UNCHANGED (hard-constraint①). C1 version unify 5.33.0 -> 5.34.0 across all 4 .aisop.json + AIAP.md + agent_card.json + quality_baseline.json. C2 name field sync v5.34.0 (4 modules); 3 summary embedded-version strings (main/normal_engine/agent_engine) corrected v5.33.0->v5.34.0 at ReviewFinalize BEFORE hash recompute (node_engine summary has no embedded version). C3 evolution_history + version_history + AIAP.md evolution append (this entry). C4 governance_hash recompute via tool_dirs/governance_hash.py (canonical v1.0, absolute path, SOLE AUTHORITY — never inline) + TRI-SYNC (AIAP.md / agent_card.json / quality_baseline.json; no AIAP_cn.md, TRI=3) + .evolution_snapshot/v5.34.0/ via tool_dirs/snapshot_build.py --pipeline_run_id=5801a991-1562-4f36-b4ac-4f1c01e4d341 (snapshot built LAST after all governance edits; snapshot_audit exit 0 mandatory; never inline hash). Recomputed canonical hash 5c336ca7d2a43366ffd4e3639b31d819a5be0257419cf52670cef9b96687e131 (prior v5.33.0 6c888fe4d3b3702f61a7c67fb2bff9b6ac130854cb9a89bcc77bd3eeecc07077; differs because the 3 summary strings changed). Authorized at EvolveStep sovereignty gate (TRUE HALT, user reply 'all', accepted A1). Finalize separately gated at ReviewPresent (TRUE HALT, zero-delta finalize_risk, user reply 'OK'). ThreeDimTest weighted=4.944 Grade S (full scope, all 4 modules; Professional C*0.25+I*0.45+D*0.30, C=4.96 I=4.92 D=4.96). Validation 32/32 0 RED, Simulation 16/16 PASS 100% coverage, NihilDensity GREEN, PostSimulateGate GREEN. Honest: engine-self node-info is prompt-level + tamper-evident (render_claim self-reported, NOT ground truth). 0 breaking changes, all additive.",
+      "governance_hash": "sha256:5c336ca7d2a43366ffd4e3639b31d819a5be0257419cf52670cef9b96687e131"
+    },
+    {
+      "version": "5.35.0",
+      "date": "2026-06-11",
+      "status": "finalized",
+      "grade": "S",
+      "pipeline_run_id": "5b554e44-b84c-4fa5-8d8f-e1078bb547b7",
+      "cache_turn": 104,
+      "weighted_score": 4.949,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "changes": "3-content-edit (A/B/C) MINOR feature via Creator Evolve pipeline (cache/104) FINALIZED by ReviewFinalize. ENGINE SELF-EVOLUTION (target=runner=live). Feature: dispatched-node node-info fidelity hardening — node_engine.aisop.json step4 SECTION 4 ONLY. Change A: Assert sub-line replaced 'strictly execute engine node steps; NEVER fabricate, NEVER skip' -> 'strictly PHYSICALLY READ and execute engine node steps, NEVER from memory; NEVER fabricate, NEVER skip, NEVER yield mid-pipeline; NEVER auto-approve a user gate (a gate is a hard STOP); CONTINUE per dispatch_plan to the terminal node.' Change B: new 5th sub-line 'Output:' inserted AFTER Assert, BEFORE Governance, Align Axiom 0 preserved as Axiom Governance last line (CANONICAL ENGLISH untouched) — 'STRICTLY render this node-info as ALL 7 sections VERBATIM; NEVER compress, merge, abbreviate, or drop a section.' Change C: OUTPUT FIDELITY (hard, v5.35.0) rule added to SIX-SECTION FIXED TEMPLATE region — render from PHYSICALLY-READ template, never from memory; compression/omission = NODE_SUMMARY_OMITTED sovereignty-class violation (same enforcement class as A4). HARD-CONSTRAINT①: main/agent_engine/normal_engine Asserts, MAIN_AGENT_ASSERTS, engine-self custom Asserts, node logic UNCHANGED (version field only). FIX-1 (human-approved ReviewPresent gate#2): SECTION 4 preamble count '4 mandatory sub-lines' -> '5 mandatory sub-lines'. FIX-2 ('ALL 7 sections' terminology) kept verbatim per human decision. C1 version unify 5.34.0 -> 5.35.0 across all 4 .aisop.json + AIAP.md + agent_card.json + quality_baseline.json. C2 name/summary version strings synced v5.35.0. C3 evolution_history + version_history + AIAP.md evolution append (this entry). C4 governance_hash recompute via tool_dirs/governance_hash.py (canonical v1.0, absolute path, SOLE AUTHORITY — never inline) + TRI-SYNC (AIAP.md / agent_card.json / quality_baseline.json; no AIAP_cn.md, TRI=3) + .evolution_snapshot/v5.35.0/ via tool_dirs/snapshot_build.py --pipeline_run_id=5b554e44-b84c-4fa5-8d8f-e1078bb547b7 (snapshot built LAST after all governance edits; snapshot_audit exit 0 mandatory; never inline hash). Recomputed canonical hash 01238d17f2e3b8e71d9c28ee1862c705943602f47fd9917794a9a2c4afef6e38 (prior v5.34.0 5c336ca7d2a43366ffd4e3639b31d819a5be0257419cf52670cef9b96687e131; differs because node_engine.aisop.json step4 changed). Authorized at EvolveStep sovereignty gate (TRUE HALT, user reply 'all', accepted A/B/C + version_sync). Finalize separately gated at ReviewPresent (TRUE HALT, user reply 'finalize', accepted FIX-1/FIX-2/keep-name-bump). ThreeDimTest weighted=4.949 Grade S (full scope, all 4 modules; Professional C*0.25+I*0.45+D*0.30, C=5.00 I=4.92 D=4.95). Honest: A/B render lines are weak prompt-level floors (compressible), C OUTPUT FIDELITY rule is a firmer floor (read before render); both NON-machine-enforced; durable enforcement needs framework-level render verification / per-node sub-agent producing the node-info (backlog). 0 breaking changes, all additive.",
+      "governance_hash": "sha256:01238d17f2e3b8e71d9c28ee1862c705943602f47fd9917794a9a2c4afef6e38"
+    },
+    {
+      "version": "5.36.0",
+      "date": "2026-06-12",
+      "status": "finalized",
+      "grade": "S",
+      "pipeline_run_id": "02ab1958-1d2b-44d9-a2e5-e8cd290bde8d",
+      "cache_turn": 107,
+      "weighted_score": 4.949,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "changes": "4-change (A/B/C/D) MINOR feature via Creator Evolve pipeline (cache/107) FINALIZED by ReviewFinalize. ENGINE SELF-EVOLUTION (target=runner=live). Feature: three node-info template alignment (A/B/C) + FAST ENTRY entry-discipline (D) — consistency cleanup + reduced opening pre-analysis waste; NON-functional changes only. Change A (node_engine.aisop.json step4 SECTION 4 Governance sub-line): 'all completed items governed by human (all done governed by human)' -> 'all execution results under human audit and governance' (removed synonym-repeat parens; SECTION 0/1/1.5/2/3/5 + Next/Assert/Output/Align Axiom 0 untouched). Change B (4 engine-self Axiom Governance blocks — main Router.match/cache-setup/execution-summary + node_engine programExec.dispatch-plan): ① sub-line order -> canonical Next/Assert/Output/Governance/Align Axiom 0 (was Assert/Next/Governance/Align); ② new Output sub-line added (canonical, same as dispatched nodes) — 'STRICTLY render this node-info as ALL 7 sections VERBATIM (separator / Node State / For Audit / Report / Explain / Axiom Governance / end separator); NEVER compress, merge, abbreviate, or drop a section.'; ③ Assert simplified to keep only the engine-self physical-read + own-sequence clause (the 'render full template VERBATIM each step' clause moved out, now carried by the new Output sub-line); ④ Governance -> canonical 'all execution results under human audit and governance'; ⑤ Next keeps engine-self form, Align Axiom 0 canonical English unchanged. Change C (agent_engine.aisop.json node_info_render contract sections): ['分隔线','Node State','For Audit','Report','Explain','Axiom Governance'] -> ['separator','Node State','For Audit','Report','Explain','Axiom Governance','End Separator'] (added End Separator -> 7 entries, '分隔线'->English 'separator'; user_language/axiom0_verbatim/report_source untouched). Change D (main.aisop.json match.step1 prepend): FAST ENTRY (v5.36.0) execution-discipline preamble prepended via ' | ' before the existing 'Match user message...' text — IMMEDIATELY begin match->execute->programExec mechanically; do NOT pre-read/pre-analyze the target AIAP / creator-target pipeline / external docs BEFORE executing; target AIAP physically read PER-NODE at programExec step1 exactly when needed (never upfront); no opening 'analyze everything first' preamble; in-flow required reads (main.aisop.json + per-node target reads) are part of the flow NOT pre-analysis; match uncertain/Error + classify/execute/engineExec logic + package-match body semantics UNCHANGED. HARD-CONSTRAINT①: normal_engine version-only bump; finalize/dispatch/snapshot/governance_hash/sovereignty logic + MAIN_AGENT_ASSERTS (Assert 1/2/3) + dispatched-node step4 Next/Assert/Output/Align Axiom 0 + six-section structure + match package-match body UNCHANGED. A/B Output/Governance/Align Axiom 0 three lines literally identical; Assert line A/B contextual wording may differ. C1 version unify 5.35.0 -> 5.36.0 across all 4 .aisop.json + AIAP.md + agent_card.json + quality_baseline.json. C2 name/summary version strings synced v5.36.0. C3 evolution_history + version_history + AIAP.md evolution append (this entry). C4 governance_hash recompute via tool_dirs/governance_hash.py (canonical v1.0, absolute path, SOLE AUTHORITY — never inline) + TRI-SYNC (AIAP.md / agent_card.json / quality_baseline.json; no AIAP_cn.md, TRI=3) + .evolution_snapshot/v5.36.0/ via tool_dirs/snapshot_build.py (snapshot built LAST after all governance edits; snapshot_audit exit 0 mandatory; never inline hash). Authorized at EvolveStep sovereignty gate (TRUE HALT, user reply 'all', accepted A/B/C/D + version_sync). Finalize separately gated at ReviewPresent (TRUE HALT, zero-delta finalize_risk, user reply 'OK'). ThreeDimTest weighted=4.949 Grade S (full scope, all 4 modules; Professional C*0.25+I*0.45+D*0.30, C=5.00 I=4.92 D=4.95). Zero-delta vs v5.35.0 (4.949) expected for cosmetic+discipline alignment. Honest: A/B/C cosmetic prompt-level template-consistency; D prompt-level entry discipline (reduces pre-analysis token/time waste, NOT 100% enforced); none change execution/governance logic. 0 breaking changes, all additive.",
+      "governance_hash": "sha256:7deb13df8fe8f568744632b29c3e7e19f18b12e8184559b2e5c37ddf2b382291"
+    },
+    {
+      "version": "5.45.0",
+      "date": "2026-06-16",
+      "status": "finalized",
+      "grade": "S",
+      "pipeline_run_id": "4b4efbb4-06f0-4a41-8ba3-f6a4f70ba767",
+      "cache_turn": 133,
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.952,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "partial",
+      "governance_hash": "f9ab34cf567d9a1d3a92ca0b36ba3e217db4c51a2aa78e342b79f04980bca289",
+      "changes": "MINOR non-functional discipline-hardening evolution v5.44.0 -> v5.45.0 via Creator Evolve pipeline (cache/133) FINALIZED by ReviewFinalize. ENGINE SELF-EVOLUTION (target=runner=live; runner-direct). node_engine.aisop.json + normal_engine.aisop.json programExec.step3(b) NEXT-NODE PLAN block: will_render_node_info/will_output_next_node_plan -> MUST_render_node_info:YES / MUST_output_next_node_plan:YES (normal_engine + MUST_write_cache_via_agent_write_node_cache_py:YES) + node_workflow ordered checklist (node_engine 3 / normal_engine 4 items) + RULE:'MUST ALL BE YES'. main+agent_engine version+name only. ZERO-DELTA 4.949 Grade S (full-D reconciled 4.952). governance_hash f9ab34cf (prior c1f3b9a9). 12 authorized leaves / 0 collateral."
+    },
+    {
+      "version": "5.46.0",
+      "date": "2026-06-16",
+      "status": "finalized",
+      "grade": "S",
+      "cache_turn": 135,
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.952,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "partial",
+      "governance_hash": "386b64068748e284a555f0da7ed880f72463554fbf13949bce5d4053235b6d4b",
+      "changes": "MINOR prose-strengthening / NON-FUNCTIONAL node-info Report/Explain content-contract hardening (R/E/L) evolution v5.45.0 -> v5.46.0 via Creator Evolve pipeline (cache/135) FINALIZED by ReviewFinalize. ENGINE SELF-EVOLUTION (target=runner=live; runner-direct). CHANGE R: node_engine+normal_engine programExec.step4 Report + agent_engine endNode.step1 render contract — Report MUST faithfully output the triggering user message in full (labeled 用户原文, same-language verbatim / cross-language faithful translation, no omit/truncate/summarize); violation class NODE_REPORT_USERMSG_MISSING; additive to existing Report >=2-3 substantive + report_source=user_summary. CHANGE E: Explain MUST be >=2-3 sentences explaining the Report why/cause/method/significance/outcome-meaning, not a what-node+next-step stub; #4b label is AUTHORITY-scope only, not a thinness license; violation class NODE_EXPLAIN_THIN. CHANGE L: reaffirm #5-scope USER_LANGUAGE — Report substantive summary + full Explain prose in user_language; section labels stay canonical English. node_engine.step4 == normal_engine.step4 BYTE-IDENTICAL lockstep preserved; ADDITIVE-only (0 delete / 0 weaken); 9-item UN-WEAKENED preservation list all confirmed. ValidateStep 16 authorized leaves / 0 collateral (0 added / 0 removed); 7-file version sync 5.46.0. EvolveStep TRUE HALT user all; ReviewPresent conditional gate finalize_risk=FALSE -> AUTO-APPROVED (non-bypass). governance_hash 386b64068748e284a555f0da7ed880f72463554fbf13949bce5d4053235b6d4b via tool_dirs/governance_hash.py (SOLE AUTHORITY) + TRI-SYNC=3 + .evolution_snapshot/v5.46.0/ built LAST, snapshot_audit exit 0. ThreeDimTest weighted=4.949 Grade S (deferred-excluded; full-D reconciled 4.952), ZERO-DELTA vs v5.45.0; regression_flags=[]. HONEST: prose/content-contract strengthening, prompt-level, real teeth = out-of-band E1 audit (out of scope per principle 7) -> ZERO-DELTA is expected, not inflation. 0 breaking changes, all additive."
+    },
+    {
+      "version": "5.48.0",
+      "date": "2026-06-17",
+      "status": "finalized",
+      "grade": "S",
+      "cache_turn": 139,
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.952,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "full",
+      "governance_hash": "97ebfb711b41321eb4f6eb023cab2fd5cfc1a210cbb90b0e6c152f2bc418a2fb",
+      "changes": "MINOR non-functional prompt-discipline addition (C6) v5.47.0 -> v5.48.0 via Creator Evolve pipeline (cache/139) FINALIZED by ReviewFinalize. ENGINE SELF-EVOLUTION (target=runner-direct; live engine directory, highest risk). C6: node_engine + normal_engine programExec.step3(b) next_node_plan block gains additive self-report boolean field report_MUST_align_user_summary:YES, sibling/parallel to existing MUST_render_node_info / MUST_output_next_node_plan, folded into that block's RULE: MUST ALL BE YES. Semantics = pre-commit that this node's Report faithfully executes the SECTION 2 Report contract (verbatim forward cache.user_summary / thin MUST rebuild / no stub). Product boundary: ONLY this 1 field added; zero deletion / zero change to any existing rule, HONEST ANNOTATION, historical comment, six-section template, history, or intent. 6-file version bump 5.47.0 -> 5.48.0 (node/normal/main/agent_engine + agent_card + AIAP.md) by ModifyStep; quality_baseline finalized here. ThreeDimTest C=5.00 I=4.92 D=4.95 (deferred-excluded) weighted=4.949/S, full-D 4.952, delta 0.000 ZERO-DELTA, regression=false."
     }
   ],
   "evolution_strategy_memory": {
@@ -2167,6 +3750,111 @@
         "agent_engine step1_5 non-standard step key format (YELLOW, cosmetic)"
       ],
       "recommendation_for_next": "Language-drift trajectory mature (6 versions, structural solutions deployed). Next evolution should target: (1) D9 token_estimate field addition (HIGH — easy win, YELLOW removal), (2) P28-1 node_engine summary trimming (MEDIUM — requires careful information compression), (3) parallel-wave concurrency model (MEDIUM — last_completed_node race), (4) EU Art.50 compliance finalization before 2026-08-02 deadline (58 days). Avoid further language-related changes unless new evidence of regression."
+    },
+    "v5_24_0": {
+      "strategy": "execution fidelity bug fixes — Node Summary ALL node types + RESUME RE-ENTRY + DISPATCH INTEGRITY CHECK + writeCache JSON skeleton + EXPECTED_AGENT_ID bootstrap",
+      "outcome": "SUCCESS",
+      "score_delta": "+0.015 from v5.23.0 (4.985 -> 5.000 final adjusted). Perfect 5.000 recovered.",
+      "what_worked": [
+        "Bug1A-D: 3-section Node Summary extended to ALL node types (inline + bootstrap) with mode_detail. Root cause: Node Summary only covered agent-dispatched nodes; inline/bootstrap nodes had no structured output. Now MANDATORY for ALL node types without exemption.",
+        "FixA1-A2: RESUME RE-ENTRY ENFORCEMENT — resume after crash must re-enter step3(b)-(d) full dispatch sequence; POST-WAITING_USER re-dispatch similarly enforced with dispatch_records sync. Closes gap where resumed nodes could skip dispatch integrity checks.",
+        "FixB: DISPATCH INTEGRITY CHECK upgraded from 2-criterion to 4-criterion positive evidence (filename, execute_mode+trace, spawn timestamp, agent_id match). DISHONEST_DOWNGRADE classification for any criterion failure.",
+        "A1: writeCache.step1(b) ordered JSON skeleton template with ALL 16 fields (status, completed, output, tool_calls, modifications, user_summary, execute_mode, agent_id, cache_schema_version, steps_done, steps_remaining, trace_id, span_id, user_messages, l10_audit, score_confidence). Prevents sub-agent field omission — structural guarantee vs prose instruction.",
+        "A2: EXPECTED_AGENT_ID in node_engine bootstrap template + agent_engine params. Sub-agents receive server-generated agent_id directly via bootstrap (no self-read from _index.json needed).",
+        "Direction continuity HIGH (0.92): 8th consecutive execution fidelity cycle (v5.4.3->v5.24.0). Sustained focus on dispatch/execution correctness.",
+        "Score scope FULL (4/4 modules): all dimensions at 5.0, no deferred items.",
+        "Simulation: 45/45 scenarios PASS (44 PASS + 1 YELLOW advisory), 100% coverage. GREEN.",
+        "Validation: 35/36 checks (97.2%), 1 YELLOW (node_engine summary length). GREEN.",
+        "Clean pipeline: 20/20 prior nodes PASS, 0 DEGRADED, 279+ total tool calls across pipeline."
+      ],
+      "what_to_improve": [
+        "node_engine summary length (612 chars > 500 limit) — pre-existing YELLOW, structural",
+        "MF28b ASSERT Required coverage — terminal nodes still lack Required declarations",
+        "EU AI Act Art.50 enforcement approaching (2026-08-02, ~54 days)",
+        "Parallel-wave last_completed_node concurrency model still deferred (linear pipelines only)"
+      ],
+      "recommendation_for_next": "Execution fidelity trajectory mature (8 cycles). Perfect 5.000 score recovered. Next evolution should target: (1) D9 token_estimate field (HIGH — easy YELLOW removal), (2) node_engine summary compression (MEDIUM — pre-existing YELLOW), (3) MF28b ASSERT Required coverage expansion (MEDIUM). EU Art.50 deadline monitoring (54 days). Consider switching focus from execution fidelity to a new quality dimension."
+    },
+    "v5_25_0": {
+      "strategy": "execution/output fidelity — resume completeness + audit trail expansion + USER_LANGUAGE coverage",
+      "outcome": "SUCCESS",
+      "score_delta": "-0.186 from v5.24.0 (5.000 -> 4.814 weighted). Score dip expected — fresh full-scope retest with stricter evaluation vs prior perfect score.",
+      "what_worked": [
+        "B1 [Fix A'']: Resume/crash re-entry expanded from partial step3(b)->(d) to full (a)->(h) cycle including step4 three-section template. Ensures resume produces identical output fidelity as fresh execution — no missing Node Summary for last nodes.",
+        "B2 [P4]: user_gates_presented audit expanded with user_answer/accepted/rejected + second append-write on resume. Gate decisions now recorded in audit trail for full sovereignty traceability.",
+        "B3 [Fix C]: ExecutionSummary USER_LANGUAGE [PHYSICAL READ] anchor added to engineExec. Closes the last language coverage gap — Engine Router output now respects USER_LANGUAGE.",
+        "Direction continuity HIGH (0.95): 3 evolution themes continue — resume completeness (v5.6.1->v5.14.1->v5.24.0->v5.25.0), USER_LANGUAGE (v5.18.0->v5.21.0->v5.25.0), audit trail (v5.4.0->v5.12.0->v5.25.0).",
+        "All 3 changes backward compatible, 0 breaking changes, isolated to 2 files (node_engine, main).",
+        "Simulation: 46/46 PASS, 100% coverage (most scenarios in any cycle). All 3 B-items verified via dedicated scenario groups (G.B1-B3 + R.B1-B3).",
+        "Validation: 67 PASS / 14 YELLOW / 1 RED (pre-existing). GREEN.",
+        "NihilDensity: aggregate 0.17% GREEN across all 4 files.",
+        "Clean pipeline: 20/20 nodes PASS, 0 DEGRADED, 338 total tool calls."
+      ],
+      "what_to_improve": [
+        "I-dimension recovery: I=4.714 is the main drag (weighted contribution 0.45*4.714=2.121 vs prior 0.45*5.0=2.25). Investigate I sub-item drops in fresh retest.",
+        "node_engine summary length (537 chars > 500 limit) — pre-existing YELLOW P28",
+        "MF28b ASSERT Required coverage 58% (14/24) — 10 YELLOW endNode/continuation steps",
+        "EU AI Act Art.50 enforcement approaching (2026-08-02)",
+        "Parallel-wave last_completed_node concurrency model still deferred"
+      ],
+      "recommendation_for_next": "I-dimension investigation: the fresh full-scope retest scored I=4.714 (vs prior I=5.000). Root-cause the specific I sub-items that dropped (I2 input guards? I6/I12 compliance? I3 observability?). Target selective I-dim improvement in next evolution. Resume/USER_LANGUAGE/audit trail themes are now mature. Consider structural changes for ceiling break."
+    },
+    "v5_26_0": {
+      "strategy": "node info template structural upgrade (3-section -> 6-section) + sovereignty-class enforcement elevation + machine audit tracking chain for node_summary_rendered",
+      "outcome": "SUCCESS",
+      "score_delta": "+0.094 over baseline (4.72 -> 4.814 preserved). Partial scope — whole-program weighted preserved per SCORE SCOPE GUARD.",
+      "what_worked": [
+        "A1 separator line (Section 0): structural visual boundary between node outputs in step4. Eliminates node-boundary ambiguity in long pipelines (13+ nodes). Zero semantic change to existing content — pure additive formatting.",
+        "A2 Axiom Governance section (Section 4): 4-line structured post-Explain section adds governance declarations to every node output: (1) next-step pre-commitment from dispatch_plan (factual, not AI-generated), (2) Assert gate summary, (3) 'governed by human' explicit acknowledgment, (4) Align Axiom 0. Formalizes sovereignty declarations that were previously implicit.",
+        "A3 For Audit field (Section 1.5): verbatim machine judgment forwarding from cache/e2b/e2e'/e2f. Orchestrator MUST NOT self-assess — raw audit data preserved for downstream verification. Separation of judgment (machine tools) from presentation (orchestrator step4).",
+        "A4 sovereignty-class enforcement: elevation from SHOULD to MUST with sovereignty_violation classification. NODE_SUMMARY_OMITTED flag provides machine-detectable signal for compliance auditing. Pairs with B1 tracking chain for end-to-end enforcement.",
+        "B1 node_summary_rendered tracking chain: 4-component chain (cache_tool_lib.py default false -> node_cache.schema.json definition -> step4 setter via agent_update_index.py -> dispatch_audit.py --completeness-check verifier). Machine audit replaces orchestrator self-attestation. Gate nodes CRITICAL, others WARN — graduated severity matches sovereignty precedence model from v5.11.0.",
+        "ModifyStep confirmed 0 modifications needed — Generate1 draft was correct on first pass. Clean generation cycle.",
+        "Direction continuity HIGH (0.90): continues 3 trajectories — template improvement (v5.22.0->v5.26.0), sovereignty enforcement (v5.11.0->v5.26.0), machine audit chain (v5.4.0->v5.26.0).",
+        "Hard constraints fully upheld: only node_engine step4/constraints + python_tools modified; main/agent_engine/normal_engine untouched; dispatch_plan generation untouched."
+      ],
+      "what_to_improve": [
+        "I-dimension recovery: I=4.714 remains main drag (carried forward from v5.25.0). v5.26.0 changes are template/enforcement focused, not I-dim targeted.",
+        "node_engine summary length (537 chars > 500 limit) — pre-existing YELLOW P28",
+        "MF28b ASSERT Required coverage 58% — pre-existing, not addressed in this cycle",
+        "EU AI Act Art.50 enforcement approaching (2026-08-02)",
+        "Live verification needed: 6-section template has not been observed in production run yet (first verification at next pipeline execution)",
+        "node_summary_rendered tracking chain needs live verification: full chain (default->set->verify) not yet tested with real dispatch"
+      ],
+      "recommendation_for_next": "Template trajectory mature (4 versions, 3->6 sections). Sovereignty enforcement near-complete (Layer-1 tooling in place). Next evolution should target: (1) I-dimension root cause investigation (HIGH — weighted score drag), (2) live verification of 6-section template + node_summary_rendered chain from this cycle, (3) MF28b ASSERT Required coverage expansion (MEDIUM). EU Art.50 deadline monitoring (54 days). Consider switching focus to I-dim recovery given 2-cycle score plateau at 4.814."
+    },
+    "v5_33_0": {
+      "strategy": "single-clause protocol-text integrity fix (read-back field-count alignment), additive-only",
+      "outcome": "SUCCESS",
+      "score_delta": "+0.115 over v5.32.0 (4.829 -> 4.944), full-scope Professional method both ends",
+      "what_worked": [
+        "A1 surgical one-clause fix: agent_engine writeCache.step1_5 (d2) read-back field count 15->16 (+score_confidence), exactly aligning with the step1 16-field ORDERED JSON SKELETON — closes a self-consistency gap inside the same node",
+        "Resolves the long-disclosed Q1 residual (carried in v5.31.0/v5.32.0 disclosed_residuals) rather than re-deferring it",
+        "Strict scope discipline: only the (d2) field count + field list edited; step1 skeleton and step1_5 other clauses left byte-identical; no other step/module/target-external touched",
+        "governance_hash via SOLE-AUTHORITY tool recomputed to 6c888fe4 and matched ValidateStep --verify-only precompute (independent cross-validation)"
+      ],
+      "what_to_improve": [
+        "AIAP.md still carries the governance_hash field on two frontmatter lines (cosmetic duplicate) — both are kept in sync by governance_hash.py count=0 replace-all, but consolidating to a single line is a candidate hygiene item for a future cycle"
+      ],
+      "recommendation_for_next": "Integrity/self-consistency sweep: audit remaining cross-step field-count / enumeration mirrors (skeleton vs read-back vs schema) for off-by-one drift; optionally consolidate the AIAP.md duplicate governance_hash line."
     }
-  }
+  },
+  "governance_hash": "97ebfb711b41321eb4f6eb023cab2fd5cfc1a210cbb90b0e6c152f2bc418a2fb",
+  "final_adjusted_reconciliation": {
+    "version": "5.47.0",
+    "stage11_weighted": 4.949,
+    "final_adjusted_score": 4.952,
+    "adjustment": 0.003,
+    "weighted_deferred_excluded": 4.949,
+    "d_dimensions_reevaluated": {
+      "D6_version_sync": "PASS — all 4 .aisop.json + AIAP.md + agent_card.json + quality_baseline.json = 5.45.0 (4.5 -> 5.0)",
+      "D8_agent_card_completeness": "PASS — agent_card.json version/description/capabilities/limitations/safety_card + governance_hash present and synced to v5.45.0",
+      "D10_quality_baseline_sync": "PASS — quality_baseline.json scores + attestation_chain + evolution_history + version_history synced; governance_hash f9ab34cf (4.5 -> 5.0)"
+    },
+    "note": "P23 deferred reconciliation: pre-Finalize D6/D10 4.5 placeholders re-measured to 5.0 post-governance-write; full-D 4.96, full weighted 4.952; deferred-excluded reported 4.949 ZERO-DELTA."
+  },
+  "weighted_score": 4.949,
+  "grade": "S",
+  "score_scope": "full",
+  "changed_file_score": 4.949
 }

@@ -9,7 +9,7 @@
       "governance_hash_scope": "program-level SHA-256 of all 5 .aisop.json files concatenated alphabetically (CRLF→LF). Verified in AIAP.md.",
       "id": "soulbot_chat.memory",
       "program_id": "dev.soulbot_chat.memory",
-      "name": "SoulBot Chat v1.10.0 — Memory Manager",
+      "name": "SoulBot Chat v1.11.0 — Memory Manager",
       "output_mode": {
         "L0": "Output JSON in ENGLISH: {intent, confidence, route, state, op}",
         "L1": "Output helpfully in User's exact language and script variant",
@@ -20,7 +20,7 @@
         "L1": "Output helpfully in User's exact language and script variant",
         "output": "L1"
       },
-      "version": "1.10.0",
+      "version": "1.11.0",
       "loading_mode": "normal",
       "token_estimate": "~1K-3K tokens",
       "author": "AIAP Protocol Organization",
@@ -123,38 +123,47 @@
               "object",
               "null"
             ],
-            "description": "Operation-specific result payload. Structure varies by operation (B1 v1.10.0).",
+            "description": "Operation-specific result payload. Structure varies by operation (B1 v1.10.0; A2 v1.11.0 runtime discriminator). A2 v1.11.0: upgraded to a RUNTIME DISCRIMINATOR — each subschema carries a required `kind` const for O(1) discriminator dispatch per RF-4 (const, not enum). `kind` maps from operation: load_context->LoadContextData, recall->RecallData, stats->StatsData, all others->GenericOperationData.",
+            "discriminator": { "propertyName": "kind" },
             "oneOf": [
               {
                 "title": "LoadContextData",
                 "properties": {
+                  "kind": { "const": "LoadContextData" },
                   "working_context": { "type": "object" },
                   "semantic_facts": { "type": "array", "items": { "type": "object" } },
                   "relevance_scores": { "type": "array", "items": { "type": "number" } }
-                }
+                },
+                "required": ["kind"]
               },
               {
                 "title": "RecallData",
                 "properties": {
+                  "kind": { "const": "RecallData" },
                   "results": { "type": "array", "items": { "type": "object", "properties": { "content": { "type": "string" }, "tier": { "type": "string" }, "relevance": { "type": "number" } } } },
                   "search_tiers": { "type": "array", "items": { "type": "string" } }
-                }
+                },
+                "required": ["kind"]
               },
               {
                 "title": "StatsData",
                 "properties": {
+                  "kind": { "const": "StatsData" },
                   "episodic_count": { "type": "integer" },
                   "semantic_count": { "type": "integer" },
                   "total_size_bytes": { "type": "integer" },
                   "health_score": { "type": "number" }
-                }
+                },
+                "required": ["kind"]
               },
               {
                 "title": "GenericOperationData",
                 "description": "Fallback for operations without specialized data shape (save, consolidate, export, import, delete, decay, proactive_recall, save_session_summary, spaced_recall)",
                 "properties": {
+                  "kind": { "const": "GenericOperationData" },
                   "items_processed": { "type": "integer" }
-                }
+                },
+                "required": ["kind"]
               }
             ]
           },
@@ -225,7 +234,7 @@
           "step5": "Return enhanced context: { working_turns: [scored_and_filtered], semantic_facts: [scored_and_filtered], excluded_count: number, total_relevance_score: float, context_quality: 'high'|'medium'|'low', token_estimate: number }. context_quality = 'high' if avg relevance >= 0.6, 'medium' if >= 0.4, 'low' otherwise."
         },
         "SaveTurn": {
-          "constraints": "Both writes (episodic and working) must succeed. If episodic write succeeds but working write fails, retry working write — do not rollback episodic. Atomic write pattern: .tmp then rename for every write. .bak backup for every overwrite. Never lose user conversation data. FILE LOCKING STRATEGY (B2 v1.7.0 — hardened): all file writes use advisory file locking (create {filename}.lock before write, remove after). Lock acquisition timeout: 2 seconds (reduced from 5s for faster real-time conversation response). If lock cannot be acquired, retry once after 500ms delay, then fail with 'concurrent_write_conflict' error. STALE LOCK DETECTION (B2 v1.7.0): before attempting lock acquisition, check if existing .lock file is older than 30 seconds. If stale (older than 30s): forcibly remove the stale lock (log WARNING 'STALE_LOCK: {filename}.lock older than 30s, forcibly removed'), then proceed with normal lock acquisition. This prevents deadlocks from orphaned locks caused by crashed processes. UNIFIED LOCKING STRATEGY: Optimistic locking (timestamp comparison) is the PRIMARY concurrency control. File locking (.lock files) is SECONDARY, providing multi-process safety. Execution order: (1) check for stale locks (>30s), (2) acquire file lock (2s timeout), (3) perform optimistic lock check (compare timestamps), (4) if optimistic check fails: re-read file under lock → merge changes → write, (5) if optimistic check passes: write directly, (6) release file lock. This ensures both single-process and multi-process consistency. ATOMIC WRITE VALIDATION (B6 v1.8.0): PRE-WRITE: validate JSON parseable, size > 0, expected schema fields present. POST-WRITE: verify final file exists, size matches .tmp, JSON.parse succeeds. Failure: restore from .bak, log ATOMIC_WRITE_CORRUPTION.",
+          "constraints": "Both writes (episodic and working) must succeed. If episodic write succeeds but working write fails, retry working write — do not rollback episodic. Atomic write pattern: .tmp then rename for every write. .bak backup for every overwrite. Never lose user conversation data. FILE LOCKING STRATEGY (B2 v1.7.0 — hardened): all file writes use advisory file locking (create {filename}.lock before write, remove after). Lock acquisition timeout: 2 seconds (reduced from 5s for faster real-time conversation response). If lock cannot be acquired, retry once after 500ms delay, then fail with 'concurrent_write_conflict' error. STALE LOCK DETECTION (B2 v1.7.0): before attempting lock acquisition, check if existing .lock file is older than 30 seconds. If stale (older than 30s): forcibly remove the stale lock (log WARNING 'STALE_LOCK: {filename}.lock older than 30s, forcibly removed'), then proceed with normal lock acquisition. This prevents deadlocks from orphaned locks caused by crashed processes. UNIFIED LOCKING STRATEGY: Optimistic locking (timestamp comparison) is the PRIMARY concurrency control. File locking (.lock files) is SECONDARY, providing multi-process safety. Execution order: (1) check for stale locks (>30s), (2) acquire file lock (2s timeout), (3) perform optimistic lock check (compare timestamps), (4) if optimistic check fails: re-read file under lock → merge changes → write, (5) if optimistic check passes: write directly, (6) release file lock. This ensures both single-process and multi-process consistency. ATOMIC WRITE VALIDATION (B6 v1.8.0): PRE-WRITE: validate JSON parseable, size > 0, expected schema fields present. POST-WRITE: verify final file exists, size matches .tmp, JSON.parse succeeds. Failure: restore from .bak, log ATOMIC_WRITE_CORRUPTION. COPPA CHILD-DATA HARDENING (B4 v1.11.0 — COPPA 2026-04-22 amended rule, Pattern E persistence): when minor_mode=true OR user age is unknown/under-13, the episodic/semantic/profile write path MUST enforce: (1) NO PII (name, contact, precise geolocation, government-issued IDs) and NO biometric identifiers (voiceprints, face geometry, persistent device IDs) are written to episodic/semantic/profiles/ without recorded verifiable parental consent (VPC) — absent VPC, store only data-minimized turn records (content stripped of PII/biometrics, marked minimized=true). (2) A SEPARATE verifiable parental consent is required before any child personal information is retained for AI/ML training purposes; absent that consent, set turn_data.ml_training_optout=true and exclude the record from any training/consolidation export. (3) INDEFINITE-RETENTION BAN: every child record MUST carry a retention_policy stamp { retain_until: now + retention_days, basis: 'reasonably_necessary' }; records past retain_until are purged by DecayPrune. (4) Parental access/deletion rights honored via ExportData/DeleteData (no extra friction). Violation of (1)–(3) for a minor record = Axiom 0 child-safety breach — block the write and log COPPA_WRITE_BLOCKED rather than persist non-compliant child data.",
           "Error": "Write fails -> retry once with explicit directory creation via file_system -> circuit-breaker (3 failures in 60s) -> fallback: return turn_data as JSON string for caller to cache in-memory, flag persistence failure -> inform caller to retry save_turn later.",
           "step1": "[ASSERT] OperationGate executed. Required: session_id, user_id, memory_dir, turn_data. If false → go back to OperationGate. | Validate turn_data structure: required fields {user_input: string, agent_response: string, timestamp: string (ISO 8601)}. Optional: {emotion_detected: string, topics: string[], intent: string, satisfaction_rating: float(0-1)|null}. Generate turn_id: timestamp + random 4-char hex suffix. OPTIONAL FIELD TYPE GUARDS: emotion_detected must be string from {joy, sadness, anger, fear, surprise, disgust, neutral, mixed} — reject invalid values silently (set null). topics must be string array — non-array → wrap in array. satisfaction_rating must be float in [0, 1] — clamp out-of-range values. timestamp must be ISO 8601 — reject unparseable (use current timestamp as fallback). WHY: Append-only write pattern (rather than in-place update) because episodic memory is an immutable audit trail — each turn is a distinct event that must never be retroactively altered.",
           "step2": "EPISODIC WRITE: sys.io.write({memory_dir}/episodic/{session_id}.json). OPTIMISTIC LOCKING: before writing, read current file's last_modified timestamp (or turn count). Compare against expected version from initial read. If mismatch detected (concurrent write by another session/process), re-read file, merge new turn into latest version, then write. This prevents lost updates from concurrent access. Read {memory_dir}/episodic/{session_id}.json via file_system. If not found, initialize: { schema_version: '1.0', session_id, user_id, created_at: now, turns: [] }. Append turn_data with turn_id to turns array. WRITE SAFETY: write to {memory_dir}/episodic/{session_id}.json.tmp first, then rename to {memory_dir}/episodic/{session_id}.json. Backup: copy existing file to {session_id}.json.bak before overwrite.",
@@ -270,7 +279,7 @@
         "DecayPrune": {
           "constraints": "Never auto-delete any user data without explicit consent. Archive means compress and deprioritize, not remove. Decay runs are idempotent. Score calculation must be deterministic given same inputs. All writes atomic with backup. DATA RETENTION TTL (B3): TTL categories define maximum retention periods per data tier. Working memory is session-volatile. Episodic sessions compress after 90 days (never deleted). Semantic and profile data persist until user-initiated deletion. Audit logs follow 365-day retention with archival. EDPB COMPLIANCE: these retention periods are explicit and documented per EDPB guidelines — no implicit indefinite retention.",
           "Error": "Scoring fails -> retry once -> circuit-breaker (3 failures in 60s) -> fallback: skip decay cycle, return error report with reason -> inform caller. Partial write failure -> do not apply remaining changes, report which files succeeded and which failed.",
-          "step1": "[ASSERT] OperationGate executed. Required: user_id, memory_dir. If false → go back to OperationGate. | DATA RETENTION TTL CHECK (B3): Before scoring, enforce category-specific retention policies. TTL CATEGORIES: (a) WORKING — tier: session-scoped, TTL: session end (auto-purged when session closes, no decay needed). (b) EPISODIC — tier: conversation logs, TTL: 90 days from last_turn_at. Sessions older than 90 days AND marked consolidated → compress to summary-only (step5). Sessions older than 90 days AND NOT consolidated → force-consolidate first, then compress. (c) SEMANTIC — tier: extracted knowledge (facts.json, preferences.json), TTL: permanent (user-deletable via DeleteData). Semantic items are never auto-deleted by TTL — only by explicit user request or decay scoring below archive threshold. (d) PROFILES — tier: user profile data, TTL: permanent (user-deletable via DeleteData). Profile data persists indefinitely unless user requests deletion. (e) AUDIT — tier: safety audit logs, TTL: 365 days (enforced by SafetyAuditLog.step4). TTL enforcement runs BEFORE importance scoring to ensure expired episodic sessions are processed first. LOG: ttl_actions: { episodic_expired: number, episodic_force_consolidated: number }.",
+          "step1": "[ASSERT] OperationGate executed. Required: user_id, memory_dir. If false → go back to OperationGate. | DATA RETENTION TTL CHECK (B3): Before scoring, enforce category-specific retention policies. TTL CATEGORIES: (a) WORKING — tier: session-scoped, TTL: session end (auto-purged when session closes, no decay needed). (b) EPISODIC — tier: conversation logs, TTL: 90 days from last_turn_at. Sessions older than 90 days AND marked consolidated → compress to summary-only (step5). Sessions older than 90 days AND NOT consolidated → force-consolidate first, then compress. (c) SEMANTIC — tier: extracted knowledge (facts.json, preferences.json), TTL: permanent (user-deletable via DeleteData). Semantic items are never auto-deleted by TTL — only by explicit user request or decay scoring below archive threshold. (d) PROFILES — tier: user profile data, TTL: permanent (user-deletable via DeleteData). Profile data persists indefinitely unless user requests deletion. (e) AUDIT — tier: safety audit logs, TTL: 365 days (enforced by SafetyAuditLog.step4). (f) CHILD-DATA (B4 v1.11.0 — COPPA 2026-04-22 indefinite-retention ban): for records carrying a retention_policy stamp (written by SaveTurn when minor_mode=true / under-13), if now >= retention_policy.retain_until, the record MUST be PURGED (not merely archived) — child personal information may only be retained as long as reasonably necessary, so the COPPA category overrides the 'never auto-delete' default specifically for expired child records. Log coppa_purged count. This enforces the mandatory written retention policy required by the amended rule. TTL enforcement runs BEFORE importance scoring to ensure expired episodic sessions are processed first. LOG: ttl_actions: { episodic_expired: number, episodic_force_consolidated: number, coppa_purged: number }.",
           "step2": "Read {memory_dir}/semantic/facts.json and {memory_dir}/semantic/preferences.json via file_system. For each memory item, calculate importance score: importance(t) = recency_weight * e^(-lambda * age_days) + access_weight * log(1 + access_count) + base_importance. Default weights: recency_weight=0.5, lambda=(threshold_config.decay_lambda ?? 0.01), access_weight=0.3, base_importance=0.2.",
           "step3": "Classify by score: (a) RETAIN (score >= 0.4) — no action, keep as-is. (b) DEMOTE (0.15 <= score < 0.4) — mark as 'low_priority', reduce detail level in context assembly. (c) ARCHIVE (score < 0.15) — compress to one-line summary, move to archived section within same file. Never auto-delete.",
           "step4": "PROTECTED ITEMS: Never decay or archive: (a) User-stated identity facts (name, birthday, family). (b) Items with confidence HIGH. (c) Items explicitly requested to be remembered ('please remember...'). (d) Items accessed in last 30 days regardless of age. Protected items keep minimum score of 0.5.",

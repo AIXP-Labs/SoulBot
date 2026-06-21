@@ -1,7 +1,7 @@
 {
   "name": "stock_analyzer",
   "description": "美股股票分析助手 v2.0.0。MCP金融数据服务器集成(Alpha Vantage/SEC EDGAR)、Pattern C三模块架构、SSE/WebSocket实时流数据、SEC EDGAR XBRL API直连、置信度校准、宏观经济指标、DORA+AI Act双合规。技术指标(MA/RSI/MACD/BB/VWAP)、基本面(PE/EPS/Revenue)、风险(Sharpe/VaR)、情绪(Twitter/Reddit/StockTwits)、同行对比、回测、ETF、期权、趋势对比、分析师评级、内幕交易、财务健康、AI综合评估与智能追问建议、自选股管理、组合概览。",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "provider": "",
   "pattern": "C",
   "tags": [
@@ -38,99 +38,155 @@
       "id": "analyze",
       "name": "股票分析",
       "description": "技术+基本面+AI综合分析(MA/RSI/MACD/BB/VWAP，MCP数据源+置信度校准)",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "risk",
       "name": "风险分析",
       "description": "Sharpe Ratio/VaR/分散化评分(含宏观经济指标背景)",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "sentiment",
       "name": "情绪分析",
       "description": "新闻+社交媒体(Twitter/Reddit/StockTwits)情绪分析(加权综合评分)",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "peer",
       "name": "同行对比",
       "description": "同行业竞争对手对比分析(GICS分类)",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "backtest",
       "name": "历史回测",
       "description": "买入持有策略 vs S&P 500基准回测",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "etf",
       "name": "ETF分析",
       "description": "ETF持仓透视/费率/追踪误差/资金流入流出",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "options",
       "name": "期权概览",
       "description": "Put/Call Ratio/隐含波动率/期权链/Max Pain/异常活动",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "trend",
       "name": "趋势对比",
       "description": "多股趋势时序对比/涨跌幅排名/波动率/相关性",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "analyst",
       "name": "分析师评级",
       "description": "华尔街分析师共识评级(Buy/Hold/Sell)/目标价/近期升降级",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "insider",
       "name": "内幕交易",
       "description": "SEC Form 4/EDGAR XBRL 内幕人交易追踪/C-suite聚焦/集群检测",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "health",
       "name": "财务健康",
       "description": "Altman Z-Score + Piotroski F-Score 财务健康评分(SEC EDGAR XBRL数据源)",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "watchlist",
       "name": "自选股管理",
       "description": "管理股票关注列表",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "overview",
       "name": "市场概览",
       "description": "三大指数、VIX、热门板块、行业轮动追踪",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "help",
       "name": "帮助",
       "description": "功能说明和金融术语解释",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     }
   ],
   "capabilities": {
@@ -143,11 +199,26 @@
     "bearer": {
       "type": "http",
       "scheme": "bearer"
+    },
+    "oauth2_advisory": {
+      "type": "oauth2",
+      "flow": "authorization_code",
+      "pkce_required": true,
+      "resource_indicators_rfc8707": true,
+      "protected_resource_metadata_rfc9728": true,
+      "token_lifecycle": {
+        "access_token_ttl_seconds": 3600,
+        "refresh_token_rotation": true,
+        "expiry_enforced": true,
+        "on_invalid": "HTTP_401"
+      },
+      "caisi_interop_profile": "pre-alignment",
+      "note": "FORWARD-LOOKING / DECLARATIVE ONLY (B5). References RFC 8707 resource indicators, RFC 9728 Protected Resource Metadata, PKCE, and access-token TTL/rotation per MCP 2025-11-25 Authorization spec. NIST CAISI Interoperability Profile is Q4-2026 planned with NO published draft — this is pre-alignment tracking. Does NOT change the real auth flow: MCP servers use api_key (alpha_vantage) / none (sec_edgar)."
     }
   },
   "tools": [
-    "google_search",
-    "web_browser",
+    "web_search",
+    "web_fetch",
     "file_system",
     "mcp_alpha_vantage",
     "mcp_sec_edgar"
@@ -180,7 +251,7 @@
       "内幕交易数据来自SEC公开披露，可能有2-5天延迟",
       "Z-Score适用性限于制造业/工业企业，科技/金融公司准确性降低",
       "file_system write scope limited to workspace_dir",
-      "MCP服务器不可用时自动降级到google_search/web_browser",
+      "MCP服务器不可用时自动降级到web_search/web_fetch",
       "置信度校准依赖历史预测数据积累，新股票首次分析无校准数据",
       "宏观经济数据获取频率受限于公开数据发布周期"
     ],
@@ -191,7 +262,18 @@
       "owasp_agentic_ai": true,
       "dora_ict_resilience": true,
       "eu_ai_act_omnibus": true
+    },
+    "ai_content_disclosure": {
+      "is_ai_generated": true,
+      "disclosure_standard": "EU_AI_Act_Art50",
+      "machine_readable": true,
+      "c2pa_assertion": "c2pa.ai_generated",
+      "claim_generator": "SoulBot-StockAnalyzer/2.1.0",
+      "iptc_digital_source_type": "trainedAlgorithmicMedia",
+      "art50_2_machine_readable_watermark_deadline": "2026-12-02",
+      "status": "metadata_declared_not_cbor_signed",
+      "note": "Structured/machine-readable AI-content disclosure layer (B4) complementing the existing prose [AI生成内容] disclaimer (NOT a duplicate). Declares C2PA assertion name + IPTC DigitalSourceType + claim_generator as a metadata-declaration layer only; does NOT claim literal CBOR cryptographic signing (these are text analysis reports, not synthetic media). Art.50(2) machine-readable watermark obligation deadline 2026-12-02."
     }
   },
-  "governance_hash": "82f7de5cf97b23a99be5428a27026de7f35fad121e630085a872b5488f9bbe1e"
+  "governance_hash": "883364030854f61e447b130f84c9a196b72fe3fb86e5ca2541a0bb228135d920"
 }

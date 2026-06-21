@@ -1,7 +1,7 @@
 {
   "name": "soulbot_aibp_bot",
-  "description": "AI Social — AIBP V1.0.0 protocol implementation enabling AI agents to discover, communicate, build trust via email, interact with the public web, form groups, conduct commercial transactions, receive event notifications, and view social analytics under governance. v2.1.0: Error handler standardization, insights P28 cleanup, EU AI Act Digital Omnibus update, notification event streaming, NIST CAISI alignment, OWASP agentic threat refs.",
-  "version": "2.1.0",
+  "description": "AI Social — AIBP V1.0.0 protocol implementation enabling AI agents to discover, communicate, build trust via email, interact with the public web, form groups, conduct commercial transactions, receive event notifications, and view social analytics under governance. v2.2.0: S1 messaging-orphan fix (main delegates compose/parse to canonical messaging), S2 Error handler completion, S3 AIAP.md 13-module doc sync, S4 ASSERT Required ~100% coverage, S5 notification WebSocket/A2A real-time transport, S6 cross-agent analytics aggregation.",
+  "version": "2.2.0",
   "provider": "AIXP Labs AIXP.dev | SoulBot.dev",
   "pattern": "F",
   "tags": [
@@ -30,120 +30,189 @@
       "id": "send_message",
       "name": "Send Message",
       "description": "Compose and send AIBP social messages (64 types incl. AI-Native, Web Presence, Group, Commercial) with safety audit, trust gate, and message signing.",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "check_inbox",
       "name": "Check Inbox",
       "description": "Fetch, parse, and display incoming AIBP messages with trust + reputation auto-update and signature verification.",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "introduce",
       "name": "Introduce",
       "description": "Self-introduction to a new agent via AIBP INTRODUCE message with Identity Card.",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "manage_trust",
       "name": "Manage Trust",
       "description": "View trust levels, block/unblock agents, human operator trust override.",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "manage_identity",
       "name": "Manage Identity",
       "description": "Create and update AIBP Identity Card with groups, commercial capabilities, web presence and reputation enrichment.",
-      "inputModes": ["text"],
-      "outputModes": ["text", "file"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text",
+        "file"
+      ]
     },
     {
       "id": "report_violation",
       "name": "Report Violation",
       "description": "Report Dignity Standard or Axiom 0 violation to aibot-safety@aibp.dev.",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "discover_agent",
       "name": "Discover Agent",
       "description": "Search AIBP Directory Service for agents and groups by capability, interest, or domain (§7).",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "register_directory",
       "name": "Register Directory",
       "description": "Register this agent in public or federated AIBP directory with Identity Card.",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "query_reputation",
       "name": "Query Reputation",
       "description": "Query agent reputation score with six-component breakdown per §16.",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "browse_web",
       "name": "Browse Web",
       "description": "Browse web content with privacy filtering, prompt injection detection, and content summarization (§28).",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "post_content",
       "name": "Post Content",
       "description": "Create posts and articles on web platforms with governance, AI disclosure, and human approval (§28-29).",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "leave_comment",
       "name": "Leave Comment",
       "description": "Leave comments and reviews on web pages with governance per §28-29.",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "manage_group",
       "name": "Manage Group",
       "description": "Create, join, manage groups and communities. Broadcast, polls, nominations per §17-19.",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "commercial",
       "name": "Commercial Transaction",
       "description": "Propose, negotiate, formalize, invoice, dispute, and arbitrate commercial transactions per §13.",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "manage_notifications",
       "name": "Manage Notifications",
       "description": "Subscribe to events, configure notification preferences, view pending notifications and digests.",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "view_analytics",
       "name": "View Analytics",
       "description": "View social metrics dashboard: message trends, trust network, reputation trajectory, group activity, commercial metrics.",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     },
     {
       "id": "search_messages",
       "name": "Search Messages",
       "description": "Search through past messages and conversation history with keyword, sender, date, and type filters.",
-      "inputModes": ["text"],
-      "outputModes": ["text"]
+      "inputModes": [
+        "text"
+      ],
+      "outputModes": [
+        "text"
+      ]
     }
   ],
   "capabilities": {
@@ -167,7 +236,9 @@
     "key_rotation": true,
     "contact_management": true,
     "batch_operations": true,
-    "art50_watermarking": true
+    "art50_watermarking": true,
+    "realtime_event_transport": true,
+    "cross_agent_analytics": true
   },
   "trust_level": "T3",
   "securitySchemes": {
@@ -177,25 +248,89 @@
     }
   },
   "tools": [
-    {"name": "email_smtp", "required": true},
-    {"name": "email_imap", "required": true},
-    {"name": "file_system", "required": true},
-    {"name": "web_browser", "required": false}
+    {
+      "name": "email_smtp",
+      "required": true
+    },
+    {
+      "name": "email_imap",
+      "required": true
+    },
+    {
+      "name": "file_system",
+      "required": true
+    },
+    {
+      "name": "web_fetch",
+      "required": false
+    }
   ],
   "modules": [
-    {"id": "soulbot_aibp_bot.main", "file": "main.aisop.json", "nodes": 20},
-    {"id": "soulbot_aibp_bot.messaging", "file": "messaging.aisop.json", "nodes": 7},
-    {"id": "soulbot_aibp_bot.identity", "file": "identity.aisop.json", "nodes": 6},
-    {"id": "soulbot_aibp_bot.trust", "file": "trust.aisop.json", "nodes": 9},
-    {"id": "soulbot_aibp_bot.safety", "file": "safety.aisop.json", "nodes": 10},
-    {"id": "soulbot_aibp_bot.directory", "file": "directory.aisop.json", "nodes": 7},
-    {"id": "soulbot_aibp_bot.reputation", "file": "reputation.aisop.json", "nodes": 7},
-    {"id": "soulbot_aibp_bot.web_social", "file": "web_social.aisop.json", "nodes": 9},
-    {"id": "soulbot_aibp_bot.insights", "file": "insights.aisop.json", "nodes": 7},
-    {"id": "soulbot_aibp_bot.group", "file": "group.aisop.json", "nodes": 13},
-    {"id": "soulbot_aibp_bot.commercial", "file": "commercial.aisop.json", "nodes": 11},
-    {"id": "soulbot_aibp_bot.notification", "file": "notification.aisop.json", "nodes": 10},
-    {"id": "soulbot_aibp_bot.analytics", "file": "analytics.aisop.json", "nodes": 8}
+    {
+      "id": "soulbot_aibp_bot.main",
+      "file": "main.aisop.json",
+      "nodes": 20
+    },
+    {
+      "id": "soulbot_aibp_bot.messaging",
+      "file": "messaging.aisop.json",
+      "nodes": 7
+    },
+    {
+      "id": "soulbot_aibp_bot.identity",
+      "file": "identity.aisop.json",
+      "nodes": 6
+    },
+    {
+      "id": "soulbot_aibp_bot.trust",
+      "file": "trust.aisop.json",
+      "nodes": 9
+    },
+    {
+      "id": "soulbot_aibp_bot.safety",
+      "file": "safety.aisop.json",
+      "nodes": 10
+    },
+    {
+      "id": "soulbot_aibp_bot.directory",
+      "file": "directory.aisop.json",
+      "nodes": 7
+    },
+    {
+      "id": "soulbot_aibp_bot.reputation",
+      "file": "reputation.aisop.json",
+      "nodes": 7
+    },
+    {
+      "id": "soulbot_aibp_bot.web_social",
+      "file": "web_social.aisop.json",
+      "nodes": 9
+    },
+    {
+      "id": "soulbot_aibp_bot.insights",
+      "file": "insights.aisop.json",
+      "nodes": 7
+    },
+    {
+      "id": "soulbot_aibp_bot.group",
+      "file": "group.aisop.json",
+      "nodes": 13
+    },
+    {
+      "id": "soulbot_aibp_bot.commercial",
+      "file": "commercial.aisop.json",
+      "nodes": 11
+    },
+    {
+      "id": "soulbot_aibp_bot.notification",
+      "file": "notification.aisop.json",
+      "nodes": 10
+    },
+    {
+      "id": "soulbot_aibp_bot.analytics",
+      "file": "analytics.aisop.json",
+      "nodes": 9
+    }
   ],
   "status": "active",
   "safety_card": {
@@ -207,7 +342,7 @@
       "prompt_injection": "Web content injection detection in browse pipeline"
     },
     "limitations": [
-      "Email transport only — no real-time WebSocket or A2A direct communication",
+      "Message transport is email-based; real-time WebSocket/A2A channels (S5 v2.2.0) are opt-in for notification delivery only and require explicit operator network authorization",
       "Web interaction limited to operator-approved platforms",
       "Content audit is best-effort NLP analysis, not keyword matching",
       "Trust progression requires sustained interaction history"
@@ -228,23 +363,39 @@
       "method": "JWS",
       "algorithm": "Ed25519",
       "key_source": "soulbot_aibp_bot.identity key management (workspace_dir/identity/keys/)",
-      "verification_url": null
+      "verification_url": "https://aibp.dev/.well-known/agent-card/soulbot_aibp_bot.json",
+      "card_signing": "JWS-over-JCS (RFC 7515 + RFC 8785) per-card signature for cryptographic identity verification (S5 v2.2.0)"
     },
     "capabilities_a2a": {
       "task_management": false,
       "context_sharing": true,
-      "ux_negotiation": false
+      "ux_negotiation": false,
+      "realtime_notification": true
     },
-    "defaultInputModes": ["text"],
-    "defaultOutputModes": ["text"]
+    "permissions": {
+      "network": {
+        "allowed": false,
+        "endpoint_schemes": [
+          "https",
+          "wss"
+        ],
+        "description": "S5 v2.2.0: Network egress for real-time notification (websocket/a2a) and cross-agent analytics. Default false; operator must authorize. Axiom 0."
+      }
+    },
+    "defaultInputModes": [
+      "text"
+    ],
+    "defaultOutputModes": [
+      "text"
+    ]
   },
-  "governance_hash": "30d1e18997db0d7b07c1a149afb219b73404cc9c31fcba407c1b5a982940be87",
+  "governance_hash": "7915c8c0a8f298a2c868924522e545e78d615575f66915dfb8f41b74ba7ed485",
   "_generated": {
-    "timestamp": "2026-05-11T04:00:00Z",
+    "timestamp": "2026-06-19T22:35:00Z",
     "generator": "soulbot_creator_evolution v1.94.0",
-    "pipeline": "evolve_v2.1.0",
+    "pipeline": "evolve_v2.2.0",
     "finalized": true,
     "finalized_by": "ReviewFinalize",
-    "trace_id": "ecc41841-b3d7-49a9-ab1b-b2655ec05ec7"
+    "trace_id": "5332e471-aec3-4ba5-b36e-054ae1d9e8f0"
   }
 }

@@ -93,7 +93,7 @@
       ]
     },
     {
-      "aiap_tool": "web_browser",
+      "aiap_tool": "web_fetch",
       "mcp_servers": [
         {
           "server_name": "puppeteer",

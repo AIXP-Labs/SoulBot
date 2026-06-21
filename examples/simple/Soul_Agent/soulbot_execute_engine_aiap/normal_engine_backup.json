@@ -1,0 +1,238 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "protocol": "AIAP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "flow_format": "mermaid",
+      "id": "soulbot_execute_engine.normal",
+      "program_id": "dev.soulbot.execute_engine.normal",
+      "name": "SoulBot Normal Engine v5.42.0",
+      "output_mode": "begin with 🤖 + helpfully in User's exact language and script variant",
+      "version": "5.42.0",
+      "summary": "Normal Engine: node-by-node inline execution of the target AIAP with crash recovery, 3-state circuit breaker, NodeVerify, Decision Node gate routing, and inline sys.* handling. Renders the mandatory six-section node-info per node and enforces sovereignty user gates. USER_LANGUAGE_CONFLICT_DETECTION retained. HMAC Phase 2, OTel SDK.",
+      "description": "SoulBot Normal Engine v5.27.0: Version sync with v5.27.0 ecosystem — node_engine six-section template with #1b blank line paragraph break, #4a Summary->Report rename, #4b Explain disclaimer, #4c User Message forwarding, #5-scope USER_LANGUAGE expansion, #5-axiom Axiom 0 canonical English, §9 context-compaction re-entry. normal_engine receives version sync for module consistency. USER_LANGUAGE_CONFLICT_DETECTION (v5.21.0 B2) retained in execute.constraints. Sovereignty gate enforcement via writeCache.step3 user_gate_audit.py --enforce retained. HMAC Phase 2, OTel SDK, EU CRA + ISO 42001.",
+      "loading_mode": "normal",
+      "tools": [
+        {
+          "name": "file_system",
+          "annotations": {
+            "read_only": false,
+            "destructive": false,
+            "idempotent": false,
+            "open_world": false
+          }
+        }
+      ],
+      "params": {
+        "entry_path": "string, REQUIRED: Absolute path to target AIAP entry file. Provided by Engine Router.",
+        "cache_dir": "string, REQUIRED: Absolute path to execution cache directory. Provided by Engine Router.",
+        "aiap_name": "string, REQUIRED: Target AIAP package name. Provided by Engine Router."
+      },
+      "json_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "description": "Normal Engine execution output",
+        "properties": {
+          "execution_result": {
+            "type": "object",
+            "properties": {
+              "nodes_in_path": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "dispatch_plan": {
+                "type": "object"
+              },
+              "last_completed_node": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "circuit_breaker_state": {
+                "type": "string",
+                "enum": [
+                  "closed",
+                  "open",
+                  "half-open"
+                ]
+              },
+              "consecutive_failure_count": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "nodes_in_path",
+              "dispatch_plan"
+            ]
+          }
+        }
+      },
+      "fractal_exempt": "7 functional nodes across 2 sub_mermaid (main 2 + inline 5). main: programExec + endNode. inline: init + execute + review + writeCache + inlineEnd. v5.3.0 C3: orphan functions not in mermaid flow cleaned up per MF31.",
+      "capabilities_dependencies": {
+        "opentelemetry-sdk": ">=1.20.0, REQUIRED for A1 OTel integration. Provides trace context propagation from _index.json trace_id to OTel spans per inline node execution."
+      },
+      "observability": {
+        "otel_integration": true,
+        "trace_context_source": "_index.json::trace_id",
+        "span_naming": "soulbot_execute_engine.normal.{node_name}",
+        "gen_ai_semantic_conventions": true,
+        "gen_ai_span_types": {
+          "invoke_agent": "Not applicable for normal_engine inline mode — no Sub Agent dispatch boundary.",
+          "execute_tool": "Tool execution spans for inline node steps (file_system Read/Write, sys.run commands). Span name: execute_tool.{tool_name}. Attributes: tool_name, node_name, step_id, status.",
+          "chat": "LLM cognitive processing spans for inline node execution (sys.llm calls). Span name: chat.normal.{node_name}.{step_id}. Attributes: model, temperature."
+        }
+      },
+      "events": [
+        {
+          "name": "node_started",
+          "description": "Emitted when an inline node begins execution. Dispatched to structured JSON log + OTel Logs API dual-emit when OTEL_SEMCONV_STABILITY_OPT_IN=http/dup is set.",
+          "fields": [
+            "node_name",
+            "dispatch_mode",
+            "timestamp"
+          ],
+          "otel_span_event": false,
+          "dispatcher": "structured_json_log",
+          "logs_api_dual_emit": true
+        },
+        {
+          "name": "node_completed",
+          "description": "Emitted when an inline node completes successfully (PASS/PARTIAL). Dispatched to structured JSON log + OTel Logs API dual-emit when enabled.",
+          "fields": [
+            "node_name",
+            "status",
+            "tool_calls",
+            "duration_ms",
+            "timestamp"
+          ],
+          "otel_span_event": false,
+          "dispatcher": "structured_json_log",
+          "logs_api_dual_emit": true
+        },
+        {
+          "name": "node_failed",
+          "description": "Emitted when an inline node fails (FAIL/DEGRADED). Dispatched to structured JSON log + OTel Logs API dual-emit when enabled.",
+          "fields": [
+            "node_name",
+            "status",
+            "error_type",
+            "retry_count",
+            "timestamp"
+          ],
+          "otel_span_event": false,
+          "dispatcher": "structured_json_log",
+          "logs_api_dual_emit": true
+        },
+        {
+          "name": "circuit_breaker_tripped",
+          "description": "Emitted when circuit breaker transitions state (closed->open, open->half-open, half-open->closed/open). Dispatched to structured JSON log + OTel Logs API dual-emit when enabled.",
+          "fields": [
+            "from_state",
+            "to_state",
+            "consecutive_failure_count",
+            "halted_at_node",
+            "timestamp"
+          ],
+          "otel_span_event": false,
+          "dispatcher": "structured_json_log",
+          "logs_api_dual_emit": true
+        },
+        {
+          "name": "decision_gate_routed",
+          "description": "Emitted when a Decision Node gate routes execution to a specific branch. Dispatched to structured JSON log + OTel Logs API dual-emit when enabled.",
+          "fields": [
+            "node_name",
+            "route",
+            "skipped_branches",
+            "timestamp"
+          ],
+          "otel_span_event": false,
+          "dispatcher": "structured_json_log",
+          "logs_api_dual_emit": true
+        }
+      ],
+      "events_migration_note": {
+        "advisory": "OTel Span.AddEvent API deprecation planned in favor of Logs API (ref: opentelemetry.io/blog/2026/deprecating-span-events/). Current: structured JSON log primary + Logs API dual-emit path prepared (parity with node_engine B2 v5.10.0). OTEL_SEMCONV_STABILITY_OPT_IN=http/dup support added for dual-emit activation. Migration path: when opentelemetry-sdk >= 2.0.0 stabilizes Logs API for event semantics, normal_engine events adopt Logs API as primary dispatcher. No breaking change — structured JSON log already provides full event coverage.",
+        "current_dispatcher": "structured JSON log primary + OTel Logs API dual-emit prepared",
+        "future_dispatcher": "OTel Logs API primary + structured JSON log fallback",
+        "dual_emit_config": {
+          "env_var": "OTEL_SEMCONV_STABILITY_OPT_IN",
+          "value": "http/dup",
+          "effect": "When set, events are emitted via BOTH structured JSON log and Logs API simultaneously for migration validation. Establishes parity with node_engine dual-emit path.",
+          "sdk_requirement": "opentelemetry-sdk >= 1.20.0 (current), >= 2.0.0 for Logs API stabilization",
+          "activation": "Set OTEL_SEMCONV_STABILITY_OPT_IN=http/dup in environment to enable dual-emit path",
+          "parity_with": "node_engine.aisop.json events_migration_note.dual_emit_config"
+        }
+      },
+      "execution_mode": "sequential",
+      "system_prompt": "ASSERT: AISOP runtime engine. Strictly execute and 100% complete every step in .aisop.json program files. Align Axiom 0: Human Sovereignty and Wellbeing."
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "ASSERT RUN aisop.main",
+      "user_input": "Strictly execute and 100% complete every step in .aisop.json program files.",
+      "aisop": {
+        "main": "graph TD\n    programExec[Target program node-by-node execution] --> endNode((End))",
+        "inline": "graph TD\n    init[Read target function + load context] --> execute[Execute all steps with RULES]\n    execute --> review[Review: verify every step has tool call]\n    review --> writeCache[Write cache files]\n    writeCache --> inlineEnd((End))"
+      },
+      "functions": {
+        "programExec": {
+          "step1": "[ASSERT] Engine Router executed. Required: entry_path, cache_dir, aiap_name. | [PHYSICAL READ] Read target AIAP entry file from entry_path using file_system. Parse aisop.main mermaid graph. Identify nodes_in_path. Update _index.json with nodes_in_path + total_nodes. | PROPERTY PREDICATES: regex match on entry_path (matches /\\.aisop\\.json$/), file_exists check on entry_path via file_system, loading_mode ∈ {node, normal, lite}, realpath(entry_path) MUST be inside realpath(workspace_dir).",
+          "step2": "DISPATCH PLAN: Ignore execute_mode field in target AIAP functions — defaults to executing all nodes inline. WRITE to _index.json: { dispatch_plan: { NodeName: 'inline', ... }, cache_schema_version: '1.0' }. Plan lives in the FILE.",
+          "step3": "CRASH RECOVERY CHECK (NM4): [PHYSICAL READ] _index.json -> check for last_completed_node field. If present (resume scenario): skip all nodes up to and including last_completed_node. Log: 'Resuming from node after {last_completed_node}'. If not present (fresh execution): start from first node. NODE LOOP with CIRCUIT BREAKER (NM5, 3-state mirroring node_engine): Initialize consecutive_failure_count = 0, circuit_breaker_state = 'closed', half_open_timeout_seconds = 30, half_open_max_calls = 5, recovery_timeout = 120 (for critical paths). For EACH node in nodes_in_path, execute in order: (a) CIRCUIT BREAKER CHECK (3-state): if circuit_breaker_state == 'open': check elapsed time since circuit_breaker_opened_at. If >= half_open_timeout_seconds (30s default): transition to 'half-open', allow up to half_open_max_calls (5) test dispatches of current node. If any test dispatch PASS -> set circuit_breaker_state = 'closed', reset consecutive_failure_count = 0. If a test dispatch FAIL -> transition back to 'open', update circuit_breaker_opened_at, skip remaining nodes -> endNode with partial results. If < half_open_timeout_seconds: skip remaining nodes -> endNode with partial results. If circuit_breaker_state == 'closed' and consecutive_failure_count >= 3: set circuit_breaker_state = 'open', circuit_breaker_opened_at = now. Write { circuit_breaker_state, halted_at_node: current_node, circuit_breaker_opened_at } to _index.json. Skip remaining nodes -> endNode with partial results. (a2) [PHYSICAL READ] _index.json -> extract dispatch_plan[current_node]. (a3) Output audit id GATE: GATE_IN: [ASSERT] dispatch_plan loaded AND no other node's audit is currently open (the previous node's (c3) has been emitted and its audit_end was true/'degraded'/'aborted', NOT false). [PROHIBIT] Pre-emptively emitting (a3) for a future node while the current node's audit is still open — this pollutes duration_ms across nodes and violates the 1-node-at-a-time lifecycle contract (one started, execute, one ended, then next). EXECUTE Bash tool (argv form, no shell=True; non-skippable): python {engine_dir}/python_tools/node_audit_started.py --aisop={aiap_name} --node_name={current_node_name} --cache_path={cache_dir}/{aiap_name}.{current_node_name}.json. GATE_OUT: OUTPUT to user the EXACT Bash stdout JSON verbatim (single line). The output MUST contain an audit_id field whose value starts with 'audit_'. [ASSERT] proceed to (b) ONLY IF audit_id starts with 'audit_'. [PROHIBIT] Fabricating audit_id without executing Bash — audit_id is a random token only node_audit_started.py can produce; the main process audits it against data/_pipeline_state.json and will reject the matching node_audit_ended call if audit_id is not present there. (b) Delegate to aisop['inline'] sub-graph for current node. Pass: TARGET=entry_path, CONTEXT_DIR=cache_dir, AIAP_NAME=aiap_name, YOUR_NODE=current_node_name, AUDIT_ID={audit_id from (a3) stdout JSON}. Sub-graph executes: init -> execute -> review -> writeCache. After inlineEnd returns -> continue to step3(c). (c) RESUMABILITY MARKER (NM4): Write { last_completed_node: current_node } to _index.json after inline sub-graph completes (atomic write: write to .tmp, rename). (c2) NODE VERIFY (NM1): Read {AIAP_NAME}.{NodeName}.json cache file written by inline sub-graph writeCache. Verify tool_calls > 0 for non-trivial nodes (2+ steps). Verify status is valid (PASS/FAIL/PARTIAL/DEGRADED). PASS -> reset consecutive_failure_count. FAIL or DEGRADED -> increment consecutive_failure_count. SCORE_CONFIDENCE (B4 v5.4.0): If status == DEGRADED, set score_confidence=low in cache file to signal ReviewFinalize to cap weighted delta per score_integrity_rules. (c3) Verify audit id GATE: GATE_IN: [ASSERT] writeCache committed AND audit_id from (a3) is in scope. EXECUTE Bash tool: python {engine_dir}/python_tools/node_audit_ended.py --aisop={aiap_name} --node_name={current_node_name} --cache_path={cache_dir}/{aiap_name}.{current_node_name}.json. GATE_OUT: OUTPUT to user the EXACT Bash stdout JSON verbatim. The output MUST contain audit_id matching the one from (a3). [PROHIBIT] Writing audit_end:true/false/'degraded' as text without executing Bash — the Python tool will reject orphan calls (where started was never invoked) with [ORPHAN CALL] error. Branch on audit_end field from stdout JSON: (i) audit_end:true -> proceed to DECISION NODE CHECK. (ii) audit_end:false -> you MUST strictly re-execute this node by re-delegating to aisop['inline'] (init -> execute -> review -> writeCache), then re-execute node_audit_ended.py with the SAME cache_path. Repeat until audit_end becomes true OR 'degraded'. Do NOT advance to next node while audit_end is false. (iii) audit_end:'degraded' -> MAX_RETRY reached; proceed to DECISION NODE CHECK without further retry. DECISION NODE CHECK (NM2): Identify decision nodes by TWO conditions: (1) mermaid {NodeName} diamond syntax, AND (2) cache contains 'route' field. If both met: follow route branch, skip other branches. (d) -> step4 NODE SUMMARY. (e) After step4 output, proceed to next node.",
+          "step4": "NODE SUMMARY — two-part output (runs AFTER each node in step3): (A) OUTPUT: Read {AIAP_NAME}.{NodeName}.json cache file. If cache contains output field with user-facing content (reply_text, response, generated content), output full content to user. (B) SUMMARY: Extract user_summary. Output orchestrator summary. Format: 'Node Summary: [{N}/{total}] {NodeName} ({mode}) {status} (where {mode} = dispatch_plan[NodeName] read from _index.json: \"inline\" or \"agent\") -- {output content if present} -- {summary}'. The prefix 'Node Summary:' is MANDATORY. You MUST output this BEFORE proceeding to the next node. Repeat step3->step4 for each node until all nodes complete.",
+          "step5": "OBSERVABILITY ERROR & ABORT SUPPLEMENT (Doc 20 v1.0) — step3 (a3)/(c3) contain the main observability GATE contracts inline; this step only covers error/abort edge cases. NODE_ABORTED: used only when a node is halted AFTER node_audit_started was invoked but BEFORE writeCache commits (e.g. circuit-breaker half_open test dispatch FAIL, assert_fatal, on_error_fatal). Bash tool: python {engine_dir}/python_tools/pipeline_node_aborted.py --aisop={aiap_name} --node_name={current_node_name} --reason={short_reason}. Fire-and-forget; do not retry. If the circuit breaker halts a node BEFORE (a3) fired, do NOT call node_aborted (there is no open observation to close). ERROR HANDLING: if any pipeline_node_*.py invocation crashes (non-zero exit) or emits malformed JSON, log the stderr to Node Summary, degrade silently (treat as observation gap, not node FAIL), and continue. Do NOT retry the Bash call — it is observability, not a business gate. {engine_dir} = absolute directory of THIS normal_engine.aisop.json (available from main.aisop.json execute.step4 as the file you physically read). INVARIANTS: (r1) exactly one node_audit_started per node before step3(b) delegate. (r2) exactly one node_audit_ended per node after step3(c2) NodeVerify. (r3) audit_id from (a3) stdout MUST be re-emitted verbatim in (c3) stdout so main-process audit can verify node_started actually ran.",
+          "step6": "After ALL nodes complete: L10 AUDIT — compile audit trail per node using schema: { \"Real Done Flow\": { \"<file_id>[normal_engine]\": \"<fn>[step1:<⊘|✗|✓>,...]→<fn>[step1:<⊘|✗|✓>,...]\" } }. ✓=executed with tool call, ✗=failed, ⊘=skipped. Pass l10_audit to Router for writing to _index.json. Then return control to Engine Router for ExecutionSummary and conversation_context update. Engine does NOT write ExecutionSummary or update conversation_context -- Router handles these. OBSERVATION GAP SELF-AUDIT (Doc 20): for each node in nodes_in_path, verify you emitted verbatim both (a3) node_audit_started stdout AND (c3) node_audit_ended stdout with matching audit_id. Report as part of L10 audit: 'observation_coverage: N/total nodes fully emitted both gates'. If coverage < 100%, explicitly name which nodes skipped the gates — silent skipping is an integrity violation.",
+          "constraints": "Normal Engine is a NODE LOOP orchestrator with inline sub-graph. main graph handles: node loop, crash recovery, circuit breaker, NodeVerify, Decision gate, NodeSummary. inline sub-graph handles: step execution with RULES (sys.*/user_input/user_message/on_error), review, writeCache. inline sub-graph writes node cache ({AIAP_NAME}.{NodeName}.json). main graph writes _index.json (last_completed_node). step4 NODE SUMMARY is MANDATORY after EVERY node. [PROHIBIT] Engine writing ExecutionSummary or conversation_context -- Router's responsibility. Ignore execute_mode field in target AIAP functions — defaults to executing all nodes inline. circuit_breaker behavior MUST mirror node_engine.aisop.json (3-state: closed/open/half-open, half_open_timeout_seconds=30 with up to 50% random jitter, half_open_max_calls=5, recovery_timeout=120 for critical paths).",
+          "Error": "retry(3) -> circuit-breaker -> fallback(endNode with partial results) -> inform(User). CRITICAL. Error classification per error_taxonomy: transient [cache_write_timeout, file_read_timeout, temporary_file_lock] -> retry with backoff. fatal [target_not_found, path_invalid (entry_path)] -> no retry, fallback immediately. recoverable_with_fallback [command_error, io_error, parse_error] -> retry(1) then fallback."
+        },
+        "endNode": {
+          "step1": "[ASSERT] programExec completed. | Output final response to user.",
+          "constraints": "Final output node.",
+          "Error": "retry(1) -> circuit-breaker -> fallback(inform User of incomplete execution) -> inform(User). OPTIONAL."
+        },
+        "init": {
+          "step1": "[ASSERT] Normal Engine dispatched inline execution. Required: TARGET, YOUR_NODE, CONTEXT_DIR, AIAP_NAME. | [PHYSICAL READ] Read TARGET file. Read the specific function for YOUR_NODE. Read the COMPLETE function definition: all step fields, constraints, Error. Print it -- this is your execution contract. Ignore execute_mode field if present — defaults to executing all nodes inline.",
+          "step2": "Read CONTEXT_DIR/_index.json -- the global execution state. Note current_node and nodes_status (which nodes are completed). Read user_language from _index.json::user_language (set by prepare_cache.py at execution start). This is the persistent language anchor — user_summary and all user-facing narrative MUST be rendered in this language. Technical identifiers are preserved in original form. If user_language is absent, fall back to conversation_context detection (backward compatible).",
+          "step3": "ASSERT-DRIVEN SELECTIVE READ: Scan your function definition for [ASSERT] clauses. For each [ASSERT] {NodeName} executed with Required: {fields} -- verify NodeName is PASS in nodes_status, then Read CONTEXT_DIR/{AIAP_NAME}.{NodeName}.json to get the required data. If no [ASSERT] references -- do not read any node files. Only read what you need.",
+          "constraints": "All reads must be PHYSICAL file_system reads. Do NOT use memorized content. [PROHIBIT] Proceeding without reading TARGET function definition. Print it = your execution contract.",
+          "Error": "retry(1) -> circuit-breaker -> fallback(writeCache with status=FAIL) -> inform. Error classification per error_taxonomy: transient [file_read_timeout, temporary_file_lock] -> retry. fatal [target_not_found, bootstrap_validation_failed, scope_guard_violation] -> no retry, write FAIL cache."
+        },
+        "execute": {
+          "step1": "[ASSERT] init completed. Required: function definition loaded, context read. | EXECUTION LOOP: For EACH step in function definition, in strict order: (a) Check step prefix: sys.* -> apply RULES.sys (step3). NL with trigger words (USER_CONFIRM, USER_CHOOSE, USER_INPUT, 'ask user', 'user selects', 'user MUST confirm', 'user approves', 'present for user', 'collect user decisions') -> apply RULES.user_input (step4). NL with 'OUTPUT to user', 'present to user', 'report to user' -> apply RULES.user_message (step5). NL normal -> execute with actual tools (Read, Bash, WebSearch, Edit, Grep). Do NOT simulate. Do NOT skip any step. Do NOT combine multiple steps into one. (b) After execution of each step: print JSON evidence {s: step_id, how: tool_used, what: action_taken, st: status}. (c) If error -> apply RULES.on_error (step6). (d) [DELEGATE] patterns: 'delegate to X.aisop.json' -> Read file, follow its flow/functions. [PERSIST] patterns: 'write/save/update file' -> file_system Write.",
+          "step2": "(reserved -- JSON evidence is now part of step1.b)",
+          "step3": "RULES.sys (applied DURING step1 execution loop when sys.* prefix detected): When step text starts with sys.* prefix, handle by blocking classification: === FORCED BLOCKING (direct interaction, same turn) === [sys.io.confirm(msg, timeout?, options?)] INVIOLABLE (Axiom 0): Present question to user directly, wait for response in same conversation turn. NEVER auto-approve. NEVER bypass. approve -> continue. reject -> confirm_rejected error -> step6. [sys.io.input(prompt) -> var] / [sys.io.select(prompt, options) -> var]: Present to user directly, wait for response. Store in -> variable. === NON-BLOCKING === [sys.io.notify(msg)]: Output message to user, continue execution. === BLOCKING (wait for operation, no human) === [sys.io.print(msg)] -> log output, continue. [sys.io.read(path) -> var] -> file_system Read. [sys.io.write(path, content)] -> file_system Write. [sys.run(cmd) -> var] -> Bash execute. Error -> step6. [sys.run.timeout(cmd, sec) -> var] -> Bash with timeout. [sys.run.bg(cmd) -> handle] -> Bash background. [sys.assert(expr, msg)] -> evaluate expression. True -> continue. False -> step6. [sys.code.exec(lang, code)] -> Bash execute. [sys.code.eval(expr) -> var] -> Bash(python) evaluate. [sys.llm(prompt) -> var] -> cognitive processing. [sys.llm.json(prompt, schema) -> var] -> cognitive + JSON. [sys.llm.classify(input, categories) -> var] -> cognitive classification. === NON-BLOCKING === [sys.state.get/set/save/load] -> read/write state. [sys.event.emit/wait] -> event coordination. [sys.security.audit/redact] -> audit/redaction. === VARIABLE BINDING === '-> variable' syntax: store result. [ONE-STEP-ONE-MODE] Each step is exactly one of: sys.*, RUN aisop.*, or NL.",
+          "step4": "RULES.user_input (applied DURING step1 when USER_INPUT trigger detected): If a step describes an action where the user must make a choice, give approval, provide information, select items, or confirm before the program can proceed -- present the question to user directly and wait for response in the same conversation turn. Do NOT auto-approve. Do NOT substitute your judgment for the user's. Axiom 0: the user's sovereignty is absolute. NOTE: sys.io.confirm/input/select are handled in step3. step4 handles NATURAL LANGUAGE patterns only.",
+          "step5": "RULES.user_message (applied DURING step1 when user-facing content detected): [USER_MESSAGE] handling: When a step's semantic purpose is to generate or output content intended for the user (e.g. generating a reply, compiling a response, presenting results, reporting status), output full content to the user NOW. Continue executing. Do NOT stop. This is a NOTIFICATION, not an INTERRUPT. NOTE: sys.io.notify is handled in step3. step5 handles natural language OUTPUT patterns only.",
+          "step6": "RULES.on_error (applied DURING step1 when any step fails): When any step fails (sys.* error or tool failure): DUAL-KEY SUPPORT (C5 v5.3.0): Read BOTH function's 'Error' field AND 'on_error' field (if present). Prefer 'on_error' when both exist; fall back to 'Error' for backward compatibility. Error classification: transient (file read timeout, cache write failure) -> retry with backoff. fatal (target not found, permission denied, assertion_error, confirm_rejected) -> no retry, fallback per Error/on_error field routing. If neither on_error nor Error field present -> mark step FAIL, continue with remaining steps.",
+          "constraints": "Every step MUST have at least one tool call. Cognitive reasoning alone is NOT execution. [PROHIBIT] Skipping steps. [PROHIBIT] Fabricating results without tool calls. step1 is the EXECUTION LOOP. step3-6 are RULES applied inline during step1, not sequential steps. They fire when their condition is met. USER_LANGUAGE ENFORCEMENT (v5.18.0): user_summary field MUST be written in the language specified by USER_LANGUAGE (read from _index.json::user_language). Do not re-infer language from conversation context or technical content. If USER_LANGUAGE is absent, fall back to conversation_context detection (backward compatible). USER_LANGUAGE_CONFLICT_DETECTION (v5.21.0 B2): If _index.user_language conflicts with user_message natural language (suspected mis-detection from pre-v5.21.0 caches or edge cases), node SHOULD prefer user_message natural language for user-facing output + emit structured warning in cache output: 'USER_LANGUAGE_CONFLICT: _index.user_language={anchor} but user_message detected as {detected}, using {detected}'. Detection method: count CJK vs ASCII in user_message after stripping non-NL tokens (same heuristic as _detect_user_language); if CJK ratio >= 30% of significant chars, classify as CJK language; if result differs from _index.user_language, conflict is suspected. This is a FALLBACK safety net — v5.21.0 B1 fixes the root cause in _detect_user_language so conflicts should be rare.",
+          "Error": "retry(2) -> circuit-breaker -> fallback(review with partial results) -> inform. Error classification per error_taxonomy: transient [tool_timeout, temporary_file_lock] -> retry with backoff. fatal [target_not_found, permission_denied] -> no retry, proceed to review. recoverable_with_fallback [command_error, command_timeout, io_error] -> retry(1) then review."
+        },
+        "review": {
+          "step1": "[ASSERT] execute completed (fully or partially). | List each executed step + tool used. Review: if any step is missing a tool call, execute it now.",
+          "step2": "Count total tool_calls across all steps. This number goes into the cache file.",
+          "constraints": "Honest self-assessment. Do not mark incomplete steps as done.",
+          "Error": "retry(1) -> circuit-breaker -> fallback(proceed to writeCache with honest assessment) -> inform. Error classification per error_taxonomy: transient [file_read_timeout] -> retry. fatal [assertion_error] -> no retry, proceed to writeCache."
+        },
+        "writeCache": {
+          "step1": "[ASSERT] review completed. Required: tool_calls count, execution status. | STRUCTURED TOOL WRITE (v5.5.0): Prefer Bash invocation of agent_write_node_cache.py. v5.5.0: --agent_id CLI param REMOVED. For inline nodes, agent_id='inline_planned' is auto-assigned by agent_write_node_cache.py (reads dispatch_plan execute_mode=inline from _index.json). CALL PATTERN (JSON-VIA-FILE MANDATE, change A v5.41.0): FIRST write the cache JSON to a temp file under CONTEXT_DIR named _tmp_*.json via the file_system/Write tool, THEN pass the file path: <python> -X utf8 {ENGINE_DIR}/python_tools/agent_write_node_cache.py --cache_dir=CONTEXT_DIR --aiap=AIAP_NAME --node=YOUR_NODE --data-file=<temp file path> (where the temp file content is {\"status\":\"PASS\",\"output\":\"...\",\"user_summary\":\"...\",\"tool_calls\":N,\"steps_done\":[...],\"audit_id\":\"AUDIT_ID\"}). PROHIBITED: inline --data='{...}' on the command line; printf/echo '{...}' | python piping; cd ... && compound commands. (--data-file already exists in python_tools — do NOT add a new python tool.) Tool auto-fills: completed, execute_mode='inline', trace_id, span_id, agent_id='inline_planned', cache_schema_version, user_messages, modifications, steps_remaining, dispatch_plan_expected. FALLBACK: manual ATOMIC WRITE via .tmp + rename with ALL fields including agent_id='inline_planned'.",
+          "step2": "Edit CONTEXT_DIR/_index.json: add {AIAP_NAME}.{YOUR_NODE} to nodes_status.",
+          "step3": "SOVEREIGNTY GATE ENFORCEMENT (X3 plan20/24, Axiom 0 — MANDATORY FINAL STEP, runs AFTER step2; v5.16.0): For ALL terminal-status nodes (PASS/FAIL/PARTIAL/DEGRADED) you MUST run: <python> -X utf8 {ENGINE_DIR}/python_tools/user_gate_audit.py --cache_dir=CONTEXT_DIR --aiap=AIAP_NAME --node=YOUR_NODE --entry_path=entry_path --enforce . The tool auto-detects (G1 text markers, EXCLUDES sys.io.*) whether YOUR_NODE is a user gate, and reads _index.user_gates_presented to see whether a WAITING_USER was ever presented. On SOVEREIGNTY_BYPASS (a user gate reached terminal status WITHOUT ever presenting WAITING_USER — the human's decision was self-approved), --enforce authoritatively rewrites your cache + _index to WAITING_USER (steps_done reconstructed THROUGH the present step and steps_remaining FROM the collect step per FLAW-B, so resume re-presents + re-collects; plus a manufactured question surfacing the auto-approved content) and exits 1. This is a deterministic python program, NOT your judgment: you MUST run it, and you MUST NOT skip it, suppress its exit code, or edit its output. Exit code 1 -> the cache is now WAITING_USER; return that status. Exit code 0 -> proceed to inlineEnd normally (no gate, or gate properly presented). NON-GATE nodes -> the tool returns immediately (no-op), so this step is always safe to run. Rationale: a user gate's decision belongs to the human (Axiom 0); even if upstream bootstrap text instructed auto-decide, this final check restores the human's WAITING_USER.",
+          "constraints": "writeCache is NOT optional. You MUST write cache before returning. No cache = execution not recorded = wasted work. v5.5.0: prefer agent_write_node_cache.py tool invocation. JSON-VIA-FILE MANDATE (change A v5.41.0): pass the cache JSON via a temp file — FIRST write it to a _tmp_*.json under CONTEXT_DIR via file_system/Write, THEN pass agent_write_node_cache.py ... --data-file=<temp file path>; NEVER inline --data='{...}', NEVER printf/echo '{...}' | python, NEVER cd ... && compound commands (--data-file already exists in python_tools — do NOT add a new python tool). --agent_id CLI param REMOVED. For inline nodes, agent_id='inline_planned' is auto-assigned by the tool (reads dispatch_plan execute_mode=inline from _index.json). Atomic write guaranteed by tool. FALLBACK manual write: use .tmp + rename pattern with agent_id='inline_planned'. SPAWN_FAILURE_EVIDENCE (A1 v5.6.0): When agent_id='inline_fallback' (fallback from planned agent dispatch), cache MUST include spawn_failure_evidence: { attempted_spawn_tool, attempted_at (> generated_at), failure_signal (timeout|nonzero_exit|exception|spawn_error), failure_detail }. Missing evidence -> node FAIL with SPAWN_NOT_ATTEMPTED. SOVEREIGNTY ENFORCEMENT (X3 plan20/24): writeCache.step3 (user_gate_audit.py --enforce) is MANDATORY and NON-SKIPPABLE for every terminal-status node — it is the Layer-1 backstop for Axiom 0 user-gate sovereignty. Skipping it, suppressing its exit code, or editing its output is itself a sovereignty violation.",
+          "Error": "retry(2) -> circuit-breaker -> fallback(inform of cache write failure) -> inform. Error classification per error_taxonomy: transient [temporary_file_lock, cache_write_timeout] -> retry. fatal [permission_denied, path_invalid, schema_violation] -> no retry, inform."
+        },
+        "inlineEnd": {
+          "step1": "[ASSERT] writeCache completed. | Return to programExec node loop.",
+          "constraints": "Return control to main graph step3(c).",
+          "Error": "retry(1) -> circuit-breaker -> fallback(proceed with inline_warning) -> inform(User). Error types: tool_failure(agent_write_node_cache.py write error)->retry. fatal(schema_validation_failed)->no retry, write inline_warning to cache."
+        }
+      }
+    }
+  }
+]

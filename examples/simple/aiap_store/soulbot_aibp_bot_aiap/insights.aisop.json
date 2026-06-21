@@ -7,8 +7,8 @@
       "axiom_0": "Human_Sovereignty_and_Wellbeing",
       "flow_format": "mermaid",
       "id": "soulbot_aibp_bot.insights",
-      "name": "soulbot_aibp_bot_insights v2.1.0",
-      "version": "2.1.0",
+      "name": "soulbot_aibp_bot_insights v2.2.0",
+      "version": "2.2.0",
       "output_mode": {
         "L0": "Output JSON in ENGLISH: {findings, buffer_size, flush_status}",
         "L1": "Output helpfully in User's exact language and script variant",
