@@ -112,14 +112,14 @@ def _aisop_dir_of(path):
 
 # Absolute-path regex: Windows drive paths (D:\... or D:/...) and POSIX (/...).
 # Captures contiguous path-like runs; trailing punctuation is stripped later.
-# The character class [^\s'"，,；;]+ is a single (non-nested) quantifier — it is
+# The character class [^\s'"，,；;。、：！？（）【】《》「」]+ is a single (non-nested) quantifier — it is
 # linear-time-safe and NOT subject to catastrophic backtracking / ReDoS (RF-3,
 # Tier1 arxiv 1301.0849 + CVE-2026-40319). stdlib re has no RE2 backend, so the
 # regex itself is kept deliberately simple AND the matched input is length-capped
 # below (see _PATH_SCAN_CAP) to bound worst-case scan cost over attacker-
 # influenceable free-text user_message.
-_WIN_ABS_RE = re.compile(r'[A-Za-z]:[\\/][^\s\'"，,；;]+')
-_POSIX_ABS_RE = re.compile(r'/[^\s\'"，,；;]+')
+_WIN_ABS_RE = re.compile(r'[A-Za-z]:[\\/][^\s\'"，,；;。、：！？（）【】《》「」]+')
+_POSIX_ABS_RE = re.compile(r'/[^\s\'"，,；;。、：！？（）【】《》「」]+')
 # '{name}_aiap' bare-name token (no path separators), e.g. soulbot_creator_evolution_aiap
 _NAME_AIAP_RE = re.compile(r'(?<![A-Za-z0-9_\-])([A-Za-z0-9][A-Za-z0-9_\-]*_aiap)(?![A-Za-z0-9_\-])')
 
