@@ -119,7 +119,7 @@ def _aisop_dir_of(path):
 # below (see _PATH_SCAN_CAP) to bound worst-case scan cost over attacker-
 # influenceable free-text user_message.
 _WIN_ABS_RE = re.compile(r'[A-Za-z]:[\\/][^\s\'"，,；;。、：！？（）【】《》「」]+')
-_POSIX_ABS_RE = re.compile(r'/[^\s\'"，,；;。、：！？（）【】《》「」]+')
+_POSIX_ABS_RE = re.compile(r'(?<![A-Za-z0-9_\-.])/[^\s\'"，,；;。、：！？（）【】《》「」]+')
 # '{name}_aiap' bare-name token (no path separators), e.g. soulbot_creator_evolution_aiap
 _NAME_AIAP_RE = re.compile(r'(?<![A-Za-z0-9_\-])([A-Za-z0-9][A-Za-z0-9_\-]*_aiap)(?![A-Za-z0-9_\-])')
 
