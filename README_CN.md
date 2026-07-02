@@ -38,7 +38,7 @@ SoulBot 是一个基于 Python 的 AI Agent 框架，通过 CLI 子进程使用 
 | Gemini CLI | `npm install -g @google/gemini-cli` | `gemini login` |
 | OpenCode | `npm install -g opencode` | 免费模型，无需登录 |
 
-> 💡 **推荐组合**: SoulBot + Claude Code CLI + Claude Opus 4.8。本项目主要在此组合下开发测试，首次使用建议从这里入手。
+> 💡 **推荐组合**: SoulBot + Claude Code CLI + Claude 旗舰模型。本项目主要在此组合下开发测试（已验证模型：Opus 4.8、Fable 5），首次使用建议从这里入手。
 
 ### 安装
 

@@ -1,0 +1,1671 @@
+{
+  "scoring_scale": "1-5",
+  "version": "1.0.0",
+  "trust_level": 4,
+  "snapshot_date": "2026-07-02",
+  "three_dim_test": {
+    "cognitive": {
+      "C1": 5.0,
+      "C2": 5.0,
+      "C3": 5.0,
+      "C4": 5.0,
+      "C5": 5.0,
+      "C6": 5.0,
+      "C7": 5.0,
+      "avg": 5.0,
+      "note": "v2.36.0 ReviewFinalize (all C1-C7 at 5.0)"
+    },
+    "intrinsic": {
+      "I1": 5.0,
+      "I2": 5.0,
+      "I3": 5.0,
+      "I4": 5.0,
+      "I5": 5.0,
+      "I6": 5.0,
+      "I7": 5.0,
+      "I8": 5.0,
+      "I9": 5.0,
+      "I10": 5.0,
+      "I11": 5.0,
+      "I12": 4.8,
+      "I13": 5.0,
+      "avg": 4.985,
+      "note": "v2.36.0 ReviewFinalize. I12=4.8: structural ceiling (executor runtime validation)."
+    },
+    "detail": {
+      "D1": 5.0,
+      "D2": 5.0,
+      "D3": 5.0,
+      "D4": 5.0,
+      "D5": 4.8,
+      "D5_note": "nihil_density NihilEnd naming convention",
+      "D6": 5.0,
+      "D6_note": "v2.36.0 ReviewFinalize governance_hash recomputed via governance_hash.py (canonical v1.0) and QUAD-SYNC verified (8acd9c68...a2e3)",
+      "D7": 5.0,
+      "D8": 5.0,
+      "D8_note": "v2.36.0 agent_card description updated (governance_hash.py SOLE AUTHORITY), summary within limit.",
+      "D9": 5.0,
+      "D9_note": "v2.36.0 evolution_history v2.36.0 appended with re-baseline annotation",
+      "D10": 5.0,
+      "avg": 4.98,
+      "note": "v2.36.0 ReviewFinalize. D6 5.0 (governance_hash QUAD-SYNC 8acd9c68 via governance_hash.py canonical v1.0). D7 5.0 (CHANGELOG generated). D10 5.0 (quality_baseline synced). D5 4.8 (nihil_density NihilEnd naming). I12 4.8 (structural ceiling)."
+    },
+    "weighted": 4.987,
+    "grade": "S",
+    "deferred_penalty": 0,
+    "deferred_items": [],
+    "plateau_status": {
+      "consecutive_versions": 0,
+      "range": "plateau broken at v1.84.0 (C2/C5 4.5, I12/I13 4.5 — independent agent cognitive cap)",
+      "ceiling_type": "STRUCTURAL (declared v1.29.0)",
+      "ceiling_confirmed_versions": 66,
+      "prior_plateau": "v1.83.0 (1 version at 5.000/S after recovery)",
+      "note": "5.000 plateau broken again at v1.84.0 (C2/C5 at 4.5 due to independent agent cognitive cap, I12/I13 at 4.5). Same pattern as v1.82.0. Grade S maintained. v1.90.0: C4/C6 at 4.5, I2/I6/I9 at 4.5, D4/D5/D8/D9/D10 below 5.0. sys.* first evolution — new capability area introduces natural score variability. D6/D7 recovered post-Finalize (version sync + agent_card updated)."
+    }
+  },
+  "mf_checks": "MF1-MF38 ALL PASS",
+  "self_improvement_alignment": {
+    "framework": "ICLR 2026 Recursive Self-Improvement",
+    "evaluation_lenses": [
+      "safety_bounds",
+      "convergence_stability",
+      "capability_preservation",
+      "regression_detection",
+      "human_oversight",
+      "transparency"
+    ],
+    "alignment_status": "ALIGNED",
+    "note": "Creator pipeline properties: safety via Axiom 0 + QualityGate + dimension floors, convergence via calibration_convergence (MATHEMATICALLY_CONVERGED_STABLE), capability preservation via ThreeDimTest regression detection, human oversight via USER_INPUT interrupt pattern, transparency via attestation chain + observability module.",
+    "added_version": "1.89.0"
+  },
+  "modules": 15,
+  "nodes": 213,
+  "scenarios_declared": 1023,
+  "scenarios_executed": 1167,
+  "pattern": "D",
+  "simulation": {
+    "scenarios": 86,
+    "coverage": 100.0,
+    "pass": 86,
+    "yellow": 0,
+    "fail": 0,
+    "tier": "Professional",
+    "pipeline_run": "23ee2fb6-d39e-475b-b366-e7ecf8aca98d"
+  },
+  "governance_hash": "cf79a11de4bb659c59e14d4cfc9f14ca81c02d4e33b8d15479863cba30396426",
+  "governance_hash_canonical_version": "1.0",
+  "evolution_history": {
+    "0.1.0": {
+      "from": "2.47.0 (copied source soulbot_creator_evolution / aiap_creator)",
+      "type": "identity_rebaseline_genesis",
+      "change": "rename aiap_creator->soulbot_aisp_creator_evolution_aiap + version 2.47.0->0.1.0 + AISP-skill-creator declaration; provenance RESET to v0.1.0 genesis per explicit human authorization (option D, turn-151 'd')",
+      "regression": false,
+      "date": "2026-06-22"
+    },
+    "0.2.0": {
+      "from": "0.1.0",
+      "type": "functional_layer_product_evolution",
+      "stage": "Stage-1 functional layer (product layer only)",
+      "change": "G1 embed read-only AISP validation suite (aisp_validate.py + aisp_check_runtime_trace.py + aisp_hash.py + schemas/) copied from read-only upstream D:/workspace/AISP-Protocol; G2 generate node now builds AISP V1.0.0 single-file skill-package (aisp.aisop.json 2-message array + real aisp_contract object) defaulting to aisp_store sibling dir; G3 validate node/validators check product via aisp_validate.py M1-M6 + safety + non_negotiable enforced_by (reject product failing M1-M6; R1-R7 honestly report not-run/gap); G4 research subgraph baseline = embedded AISP spec snapshot + read-only upstream. Research2 4 FIX (Q1 clear AIAP-term plumbing residue->AISP, Q2 gate on real validator JSON, Q3 ValidateStep product-scope guard protocol=='AISP V1.0.0', Q4 product invocation/resources least-privilege). C1/C2 version+name sync 0.1.0->0.2.0.",
+      "boundary": "PRODUCT LAYER ONLY. Creator-self AIAP V1.0.0 governance FROZEN (governance_hash mechanism / QUAD-SYNC / two gates / snapshot / version_history / quality_baseline scoring). AIAP.md 'AIAP V1.0.0' shell + engine-executed skeleton untouched. Embedded AISP spec snapshot + read-only upstream D:/workspace/AISP-Protocol untouched (G1 reads-and-copies only). 0 collateral.",
+      "weighted_score": 4.5,
+      "grade": "S",
+      "score_scope": "partial",
+      "scored_files": [
+        "generate.aisop.json",
+        "main.aisop.json"
+      ],
+      "weighted_score_note": "this-run authoritative partial score 4.500/S (Generate2 retest, scope=generate+main). Per SCORE SCOPE GUARD the whole-program weighted_score (4.987/S inherited from v2.47.0 byte-identical logic line) is PRESERVED, NOT replaced by this partial figure; full whole-program re-score pending a future stage.",
+      "validate_indicator": "12/12 (100%)",
+      "simulate_indicator": "GREEN",
+      "regression": false,
+      "deferred_reconciled": {
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "generate2_weighted": 4.5,
+        "final_weighted": 4.5,
+        "D6": 5.0,
+        "D10": 5.0,
+        "note": "D6 (version-sync) + D10 (description) re-measured post-Finalize against now-updated governance files at v0.2.0 with canonical v1.0 governance_hash ee6ddc159c2aabcee36a303de49e865c6652a135086d302f2b67459b2d5c8fc4 (QUAD-SYNC AIAP.md/AIAP_cn.md/agent_card.json/quality_baseline.json all PASS); all .aisop.json + AIAP.md + agent_card.json + quality_baseline.json at version 0.2.0; product-layer descriptions reflect AISP V1.0.0 capability. Partial-scope (generate+main) reconciliation; both D6/D10 clean at 5.0; final_weighted == generate2 partial 4.500 (no swing at partial scope)."
+      },
+      "governance_hash": "ee6ddc159c2aabcee36a303de49e865c6652a135086d302f2b67459b2d5c8fc4",
+      "pipeline_run_id": "3cdf5173-2505-4d3d-a850-6f15bceab6d8",
+      "date": "2026-06-22"
+    },
+    "0.2.1": {
+      "from": "0.2.0",
+      "type": "product_rule_compliance_fix",
+      "stage": "Stage-1.1 (generate AISP-product compliance gaps)",
+      "change": "Fixed generate.aisop.json AISP-product-rule compliance gaps surfaced by authoritative aisp_validate.py (csv_profiler + webapp_testing each had 1 FAIL + multiple WARN). G-FIX1 (FAIL): GenerateAISOP.step8 force system.content.loading_mode='node' per AISP M1 HARD requirement (was 'normal' -> AISP_E_M1_LOADING_MODE FAIL). G-FIX2 (WARN): stamp explicit execute_mode (agent for heavy / inline for simple function nodes) on every generated aisop graph node (empty -> runtime fallback inline + AISP_W_M1_EXECUTE_MODE_DEFAULT_INLINE). G-FIX3 (WARN EC7): SaveDraft generates a thin SKILL.md sidecar deterministically via embedded aisp_suite/aisp_skill_md.py (AISP defines the package; SKILL.md is a thin bridge). G-FIX4 (WARN EC8): SaveDraft derives README.md deterministically from aisp_contract via embedded aisp_suite/aisp_readme.py (no free-form drift). Package-wide version label sync 0.2.0->0.2.1 (10 AIAP business modules + agent_card/protocol_config/quality_baseline top).",
+      "boundary": "PRODUCT-RULE LAYER ONLY (generate node's AISP-product field/resource rules). Creator-self AIAP skeleton FROZEN (main routing / research / validate / review / two gates / governance / snapshot / AIAP.md shell / quality_baseline mechanism). Embedded aisp_suite tools byte-untouched (aisp_skill_md.py 11778B, aisp_readme.py 11479B, aisp_validate.py present). R6_TOOLS_CONDITIONAL (enforced_by:tools) WARN HONESTLY PRESERVED — NOT weakened to silence a WARN. aisp_store already-built products NOT touched (separate C-step). 0 collateral.",
+      "weighted_score": 4.964,
+      "grade": "S",
+      "score_scope": "partial",
+      "scored_files": [
+        "generate.aisop.json"
+      ],
+      "weighted_score_note": "this-run authoritative partial score 4.964/S (Generate2 retest, scope=modified generate.aisop.json product-rule fields {GenerateAISOP.step8, SaveDraft.step2}; INDEPENDENT_AGENT cognitive cap). Per SCORE SCOPE GUARD the whole-program weighted_score (4.987/S inherited line) is PRESERVED, NOT replaced; full whole-program re-score pending a future stage.",
+      "validate_indicator": "19/21 (0 FAIL, 0 RED, 2 non-blocking YELLOW pre-existing frozen-skeleton keys, 0 collateral)",
+      "simulate_indicator": "GREEN (24 scenarios, 22 pass / 2 yellow / 0 red, coverage 100%)",
+      "regression": false,
+      "pipeline_run_id": "876f1b16-a4f9-4037-bfae-25312cf8e998",
+      "date": "2026-06-24",
+      "deferred_reconciled": {
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "generate2_weighted": 4.964,
+        "final_weighted": 4.964,
+        "D6": 5.0,
+        "D10": 5.0,
+        "note": "Provenance synced by attestation_advance.py to v0.2.1 (governance_hash 6ab1ebd8466fe8503f7d87b8a729dc72abf4ce90916dd82c9bf6666ae1f0abed); D6/D8/D10 cite current version + current SOLE-AUTHORITY governance_hash. PLACEHOLDER pre-attestation_advance.py: D6 (version-sync) + D10 (description) re-measured post-Finalize against now-updated governance files at v0.2.1; all .aisop.json + AIAP.md + agent_card.json + quality_baseline.json + protocol_config.json at version 0.2.1; verified_on 2026-06-24; product-layer descriptions reflect the G-FIX1..G-FIX4 AISP-conformance capability. Partial-scope reconciliation; both D6/D10 clean at 5.0; final_weighted == generate2 partial 4.964 (no swing at partial scope). attestation_advance.py (SOLE AUTHORITY) will rewrite this note's governance_hash citation to the current canonical hash."
+      }
+    },
+    "0.2.2": {
+      "from": "0.2.1",
+      "type": "pipeline_hygiene_fix",
+      "stage": "W_M5 stage-cache pollution fix (creator-self skeleton, R-minimal)",
+      "change": "Fixed W_M5 pipeline-hygiene defect: in CREATE mode the per-stage pipeline snapshot was written with a RELATIVE path ('.version_history/.pipeline_cache/{run}/stage_N.json'), which under CREATE resolves to the PRODUCT directory and pollutes it with scratch ('.version_history/.pipeline_cache' residue observed in csv_profiler product dir). B1/R-minimal: main.aisop.json PipelineStart.step5 PIPELINE CONTEXT PERSISTENCE re-anchored the stage-snapshot write path AND the resume latest-snapshot read path from relative to the absolute execution cache anchor '{cache_dir}/.pipeline_cache/{run}/stage_N.json'. HARD BOUNDARY HONORED: only PipelineStart.step5 stage-cache read/write path anchor changed (relative -> {cache_dir} absolute); the 9-field STAGE_CACHE schema, chain_seed/chain_hash integrity, TTL=24h, and skip-completed semantics are UNCHANGED; the other 5 EVOLVE .version_history references in main + 4 in review (which read/write the EVOLVED object's own .version_history) are deliberately UNTOUCHED; creator skeleton / two gates / governance mechanism / generate product-build logic untouched. main.aisop.json leaf-diff vs v0.2.1 = EXACTLY 3 leaves (name label, version field, PipelineStart.step5). Package-wide version label sync 0.2.1->0.2.2 (main already bumped by Generate1; 9 remaining business modules advisor/convert/generate/modify/nihil_density/observability/research/review/simulate name+version + AIAP.md/AIAP_cn.md/agent_card.json/quality_baseline.json/protocol_config.json top version) propagated by ReviewFinalize as its sole governance ownership.",
+      "boundary": "CREATOR-SELF PIPELINE-HYGIENE LAYER ONLY (main.aisop.json PipelineStart.step5 stage-cache path anchor). review.aisop.json LOGIC byte-untouched (only its top-level name+version label bumped for package version sync, not its functional content; ValidateStep proved review logic byte-identical to v0.2.1). AISP_Standard.{core,security,ecosystem} frozen 1.0.0. Embedded AISP spec snapshot + read-only upstream untouched. aisp_store already-built products untouched. NO_SELF_MODIFY honored: operand = aiap_store target, runner (Soul_Agent/aiap/soulbot_creator_evolution_aiap) NOT touched. 0 collateral.",
+      "weighted_score": 4.987,
+      "grade": "S",
+      "score_scope": "partial",
+      "scored_files": [
+        "main.aisop.json"
+      ],
+      "weighted_score_note": "this-run authoritative partial score 4.987/S (Generate2 retest, scope=modified main.aisop.json PipelineStart.step5 path-anchor). Per SCORE SCOPE GUARD the whole-program weighted_score (4.987/S inherited line) is PRESERVED, NOT replaced; whole-program re-score pending a future full-scope stage.",
+      "validate_indicator": "M1-M6 6/6 PASS (0 FAIL; honest Y1 version-sync-pending=ReviewFinalize-owned now completed, Y2 pre-existing AISP suite signature byte-identical to v0.2.1 = 0 new regression, Y3 documented fallback_cognitive)",
+      "simulate_indicator": "GREEN (21 scenarios, 19 pass / 2 yellow / 0 fail / 0 red, coverage 100%)",
+      "regression": false,
+      "deferred_advisories": [
+        {
+          "id": "A1",
+          "source": "ReviewPresent",
+          "severity": "INFO",
+          "blocking": false,
+          "description": "consumer-base under-specification: review.aisop.json Finalize.step3 pipeline_cache scan has no {cache_dir} anchor pin (symmetry with the PipelineStart.step5 anchor fixed this cycle)",
+          "first_seen_cycle": "c140d256-4efc-4e91-b95c-13b563c8cba7",
+          "cycles_deferred": 1
+        },
+        {
+          "id": "A2",
+          "source": "ReviewPresent",
+          "severity": "INFO",
+          "blocking": false,
+          "description": "producer/consumer field-count drift: main PipelineStart.step5 '9 fields' vs review Finalize.step3 STAGE_CACHE_SCHEMA '8 required fields'",
+          "first_seen_cycle": "c140d256-4efc-4e91-b95c-13b563c8cba7",
+          "cycles_deferred": 1
+        }
+      ],
+      "pipeline_run_id": "c140d256-4efc-4e91-b95c-13b563c8cba7",
+      "date": "2026-06-25",
+      "deferred_reconciled": {
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "generate2_weighted": 4.987,
+        "final_weighted": 4.987,
+        "D6": 5.0,
+        "D10": 5.0,
+        "note": "Provenance synced by attestation_advance.py to v0.2.2 (governance_hash eb1fdc4c82fd51dd9c9e4c5de74c5c57c6b5b020b9781009b9554aa3b637e436); D6/D8/D10 cite current version + current SOLE-AUTHORITY governance_hash. Provenance synced by attestation_advance.py to v0.2.2 (governance_hash 87a28e5b5e227a508cf8f9a8ff3fea7ec12896d6349ab4c58974d36e143d87c0); D6/D8/D10 cite current version + current SOLE-AUTHORITY governance_hash. PLACEHOLDER pre-attestation_advance.py: D6 (version-sync) + D10 (description) re-measured post-Finalize against now-updated governance files at v0.2.2; all .aisop.json + AIAP.md + AIAP_cn.md + agent_card.json + quality_baseline.json + protocol_config.json at version 0.2.2; verified_on 2026-06-25; W_M5 pipeline-hygiene path-anchor fix. Partial-scope (main.aisop.json) reconciliation; both D6/D10 clean at 5.0; final_weighted == generate2 partial 4.987 (no swing at partial scope). attestation_advance.py (SOLE AUTHORITY) will rewrite this note's governance_hash citation to the current canonical hash."
+      }
+    },
+    "1.0.0": {
+      "from": "0.2.2",
+      "type": "governance_criterion_add + deliberate_1.0_stability_declaration",
+      "stage": "EvolveStep SEMVER_DISCIPLINE predicate-flip breaking criterion (B1) + 0.2.2->1.0.0 stability declaration (A1)",
+      "change": "B1: appended to EvolveStep.constraints SEMVER_DISCIPLINE an explicit breaking-change criterion — if a change to the TARGET skill's enforced_by predicate / red-line decision condition makes a previously-compliant implementation NON-compliant under the new version, it MUST be judged a breaking change -> MAJOR version + explicit 'breaks:' annotation, EVEN IF the red line's INTENT is unchanged (mechanism modernization / internal hardening does NOT exempt); only additive predicate widening (accept-set grows or unchanged) may remain MINOR/PATCH. Retroactive rationale embedded: webapp_testing_aisp NN2 flipping its assertion predicate from load_state=='networkidle' to readiness_ok==true rendered prior networkidle-based implementations non-compliant and was mislabeled MINOR internal hardening (turn174) — under this criterion it is unambiguously MAJOR; the criterion removes that discretionary latitude. A1: deliberate 1.0 stability declaration 0.2.2->1.0.0 (MAJOR) — endorsed by 4 AISP skills evolved 0-fail (webapp_testing/csv_profiler/pdf_toolkit/mcp_builder), SELF_DISCOVERY validation (autonomously surfaced real RC4/SSRF/auth defects), and the resolve_target triple-bug cleanup maturity.",
+      "boundary": "PRODUCT BOUNDARY STRICTLY HELD (user-declared): ONLY EvolveStep SEMVER/tiering-related text + version-number-related fields changed. main.aisop.json leaf-diff vs v0.2.2 = EXACTLY 3 leaves (name label, version field, EvolveStep.constraints SEMVER_DISCIPLINE append). python_tools (resolve_target.py etc — already hand-fixed prior turns) UNTOUCHED; aisp_suite (authoritative validator already synced) UNTOUCHED; other-node logic UNTOUCHED; two-gate skeleton (EvolveStep sys.io.confirm + ReviewPresent conditional gate) byte-untouched. 9 business modules + AISP_Standard.{core,security,ecosystem} functional content frozen (only name/version label sync where applicable). NO_SELF_MODIFY honored: operand = aiap_store target; runner (Soul_Agent) NOT touched by this node.",
+      "weighted_score": 4.987,
+      "grade": "S",
+      "score_scope": "partial",
+      "scored_files": [
+        "main.aisop.json"
+      ],
+      "weighted_score_note": "this-run authoritative partial score 4.5/S (Generate2 retest; scope=modified main.aisop.json EvolveStep.constraints SEMVER append + version fields). Per SCORE SCOPE GUARD the whole-program weighted_score (4.987/S inherited line) is PRESERVED, NOT replaced by the partial single-file score; whole-program re-score pending a future full-scope stage.",
+      "changed_file_score": 4.5,
+      "validate_indicator": "21/21 PASS (100%, 0 RED, 2 non-blocking pre-Finalize LEVEL_C YELLOW); M1-M6 conformant; B1/A1 landed; two-gate skeleton intact",
+      "simulate_indicator": "GREEN (30 scenarios, 30 pass / 0 yellow / 0 fail / 0 red, coverage 100%, node 33/33; B1 predicate-flip criterion trigger scenarios fire correctly)",
+      "regression": false,
+      "deferred_advisories": [],
+      "pipeline_run_id": "d9042138-1142-41e0-bddd-309d83c96ea4",
+      "date": "2026-07-02",
+      "deferred_reconciled": {
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "generate2_weighted": 4.5,
+        "final_weighted": 4.5,
+        "D6": 5.0,
+        "D10": 5.0,
+        "note": "Provenance synced by attestation_advance.py to v1.0.0 (governance_hash cf79a11de4bb659c59e14d4cfc9f14ca81c02d4e33b8d15479863cba30396426); D6/D8/D10 cite current version + current SOLE-AUTHORITY governance_hash. PLACEHOLDER pre-attestation_advance.py: D6 (version-sync) + D10 (description) re-measured post-Finalize against now-updated governance files at v1.0.0; all .aisop.json + AIAP.md + AIAP_cn.md + agent_card.json + quality_baseline.json + protocol_config.json at version 1.0.0; verified_on 2026-07-02; B1 SEMVER predicate-flip criterion add + A1 0.2.2->1.0.0 stability declaration. Partial-scope (main.aisop.json) reconciliation; both D6/D10 clean at 5.0; final_weighted == Generate2 partial 4.5 (no swing at partial scope; whole-program 4.987/S preserved per SCORE SCOPE GUARD). attestation_advance.py (SOLE AUTHORITY) will rewrite this note's governance_hash citation to the current canonical hash."
+      }
+    }
+  },
+  "autonomy": {
+    "bayesian_confidence": 0.938,
+    "stable_duration": 30,
+    "next_check": "v1.93.0",
+    "v1_51_0": "CHECK (odd=CHECK)",
+    "v1_52_0": "SKIP (even=SKIP)",
+    "v1_57_0": "CHECK (odd=CHECK, 22nd cycle)",
+    "v1_59_0": "CHECK (odd=CHECK, 23rd cycle)",
+    "v1_63_0": "CHECK (24th cycle) — CONFIRMED, bayesian 0.938, stable_duration 23",
+    "v1_65_0": "CHECK (25th cycle) — CONFIRMED, bayesian 0.938, stable_duration 24",
+    "v1_67_0": "CHECK (26th cycle) — CONFIRMED, bayesian 0.938, stable_duration 25",
+    "v1_71_0": "CHECK (27th cycle) — CONFIRMED, bayesian 0.938, stable_duration 26",
+    "v1_73_0": "CHECK (28th cycle) — CONFIRMED, bayesian 0.938, stable_duration 27",
+    "v1_75_0": "CHECK (29th cycle) — CONFIRMED, bayesian 0.938, stable_duration 24, 60 consecutive 100%",
+    "v1_79_0": "CHECK (30th cycle) — CONFIRMED, bayesian 0.938, stable_duration 25, 63 consecutive 100%",
+    "v1_81_0": "CHECK (31st cycle) — CONFIRMED, bayesian 0.938, stable_duration 26, 65 consecutive 100%",
+    "v1_83_0": "CHECK (32nd cycle) — CONFIRMED, bayesian 0.938, stable_duration 27, 67 consecutive 100%",
+    "v1_87_0": "CHECK (34th cycle) — CONFIRMED, bayesian 0.938, stable_duration 28, 71 consecutive 100%",
+    "v1_88_0": "SKIP (35th cycle, Pattern D, even version, no escalation triggers)",
+    "v1_89_0": "CHECK (36th cycle) — CONFIRMED, bayesian 0.938, stable_duration 29, 73 consecutive 100%",
+    "v1_91_0": "CHECK (37th cycle) — CONFIRMED, bayesian 0.938, stable_duration 30, 75 consecutive 100%"
+  },
+  "calibration_convergence": {
+    "state": "MATHEMATICALLY_CONVERGED_STABLE",
+    "next_check": "v1.84.0",
+    "v1_50_0": "CHECK (6th, every_third due v1.47->v1.50)",
+    "v1_63_0": "CHECK (7th, every_third due v1.60->v1.63) — CONFIRMED STABLE, 5.000/S plateau ccv=56",
+    "v1_72_0": "CHECK (8th, every_third due v1.69->v1.72) — CONFIRMED STABLE, 5.000/S plateau ccv=57",
+    "v1_75_0": "CHECK (9th, every_third due v1.72->v1.75) — CONFIRMED STABLE, 5.000/S plateau ccv=60, re-established plateau v1.71.0-v1.75.0 (5 consecutive)",
+    "v1_78_0": "CHECK (10th, every_third due v1.75->v1.78) — CONFIRMED STABLE, 5.000/S plateau ccv=62, re-established plateau v1.71.0-v1.78.0 (8 consecutive)",
+    "v1_81_0": "CHECK (11th, every_third due v1.78->v1.81) — CONFIRMED STABLE, 5.000/S plateau ccv=65, re-established plateau v1.71.0-v1.81.0 (11 consecutive)"
+  },
+  "rollback_registry": {
+    "total_entries": 34,
+    "active": 3,
+    "stale": 0,
+    "full_archived": 2,
+    "summary_archived": 29,
+    "ilm_cycle": 35,
+    "archive_ratio": "91.2%",
+    "summary_tier": {
+      "status": "OPERATIONAL",
+      "total_converted": 29,
+      "last_conversion": "v1.40.0 at v1.50.0",
+      "next_candidate": "v1.41.0 (age=9, needs age=10, ~v1.51.0)"
+    },
+    "v1_73_0_cleanup": "2 stale entries removed (ilm_cycle 35). total_entries 36->34, stale 2->0."
+  },
+  "anti_pattern": {
+    "status": "ALL_CONFORMING",
+    "certificate": "v1.46.0-v1.97.0 (age=2)",
+    "v1_49_0": "inter-surveillance (no audit required)",
+    "next": "v1.99.0 (Y11 recertification)",
+    "v1_95_0": "Y10 recertification — PASS, ALL_CONFORMING, certificate renewed (age=1). Audit: 15 modules, 207 nodes. All Error fields conform to retry/circuit-breaker/fallback/inform pattern. No anti-patterns detected.",
+    "v1_50_0": "Y2 intermediate (scope spot-check)",
+    "v1_63_0": "Y3 recertification — PASS, ALL_CONFORMING, certificate renewed (age=14)",
+    "v1_71_0": "Y4 recertification — PASS, ALL_CONFORMING, certificate renewed (age=6). Audit: 15 modules, 215 nodes, all Error fields conform to retry/circuit-breaker/fallback/inform pattern. No anti-patterns detected.",
+    "v1_75_0": "Y5 recertification — PASS, ALL_CONFORMING, certificate renewed (age=7). Audit: 15 modules, 215 nodes, 215 functions checked. 2 routing gate exemptions (InsightsModeGate, EnableInsights) — semantically conforming. No anti-patterns detected.",
+    "v1_79_0": "Y6 recertification — PASS, ALL_CONFORMING, certificate renewed (age=1). Audit: 15 modules, 213 nodes, 217 Error fields checked. All conform to retry/circuit-breaker/fallback/inform pattern. 2 routing gate exemptions (InsightsModeGate, EnableInsights) — semantically conforming. No anti-patterns detected. steps_summary removed (2 nodes).",
+    "v1_83_0": "Y7 recertification — PASS, ALL_CONFORMING, certificate renewed (age=1). Audit: 15 modules, 213 nodes, 217 Error fields checked. All conform to retry/circuit-breaker/fallback/inform pattern. 2 routing gate exemptions (InsightsModeGate, EnableInsights) — semantically conforming. No anti-patterns detected.",
+    "v1_87_0": "Y8 recertification — PASS, ALL_CONFORMING, certificate renewed (age=1). Audit: 15 modules, 213 nodes, 213 Error fields checked. All conform to retry/circuit-breaker/fallback/inform pattern. No anti-patterns detected.",
+    "v1_91_0": "Y9 recertification — PASS, ALL_CONFORMING, certificate renewed (age=1). Audit: 15 modules, 213 nodes. Validation 939/940 checks pass, 0 RED. All Error fields conform to retry/circuit-breaker/fallback/inform pattern. No anti-patterns detected."
+  },
+  "triple_subsystem_sync": {
+    "v1_49_0": "CHECK (odd=CHECK, 16th cycle) — autonomy CONFIRMED, cache CONFIRMED, steady_state CONFIRMED",
+    "unified_tracking": true,
+    "next_check": "v1.93.0",
+    "v1_50_0": "SKIP (even=SKIP, 17th cycle)",
+    "v1_57_0": "CHECK (odd=CHECK, 22nd cycle) — autonomy CONFIRMED, cache CONFIRMED, steady_state CONFIRMED",
+    "v1_59_0": "CHECK (odd=CHECK, 23rd cycle) — autonomy CONFIRMED, cache CONFIRMED, steady_state CONFIRMED",
+    "v1_63_0": "CHECK (24th cycle) — autonomy CONFIRMED, cache CONFIRMED, steady_state CONFIRMED",
+    "v1_65_0": "CHECK (25th cycle) — autonomy CONFIRMED, cache CONFIRMED, steady_state CONFIRMED",
+    "v1_67_0": "CHECK (26th cycle) — autonomy CONFIRMED, cache CONFIRMED, steady_state CONFIRMED",
+    "v1_71_0": "CHECK (27th cycle) — autonomy CONFIRMED, cache CONFIRMED, steady_state CONFIRMED",
+    "v1_73_0": "CHECK (28th cycle) — autonomy CONFIRMED, cache CONFIRMED, steady_state CONFIRMED",
+    "v1_75_0": "CHECK (29th cycle) — autonomy CONFIRMED, cache CONFIRMED, steady_state CONFIRMED",
+    "v1_77_0": "CHECK (30th cycle) — autonomy CONFIRMED (bayesian 0.938, stable_duration 24), cache CONFIRMED (rollback 34 entries, 3 active), steady_state CONFIRMED (61 consecutive 100%)",
+    "v1_79_0": "CHECK (31st cycle) — autonomy CONFIRMED (bayesian 0.938, stable_duration 25), cache CONFIRMED (rollback 34 entries, 3 active), steady_state CONFIRMED (63 consecutive 100%)",
+    "v1_81_0": "CHECK (32nd cycle) — autonomy CONFIRMED (bayesian 0.938, stable_duration 26), cache CONFIRMED (rollback 34 entries, 3 active), steady_state CONFIRMED (65 consecutive 100%)",
+    "v1_83_0": "CHECK (33rd cycle) — autonomy CONFIRMED (bayesian 0.938, stable_duration 27), cache CONFIRMED (rollback 34 entries, 3 active), steady_state CONFIRMED (67 consecutive 100%)",
+    "v1_87_0": "CHECK (34th cycle) — autonomy CONFIRMED (bayesian 0.938, stable_duration 28), cache CONFIRMED (rollback 34 entries, 3 active), steady_state CONFIRMED (71 consecutive 100%)",
+    "v1_88_0": "SKIP (35th cycle, even version)",
+    "v1_89_0": "CHECK (36th cycle) — autonomy CONFIRMED (bayesian 0.938, stable_duration 29), cache CONFIRMED (rollback 34 entries, 3 active), steady_state CONFIRMED (73 consecutive 100%)",
+    "v1_91_0": "CHECK (37th cycle) — autonomy CONFIRMED (bayesian 0.938, stable_duration 30), cache CONFIRMED (rollback 34 entries, 3 active), steady_state CONFIRMED (75 consecutive 100%)"
+  },
+  "bootstrap_advisory": {
+    "verification_cycle": 59,
+    "chain_integrity": "INTACT (v1.15.0-v1.95.0, 79ver)",
+    "cadence": "every_5_versions",
+    "next_check": "v2.35.0 - CHECK (every_5_versions due)",
+    "maintenance_mode": "60TH",
+    "v1_75_0": "CHECK (52nd cycle) — CONFIRMED INTACT, chain v1.15.0-v1.75.0 (60 versions), no features_pending_verification",
+    "v1_77_0_advisory": {
+      "features_pending_verification": [
+        "B1_multi_lang_sync: verify ReviewFinalize step7 correctly syncs AIAP_cn.md structured fields without corrupting localized prose",
+        "B2_validate_lang_check: verify ValidateStep step6 lang check does not false-positive on valid localized content",
+        "B3_ASSERT_injection: verify 154 ASSERT patterns do not cause unintended gate-blocking in edge cases"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "NihilDensity GH7 trend: 9/10 files show REGRESSION_ADVISORY from expanded Error field detection. All GREEN but aggregate 0.0275 up from 0.0058. Monitor and consider targeted cleanup if trend continues."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "AIAP_cn.md prose accuracy: variant was 17 versions behind (v1.60.0). Structural fields synced but localized prose descriptions may need human review for accuracy."
+        }
+      ]
+    },
+    "v1_78_0_advisory": {
+      "features_pending_verification": [],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "NihilDensity GH7 trend: improved. Aggregate 0.0157 (down from 0.0275, 43% improvement). All 10 files GREEN. Continue monitoring. Consider targeted GH7 cleanup if aggregate exceeds 0.05 in future versions."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Calibration convergence 10th CHECK confirms mathematical stability at 5.000/S. Next check at v1.81.0 (every_third cadence)."
+        }
+      ],
+      "v1_79_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "Anti-pattern Y6 recertification DUE at v1.79.0. Full audit of 15 modules, 215 nodes required."
+        },
+        {
+          "priority": "HIGH",
+          "item": "Autonomy CHECK DUE at v1.79.0. Verify bayesian_confidence, stable_duration."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Triple subsystem sync CHECK DUE at v1.79.0 (31st cycle). Verify autonomy, cache, steady_state."
+        }
+      ]
+    },
+    "v1_79_0_advisory": {
+      "features_pending_verification": [
+        "B1_steps_summary_removal: verify no orphan references to SummaryEntry/SummaryOutput/steps_summary remain in any module",
+        "AIAP.md_node_count: verify main.aisop.json node count updated from 35 to 33 in AIAP.md modules list"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "NihilDensity aggregate 0.0195 (up from 0.0157). Minor GH3 regression in 4 files but all GREEN. Monitor trend — if aggregate exceeds 0.03 next version, consider targeted cleanup."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Bootstrap advisory CHECK DUE at v1.80.0 (every_5_versions cadence). Verify chain integrity v1.15.0-v1.80.0."
+        }
+      ],
+      "v1_80_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "Bootstrap advisory CHECK DUE at v1.80.0. Verify chain_integrity, features_pending_verification from v1.79.0."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "AIAP_cn.md prose review: variant synced structurally but localized prose descriptions may need human review for accuracy (steps_summary references removed, 16-stage pipeline language updated)."
+        }
+      ]
+    },
+    "v1_80_0_advisory": {
+      "features_pending_verification": [
+        "B1_execute_mode_auto_assignment: verify generate step8_1 correctly assigns execute_mode based on program topology analysis",
+        "I11_execution_mode_fix: verify all 10 Creator modules have correct execution_mode field (9 pipeline + 1 hybrid)"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "NihilDensity aggregate 0.0359 (up from 0.0195). All GREEN but trend is upward. If aggregate exceeds 0.05 next version, targeted GH cleanup recommended."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Calibration convergence next CHECK at v1.81.0 (every_third cadence). Verify continued 5.000/S stability."
+        }
+      ],
+      "v1_81_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "Calibration convergence 11th CHECK DUE at v1.81.0. Verify 5.000/S plateau stability (10 consecutive)."
+        },
+        {
+          "priority": "HIGH",
+          "item": "Autonomy CHECK DUE at v1.81.0. Verify bayesian_confidence, stable_duration."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Triple subsystem sync CHECK DUE at v1.81.0 (32nd cycle). Verify autonomy, cache, steady_state."
+        }
+      ]
+    },
+    "v1_81_0_advisory": {
+      "features_pending_verification": [
+        "B1_ValidateStep_EXECUTE_MODE_VALIDATION: verify step7 correctly validates execute_mode across all module files",
+        "B2_ReviewPresent_EXECUTE_MODE_SUMMARY: verify step6 EXECUTE_MODE_SUMMARY produces accurate topology report",
+        "B3_EvolveStep_user_override: verify step8 user execute_mode override works during DRY-RUN interaction window"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "NihilDensity aggregate 0.0312 (improved from 0.0359). Trend stabilized. Monitor in next version — if aggregate stays below 0.03, consider GH cleanup cadence reduction."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Anti-pattern Y7 recertification DUE at v1.83.0. Full audit of 15 modules, 213 nodes required."
+        }
+      ],
+      "v1_82_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "Bootstrap advisory CHECK DUE at v1.85.0 (every_5_versions cadence). No immediate action for v1.82.0."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "AIAP_cn.md prose review: variant synced structurally at v1.81.0 but localized prose descriptions may benefit from human review for accuracy."
+        }
+      ]
+    },
+    "v1_82_0_advisory": {
+      "features_pending_verification": [
+        "B1_version_sync: verify protocol_config.json version now matches all module versions at 1.82.0",
+        "B7_json_schema: verify json_schema fields in main/generate/research parse correctly and match I10 requirements",
+        "B3_B6_regulatory_refs: verify Research3 constraints accurately reflect EU Omnibus trilogue status and A2A v1.0 bindings"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "Anti-pattern Y7 recertification DUE at v1.83.0. Full audit of 15 modules, 213 nodes required."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Scenario coverage gap: 26/1023 (2.5%) unexecuted. Consider adding Pattern G and A2A scenarios in next pipeline runs."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "AIAP_cn.md prose review: variant synced structurally but localized descriptions may benefit from human review."
+        }
+      ],
+      "v1_83_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "Anti-pattern Y7 recertification DUE at v1.83.0. Full audit required."
+        },
+        {
+          "priority": "HIGH",
+          "item": "Autonomy CHECK DUE at v1.83.0. Verify bayesian_confidence, stable_duration."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Triple subsystem sync CHECK DUE at v1.83.0 (33rd cycle)."
+        }
+      ]
+    },
+    "v1_83_0_advisory": {
+      "features_pending_verification": [
+        "B1_A2A_v1.0_update: verify A2A v1.0 references in main/advisor/ecosystem/core accurately reflect production spec (JWS, multi-tenancy, OAuth 2.0 Device Code)",
+        "B6_json_schema_expansion: verify 4 new json_schema sections (modify, review, simulate, nihil_density) parse correctly and match module params",
+        "SIM_Y_001_fix: verify ProtocolAlign.step1 A2A v1.0 update does not affect classification logic for Pattern D programs"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "json_schema completion: expand from 7/10 to 10/10 modules (add convert, observability, advisor). This would achieve comprehensive coverage."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "NihilDensity aggregate 0.0285 (up from 0.0126). All GREEN but upward trend. If next version exceeds 0.05, targeted GH3 duplicate cleanup recommended."
+        }
+      ],
+      "v1_84_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "Calibration convergence 12th CHECK DUE at v1.84.0 (every_third cadence). Verify 5.000/S plateau stability."
+        },
+        {
+          "priority": "HIGH",
+          "item": "json_schema 10/10 completion: add to convert, observability, advisor modules for full coverage."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "JWS RFC 8785 citation: add explicit RFC citation for A2A JSON Canonicalization (deferred from v1.83.0 QS-2)."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "NIST AI 800-2 draft marking: mark reference as draft until final publication (deferred from v1.83.0 QS-3)."
+        }
+      ]
+    },
+    "v1_84_0_advisory": {
+      "features_pending_verification": [
+        "B1_ASSERT_Required: verify Required field declarations parse correctly by execution engines and do not cause unintended gate-blocking",
+        "B1_data_flow_integrity: verify all 181 unique field names in Required declarations reference actual data produced by predecessor nodes"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "json_schema 10/10 completion: expand from 7/10 to 10/10 modules (add convert, observability, advisor). Would achieve comprehensive I10 coverage and likely recover full 5.0 weighted score."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "NihilDensity trend: aggregate ~0.07 (10/10 GREEN, max 0.135 advisor). Stable but higher than v1.82.0 (0.0126). Monitor — if advisor exceeds 0.15, targeted cleanup recommended."
+        }
+      ],
+      "v1_85_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "Bootstrap advisory CHECK DUE at v1.85.0 (every_5_versions cadence). Verify chain_integrity, features_pending_verification from v1.84.0."
+        },
+        {
+          "priority": "HIGH",
+          "item": "Autonomy CHECK DUE at v1.85.0. Verify bayesian_confidence, stable_duration."
+        },
+        {
+          "priority": "HIGH",
+          "item": "Triple subsystem sync CHECK DUE at v1.85.0 (34th cycle)."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "json_schema 10/10 completion: expand to convert, observability, advisor for full I10 coverage."
+        }
+      ]
+    },
+    "v1_86_0_advisory": {
+      "features_pending_verification": [
+        "B1_A2A_advisor_fix: verify advisor.aisop.json A2A v0.3 refs are now correctly updated to v1.0-compatible phrasing",
+        "B2_json_schema_10_10: verify advisor/convert/observability json_schema sections parse correctly and match module params"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "C2/C5 cognitive cap at 4.5 is the dominant score limiter. This is structural (independent agent execution) and cannot be addressed by program changes alone. Score oscillation between 4.92-5.00 is expected."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "NihilDensity aggregate 0.0108 (-84.3% from v1.84.0). Excellent improvement. All 10 files GREEN. Maintain current levels."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "4 YELLOW advisories remain non-blocking: MF31c (3 non-standard sub-graph terminals in generate), STEP-KEY (15 non-standard keys across 4 modules), ERR-PAT (9 incomplete Error patterns in AIAP_Standard.runtime_extensions), plus A2A-Y1 now fixed."
+        }
+      ],
+      "v1_87_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "Anti-pattern Y8 recertification DUE at v1.87.0. Full audit of 15 modules, 213 nodes required."
+        },
+        {
+          "priority": "HIGH",
+          "item": "Autonomy CHECK DUE at v1.87.0. Verify bayesian_confidence, stable_duration."
+        },
+        {
+          "priority": "HIGH",
+          "item": "Triple subsystem sync CHECK DUE at v1.87.0 (34th cycle)."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "MF31c cleanup: standardize generate.aisop.json sub-graph terminals (ScaffoldEnd/ContentEnd/ToolingEnd -> endNode((End)))."
+        }
+      ]
+    },
+    "v1_87_0_advisory": {
+      "features_pending_verification": [
+        "A1_MF31c_terminal_fix: verify generate.aisop.json sub_mermaid terminals now use endNode((End)) consistently",
+        "A2_STEP_KEY_normalization: verify 13 normalized step keys across generate/research/review/simulate parse correctly by execution engines"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "C5 fractal_exempt cognitive cap at 4.5 remains the dominant weighted score limiter. Structural limitation — advisor module with 62 functions requires fractal_exempt to avoid forced decomposition. Cannot be addressed without architectural changes."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "NihilDensity aggregate 0.0158 (modified files). Minor increase from 0.0108 (full scan). main.aisop.json regression 0.0166->0.0311 due to GH7 error templates in 33-function module. All files GREEN — no action needed."
+        }
+      ],
+      "v1_88_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "Calibration convergence 12th CHECK DUE at v1.87.0 (every_third cadence from v1.81.0). Verify 5.000/S plateau stability."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "AIAP_cn.md prose review: variant synced structurally at v1.87.0. Localized prose descriptions may need human review for accuracy."
+        }
+      ]
+    },
+    "v1_88_0_advisory": {
+      "features_pending_verification": [
+        "B1_NIST_alignment: verify Research3 constraints accurately reflect three-pillar NIST AI Agent Standards framework (benchmark, identity, listening sessions)",
+        "B5_agentic_hardening: verify multi-agent validation chain pattern documentation in ThreeDimTest does not introduce scoring artifacts"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "C2/C5 cognitive cap at 4.5 remains the dominant weighted score limiter. Structural limitation — independent agent execution and advisor 62-function fractal_exempt. Score will oscillate 4.85-4.95 until architectural changes."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "NihilDensity aggregate 0.0007 — historical best. All 10 files GREEN. Maintain current levels."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "D8 summary length (633 > 500 chars) is the only remaining non-structural YELLOW. Consider summary text compression."
+        }
+      ],
+      "v1_89_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "Autonomy CHECK DUE at v1.89.0 (36th cycle, odd version). Verify bayesian_confidence, stable_duration."
+        },
+        {
+          "priority": "HIGH",
+          "item": "Triple subsystem sync CHECK DUE at v1.89.0 (36th cycle, odd version). Verify autonomy, cache, steady_state."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Anti-pattern Y9 recertification DUE at v1.91.0. Plan ahead — full audit of 15 modules, 213 nodes."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "AIAP_cn.md prose review: variant synced structurally at v1.88.0. Localized prose descriptions may need human review for accuracy."
+        }
+      ]
+    },
+    "v1_89_0_advisory": {
+      "features_pending_verification": [
+        "B3_NIST_listening_sessions: verify Research3 constraints accurately reflect April 2026 NIST listening session scope (benchmarking, identity, security)",
+        "B6_AGENTS_md: verify advisory-level AGENTS.md convention reference does not introduce false compliance requirements",
+        "B7_ICLR_alignment: verify self_improvement_alignment framework in quality_baseline.json accurately maps Creator pipeline properties to ICLR 2026 evaluation lenses"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "C2/C5 cognitive cap at 4.5 remains the dominant weighted score limiter. Structural limitation — independent agent execution and advisor 62-function fractal_exempt. Score will oscillate 4.85-4.95 until architectural changes."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "NihilDensity aggregate 0.0151 (up from 0.0007 historical low). Regression expected from B-item content updates. All GREEN. Monitor — if aggregate exceeds 0.03 next version, targeted GH3 cleanup recommended."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "D8 summary length (633 > 500 chars) is the only remaining non-structural YELLOW. Consider summary text compression."
+        }
+      ],
+      "v1_90_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "Calibration convergence CHECK may be DUE (verify cadence). Confirm 4.949/S stability after v1.84.0-v1.89.0 oscillation range."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Anti-pattern Y9 recertification DUE at v1.91.0. Plan ahead — full audit of 15 modules, 213 nodes."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "AIAP_cn.md prose review: variant synced structurally at v1.89.0. Localized prose descriptions may need human review for accuracy."
+        }
+      ]
+    },
+    "v1_90_0_advisory": {
+      "features_pending_verification": [
+        "B1_SYS_CALL_ASSIGNMENT: verify GenerateAISOP.step11 correctly assigns sys.* calls based on tool annotations and blocking classification for newly generated programs",
+        "B2_SYS_CALL_VALIDATION: verify ValidateStep.step9 detects invalid sys.* namespace references and RE5 violations",
+        "B3_SYS_CALL_SUMMARY: verify ReviewPresent.step8 + PresentDraft accurately displays sys.* call inventory, especially forced_blocking classification for Axiom 0 calls",
+        "B4_SYS_IO_CONFIRM_GUARD: verify EvolveStep.step3 correctly classifies sys.io.confirm/input/select as forced_blocking and migrates sys.* calls across version boundaries"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "Anti-pattern Y9 recertification DUE at v1.91.0. Full audit of 15 modules, 213 nodes required. Certificate renewal needed (current: v1.46.0-v1.89.0 age=3)."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "NihilDensity aggregate 0.0179 (up from 0.0151). Minor regression from sys.* B-item content additions. All GREEN. Monitor trend — if aggregate exceeds 0.03 next version, targeted GH3 cleanup recommended."
+        }
+      ],
+      "v1_91_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "Anti-pattern Y9 recertification DUE at v1.91.0. Full audit required."
+        },
+        {
+          "priority": "HIGH",
+          "item": "Autonomy CHECK DUE at v1.91.0 (37th cycle, odd version). Verify bayesian_confidence, stable_duration."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Triple subsystem sync CHECK DUE at v1.91.0 (37th cycle). Verify autonomy, cache, steady_state."
+        }
+      ]
+    },
+    "v1_91_0_advisory": {
+      "features_pending_verification": [
+        "A1_SAFE_EXPRESSION_ENGINE: verify SysExec AST-based parser correctly rejects function calls, imports, eval, exec while supporting ==,!=,>,<,>=,<=,&&,||,!,in,not_in,typeof,ternary operators",
+        "A2_MICRO_AGENT_BATCHING: verify SysExec batches up to 5 consecutive tool-type sys.* calls into single micro-Agent spawn, with fallback to individual execution on failure",
+        "B1_EXPONENTIAL_BACKOFF: verify SysExec applies base_delay*2^(attempt-1) with max 30s and 25% jitter for command_error/timeout/io_error",
+        "B2_INTERRUPT_VERSIONING: verify WAITING_USER persists interrupt_version, ttl_seconds fields and expired interrupts route to on_error.confirm_timeout",
+        "B3_ATOMIC_WAL: verify NodeComplete writes .wal before .json rename, and crash recovery scans for orphaned .wal files"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "D5 score 4.0 recovery: D5 (error handling quality) at 4.0 is the lowest dimension. Audit error handling patterns across engine for improvement opportunities."
+        },
+        {
+          "priority": "HIGH",
+          "item": "D4/D8/D9 recovery to 5.0: three D-dimensions at 4.5. Investigate structural improvements for flow completeness (D4), agent card detail (D8), and quality baseline alignment (D9)."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "NihilDensity aggregate 0.0338 (up from 0.0179). Regression from engine v4.1 content expansion. All GREEN but approaching yellow threshold. Targeted GH3 cleanup recommended if trend continues."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "AIAP_cn.md prose review: variant may be >5 versions behind in localized prose. Human review recommended for accuracy of translated descriptions."
+        }
+      ]
+    },
+    "v1_95_0_advisory": {
+      "features_pending_verification": [
+        "B3_SimulateStep_delegation_params: verify SimulateStep delegation now correctly passes research_context, evolution_context, quality_baseline, and research_quality_context to simulate.aisop.json",
+        "B5_MCP_Tool_Annotations: verify MCP Tool Annotations best practices section in ProtocolAlign accurately reflects MCP 2026 spec (readOnlyHint, destructiveHint, idempotentHint, openWorldHint)",
+        "B6_node_count_207: verify total functional node count of 207 is consistent across AIAP.md, agent_card.json, quality_baseline.json, and actual module file counts"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "Anti-pattern Y10 recertification DUE at v1.95.0. Full audit of 15 modules, 207 nodes required. Certificate age=5 at v1.95.0."
+        },
+        {
+          "priority": "HIGH",
+          "item": "Quality trajectory DECLINING (4.94/S -> 4.39/A, -0.55). Root cause: v1.94.0 infrastructure files (per-file scoring natural variability). Monitor over next 3 versions. If trend continues below A, investigate structural improvements."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "NihilDensity aggregate 0.018 (improved from 0.0338). All 10 files GREEN. Trend stabilized. Maintain current levels."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "AIAP_cn.md synced to v1.95.0 at this version. Localized prose descriptions should be reviewed by human for accuracy."
+        }
+      ],
+      "v1_96_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "Bootstrap advisory CHECK DUE at v1.95.0 (every_5_versions cadence). Chain verified INTACT at this version."
+        },
+        {
+          "priority": "HIGH",
+          "item": "Autonomy CHECK DUE at v1.95.0 (odd version). Verify bayesian_confidence, stable_duration."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Triple subsystem sync CHECK DUE at v1.95.0 (odd version). Verify autonomy, cache, steady_state."
+        }
+      ]
+    },
+    "v2_17_0_advisory": {
+      "features_pending_verification": [
+        "B1_regulatory_refresh: verify EU AI Act Omnibus May 7 provisional agreement text accurately reflected in ProtocolAlign.step1 and Research3",
+        "B2_I2_security_hardening: verify five guard types RED enforcement in security-related modules does not cause false positives in ThreeDimTest I2",
+        "B3_D4_cross_module_consistency: verify D4 CONSTRAINT sub-check with explicit fallback target examples does not break existing cross-module references",
+        "QS1_simulate_per_field: verify CompileReport.step6 per-field granularity error_keyword_completeness does not cause regression in simulate scenario scoring",
+        "QS2_review_D4_fallback: verify ReTest.constraints D4 fallback target example enforcement does not falsely flag valid cross-module patterns"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "I3 consent verification at 4.5 is the primary remaining YELLOW. Structural limitation (independent agent execution cap). May require WAITING_USER gate expansion for recovery to 5.0."
+        },
+        {
+          "priority": "HIGH",
+          "item": "I7 parameter annotations at 4.5 — some modules lack explicit type annotations. Consider systematic type annotation pass in next evolution cycle."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "I12 tool annotations at 4.5 — duplicated across modules without centralized registry. Consider shared tool_annotations reference in protocol_config.json."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "D3 description accuracy at 4.5 — some descriptions marginally exceed conciseness targets. Consider summary compression pass."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "ASSERT Required coverage 216/220 (98.2%). 4 gaps auto-fixable by Generate step10 in next evolution cycle."
+        },
+        {
+          "priority": "LOW",
+          "item": "NihilDensity aggregate 0.0122 — excellent level. Maintain current hygiene practices."
+        }
+      ],
+      "v2_18_0_direction": [
+        {
+          "priority": "HIGH",
+          "item": "ASSERT Required gap resolution: 4 functions (EvolveStep.step3, ReviewPresent.step7, PresentDraft.step6, ScanTarget.step1) lack Required clause. Auto-fixable via Generate step10."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "I7/I12 annotation improvements: systematic type annotation pass + centralized tool_annotations registry."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "D3 summary conciseness: targeted compression of verbose descriptions."
+        }
+      ]
+    },
+    "v2_30_0_advisory": {
+      "features_pending_verification": [
+        "B1: PipelineStart _index.user_message target resolution - verify correct target extraction across various user_message formats",
+        "B2: PipelineEntry explicit target pass-through - verify target path propagation under edge cases"
+      ],
+      "recommendations": [
+        "I12 at 4.8 - investigate full runtime validation coverage to close remaining gap",
+        "NihilDensityStep DEGRADED - investigate cache_write_failure root cause",
+        "Consider EvolveStep latency optimization (36.7% of pipeline time)"
+      ]
+    },
+    "next_evolution_directions": [
+      {
+        "priority": "HIGH",
+        "id": "P5b",
+        "direction": "Register snapshot_build.py in tool_dirs/manifest.json (currently manifest_tool_count=2, snapshot_build.py registered_in_manifest=false). This evolution wired it by absolute-path call (works), but manifest registration would complete the tool-governance picture. Out-of-tier this cycle per user hard-constraint #1."
+      },
+      {
+        "priority": "MEDIUM",
+        "id": "D-fullscore",
+        "direction": "Run a full 18-module cognitive re-score to refresh the whole-program weighted_score (currently preserved at 4.987 from prior baseline because v2.37.0 used partial scope). Next non-trivial evolution should trigger full re-score for an accurate program-level grade."
+      }
+    ],
+    "features_pending_verification": [
+      "P5 in-band snapshot wiring (snapshot_build.py absolute-path call in review.aisop.json Finalize.step2) — verify next DependencyCheck that the wired tool call actually built .evolution_snapshot/v2.37.0/.",
+      "C-1/C-2 absolute-path tool anchoring — verify still present and not regressed."
+    ],
+    "stage_recorded_by": "ReviewFinalize",
+    "timestamp": "2026-06-10T14:38:41.038065+00:00",
+    "v2_38_0_advisory": {
+      "features_pending_verification": [
+        "C-2 snapshot_audit HARD_FAIL wording present in main.aisop.json ReviewFinalize.step7_5 (no cognitive/LLM self-audit fallback; missing-or-non-zero-exit -> HARD_FAIL halt)",
+        "governance_hash QUAD-SYNC v2.38.0 consistent across AIAP.md / AIAP_cn.md / agent_card.json / quality_baseline.json (top-level)",
+        "snapshot_audit.py exit 0 against .evolution_snapshot/v2.38.0/ (no degraded/cognitive substitution path remains)"
+      ],
+      "direction_suggestions": [
+        {
+          "priority": "HIGH",
+          "item": "Audit remaining TOOL FALLBACK / silent-degrade prose across review.aisop.json and other modules for the same C-1/C-2 silent-pass anti-pattern; convert any tool-missing-as-pass to HARD_FAIL."
+        },
+        {
+          "priority": "MEDIUM",
+          "item": "Consider a full 18-module cognitive re-score to refresh the whole-program weighted baseline (currently preserved at 4.987 across several consecutive partial-scope evolutions)."
+        }
+      ]
+    }
+  },
+  "maintenance_mode": {
+    "status": "STABLE",
+    "declared_at": "v1.34.0",
+    "consecutive_100pct": 80,
+    "milestone": "62ND"
+  },
+  "lightweight_policy": {
+    "status": "ACTIVE (declared v1.47.0)",
+    "max_summary_chars": 500,
+    "enforcement_review": "v1.50.0 PASS — seal upgrade only, no size impact",
+    "cumulative_reduction": {
+      "main_aisop": "489KB -> 318KB (-35%)",
+      "obs_aisop": "93KB -> 46KB (-51%)",
+      "generate_aisop": "160KB -> 156KB (-2.5%)",
+      "all_modules": "719KB -> 696KB (-3.1% this round)",
+      "total_chars_removed": "~199K cumulative"
+    }
+  },
+  "nihil_data": {
+    "status": "ACTIVE",
+    "introduced_version": "1.66.0",
+    "version": "0.2.0",
+    "gh_rule_set_version": "1.1",
+    "baseline_reset": true,
+    "scan_mode": "pipeline_evolve",
+    "aggregate_nihil_ratio": 0.0092,
+    "last_analysis_version": "0.2.0",
+    "history": [
+      {
+        "version": "1.83.0",
+        "aggregate_nihil_ratio": 0.0285,
+        "max_density": 0.0479,
+        "files_scanned": 10,
+        "green": 10,
+        "yellow": 0,
+        "red": 0,
+        "total_residual_chars": 9417,
+        "total_chars": 330073,
+        "timestamp": "2026-03-31",
+        "note": "v1.83.0 A2A v1.0 + json_schema expansion evolution. Aggregate density 0.0285 (increased from 0.0126 due to new content in B1/B5/B6/B7 changes). All 10 files GREEN. Max density 0.0479 (advisor.aisop.json). 7 regressions (all within GREEN), 2 improvements, 1 stable. Primary residual: GH3 (duplicates from json_schema additions and reference updates)."
+      },
+      {
+        "version": "1.84.0",
+        "aggregate_nihil_ratio": 0.069,
+        "max_density": 0.135,
+        "files_scanned": 10,
+        "green": 10,
+        "yellow": 0,
+        "red": 0,
+        "timestamp": "2026-03-31",
+        "note": "v1.84.0 ASSERT Required upgrade. Aggregate density 0.069 (increased from 0.0285 due to Required field declarations adding content). All 10 files GREEN. Max density 0.135 (advisor.aisop.json — 62 ASSERTs, most Required declarations). 19 keyword hits all semantically valid. No actual nihil content introduced."
+      },
+      {
+        "version": "1.86.0",
+        "aggregate_nihil_ratio": 0.0108,
+        "max_density": 0.0245,
+        "files_scanned": 10,
+        "green": 10,
+        "yellow": 0,
+        "red": 0,
+        "total_residual_chars": 4786,
+        "total_chars": 442749,
+        "timestamp": "2026-03-31",
+        "note": "v1.86.0 A2A fix + json_schema expansion. Aggregate density 0.0108 (improved from 0.069, -84.3%). All 10 files GREEN. Max density 0.0245 (research.aisop.json). 8 improvements, 2 minor regressions (research, simulate — both well within GREEN). Primary residual: GH3 (duplicate sentences, 4772 chars)."
+      },
+      {
+        "version": "1.87.0",
+        "aggregate_nihil_ratio": 0.0158,
+        "max_density": 0.0311,
+        "files_scanned": 4,
+        "green": 4,
+        "yellow": 0,
+        "red": 0,
+        "total_residual_chars": 2793,
+        "total_chars": 176872,
+        "timestamp": "2026-03-31",
+        "note": "v1.87.0 problem fixes + feature hardening (evolve scan: 4 modified files). Aggregate density 0.0158 (modified files only). All 4 files GREEN. Max density 0.0311 (main.aisop.json). 1 minor regression (main: 0.0166->0.0311, GH7 error templates + GH3 duplicates), 2 improvements (generate, research), 1 stable (review). Primary residual: GH7 (error templates in main.aisop.json, 1287 chars) + GH3 (duplicates, 1500 chars)."
+      },
+      {
+        "version": "1.88.0",
+        "aggregate_nihil_ratio": 0.0007,
+        "max_density": 0.0024,
+        "files_scanned": 10,
+        "green": 10,
+        "yellow": 0,
+        "red": 0,
+        "total_residual_chars": 238,
+        "total_chars": 344182,
+        "timestamp": "2026-03-31",
+        "note": "v1.88.0 problem fixes + feature hardening (evolve scan: 10 modified files). Aggregate density 0.0007 (improved from 0.0158, -95.6%). All 10 files GREEN. Max density 0.0024 (simulate.aisop.json). 7 improvements, 3 stable. Primary residual: GH5 (decorative text in simulate/main, 226 chars) + GH4 (version refs in observability, 12 chars). Lowest aggregate density in entire history."
+      },
+      {
+        "version": "1.89.0",
+        "aggregate_nihil_ratio": 0.0151,
+        "max_density": 0.0353,
+        "files_scanned": 10,
+        "green": 10,
+        "yellow": 0,
+        "red": 0,
+        "timestamp": "2026-03-31",
+        "note": "v1.89.0 problem fixes + feature hardening (evolve scan: 10 files). Aggregate density 0.0151 (regression from 0.0007, expected from B-item content updates). All 10 files GREEN. Max density 0.0353 (research.aisop.json). 8 regressions (all within GREEN), 2 stable (nihil_density, review). Primary residual: GH3 duplicates (4772 chars) + GH5 decorative (420 chars) + GH4 version refs (20 chars)."
+      },
+      {
+        "version": "2.32.0",
+        "aggregate_nihil_ratio": 0.0132,
+        "max_density": 0.0228,
+        "files_scanned": 10,
+        "green": 10,
+        "yellow": 0,
+        "red": 0,
+        "total_residual_chars": 8223,
+        "total_chars": 621110,
+        "timestamp": "2026-06-04",
+        "note": "v2.32.0 evolve pipeline scan. Aggregate density 0.0132 (improved from 0.018 at v1.95.0). All 10 files GREEN. Max density 0.0228 (research.aisop.json). Primary residual: GH3 duplicates (7188 chars) + GH1 version annotations (1035 chars). Trend: HEALTHY. No YELLOW/RED files."
+      },
+      {
+        "version": "0.2.0",
+        "aggregate_nihil_ratio": 0.0092,
+        "max_density": 0.0241,
+        "files_scanned": 10,
+        "green": 10,
+        "yellow": 0,
+        "red": 0,
+        "total_residual_chars": 6088,
+        "total_chars": 480349,
+        "gh_rule_set_version": "1.1",
+        "baseline_reset": true,
+        "timestamp": "2026-06-22"
+      }
+    ],
+    "files": {
+      "main.aisop.json": {
+        "nihil_density": 0.011,
+        "status": "GREEN",
+        "gh_contribution": {
+          "GH3": 0.99,
+          "GH4": 0.01
+        }
+      },
+      "generate.aisop.json": {
+        "nihil_density": 0.0085,
+        "status": "GREEN",
+        "gh_contribution": {
+          "GH3": 1.0
+        }
+      },
+      "research.aisop.json": {
+        "nihil_density": 0.0241,
+        "status": "GREEN",
+        "gh_contribution": {
+          "GH3": 1.0
+        }
+      },
+      "advisor.aisop.json": {
+        "nihil_density": 0.0049,
+        "status": "GREEN",
+        "gh_contribution": {
+          "GH3": 1.0
+        }
+      },
+      "convert.aisop.json": {
+        "nihil_density": 0.0,
+        "status": "GREEN",
+        "gh_contribution": {}
+      },
+      "modify.aisop.json": {
+        "nihil_density": 0.0058,
+        "status": "GREEN",
+        "gh_contribution": {
+          "GH3": 1.0
+        }
+      },
+      "nihil_density.aisop.json": {
+        "nihil_density": 0.0,
+        "status": "GREEN",
+        "gh_contribution": {}
+      },
+      "observability.aisop.json": {
+        "nihil_density": 0.0008,
+        "status": "GREEN",
+        "gh_contribution": {
+          "GH4": 1.0
+        }
+      },
+      "review.aisop.json": {
+        "nihil_density": 0.0,
+        "status": "GREEN",
+        "gh_contribution": {}
+      },
+      "simulate.aisop.json": {
+        "nihil_density": 0.0102,
+        "status": "GREEN",
+        "gh_contribution": {
+          "GH3": 1.0
+        }
+      }
+    },
+    "suggestions": [],
+    "thresholds": {
+      "green": 0.05,
+      "red": 0.2,
+      "ideal": 0.03
+    },
+    "categories_tracked": [
+      "GH1",
+      "GH2",
+      "GH3",
+      "GH4",
+      "GH5",
+      "GH6",
+      "GH7"
+    ],
+    "timestamp": "2026-06-22T10:56:26.063082"
+  },
+  "multi_lang_sync": {
+    "files_synced": [
+      "AIAP_cn.md"
+    ],
+    "fields_updated": [
+      "summary",
+      "version",
+      "governance_hash"
+    ],
+    "version_delta": "2.38.0->2.38.0 (version already bumped upstream; summary + governance_hash structured fields synced post-Finalize)",
+    "timestamp": "2026-06-11"
+  },
+  "scenario_consolidation": "STABLE (since v1.42.0, 1023 scenarios, 51 classes)",
+  "key_milestones_v1_49_0": [
+    "STRUCTURAL_SIMPLIFICATION_ROUND3",
+    "B-ref provenance archival: -24K chars across all modules",
+    "ReviewStep.step3: completed subsystem archival (ENRICHMENT_CALIBRATION, CALIBRATION_LOOP, DEPENDENCY_CHURN, PRUNING_WINDOW)",
+    "TRIPLE_SYNC 16th CHECK: all three CONFIRMED",
+    "Rollback 31st ILM cycle, Summary Tier first conversion (v1.39.0)",
+    "Cumulative: main 489K->318KB (-35%), all modules 719KB->696KB",
+    "35th consecutive 100%, 4.929/S STRUCTURAL CEILING ccv=44"
+  ],
+  "key_milestones_v1_50_0": [
+    "ALIGN_AXIOM_0_SEAL — protocol-level errata",
+    "Align: -> Align Axiom 0: across protocol (2 files), standard (5 files), Creator (10 modules)",
+    "Calibration 6th CHECK, Bootstrap 36th CHECK (every_5_versions due)",
+    "Rollback 32nd, Summary Tier v1.40.0 conversion",
+    "ISO Y2 intermediate (cert age=4)",
+    "36th consecutive 100%, 4.929/S STRUCTURAL CEILING ccv=45"
+  ],
+  "scenario_coverage_gap": {
+    "declared": 1023,
+    "executed": 997,
+    "unexecuted": 26,
+    "gap_percentage": 2.5,
+    "investigation_status": "DOCUMENTED",
+    "gap_categories": [
+      {
+        "category": "Edge cases in Pattern G tool directory generation",
+        "count": 8,
+        "affected_modules": [
+          "aiap_creator.generate (generate_tooling sub-graph)"
+        ],
+        "reason": "Pattern G tool_dir scaffolding paths not yet exercised in simulation — requires tool_dir fixture setup"
+      },
+      {
+        "category": "A2A bridge config interaction scenarios",
+        "count": 6,
+        "affected_modules": [
+          "aiap_creator.advisor",
+          "aiap_creator.research"
+        ],
+        "reason": "A2A v1.0 multi-binding scenarios added at v1.80.0, awaiting A2A integration test harness"
+      },
+      {
+        "category": "Multi-wave generation failure recovery paths",
+        "count": 5,
+        "affected_modules": [
+          "aiap_creator.generate (generate_content sub-graph)",
+          "aiap_creator.main (Generate1)"
+        ],
+        "reason": "Wave-based generation (P2b) recovery paths require multi-file fixtures with intentional mid-wave failures"
+      },
+      {
+        "category": "Remote registry federation timeout scenarios",
+        "count": 4,
+        "affected_modules": [
+          "aiap_creator.advisor"
+        ],
+        "reason": "Federation timeout simulation requires mock registry with configurable latency"
+      },
+      {
+        "category": "Concurrent pipeline cancellation race conditions",
+        "count": 3,
+        "affected_modules": [
+          "aiap_creator.main (PipelineStart, NodeLoop)"
+        ],
+        "reason": "PL21 cancellation during active file writes — requires concurrent execution test harness"
+      }
+    ],
+    "remediation": "Non-blocking. All 26 scenarios documented with affected modules and prerequisites. Priority: Pattern G (8) and A2A (6) scenarios are highest-value additions. No quality regression detected from gap."
+  },
+  "evolution_notes": {
+    "v1.99.0_changes": "Auto Evolution Round 1: B1 runtime_extensions Error fields added (8 functions). B2 runtime_extensions params added. B3 agent_card TODO->PLACEHOLDER. C1-C10 version sync.",
+    "v2.18.0_changes": "Self-evolution v2.17.0->v2.18.0 (MINOR). 6 LEVEL_B + 5 LEVEL_C = 11 changes, 11 effective. B1 EU AI Act Omnibus formal adoption tracking. B2 NIST CAISI maturation. B3 I3 SYMLINK_GUARD boundary hardening. B4 MCP Tasks SEP-1686. B5 A2A v1.2 maturation. B6 ABC framework I2 ref. C1-C5 metadata sync. ThreeDimTest 4.93/S. Governance hash recomputed d9e06f...bfa8.",
+    "v2.19.0_changes": "Self-evolution v2.18.0->v2.19.0 (MINOR). 6 LEVEL_B + 5 LEVEL_C = 11 changes, 11 effective. B1 I7 agentic_prompt recovery across all 15 modules — descriptive annotations for observability/nihil_density/convert params. B2 I12 tool annotations completeness — simulate read_only:true + AIAP_Standard MCP-compliant. B3 D3 naming patterns standardization — ReviewPresent step numbering gap fixed. B4 EU AI Act Omnibus OJ publication tracking — third trilogue May 7 2026 outcomes in AIAP_Standard.core. B5 NIST NCCoE AI Agent Identity milestone tracking — comment period closed Apr 2 2026, final Q3 2026. B6 EU AI Act GPAI CoP final reference — Jul 2025 final, Aug 2025 endorsed, Art.50 Aug 2 2026. C1-C5 metadata sync. ThreeDimTest pending Generate1."
+  },
+  "attestation_chain": {
+    "v0.1.0": {
+      "version": "v0.1.0",
+      "from": null,
+      "governance_hash": "1d6dc5f4b43043effef5fbf67a53a2d998cd428c68e8fece61eaf4341f85f7d7",
+      "governance_hash_canonical_version": "1.0",
+      "pipeline_run_id": null,
+      "all_pass": true,
+      "attested_by": "attestation_advance.py (SOLE AUTHORITY)"
+    },
+    "v0.2.0": {
+      "version": "v0.2.0",
+      "from": "v0.1.0",
+      "governance_hash": "ee6ddc159c2aabcee36a303de49e865c6652a135086d302f2b67459b2d5c8fc4",
+      "governance_hash_canonical_version": "1.0",
+      "pipeline_run_id": null,
+      "all_pass": true,
+      "attested_by": "attestation_advance.py (SOLE AUTHORITY)"
+    },
+    "v0.2.1": {
+      "version": "v0.2.1",
+      "from": "v0.2.0",
+      "governance_hash": "6ab1ebd8466fe8503f7d87b8a729dc72abf4ce90916dd82c9bf6666ae1f0abed",
+      "governance_hash_canonical_version": "1.0",
+      "pipeline_run_id": null,
+      "all_pass": true,
+      "attested_by": "attestation_advance.py (SOLE AUTHORITY)"
+    },
+    "v0.2.2": {
+      "version": "v0.2.2",
+      "from": "v0.2.1",
+      "governance_hash": "eb1fdc4c82fd51dd9c9e4c5de74c5c57c6b5b020b9781009b9554aa3b637e436",
+      "governance_hash_canonical_version": "1.0",
+      "pipeline_run_id": null,
+      "all_pass": true,
+      "attested_by": "attestation_advance.py (SOLE AUTHORITY)"
+    },
+    "v1.0.0": {
+      "version": "v1.0.0",
+      "from": "v0.2.2",
+      "governance_hash": "cf79a11de4bb659c59e14d4cfc9f14ca81c02d4e33b8d15479863cba30396426",
+      "governance_hash_canonical_version": "1.0",
+      "pipeline_run_id": null,
+      "all_pass": true,
+      "attested_by": "attestation_advance.py (SOLE AUTHORITY)"
+    }
+  },
+  "evolution_direction": {
+    "version": "0.1.0",
+    "next_evolution_suggestions": [
+      {
+        "priority": "HIGH",
+        "title": "R3 Stage-1 deep-identity pass (Q1/Q4 + content.id/program_id rename)",
+        "description": "Residual surface-identity strings still carry the copied source's 'AIAP Creator' framing: Q1 main.aisop.json content.summary/description ('AIAP Creator ... 18-stage pipeline ... managing AIAP programs'); Q4 agent_card.json skills[] describe 'AIAP program' product; content.id / program_id still aiap_creator.*. These are DEEP rename targets that change governance-hashed *.aisop.json bytes, so they were deliberately DEFERRED out of the Stage-0 identity/version re-baseline (which kept program logic byte-identical to v2.47.0). Run a dedicated Stage-1 deep-identity pass: rewrite summary/description/skills to the AISP-skill-creator product framing and rename content.id/program_id -> soulbot_aisp_creator_evolution_aiap.*, then re-seal governance_hash + attestation + snapshot.",
+        "target_modules": [
+          "main.aisop.json",
+          "agent_card.json",
+          "all *.aisop.json content.id/program_id"
+        ],
+        "expected_impact": "Identity coherence: removes last 'AIAP Creator' provenance artifacts; governance_hash WILL change (hashed bytes change) -> new attestation entry v0.2.0.",
+        "logged_as": "R3 (turn-151 option-D resume residual)"
+      },
+      {
+        "priority": "HIGH",
+        "title": "I12 runtime validation coverage",
+        "description": "I12 at 4.8 due to protocol_config runtime validation gap. Investigate full runtime validation coverage to close the 0.2 gap and reach I12=5.0.",
+        "target_modules": [
+          "main (protocol_config)"
+        ],
+        "expected_impact": "I-dimension +0.015 (I12: 4.8->5.0), weighted +0.005"
+      },
+      {
+        "priority": "HIGH",
+        "title": "NihilDensityStep reliability",
+        "description": "NihilDensityStep DEGRADED due to cache_write_failure in 2 consecutive pipelines. Root cause analysis and fix needed.",
+        "target_modules": [
+          "nihil_density"
+        ],
+        "expected_impact": "Pipeline reliability improvement, nihil density data availability"
+      },
+      {
+        "priority": "MEDIUM",
+        "title": "EvolveStep latency optimization",
+        "description": "EvolveStep takes 36.7% of pipeline time (includes WAITING_USER). Investigate if non-interactive portion can be optimized.",
+        "target_modules": [
+          "main (EvolveStep)"
+        ],
+        "expected_impact": "Pipeline throughput improvement"
+      }
+    ],
+    "v0.1.0_changelog": "v0.1.0 GENESIS — identity re-baseline from copied source aiap_creator/soulbot_creator_evolution v2.47.0: rename -> soulbot_aisp_creator_evolution_aiap, version 2.47.0->0.1.0, AISP-skill-creator declaration. Program logic BYTE-IDENTICAL to v2.47.0 (0 collateral). Provenance (attestation_chain + evolution_history) RESET to v0.1.0 genesis under explicit human authorization (option D, turn-151 'd'); one-time human-legislated append-only exception, auditable via provenance_reset_note. governance_hash 1d6dc5f4 unchanged (hashes *.aisop.json only). weighted_score 4.987/S inherited. AISP_Standard.{core,ecosystem,security} frozen 1.0.0. snapshot v0.1.0 PASS."
+  },
+  "strategy_memory": {
+    "v2.20.0": {
+      "strategy": "Focused I7 agentic_prompt recovery + A2A cardSignature tracking",
+      "outcome": "I7 4.5->5.0 recovered. 39 params enriched across 6 modules. Direction continuity HIGH.",
+      "score_impact": "+0.04 weighted (4.93->4.967)",
+      "lessons": [
+        "B-item focused on single dimension recovery (I7) yielded measurable improvement",
+        "Cross-program pattern (soulbot_aivp_bot v1.4.0) validated agentic_prompt approach",
+        "A2A cardSignature tracking as advisory-only item avoided scope creep while maintaining protocol awareness"
+      ],
+      "effective_patterns": [
+        "single-dimension-focus",
+        "cross-program-validation",
+        "advisory-defer"
+      ],
+      "timestamp": "2026-05-12"
+    },
+    "v2.21.0": {
+      "strategy": "Minimal regulatory text correction (B1 watermarking date) + maintenance sync (C1-C5)",
+      "outcome": "Score maintained at 4.967/S. B1 corrected Art.50 watermarking date Nov->Dec 2026. Direction continuity HIGH (0.92) — consistent regulatory refresh cycle.",
+      "score_impact": "0.00 weighted (4.967->4.967, stable)",
+      "lessons": [
+        "Single B-item text corrections maintain score stability without introducing regression risk",
+        "Regulatory refresh cycle pattern validated across v2.17.0-v2.21.0 (5 consecutive versions)",
+        "Cosmetic advisory (R.1) deferred to next version as LEVEL_C — appropriate for non-functional change"
+      ],
+      "effective_patterns": [
+        "regulatory-refresh-cycle",
+        "minimal-change-stability",
+        "cosmetic-defer"
+      ],
+      "timestamp": "2026-05-12"
+    },
+    "v2.22.0": {
+      "strategy": "Focused I12 protocol_config + D3 Error taxonomy recovery with regulatory alignment and observability instrumentation",
+      "outcome": "D3 4.75->4.90 improved. I12 remains 4.5 (cognitive cap). Stage_timings instrumentation enabled. D6/D10 recovered post-Finalize.",
+      "score_impact": "-0.017 weighted (4.967->4.950) pre-Finalize, within noise threshold. Grade S maintained.",
+      "lessons": [
+        "I12 protocol_config completeness has a structural cognitive cap that is resistant to single-iteration improvement",
+        "D3 Error taxonomy recovery shows incremental progress (4.75->4.90) but full coverage of 33 functions requires multi-iteration effort",
+        "Stage_timings instrumentation (B4) is an enabler for future observability improvements without immediate score impact",
+        "D6/D10 deferred items consistently recover to 5.0 post-Finalize - projection accuracy remains HIGH"
+      ],
+      "effective_patterns": [
+        "focused_dimension_recovery",
+        "regulatory_alignment",
+        "observability_enhancement"
+      ],
+      "ineffective_patterns": [
+        "cognitive_cap_items_resist_single_evolution"
+      ]
+    },
+    "v2.25.0": {
+      "strategy": "Multi-dimensional recovery: I12 protocol_config (4.5->4.8 via execution_config_validation), D3 Error taxonomy (4.9->5.0 via 10-module on_error dual-key), regulatory freshness (EU AI Act Art.50 66-day countdown)",
+      "outcome": "Weighted 4.987->4.995/S (+0.008). I12 4.5->4.8 (B2 protocol_config recovery). D3 4.9->5.0 (B3 Error taxonomy standardized across 10 business modules). I-dimension improved 4.962->4.985. All other dimensions at 5.0. 25 simulation scenarios (24 PASS, 1 YELLOW). NihilDensity 0.0296 GREEN.",
+      "score_impact": "+0.008 weighted (4.987->4.995). Grade S sustained.",
+      "lessons": [
+        "I12 protocol_config recovery from 4.5->4.8 confirms multi-iteration approach works (v2.22.0 prep + v2.25.0 execution)",
+        "D3 Error taxonomy standardization across 10 modules achieved in single evolution via on_error dual-key migration",
+        "Regulatory freshness (B1 EU Art.50) is low-risk high-signal change that maintains compliance awareness",
+        "Score scope guard correctly preserved baseline 4.995 when Generate2 partial scope scored 4.967"
+      ],
+      "effective_patterns": [
+        "multi_iteration_recovery",
+        "cross_module_standardization",
+        "regulatory_freshness",
+        "score_scope_guard"
+      ],
+      "timestamp": "2026-05-28"
+    },
+    "v2.27.0": {
+      "strategy": "Infrastructure hardening: snapshot integrity fix (coupled B1 with 3 sub-items: hard-coded SNAPSHOT_MANIFEST, snapshot_audit.py machine validator, canonical meta.json fields)",
+      "outcome": "Weighted 4.995->4.993/S (-0.002, within noise). B1 snapshot integrity adds machine-enforced snapshot completeness and hash verification. 4/4 simulation scenarios PASS (100% B1 path coverage). Nihil density 24% YELLOW (advisory, not blocking). No regression in any dimension.",
+      "score_impact": "-0.002 weighted (4.995->4.993). Grade S sustained. Minor delta due to I12=4.8 structural ceiling.",
+      "lessons": [
+        "Coupled B-items (3 sub-items as single CAP item) keep scope manageable while delivering comprehensive feature",
+        "Hard constraint scoping (only ReviewFinalize + 1 validator, no engine changes) prevented scope creep",
+        "Machine validation tools (snapshot_audit.py) provide deterministic verification that agent evaluation cannot",
+        "User-specified backlog items (nihil P3, doc slimming) correctly deferred without blocking current evolution"
+      ],
+      "effective_patterns": [
+        "coupled_b_item_scoping",
+        "hard_constraint_discipline",
+        "machine_validation_tools",
+        "backlog_deferral"
+      ],
+      "timestamp": "2026-05-30"
+    },
+    "v2.28.0": {
+      "strategy": "C-only evolution: finalize sovereignty gate formalization + governance hash TRI-SYNC recompute (fix stale 4ea4ea1d). No functional code changes — finalize sovereignty gate was already present from manual addition in v2.27.0.",
+      "outcome": "Weighted 4.993->4.993/S (stable). C-only changes (version bump, name sync, evolution_history, governance_hash recompute). Finalize sovereignty gate (5 triggers: regression/RED/zero-delta/DEGRADED/simulate RED) confirmed present and intact. Governance hash corrected from stale 4ea4ea1d to fresh c64967c6. 48 simulation scenarios (47 PASS, 1 SKIP). NihilDensity 10/10 GREEN aggregate 3.99%.",
+      "score_impact": "0.000 weighted (4.993->4.993, stable). Grade S sustained.",
+      "lessons": [
+        "C-only evolution is appropriate when functional changes have already been manually applied and only governance formalization is needed",
+        "Stale governance_hash (4ea4ea1d from v2.27.0 pre-finalize) was correctly identified and refreshed via TRI-SYNC",
+        "Finalize sovereignty gate (5 triggers) is a structural Axiom 0 safeguard that should not be weakened in future evolutions",
+        "User hard constraints (HC1 no weaken gate, HC2 no touch snapshot_audit.py, HC3 MINOR only) correctly scoped the evolution"
+      ],
+      "effective_patterns": [
+        "c_only_governance_formalization",
+        "stale_hash_detection_and_fix",
+        "user_hard_constraint_scoping",
+        "sovereignty_gate_preservation"
+      ],
+      "timestamp": "2026-05-31"
+    },
+    "v2.29.0": {
+      "strategy": "C-only evolution: v2.28.0->v2.29.0 ReviewFinalize finalization. Version bump, governance_hash TRI-SYNC recompute (c64967c6->5463223d), evolution_history append, attestation chain update.",
+      "outcome": "Weighted 4.993->4.993/S (stable). C-only changes (version bump, name sync, evolution_history, governance_hash TRI-SYNC). Generate2 score_scope=partial, whole-program weighted_score preserved via SCORE SCOPE GUARD. Grade S maintained.",
+      "score_impact": "0.000 weighted (4.993->4.993, stable). Grade S sustained.",
+      "lessons": [
+        "SCORE SCOPE GUARD correctly preserves whole-program score when generate2_score_scope=partial",
+        "C-only evolutions maintain perfect stability with zero regression risk",
+        "TRI-SYNC governance hash rotation from c64967c6 to 5463223d confirms canonical v1.0 hash algorithm consistency",
+        "103 consecutive 100% effectiveness rate demonstrates pipeline maturity"
+      ],
+      "effective_patterns": [
+        "score_scope_guard",
+        "c_only_stability",
+        "tri_sync_rotation",
+        "consecutive_effectiveness"
+      ],
+      "timestamp": "2026-05-31"
+    },
+    "v2.30.0": {
+      "strategy_used": "bug-fix",
+      "items": {
+        "B1": {
+          "title": "PipelineStart _index.user_message target resolution",
+          "outcome": "PASS",
+          "score_impact": 0
+        },
+        "B2": {
+          "title": "PipelineEntry explicit target pass-through",
+          "outcome": "PASS",
+          "score_impact": 0
+        }
+      },
+      "pre_evolution_weighted": 4.993,
+      "post_evolution_weighted": 4.963,
+      "delta": -0.03,
+      "delta_explanation": "Negative delta due to fresh scoring recalculation with D6/D10 deferred at pre-Finalize stage. Post-Finalize D6/D10 restored to 5.0. True weighted: 4.963 (I12=4.8 is the only non-5.0 score).",
+      "lesson": "Bug-fix evolutions that do not change module content maintain stable scores. The -0.030 delta is a recalibration artifact, not a regression."
+    },
+    "v2.31.0": {
+      "strategy": "Multi-dimensional improvement: MCP 2026-07-28 RC stateless protocol integration (ProtocolAlign+Research3), EU AI Act Art.50 FRESHNESS enforcement (imminent Aug 2 2026 deadline), I12 partial recovery (protocol_config execution field).",
+      "outcome": "Weighted 4.963->4.941/S (-0.022). MCP RC alignment deepened (stateless protocol core, Extensions framework, Tasks primitive, MCP Apps, deprecation policy). EU AI Act FRESHNESS tracking with 35M EUR / 7% penalty awareness. I12 4.5->4.8 via execution_config_validation. 42 simulation scenarios all PASS.",
+      "score_impact": "-0.022 weighted (4.963->4.941). Grade S sustained. Delta due to recalibration with honest D-dimension scoring.",
+      "lessons": [
+        "MCP RC alignment is a maintenance-level change with no score risk",
+        "EU AI Act FRESHNESS tracking is a regulatory compliance item that maintains awareness",
+        "I12 recovery from 4.5->4.8 confirms multi-iteration approach for structural ceiling items"
+      ],
+      "effective_patterns": [
+        "regulatory_freshness",
+        "protocol_alignment",
+        "structural_ceiling_recovery"
+      ],
+      "timestamp": "2026-06-04"
+    },
+    "v2.32.0": {
+      "strategy": "Functional hardening: B1 SEARCH_RETRY_BACKOFF standardization across research modes, B4 I12 runtime validation coverage uplift (STAGE_TRANSITION_VALIDATION, CACHE_SCHEMA_RUNTIME_CHECK), B5 simulation scenario tier threshold enforcement (SCENARIOS_MINIMUM, RESILIENCE_PATH_TOLERANCE).",
+      "outcome": "Weighted 4.941->4.972/S (+0.031). All 3 B-items applied and verified. D6/D10 recovered post-Finalize (4.5->5.0). D5=4.8 (nihil_density naming), D8=4.5 (summary length). I12=4.8 (structural ceiling). 42 simulation scenarios all PASS. Governance hash TRI-SYNC verified (2584aa98...ae609). 20/20 pipeline nodes PASS.",
+      "score_impact": "+0.031 weighted (4.941->4.972). Grade S sustained. Post-Finalize D6/D10 recovery contributed +0.029.",
+      "lessons": [
+        "SEARCH_RETRY_BACKOFF standardization (B1) is a low-risk cross-module consistency improvement",
+        "I12 runtime validation uplift (B4) shows incremental progress at structural ceiling boundary",
+        "Simulation tier threshold enforcement (B5) strengthens quality gate reliability",
+        "D6/D10 deferred items consistently recover to 5.0 post-Finalize confirming pipeline design"
+      ],
+      "effective_patterns": [
+        "cross_module_standardization",
+        "structural_ceiling_incremental",
+        "quality_gate_hardening",
+        "deferred_score_recovery"
+      ],
+      "timestamp": "2026-06-05"
+    },
+    "v2.34.0": {
+      "pipeline_id": "522df183-db1c-4f17-b6f7-1ca8f7ea3f15",
+      "stages_completed": 21,
+      "stages_total": 21,
+      "all_pass": true,
+      "governance_hash": "01854f9cd0c23d75b11d2b9e7be08488534c1af052ab75dcd5a6c862642a14f6",
+      "tri_sync_verified": true,
+      "version_sync_verified": true,
+      "three_dim_test": {
+        "C": 5.0,
+        "I": 4.985,
+        "D": 4.98,
+        "weighted": 4.987,
+        "grade": "S",
+        "scope": "partial",
+        "scored_files": [
+          "main.aisop.json"
+        ],
+        "note": "partial scope — prior whole-program weighted_score (4.972) preserved per SCORE SCOPE GUARD; changed_file_score=4.987 recorded separately"
+      },
+      "changed_file_score": 4.987,
+      "weighted_score_note": "This version changed only main.aisop.json; partial score 4.987; whole-program weighted unchanged from prior baseline 4.972, pending full re-score.",
+      "simulation": {
+        "scenarios": 24,
+        "pass": 24,
+        "yellow": 0,
+        "fail": 0,
+        "coverage": 97.0
+      },
+      "nihil_density": {
+        "aggregate_ratio": 0.0221,
+        "status": "GREEN"
+      },
+      "strategy": "Sovereignty enforcement precision: add explicit user_gate tri-state markers to 3 pipeline nodes (EvolveStep=true, ValidateStep=false, ReviewPresent=conditional) to eliminate G1 false positive coercion from text_marker fallback.",
+      "outcome": "3 A-items + 4 C-items applied. user_gate field added to EvolveStep (true), ValidateStep (false), ReviewPresent (conditional). Root cause fix: user_gate_audit.py text_marker fallback caused sovereignty_coercion=True false positives (cache/82, cache/83). Version sync 2.33.0->2.34.0 across 15 files. Governance hash TRI-SYNC verified (01854f9c...14f6). ThreeDimTest partial score: C=5.000 I=4.985 D=4.980 weighted=4.987/S. SCORE SCOPE GUARD: whole-program weighted_score 4.972 preserved.",
+      "score_impact": "+0.015 partial-scope delta (main.aisop.json only). Whole-program weighted_score preserved at 4.972 per SCORE SCOPE GUARD.",
+      "lessons": [
+        "Explicit tri-state user_gate field eliminates text_marker false positives at source",
+        "Additive metadata fields have 100% success rate across prior evolution cycles",
+        "Sovereignty enforcement improvements are consistent with v2.30.0-v2.33.0 evolution themes",
+        "SCORE SCOPE GUARD correctly preserves whole-program baseline when only 1 of 15 modules re-scored"
+      ],
+      "effective_patterns": [
+        "metadata_field_addition",
+        "sovereignty_precision",
+        "false_positive_elimination",
+        "score_scope_guard"
+      ],
+      "timestamp": "2026-06-06",
+      "attested_by": "claude-opus-4-6"
+    },
+    "v2.35.0": {
+      "strategy": "governance_audit_hardening",
+      "items": [
+        "P2_QUAD_SYNC_4_location",
+        "P3_complete_content_snapshot"
+      ],
+      "outcome": "score_improved",
+      "delta": "+0.015",
+      "note": "Targeted governance infrastructure fixes. P2 extends ValidateStep 3-location TRI-SYNC to 4-location QUAD-SYNC (attestation_chain). P3 standardizes snapshot format to complete content directory. Both additive, zero-risk. Score improvement from D6/D7/D10 recovery post-Finalize."
+    },
+    "v2.36.0": {
+      "pipeline_id": "23ee2fb6-d39e-475b-b366-e7ecf8aca98d",
+      "stages_completed": 21,
+      "stages_total": 21,
+      "all_pass": true,
+      "governance_hash": "8acd9c68577f28e51a744bcdc29448dfcbace63318c6c5e149342f8bd719a2e3",
+      "governance_hash_canonical_version": "1.0",
+      "tri_sync_verified": true,
+      "version_sync_verified": true,
+      "three_dim_test": {
+        "C": 5.0,
+        "I": 4.985,
+        "D": 4.98,
+        "weighted": 4.987,
+        "grade": "S",
+        "scope": "full",
+        "scored_files": "all 15 modules"
+      },
+      "simulation": {
+        "scenarios": 86,
+        "pass": 86,
+        "yellow": 0,
+        "fail": 0,
+        "coverage": 100
+      },
+      "nihil_density": {
+        "aggregate_ratio": 0.0071,
+        "status": "GREEN"
+      },
+      "strategy": "governance_hash_tool_migration",
+      "items": [
+        "A1_governance_hash_py_sole_authority",
+        "A2_ReviewFinalize_tool_invocation"
+      ],
+      "outcome": "Weighted 4.987->4.987/S (stable, zero-delta). P1 evolution migrates governance_hash computation from LLM prose to deterministic Python tool (tool_dirs/governance_hash.py). Infrastructure change maintains S-grade ceiling. Re-baseline annotation: since v2.36.0 governance_hash computed deterministically by governance_hash.py canonical v1.0, incomparable with prior LLM-computed values.",
+      "score_impact": "0.0 delta (infrastructure migration, no functional quality change)",
+      "lessons": [
+        "Deterministic tool-based governance_hash eliminates LLM computation variability",
+        "SOLE AUTHORITY pattern (single tool owns hash lifecycle) prevents hash drift",
+        "Re-baseline annotation preserves historical context while acknowledging incomparability",
+        "Infrastructure migrations at S-grade ceiling maintain stability without regression"
+      ],
+      "effective_patterns": [
+        "deterministic_tool_migration",
+        "sole_authority_pattern",
+        "re_baseline_annotation",
+        "infrastructure_stability"
+      ],
+      "timestamp": "2026-06-09",
+      "attested_by": "claude-opus-4-6"
+    },
+    "v2.37.0": {
+      "strategy": "Validation+formalization evolution: route session manual hotfix through regular channel. 1 B-item (B1 P5 in-band wiring, single-module review.aisop.json) + 3 auto-C (version bump / name sync / changelog). EvolveStep sovereignty gate truly halted, user answered 'all'.",
+      "outcome": "Weighted partial 4.98/S (whole-program baseline 4.987 preserved). No regression. governance_hash refreshed stale 4fd7eab8 -> canonical 3d7d0320 via SOLE-AUTHORITY governance_hash.py. Snapshot v2.37.0 built via deterministic snapshot_build.py (P5 proven in-band).",
+      "lesson": "Single-module in-band tool-wiring B-items with deterministic tool calls are low-risk, high-continuity (governance-hardening lineage cycles 9-22). Partial-scope re-score correctly preserved whole-program baseline (SCORE SCOPE GUARD) — no score pollution.",
+      "b_item_type": "in_band_tool_wiring",
+      "score_effect": "neutral_stable (partial 4.98 vs prior 4.987; no regression)"
+    }
+  },
+  "last_pipeline": {
+    "version": "1.0.0",
+    "finalized_at": "2026-06-22T15:59:03.067703+00:00",
+    "governance_hash": "ee6ddc159c2aabcee36a303de49e865c6652a135086d302f2b67459b2d5c8fc4",
+    "pipeline_run_id": "d9042138-1142-41e0-bddd-309d83c96ea4",
+    "finalize_decision": {
+      "mode": "auto_approved_then_human_confirmed",
+      "risk": "none",
+      "user_decision": "OK",
+      "reason": "node-level finalize_risk=FALSE (auto_approved per conditional-gate spec); orchestrator imposed ReviewFinalize_precommit human gate per Assert 3, human answered 'ok' (2026-06-22T15:54:47)."
+    },
+    "stage": "Stage-1 functional layer (product layer only)",
+    "completed_at": "2026-07-02",
+    "mode": "evolve"
+  },
+  "weighted_score": 4.987,
+  "grade": "S",
+  "weighted_score_note": "Whole-program baseline weighted_score 4.987/S PRESERVED (SCORE SCOPE GUARD): v1.0.0 evolve was partial-scope (only main.aisop.json EvolveStep.constraints + version fields re-scored, changed_file_score 4.5/S). Whole-program weighted unchanged from prior baseline, pending a future full-scope re-score.",
+  "regression_check": {
+    "v0.1.0": {
+      "weighted_delta": "N/A (identity re-baseline; not a full re-score)",
+      "regression_detected": false,
+      "simulate_indicator": "GREEN",
+      "validate_indicator": "PASS",
+      "note": "v0.1.0 is a Stage-0 identity/version re-baseline whose program logic is BYTE-IDENTICAL to v2.47.0 (ValidateStep: 10 modules mermaid+functions byte-identical, content.id/program_id unchanged, 0 collateral). Whole-program weighted_score 4.987/S inherited from v2.47.0; no independent re-score this run. SimulateStep GREEN, ValidateStep PASS, 0 DEGRADED, regression_detected=false."
+    },
+    "v2.37.0": {
+      "weighted_delta": "N/A (partial re-score; not comparable to prior whole-program baseline 4.987)",
+      "regression_detected": false,
+      "simulate_indicator": "GREEN",
+      "validate_indicator": "PASS",
+      "note": "Generate2 partial scope: only changed module + deterministic checks re-scored. No dimension dropped >0.3. SimulateStep 22 run/20 PASS/2 YELLOW/0 RED, regression_detected=false."
+    },
+    "v2.38.0": {
+      "weighted_delta": "N/A (partial re-score; not comparable to prior whole-program baseline 4.987)",
+      "regression_detected": false,
+      "simulate_indicator": "GREEN",
+      "validate_indicator": "PASS",
+      "note": "Generate2 partial scope: only changed module main.aisop.json + deterministic cross-module checks re-scored (4.475). No dimension dropped >0.3. SimulateStep 24/24 GREEN (HARD_FAIL branch both arms simulated with real subprocess evidence), regression_detected=false."
+    },
+    "v2.39.0": {
+      "weighted_delta": "N/A (partial re-score; not comparable to prior whole-program baseline 4.987). Deferred D6/D8/D10 excluded like-for-like per the v2.40.0 finalize_risk fix; deferred-excluded changed-file delta ~= 0 (no real regression).",
+      "regression_detected": false,
+      "simulate_indicator": "GREEN",
+      "validate_indicator": "PASS",
+      "note": "Generate2 partial scope: changed main.aisop.json::ReviewPresent.step8 finalize_risk(1) + review.aisop.json::Review.step1 mirror (deferred-exclusion in regression/delta computation only). Spec-text refinement, no tool source change, no data-contract break. No dimension dropped >0.3. SimulateStep 18/18 GREEN coverage 100%, ValidateStep PASS, regression_detected=false."
+    },
+    "v2.46.0": {
+      "weighted_delta": "N/A (partial re-score; not comparable to prior whole-program baseline 4.987). Deferred D6/D10 excluded like-for-like per B-3. The 4.819 deferred-excl vs 4.987 facade gap is a cross-method re-score artifact (method-change exemption, [INDEPENDENT_AGENT] cognitive cap), NOT a real regression.",
+      "regression_detected": false,
+      "simulate_indicator": "GREEN",
+      "validate_indicator": "PASS",
+      "note": "Generate2 partial scope: changed nihil_density.aisop.json ApplyGH.step1(GH1_SCAN+C1-C5) + ApplyGH.step2(tier+fallback-8) + GenerateReport.step1(fallback-9) + GenerateReport.step2(gh_rule_set_version). Additive prose-discipline + machine-criteria, no tool source change, no data-contract break. No dimension dropped >0.3. SimulateStep 20/20 GREEN coverage 100%, ValidateStep 21/21 PASS, regression_detected=false."
+    },
+    "v0.2.0": {
+      "weighted_delta": "N/A (partial re-score; generate+main only; not comparable to prior whole-program baseline)",
+      "regression_detected": false,
+      "simulate_indicator": "GREEN",
+      "validate_indicator": "12/12 PASS",
+      "deferred_dimension_exclusion_applied": true,
+      "note": "Stage-1 product-layer evolution with score_scope=partial. finalize_risk=FALSE on all four inviolable triggers (no regression / no traffic RED / no DEGRADED node / SIMULATE not RED). Whole-program weighted_score preserved (4.987/S); partial this-run score 4.500/S; 0 collateral; creator-self AIAP governance frozen."
+    },
+    "0.2.1": {
+      "weighted_delta": "N/A (partial re-score; modified generate.aisop.json product-rule fields only; not comparable to prior whole-program baseline 4.987)",
+      "regression_detected": false,
+      "simulate_indicator": "GREEN",
+      "validate_indicator": "19/21 PASS (0 FAIL)",
+      "deferred_dimension_exclusion_applied": true,
+      "note": "Stage-1.1 product-rule compliance fix with score_scope=partial. finalize_risk=FALSE on all four inviolable triggers (no regression / no traffic RED / no DEGRADED node / SIMULATE not RED). Whole-program weighted_score preserved (4.987/S); partial this-run score 4.964/S; 0 collateral; creator-self AIAP governance frozen; R6_TOOLS_CONDITIONAL honestly preserved."
+    },
+    "regression": false,
+    "weighted_delta": "N/A (partial re-score; not comparable to prior whole-program baseline)",
+    "last_checked_version": "1.0.0"
+  },
+  "attestation_chain_length": 5,
+  "provenance_reset_note": "Inherited attestation_chain + evolution_history (from copied source v2.47.0) were RESET to v0.1.0 genesis under explicit human authorization (turn-151 option D). One-time append-only exception, human-legislated, auditable. governance_hash unaffected (hashes *.aisop.json only)."
+}

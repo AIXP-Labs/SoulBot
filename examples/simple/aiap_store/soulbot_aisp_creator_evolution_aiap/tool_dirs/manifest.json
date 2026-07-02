@@ -1,0 +1,382 @@
+{
+  "schema_version": "mcp-1.0-prep",
+  "manifest_type": "aiap_tool_directory",
+  "aiap_id": "soulbot_aisp_creator_evolution_aiap",
+  "aiap_version": "0.2.0",
+  "aiap_pattern": "D",
+  "trust_level": 4,
+  "governance": {
+    "protocol": "AIAP V1.0.0",
+    "governance_hash": "runtime_computed_by_governance_hash_py",
+    "governance_hash_note": "Value computed at runtime by governance_hash.py (canonical v1.0). Not stored here statically; authoritative values reside in AIAP.md, agent_card.json, and quality_baseline.json after TRI-SYNC write.",
+    "governance_hash_canonical_version": "1.0"
+  },
+  "mcp_server": {
+    "enabled": false,
+    "note": "MCP Server support is prepared but not yet implemented. This manifest serves as schema definition for future activation.",
+    "server_id": "aiap_creator_tools",
+    "transport": "stdio",
+    "runtime": "tbd",
+    "entry_point": "tbd"
+  },
+  "tools": [
+    {
+      "name": "snapshot_audit",
+      "description": "Audit version snapshot integrity — verifies completeness against hard-coded SNAPSHOT_MANIFEST, validates SHA-256 hashes of snapshot files against source originals, checks meta.json canonical fields (including created_at truthfulness validation: rejects 00:00:00 placeholder, out-of-range year, non-ISO strings). Provides --emit-created-at subcommand to emit Python-computed UTC ISO 8601 timestamp to stdout for meta.json created_at field (emit path is output-only, does not write files). Audit main path: READ-ONLY, never writes or modifies any file.",
+      "path": "tool_dirs/snapshot_audit.py",
+      "language": "python",
+      "runtime": "python3",
+      "annotations": {
+        "read_only": true,
+        "destructive": false,
+        "idempotent": true,
+        "open_world": false
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "snapshot_dir": {
+            "type": "string",
+            "description": "Path to the snapshot directory (.version_history/{version}/)"
+          },
+          "version": {
+            "type": "string",
+            "description": "Expected semver version string"
+          },
+          "aiap_dir": {
+            "type": "string",
+            "description": "Path to the source AIAP directory"
+          }
+        },
+        "required": [
+          "snapshot_dir",
+          "version",
+          "aiap_dir"
+        ]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL"
+            ]
+          },
+          "files_expected": {
+            "type": "integer"
+          },
+          "files_found": {
+            "type": "integer"
+          },
+          "missing": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "extra": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "hash_mismatches": {
+            "type": "array"
+          },
+          "meta_valid": {
+            "type": "boolean"
+          },
+          "timestamp": {
+            "type": "string"
+          }
+        }
+      },
+      "exit_codes": {
+        "0": "PASS — all checks passed",
+        "1": "FAIL — one or more checks failed"
+      },
+      "invocation": "python tool_dirs/snapshot_audit.py --snapshot_dir=<path> --version=<semver> --aiap_dir=<path> | python tool_dirs/snapshot_audit.py --emit-created-at",
+      "added_in_version": "2.27.0",
+      "consumed_by": "review.aisop.json Finalize.step5_5 (mandatory post-snapshot audit)"
+    },
+    {
+      "name": "governance_hash",
+      "description": "Deterministic governance_hash computation (canonical v1.0) and ATOMIC TRI-SYNC write. SOLE AUTHORITY for governance_hash values — LLM/ReviewFinalize MUST NOT compute or fill hash values directly. Algorithm: enumerate *.aisop.json sorted ASCII, JCS canonicalize each (json.dumps sort_keys=True, separators=(',',':'), ensure_ascii=False), UTF-8 encode, join with 0x1E Record Separator, sha256.hexdigest(). Writes to AIAP.md, AIAP_cn.md (if exists), agent_card.json, quality_baseline.json (top-level governance_hash only — attestation_chain advancement is delegated to attestation_advance.py SOLE AUTHORITY, since the on-disk attestation_chain is a dict the list-only update branch here silently no-ops on). Post-write read-back verification for byte-identical assertion.",
+      "path": "tool_dirs/governance_hash.py",
+      "language": "python",
+      "runtime": "python3",
+      "annotations": {
+        "read_only": false,
+        "destructive": false,
+        "idempotent": true,
+        "open_world": false
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "program_dir": {
+            "type": "string",
+            "description": "Absolute path to the AIAP program directory containing *.aisop.json files"
+          }
+        },
+        "required": [
+          "program_dir"
+        ]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUCCESS",
+              "FAILURE"
+            ]
+          },
+          "hash": {
+            "type": "string",
+            "description": "64-char SHA-256 hex digest"
+          },
+          "algorithm": {
+            "type": "string",
+            "enum": [
+              "canonical_v1.0"
+            ]
+          },
+          "files_hashed": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tri_sync_targets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "verification": {
+            "type": "array"
+          }
+        }
+      },
+      "exit_codes": {
+        "0": "SUCCESS — hash computed and TRI-SYNC verified",
+        "1": "FAILURE — computation error or read-back mismatch"
+      },
+      "invocation": "python tool_dirs/governance_hash.py --program_dir=<path> [--verify-only]",
+      "added_in_version": "2.36.0",
+      "consumed_by": "main.aisop.json ReviewFinalize.step1, review.aisop.json Finalize.step3 (SOLE AUTHORITY for governance_hash)"
+    },
+    {
+      "name": "resolve_target",
+      "description": "Deterministic evolution-target resolution + sovereignty guard (target != runner operand integrity). Replaces the LLM-inferred AUTHORITATIVE TARGET RESOLUTION prose rule (PipelineStart step1(b), B1 v2.30.0) that the sub-agent repeatedly ignored (cache/105). READ-ONLY of all inputs except the _index.json target fields it writes. Reads _index.user_message (authoritative operand source) + _index.target (runner/executor) + workspace_dir; deterministically extracts the explicit target (absolute-path regex first, then '{name}_aiap' name scan); resolves to the actual AISOP directory; runs SOVEREIGNTY GUARD (exit 1 OPERAND_AMBIGUITY when the user named a different explicit target yet it collapses onto the runner; ALLOW when the user explicitly named the runner itself = legitimate engine-style self-evolution); on success atomically writes authoritative _index.target_aiap_dir + pipeline_context.target_aiap_dir + creator_directory. Pure stdlib (argparse/json/os/re/sys); never touches *.aisop.json / AIAP.md / agent_card.json / quality_baseline.json / governance files.",
+      "path": "tool_dirs/resolve_target.py",
+      "language": "python",
+      "runtime": "python3",
+      "annotations": {
+        "read_only": false,
+        "destructive": false,
+        "idempotent": true,
+        "open_world": false
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "cache_dir": {
+            "type": "string",
+            "description": "Absolute path to the execution cache directory containing _index.json"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "description": "--dry-run: resolve + run sovereignty guard and print result, but do NOT write _index.json (read-only verification mode)"
+          }
+        },
+        "required": [
+          "cache_dir"
+        ]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUCCESS",
+              "OPERAND_AMBIGUITY",
+              "NO_TARGET_IN_MESSAGE",
+              "NO_MATCH",
+              "INDEX_NOT_FOUND",
+              "FAILURE"
+            ]
+          },
+          "target_aiap_dir": {
+            "type": "string"
+          },
+          "creator_directory": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "explicit_abs_path",
+              "name_scan"
+            ]
+          },
+          "runner": {
+            "type": "string"
+          },
+          "lands_on_runner": {
+            "type": "boolean"
+          },
+          "user_named_runner": {
+            "type": "boolean"
+          }
+        }
+      },
+      "exit_codes": {
+        "0": "SUCCESS — target resolved + sovereignty guard passed; _index written unless --dry-run",
+        "1": "FAILURE — OPERAND_AMBIGUITY / NO_TARGET_IN_MESSAGE / NO_MATCH / INDEX_NOT_FOUND"
+      },
+      "invocation": "python tool_dirs/resolve_target.py --cache_dir=<path> [--dry-run]",
+      "added_in_version": "2.41.0",
+      "consumed_by": "main.aisop.json PipelineStart.step1(b) Evolve branch (SOLE AUTHORITY for evolution target resolution; HARD_FAIL HALT on TOOL-MISSING or exit 1)"
+    },
+    {
+      "name": "attestation_advance",
+      "description": "Deterministic SOLE-AUTHORITY advancement of quality_baseline.json attestation_chain (dict-aware) + final_adjusted_reconciliation to the current version + current governance_hash. Root-fixes ATTESTATION_CHAIN_STALE (band-out E1 SG-10): the on-disk attestation_chain is a version-keyed DICT, which governance_hash.py's isinstance(chain,list) branch silently no-ops on, freezing the chain several versions behind. SIBLING tool to governance_hash.py — CONSUMES the canonical top-level governance_hash, NEVER recomputes it. Mirrors governance_hash.py pattern: read top-level version+governance_hash -> DICT-AWARE APPEND-ONLY INSERT 'v{current}' entry {version, from=immediately-prior semver-max key no-skip, governance_hash=current, prev pointer} leaving existing entries untouched -> advance top-level attestation_chain_length -> sync evolution_history.{current} final_adjusted/deferred_reconciled note to cite current version+hash (no stale 'synced; <old hash>') -> ATOMIC .tmp+os.replace -> read-back verify. LLM/ReviewFinalize MUST NOT fill these provenance fields directly. --verify-only emits ATTESTATION_CHAIN_STALE (read-only detector).",
+      "path": "tool_dirs/attestation_advance.py",
+      "language": "python",
+      "runtime": "python3",
+      "annotations": {
+        "read_only": false,
+        "destructive": false,
+        "idempotent": true,
+        "open_world": false
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "program_dir": {
+            "type": "string",
+            "description": "Absolute path to the AIAP program directory containing quality_baseline.json"
+          },
+          "verify_only": {
+            "type": "boolean",
+            "description": "--verify-only: READ-ONLY ATTESTATION_CHAIN_STALE detector (no writes), reused by ValidateStep.step3 MF29 QUAD-SYNC"
+          }
+        },
+        "required": [
+          "program_dir"
+        ]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUCCESS",
+              "FAILURE",
+              "ATTESTATION_CHAIN_STALE"
+            ]
+          },
+          "current_version": {
+            "type": "string"
+          },
+          "current_governance_hash": {
+            "type": "string",
+            "description": "64-char SHA-256 hex digest (consumed from governance_hash.py, not recomputed)"
+          },
+          "attestation_chain_length": {
+            "type": "integer"
+          },
+          "semver_max_key": {
+            "type": "string"
+          },
+          "verify_failures": {
+            "type": "array"
+          }
+        }
+      },
+      "exit_codes": {
+        "0": "SUCCESS — chain advanced + read-back verified (advance mode) | all-pass (verify-only)",
+        "1": "FAILURE / ATTESTATION_CHAIN_STALE — read-back mismatch, missing file, or stale chain"
+      },
+      "invocation": "python tool_dirs/attestation_advance.py --program_dir=<path> [--verify-only]",
+      "added_in_version": "2.47.0",
+      "consumed_by": "review.aisop.json Finalize.step3 (after governance_hash TRI-SYNC AND P23 deferred-score reconciliation; SOLE AUTHORITY for attestation_chain advancement; HARD_FAIL on TOOL-MISSING or exit 1); ValidateStep.step3 MF29 QUAD-SYNC (--verify-only ATTESTATION_CHAIN_STALE detector)"
+    },
+    {
+      "name": "aisp_suite",
+      "description": "EMBEDDED READ-ONLY AISP V1.0.0 VALIDATION SUITE (G1, added v0.2.0) — used to validate the creator's PRODUCT (AISP single-file skill-packages), NOT the creator's own AIAP governance. This is a read-only copy from the authoritative upstream D:\\workspace\\AISP-Protocol (tools/ + schemas/); the copy is never written back to upstream. Contents under tool_dirs/aisp_suite/: aisp_validate.py (M1-M6 static conformance + safety + non_negotiable enforced_by binding; R1-R7 runtime rules honestly reported NOT RUN unless a runtime trace is supplied — never washed to PASS), aisp_check_runtime_trace.py (R-rule runtime conformance from a trace JSON), aisp_hash.py (canonical AISP provenance/registry hash for product publication), aisp_readme.py (transitive dependency of aisp_validate for README-marker M-checks), and schemas/ (aisp-contract-v1, runtime-trace-v1, tool-capabilities-v1, registry-manifest-v1). DISTINCT from the four creator-own AIAP governance tools above (snapshot_audit/governance_hash/resolve_target/attestation_advance) which remain the FROZEN sovereignty/governance toolset.",
+      "path": "tool_dirs/aisp_suite/aisp_validate.py",
+      "language": "python",
+      "runtime": "python3",
+      "annotations": {
+        "read_only": true,
+        "destructive": false,
+        "idempotent": true,
+        "open_world": false
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "paths": {
+            "type": "string",
+            "description": "Skill folder, aisp.aisop.json, or aisp/ directory path of the PRODUCT to validate"
+          },
+          "runtime_trace": {
+            "type": "string",
+            "description": "--runtime-trace: optional runtime trace JSON to prove R-rule / hard tool enforcement"
+          }
+        },
+        "required": [
+          "paths"
+        ]
+      },
+      "exit_codes": {
+        "0": "validator ran (read PASS/FAIL from JSON report; M-rule FAIL => product rejected)",
+        "2": "argument/usage error"
+      },
+      "invocation": "python tool_dirs/aisp_suite/aisp_validate.py --json <skill_folder> [--runtime-trace <trace> --tool-capabilities <caps>]",
+      "added_in_version": "0.2.0",
+      "consumed_by": "main.aisop.json ValidateStep.step1 (G3 PRODUCT validation — authoritative M1-M6); generate.aisop.json GenerateAISOP.step14 (SCHEMA_PRECHECK product M-rule read)",
+      "boundary": "PRODUCT-validation only; read-only embed; NOT a creator-self governance tool; upstream is read-only (copy-out only)"
+    }
+  ],
+  "tool_metadata": {
+    "total_tools": 5,
+    "languages": [
+      "python"
+    ],
+    "dependencies": [],
+    "tool_classes": {
+      "creator_aiap_governance_frozen": ["snapshot_audit", "governance_hash", "resolve_target", "attestation_advance"],
+      "embedded_product_validation_readonly": ["aisp_suite"]
+    }
+  },
+  "security": {
+    "file_scope": "tool_dirs/",
+    "network_access": "none",
+    "dependency_pinning": "strict",
+    "audit_triggers": [
+      "dependency_change",
+      "network_declaration",
+      "permission_escalation"
+    ]
+  },
+  "compatibility": {
+    "min_aiap_version": "1.0.0",
+    "mcp_version_target": "1.0",
+    "runtime_requirements": "none"
+  },
+  "notes": [
+    "Pattern G preparation - directory structure and manifest created in v2.23.0",
+    "Tool implementations will be added in future versions based on ecosystem adoption",
+    "MCP integration will be activated when MCP Server support is fully specified",
+    "This manifest follows I13 compliance requirements for future tool security"
+  ]
+}

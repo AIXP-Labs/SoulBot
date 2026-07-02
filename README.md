@@ -38,7 +38,7 @@ SoulBot is a Python-based AI Agent framework that connects to LLMs through CLI s
 | Gemini CLI | `npm install -g @google/gemini-cli` | `gemini login` |
 | OpenCode | `npm install -g opencode` | Free models, no login needed |
 
-> 💡 **Recommended combination**: SoulBot + Claude Code CLI + Claude Opus 4.8. This project is primarily developed and tested with this stack. New users: start here.
+> 💡 **Recommended combination**: SoulBot + Claude Code CLI + a flagship Claude model. This project is primarily developed and tested with this stack (validated models: Opus 4.8, Fable 5). New users: start here.
 
 ### Install
 
