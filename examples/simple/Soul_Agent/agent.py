@@ -2,15 +2,11 @@ import copy
 import json
 import logging
 import os
+import subprocess
 from datetime import datetime
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
-
-try:
-    import yaml as _yaml  # noqa: F401
-except ImportError:
-    logger.warning("PyYAML not installed — AIAP.md frontmatter summaries will be unavailable. Install with: pip install pyyaml")
 
 import soulbot
 from soulbot.agents import LlmAgent
@@ -22,6 +18,7 @@ from soulbot.agents import LlmAgent
 _AGENT_DIR = Path(__file__).parent
 _AIAP_DIR = (_AGENT_DIR / "aiap").resolve()
 _AIAP_STORE_DIR = (_AGENT_DIR.parent / "aiap_store").resolve()
+_AISP_DIR = (_AGENT_DIR / "aisp").resolve()
 
 # Cache lifecycle management is delegated to prepare_cache module.
 # agent.py bootstraps the Engine by importing cleanup_cache + prepare_execution_context.
@@ -112,27 +109,32 @@ def _load_router_cache() -> list:
 
 
 # ---------------------------------------------------------------------------
-# AIAP registry (scan aiap_store + aiap, with loading_mode)
+# AIAP registry (consume aiap/aiap_list.json; aiap_list.py is the generator)
+# Truth model: *_aiap folders = source of truth, aiap_list.py = generator,
+# aiap_list.json = cache, agent.py = consumer only.
 # ---------------------------------------------------------------------------
 
-_aiap_json_path = _AGENT_DIR / "aiap.json"
 _aiap_registry_cache: list[dict] | None = None
 _aiap_dirs_hash: str = ""
 
 
-def _compute_dirs_hash(aiap_dirs: list[Path]) -> str:
-    """Compute a content-based hash of AIAP directory listings.
+def _compute_dirs_hash(
+    dirs: list[Path], suffix: str = "_aiap", entry_name: str = "main.aisop.json"
+) -> str:
+    """Compute a content-based hash of package directory listings.
 
-    Uses directory entry names + sizes instead of mtime, which is unreliable
-    on Windows (mtime granularity issues, copy/move not updating mtime).
+    Generalized for both protocols (AIAP: *_aiap/main.aisop.json — defaults;
+    AISP: *_aisp/aisp.aisop.json). Uses directory entry names + sizes instead
+    of mtime, which is unreliable on Windows (mtime granularity issues,
+    copy/move not updating mtime).
     """
     import hashlib
     h = hashlib.md5(usedforsecurity=False)
-    for d in sorted(aiap_dirs):
+    for d in sorted(dirs):
         try:
             for entry in sorted(d.iterdir()):
-                if entry.is_dir() and entry.name.endswith("_aiap"):
-                    main_file = entry / "main.aisop.json"
+                if entry.is_dir() and entry.name.endswith(suffix):
+                    main_file = entry / entry_name
                     size = main_file.stat().st_size if main_file.is_file() else 0
                     h.update(f"{entry.name}:{size}".encode())
         except OSError:
@@ -140,88 +142,129 @@ def _compute_dirs_hash(aiap_dirs: list[Path]) -> str:
     return h.hexdigest()
 
 
+def _first_sentence(raw: str) -> str:
+    """First sentence for display: cut at the earliest of '。' or '. ' (half-width
+    dot followed by whitespace/end) — avoids dots inside version numbers
+    ("V1.0.0") and filenames ("cast_hexagram.py")."""
+    zh = raw.find("。")
+    en = -1
+    i = raw.find(".")
+    while i != -1:
+        if i == len(raw) - 1 or raw[i + 1] in " \n\t":
+            en = i
+            break
+        i = raw.find(".", i + 1)
+    cands = [c for c in (zh, en) if c != -1]
+    return raw[:min(cands) + 1] if cands else raw
+
+
 def _get_aiap_registry() -> list[dict]:
-    """Scan aiap/ for *_aiap packages (private agent-local AIAPs only)."""
+    """Consume aiap/aiap_list.json (regenerated via aiap_list.py on dir change).
+
+    Private agent-local AIAPs only. Generator failure falls back to the
+    existing aiap_list.json (routing never breaks on a malformed package);
+    unreadable JSON degrades to an empty registry for this turn.
+    """
     global _aiap_registry_cache, _aiap_dirs_hash
 
-    aiap_dirs = [d for d in (_AIAP_DIR,) if d.is_dir()]
-    if not aiap_dirs:
+    if not _AIAP_DIR.is_dir():
         return []
-
     try:
-        current_hash = _compute_dirs_hash(aiap_dirs)
+        current_hash = _compute_dirs_hash([_AIAP_DIR])
     except OSError:
         return _aiap_registry_cache or []
 
     if _aiap_registry_cache is not None and current_hash == _aiap_dirs_hash:
         return _aiap_registry_cache
 
+    list_json = _AIAP_DIR / "aiap_list.json"
+    if current_hash != _aiap_dirs_hash or not list_json.is_file():
+        try:
+            subprocess.run(
+                [_sys.executable, "-B", str(_AIAP_DIR / "aiap_list.py"), "--json"],
+                cwd=str(_AIAP_DIR), timeout=30, capture_output=True, check=True)
+        except Exception as e:
+            logger.error("aiap_list.py --json failed: %s — falling back to existing aiap_list.json", e)
     _aiap_dirs_hash = current_hash
 
     packages = []
-    seen_names = set()
-
-    for aiap_dir in aiap_dirs:
-        for d in sorted(aiap_dir.iterdir()):
-            if not d.is_dir() or not d.name.endswith("_aiap"):
-                continue
-
-            # Dedup: aiap_store scanned first, skip duplicates in aiap/
-            if d.name in seen_names:
-                continue
-            seen_names.add(d.name)
-
-            entry = d / "main.aisop.json"
-            if not entry.is_file():
-                continue
-
-            pkg = {
-                "name": d.name.replace("_aiap", ""),
-                "summary": "",
-                "entry": str(entry),
-                "loading_mode": "normal",
-                "workspace_dir": str(aiap_dir),
-            }
-
-            # Read loading_mode from main.aisop.json
-            try:
-                with open(entry, encoding="utf-8-sig") as f:
-                    prog = json.load(f)
-                lm = prog[0]["content"].get("loading_mode", "normal")
-                if lm not in ("normal", "node", "lite"):
-                    logger.warning("AIAP %s has invalid loading_mode '%s', defaulting to 'normal'", d.name, lm)
-                pkg["loading_mode"] = lm if lm in ("normal", "node", "lite") else "normal"
-            except Exception:
-                pass
-
-            # Extract summary from AIAP.md YAML frontmatter
-            aiap_md = d / "AIAP.md"
-            if aiap_md.is_file():
-                try:
-                    import yaml  # noqa: F811
-                    content = aiap_md.read_text(encoding="utf-8-sig")
-                    if content.startswith("---"):
-                        fm_parts = content.split("---", 2)
-                        if len(fm_parts) >= 3:
-                            fm = yaml.safe_load(fm_parts[1])
-                            if isinstance(fm, dict):
-                                raw = str(fm.get("summary", ""))
-                                dot = raw.find(".")
-                                pkg["summary"] = raw[:dot + 1] if dot > 0 else raw
-                except Exception:
-                    pass
-
-            packages.append(pkg)
-
-    # Persist registry
     try:
-        with open(_aiap_json_path, "w", encoding="utf-8") as f:
-            json.dump(packages, f, ensure_ascii=False, indent=2)
-    except OSError:
-        pass
-
+        data = json.loads(list_json.read_text(encoding="utf-8-sig"))
+        for item in data.get("packages", []):
+            packages.append({
+                "name": item["id"].replace("_aiap", ""),
+                "summary": _first_sentence(item.get("summary") or ""),
+                "entry": str(_AGENT_DIR / item["path"]),
+                "loading_mode": item.get("loading_mode", "normal"),
+                "workspace_dir": str(_AIAP_DIR),
+            })
+    except Exception as e:
+        logger.error("cannot read aiap_list.json: %s — registry empty this turn", e)
     _aiap_registry_cache = packages
     return packages
+
+
+# ---------------------------------------------------------------------------
+# AISP registry (consume aisp/aisp_list.json; aisp_list.py is the generator —
+# spec-normative, referenced by AISP_Standard.core/ecosystem/security).
+# Same truth model + consumer pattern as the AIAP registry above.
+# ---------------------------------------------------------------------------
+
+_aisp_registry_cache: list[dict] | None = None
+_aisp_dirs_hash: str = ""
+
+
+def _get_aisp_registry() -> list[dict]:
+    """Consume aisp/aisp_list.json (regenerated via aisp_list.py on dir change).
+
+    Private agent-local AISP skills only. Mirrors _get_aiap_registry's
+    hash-gated subprocess + fallback pattern: generator failure falls back to
+    the existing aisp_list.json; unreadable JSON degrades to an empty registry.
+    loading_mode is hardcoded "node" (AISP M1 mandates node; aisp_list.json
+    does not carry the field). when_to_use/risk_level come from aisp_contract
+    discovery semantics — stronger routing signals than AIAP name+summary.
+    """
+    global _aisp_registry_cache, _aisp_dirs_hash
+
+    if not _AISP_DIR.is_dir():
+        return []
+    try:
+        current_hash = _compute_dirs_hash(
+            [_AISP_DIR], suffix="_aisp", entry_name="aisp.aisop.json")
+    except OSError:
+        return _aisp_registry_cache or []
+
+    if _aisp_registry_cache is not None and current_hash == _aisp_dirs_hash:
+        return _aisp_registry_cache
+
+    list_json = _AISP_DIR / "aisp_list.json"
+    if current_hash != _aisp_dirs_hash or not list_json.is_file():
+        try:
+            subprocess.run(
+                [_sys.executable, "-B", str(_AISP_DIR / "aisp_list.py"), "--json"],
+                cwd=str(_AISP_DIR), timeout=30, capture_output=True, check=True)
+        except Exception as e:
+            logger.error("aisp_list.py --json failed: %s — falling back to existing aisp_list.json", e)
+    _aisp_dirs_hash = current_hash
+
+    skills = []
+    try:
+        data = json.loads(list_json.read_text(encoding="utf-8-sig"))
+        for item in data.get("skills", []):
+            skills.append({
+                "protocol": "AISP",
+                "name": item["id"],                 # full id incl. _aisp suffix
+                "summary": _first_sentence(item.get("summary") or ""),
+                "entry": str(_AGENT_DIR / item["path"]),
+                "loading_mode": "node",             # AISP M1: always node
+                "when_to_use": item.get("when_to_use", []),
+                "risk": item.get("risk_level"),
+                "workspace_dir": str(_AISP_DIR),
+            })
+    except Exception as e:
+        logger.error("cannot read aisp_list.json: %s — AISP registry empty this turn", e)
+    _aisp_registry_cache = skills
+    return skills
 
 
 # ---------------------------------------------------------------------------
@@ -309,7 +352,8 @@ def _router_instruction(_ctx) -> str:
 
     dir_block = (
         f"[AIAP Directory]\n{_AIAP_DIR}\n"
-        f"[AIAP Store Directory]\n{_AIAP_STORE_DIR}"
+        f"[AIAP Store Directory]\n{_AIAP_STORE_DIR}\n"
+        f"[AISP Directory]\n{_AISP_DIR}"
     )
     parts.append(dir_block)
 
@@ -368,16 +412,53 @@ def _router_instruction(_ctx) -> str:
         data[1]["content"]["instruction"] = "RUN aisop.main"
         data[0]["content"].pop("loading_mode", None)
 
-        # AIAP package registry with loading_mode (only needed for Router matching)
+        # Package registry for Router matching. Block name kept as
+        # "[Available AIAP packages]" for engine-match compatibility; AISP
+        # entries are tagged [protocol=AISP] (untagged entries = AIAP). AIAP
+        # entry rendering is byte-identical to the pre-AISP version (doc 04 V3).
         registry = _get_aiap_registry()
-        if registry:
+        aisp_registry = _get_aisp_registry()
+        if registry or aisp_registry:
             lines = ["[Available AIAP packages]"]
             for pkg in registry:
                 mode_tag = f" [loading_mode={pkg['loading_mode']}]"
                 lines.append(f"- {pkg['name']}: {pkg['summary'] or 'No description'}{mode_tag}")
                 lines.append(f"  entry: {pkg['entry']}")
                 lines.append(f"  workspace_dir: {pkg['workspace_dir']}")
-            lines.append("Route user intent to the matching package above.")
+            for pkg in aisp_registry:
+                risk_tag = f" [risk={pkg['risk']}]" if pkg.get("risk") else ""
+                lines.append(
+                    f"- {pkg['name']}: {pkg['summary'] or 'No description'}"
+                    f" [protocol=AISP] [loading_mode={pkg['loading_mode']}]{risk_tag}"
+                )
+                if pkg.get("when_to_use"):
+                    lines.append(f"  when_to_use: {' | '.join(pkg['when_to_use'])}")
+                lines.append(f"  entry: {pkg['entry']}")
+                lines.append(f"  workspace_dir: {pkg['workspace_dir']}")
+            # Routing discipline (user legislation 2026-07-03, Axiom 0 — see
+            # docs/01SoulBot-Support-AISP/05 §4b): explicit naming wins; on
+            # same-intent ambiguity NEVER pick on the user's behalf — ask.
+            # v2 (same day): bounded "doubt" + anti-over-gate clause — the first
+            # wording's unscoped "when in doubt, STOP" invited manufactured doubt
+            # (mid-run "shall I continue" pauses). Two-sided discipline: designed
+            # gates must stop; undesigned stops are also a sovereignty violation.
+            lines.append(
+                "Route user intent to the matching package above.\n"
+                "- If the user explicitly names a package or a protocol (e.g. \"用 AISP …\"), "
+                "use exactly that — absolute priority.\n"
+                "- If exactly one entry matches the intent, route to it and RUN — "
+                "do not ask permission to proceed.\n"
+                "- ONLY IF more than one entry covers the same intent and the user did not "
+                "name one: do not pick for the user — present the matching entries as a "
+                "short numbered list (one line each), optionally add your recommendation, "
+                "and wait for the user's choice. (Axiom 0 here means: genuine doubt about "
+                "WHICH package the user wants — not doubt about whether to proceed with "
+                "clear instructions.)\n"
+                "- Once the target is decided, execute continuously to completion or a "
+                "DESIGNED gate (sys.io.confirm / user_gate) or HARD_FAIL. Do NOT pause "
+                "mid-run to ask \"shall I continue\" — unnecessary stops are also a "
+                "sovereignty violation (they dilute real gates)."
+            )
             parts.append("\n".join(lines))
 
         file_id = data[0]["content"].get("id", "main")

@@ -81,5 +81,11 @@ class LlmResponse(BaseModel):
     error_code: Optional[str] = None
     error_message: Optional[str] = None
 
+    crash_zero_progress: bool = False
+    """True when an ACP_CRASH produced zero output (instant subprocess death).
+    Runner uses consecutive zero-progress crashes as a circuit breaker
+    (environment broken / user killing children — resuming would fight the
+    user instead of recovering from a mid-run OOM). Doc 01SoulBot-Support-AISP/03."""
+
     usage: Optional[dict[str, Any]] = None
     """Token usage info (model-dependent structure)."""

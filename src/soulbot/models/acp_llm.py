@@ -160,6 +160,11 @@ class ACPLlm(BaseLlm):
         # final yield reports error_code="ACP_CRASH" — Runner (change B) then auto-resumes
         # the pipeline from cache instead of surfacing a dead-end error.
         self._crashed = False
+        # Fix (doc 01SoulBot-Support-AISP/03): track output progress across attempts.
+        # A crash with ZERO progress (instant subprocess death, chunks=0) signals a
+        # broken environment or a user killing children (Ctrl+C) — NOT a mid-run OOM
+        # worth resuming. Runner circuit-breaks on consecutive zero-progress crashes.
+        self._progress_chars = 0
         provider = resolve_provider(self.model)
         skip_tools = provider == "openclaw"
         prompt = self._build_prompt(llm_request, skip_tools=skip_tools)
@@ -283,6 +288,7 @@ class ACPLlm(BaseLlm):
                                         span.set_attribute(sc.GEN_AI_SERVER_TTFT, round(ttft, 4))
                                     ttft_recorded = True
                                 output_text += chunk
+                                self._progress_chars += len(chunk)
                                 yield LlmResponse(
                                     content=Content(role="model", parts=[Part(text=chunk)]),
                                     partial=True,
@@ -476,6 +482,7 @@ class ACPLlm(BaseLlm):
         yield LlmResponse(
             error_code="ACP_CRASH" if self._crashed else "ACP_ERROR",
             error_message=error_msg,
+            crash_zero_progress=(self._crashed and self._progress_chars == 0),
         )
 
     # ------------------------------------------------------------------

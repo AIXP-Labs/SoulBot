@@ -4,7 +4,7 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-1259%20passed-brightgreen.svg)](#测试)
+[![Tests](https://img.shields.io/badge/tests-1263%20passed-brightgreen.svg)](#测试)
 
 [English](README.md) | 中文文档
 
@@ -18,6 +18,7 @@ SoulBot 是一个基于 Python 的 AI Agent 框架，通过 CLI 子进程使用 
 - **多模型切换** — Claude、Gemini、OpenCode（Kimi 等），`.env` 一行切换
 - **AISOP 协议** — Agent 行为由 `.aisop.json`（Mermaid 流程图）蓝图定义
 - **AIAP 包系统** — 热插拔功能包（`*_aiap`），支持 AISOP 入口，即插即用扩展 Agent 能力
+- **AISP 技能** — 单文件 AI 技能包（`*_aisp/`），携带机器强制的契约红线（违约即 HARD_FAIL 停机）与人审门 —— 同一引擎原生运行
 - **Agent 组合** — 单 Agent、多 Agent 路由、Sequential / Parallel / Loop 工作流
 - **工具系统** — Python 函数自动包装为 LLM 可调用工具
 - **多通道接入** — 终端 CLI、Web Dev UI、Telegram Bot
@@ -84,13 +85,15 @@ soulbot create my_agent
 
 ```
 my_agent/
-├── agent.py          # Agent 定义
-├── main.aisop.json   # AISOP 蓝图（Mermaid 流程图）
-├── .env              # 配置（模型选择等）
-└── aisop_aiap/       # AISOP 格式 AIAP 功能包目录
+├── agent.py                        # Agent 定义（双协议注册表消费者）
+├── aiap/                           # AIAP 包（*_aiap/）+ aiap_list.py 注册表生成器
+├── aisp/                           # AISP 技能（*_aisp/）+ aisp_list.py + _shared/
+├── soulbot_execute_engine_aiap/    # AISOP 执行引擎（node/agent 派发、红线硬门）
+├── soulbot_intent_classifier_aiap/ # 意图分类器包
+└── heartbeat.aisop.json            # 定时任务蓝图
 ```
 
-编辑 `.env` 选择 LLM 后端，然后运行：
+创建 `.env` 选择 LLM 后端（三层查找：agent 目录 → agents 目录 → SoulBot 根），然后运行：
 
 ```bash
 soulbot run my_agent
@@ -100,14 +103,15 @@ soulbot run my_agent
 
 ## 架构
 
-### AISOP + AIAP
+### AISOP + AIAP + AISP
 
-SoulBot 引入了两个核心概念：
+SoulBot 引入了三个核心概念：
 
 | 概念 | 说明 |
 |------|------|
 | **AISOP V1.0.0** | AI Standard Operating Procedure — 基于 JSON 的蓝图协议，通过 **Mermaid 流程图**定义 Agent 行为的控制流 |
 | **AIAP 包** | AI Application Package — 热插拔功能模块（`*_aiap/`），支持 `main.aisop.json` 入口 |
+| **AISP 技能** | AI Skill Protocol — 单文件技能（`*_aisp/aisp.aisop.json`），携带 `aisp_contract` 契约（non_negotiable 红线 + 人审门） |
 
 **核心理念**：流程图是确定性执行路径（类似电路图），prompt 提供上下文和约束（类似元器件参数）。AISOP 用 Mermaid 语法（适合可视化）。这种分离使 Agent 行为可复现、可版本控制。
 
@@ -117,15 +121,19 @@ SoulBot 引入了两个核心概念：
 agent.py → _dynamic_instruction()
     ├── _SYSTEM_PROMPT（WHO — 运行时身份）
     ├── main.aisop.json（WHAT — 路由规则）
-    └── [Available AIAP packages]（可用能力，扫描 aisop_aiap/）
+    └── [Available packages] — AIAP 程序 + AISP 技能
+        （生成式注册表：aiap_list.json / aisp_list.json，源于 aiap/ 与 aisp/）
     ↓
 LLM 按流程图执行：
-    NLU[匹配意图] → Run[加载并执行 *_aiap/main.aisop.json]
+    NLU[匹配意图] → Run[加载并执行 *_aiap/main.aisop.json
+                        或 *_aisp/aisp.aisop.json]
     ↓
-AIAP 包内的流程执行领域逻辑
+包内流程执行领域逻辑
     ↓
 返回结果给用户
 ```
+
+引擎是**协议无关的 AISOP 执行器**：经 `enforced_by` 绑定的契约红线是硬门（违约 → HARD_FAIL 停机、交人处置）；多候选路由歧义时**停下来询问用户**（公理 0），绝不静默代选。
 
 ### 治理域
 
@@ -230,6 +238,22 @@ root_agent = ParallelAgent(name="parallel", sub_agents=[search, summarize])
 # 循环执行
 root_agent = LoopAgent(name="refiner", sub_agents=[draft, review], max_iterations=3)
 ```
+
+### AISP 技能与 aisp_store
+
+`examples/simple/aisp_store/` 随仓附带 6 个现成 AISP 技能（库存 —— **交付 ≠ 装机**）：
+
+| 技能 | 展示什么 |
+|---|---|
+| `aisp_creator_evolution_aisp` v1.1.0 | 对话式创建/进化 AISP 技能（同时挂载于 `Soul_Agent/aisp/`，开箱可路由） |
+| `webapp_testing_aisp` v1.3.0 | research 驱动的进化链（v1.0 → v1.3），Playwright 网页测试 |
+| `mcp_builder_aisp` v2.0.0 | MCP 服务器构建 —— SemVer MAJOR（谓词翻转）活案例 |
+| `yijing_aisp` | 易经占卜 —— 引擎原生运行的第一个 AISP 技能 |
+| `random_draw_aisp` | 无偏随机抽签（CSPRNG，离线）—— 由创建器技能端到端造出 |
+| `redline_breach_test_aisp` | **硬门探针**：故意违反自己的红线 —— 合规 runtime 必须在 `breach.step2` 停机。克隆后可亲手验证 |
+
+- **装机**：把技能文件夹从 `aisp_store/` 复制到 `Soul_Agent/aisp/` —— 注册表（`aisp_list.json`）下一轮自动重生成（缺 cache 自愈）。
+- **创建**：直接对话（如 `创建一个 AISP 技能:...`）—— 若多个创建器覆盖同一意图且未点名，路由会停下来问你（公理 0）；产物默认落 `aisp_store/`。
 
 ---
 
@@ -425,7 +449,9 @@ AIXP Labs 开发并维护以下核心项目：
 | [AIRP](https://airp.dev) | AI RMB Protocol —— 中国大陆商务、人民币持牌结算 | airp.dev |
 | [AIBP](https://aibp.dev) | AI Bot Protocol —— 社交通信与信任 | aibp.dev |
 | [AIAP](https://aiap.dev) | AI Application Protocol —— 治理与合规 | aiap.dev |
+| [AISP](https://aisp.dev) | AI Skill Protocol —— 单文件技能包，机器强制的契约红线 | aisp.dev |
 | [AISOP](https://aisop.dev) | AI Standard Operating Protocol —— 流程程序定义 | aisop.dev |
+| [SoulSkill](https://soulskill.dev) | AISP 技能参考库 & 多 CLI 插件分发 | soulskill.dev |
 | [SoulAgent](https://soulagent.dev) | 任何 CLI / SDK / IDE 直接调用的 drop-in AI agent | soulagent.dev |
 | [SoulBot](https://soulbot.dev) | AI agent 运行时 & 自编排框架（定时、建 agent、agent 间通信） **（本项目）** | soulbot.dev |
 | [SoulACP](https://soulacp.dev) | 适配库 —— 桥接 CLI 工具与 LLM 提供方 | soulacp.dev |

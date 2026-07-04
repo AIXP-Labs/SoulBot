@@ -84,6 +84,10 @@ class Event(BaseModel):
     error_code: str | None = None
     error_message: str | None = None
 
+    crash_zero_progress: bool = False
+    """True when error_code=="ACP_CRASH" and the subprocess died with zero
+    output (instant death). Runner's auto-resume circuit breaker input."""
+
     # ------------------------------------------------------------------
     # Helpers
     # ------------------------------------------------------------------

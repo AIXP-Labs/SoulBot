@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import TYPE_CHECKING, AsyncGenerator, Optional
+from typing import TYPE_CHECKING, AsyncGenerator, Callable, Optional
 
 from ..agents.base_agent import BaseAgent
 from ..agents.invocation_context import InvocationContext, RunConfig
@@ -17,6 +17,27 @@ if TYPE_CHECKING:
     from ..history.base_history_service import BaseChatHistoryService
 
 logger = logging.getLogger(__name__)
+
+
+# --- Fix (doc 01SoulBot-Support-AISP/03): shutdown-aware auto-resume ------------
+# uvicorn captures Ctrl+C and defers it until serve() can exit; without this hook
+# the ACP_CRASH auto-resume loop keeps the turn alive and fights the user (Axiom 0:
+# user intent to stop overrides self-healing). cli.py registers
+# `lambda: server.should_exit` here; the resume loop checks it before every resume.
+_shutdown_check: Callable[[], bool] | None = None
+
+
+def set_shutdown_check(fn: Callable[[], bool]) -> None:
+    """Register a callable returning True once process shutdown was requested."""
+    global _shutdown_check
+    _shutdown_check = fn
+
+
+def _shutdown_requested() -> bool:
+    try:
+        return bool(_shutdown_check and _shutdown_check())
+    except Exception:
+        return False
 
 
 # --- Doc 22 P3: per-turn OTel span (soft-fail if observability not installed) ---
@@ -232,8 +253,15 @@ class Runner:
             # the 60s-capped backoff) before escalation; acceptable since OOM is now rare.
             # (reset-on-progress + small cap = backlog if OOM-on-long-runs recurs.)
             MAX_AUTO_RESUME = 100
+            # Fix (doc 03): circuit breaker — N consecutive crashes with ZERO output
+            # (instant subprocess death) means the environment is broken or the user
+            # is killing children (Ctrl+C); resuming would fight the user, not recover
+            # an OOM. Mid-run crashes (chunks>0) keep the full OOM-recovery behavior.
+            MAX_ZERO_PROGRESS = 3
+            zero_streak = 0
             while True:
                 crashed = False
+                crash_zero = False
                 # 5. Execute agent and yield events (all under per-turn span)
                 async for event in self.agent.run_async(ctx):
                     event.invocation_id = ctx.invocation_id
@@ -242,6 +270,7 @@ class Runner:
                     # response; the auto-resume below takes over.
                     if event.error_code == "ACP_CRASH":
                         crashed = True
+                        crash_zero = bool(getattr(event, "crash_zero_progress", False))
                         continue
 
                     # CMD processing moved to LlmAgent layer (Doc 26)
@@ -307,6 +336,34 @@ class Runner:
                         )
                     break  # normal completion or WAITING_USER (no ACP_CRASH) → done
                 resume_count += 1
+                # Fix (doc 03) gate 1: shutdown requested (e.g. Ctrl+C captured by
+                # uvicorn) → never resume; let serve() exit so the deferred signal fires.
+                if _shutdown_requested():
+                    logger.warning(
+                        "Shutdown requested — not auto-resuming crashed pipeline "
+                        "(user intent overrides self-healing, session=%s)", session_id,
+                    )
+                    break
+                # Fix (doc 03) gate 2: consecutive zero-progress crashes → circuit break
+                # (broken environment / user killing children; NOT a resumable OOM).
+                if crash_zero:
+                    zero_streak += 1
+                else:
+                    zero_streak = 0
+                if zero_streak >= MAX_ZERO_PROGRESS:
+                    logger.error(
+                        "ACP crashed %d consecutive times with ZERO progress (instant "
+                        "subprocess death — broken environment or user interrupt); "
+                        "stopping auto-resume (session=%s)", zero_streak, session_id,
+                    )
+                    yield Event(
+                        author="system",
+                        content=Content(role="model", parts=[Part(text=(
+                            f"⚠️ ACP 子进程连续 {zero_streak} 次零产出即死(环境故障或人工中断),"
+                            "已停止自动续跑。请检查 CLI 环境,或回复「继续执行任务」手动续跑。"
+                        ))]),
+                    )
+                    break
                 if resume_count > MAX_AUTO_RESUME:
                     logger.error(
                         "ACP pipeline still crashing after %d auto-resumes; escalating to "
@@ -331,6 +388,14 @@ class Runner:
                     "backoff (session=%s)", resume_count, MAX_AUTO_RESUME, delay, session_id,
                 )
                 await asyncio.sleep(delay)
+                # Fix (doc 03): shutdown may have arrived during the backoff sleep —
+                # re-check before spawning a new subprocess.
+                if _shutdown_requested():
+                    logger.warning(
+                        "Shutdown requested during backoff — aborting auto-resume "
+                        "(session=%s)", session_id,
+                    )
+                    break
                 await self.session_service.append_event(session, Event(
                     author="user",
                     content=Content(role="user", parts=[Part(text="继续执行任务")]),

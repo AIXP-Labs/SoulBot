@@ -160,6 +160,7 @@ class LlmAgent(BaseAgent):
                     branch=ctx.branch,
                     error_code=llm_response.error_code,
                     error_message=llm_response.error_message,
+                    crash_zero_progress=getattr(llm_response, "crash_zero_progress", False),
                 )
                 break
 

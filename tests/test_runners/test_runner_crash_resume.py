@@ -119,8 +119,12 @@ async def test_auto_resume_on_acp_crash():
 
 
 async def test_resume_exhausted_reports_human():
-    """Persistent crash → after MAX_AUTO_RESUME stop and report to human."""
-    CrashMockLlm.set_responses([_crash()] * 10)
+    """Persistent crash → after MAX_AUTO_RESUME (100) stop and report to human.
+
+    Feeds 105 crashes so the 100-resume ceiling is actually exceeded
+    (backoff sleeps are skipped by the no_backoff fixture, so this is instant).
+    """
+    CrashMockLlm.set_responses([_crash()] * 105)
     svc = InMemorySessionService()
     runner = Runner(agent=_agent(), app_name="app", session_service=svc)
 

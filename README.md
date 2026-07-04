@@ -4,7 +4,7 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-1259%20passed-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/tests-1263%20passed-brightgreen.svg)](#testing)
 
 [中文文档](README_CN.md) | English
 
@@ -18,6 +18,7 @@ SoulBot is a Python-based AI Agent framework that connects to LLMs through CLI s
 - **Multi-Model Switching** — Claude, Gemini, OpenCode (Kimi, etc.) — switch with one line in `.env`
 - **AISOP Protocol** — Agent behavior defined by `.aisop.json` (Mermaid flowcharts) blueprints
 - **AIAP Package System** — Hot-pluggable capability packages (`*_aiap`) with AISOP entry points, extending agent functionality
+- **AISP Skills** — Single-file AI Skill packages (`*_aisp/`) carrying machine-enforced contract red lines (HARD_FAIL on violation) and human-approval gates — run natively on the same engine
 - **Agent Composition** — Single agent, multi-agent routing, Sequential / Parallel / Loop workflows
 - **Tool System** — Python functions auto-wrapped as LLM-callable tools
 - **Multi-Channel** — Terminal CLI, Web Dev UI, Telegram Bot
@@ -84,13 +85,15 @@ This generates:
 
 ```
 my_agent/
-├── agent.py          # Agent definition
-├── main.aisop.json   # AISOP blueprint (Mermaid flowchart)
-├── .env              # Configuration (model selection)
-└── aisop_aiap/       # AISOP-format AIAP package directory
+├── agent.py                        # Agent definition (dual-protocol registry consumer)
+├── aiap/                           # AIAP packages (*_aiap/) + aiap_list.py registry generator
+├── aisp/                           # AISP skills (*_aisp/) + aisp_list.py + _shared/
+├── soulbot_execute_engine_aiap/    # AISOP execution engine (node/agent dispatch, red-line gates)
+├── soulbot_intent_classifier_aiap/ # Intent classifier package
+└── heartbeat.aisop.json            # Scheduled-task blueprint
 ```
 
-Edit `.env` to select your LLM backend, then run:
+Create a `.env` to select your LLM backend (looked up in 3 layers: agent dir → agents dir → SoulBot root), then run:
 
 ```bash
 soulbot run my_agent
@@ -100,14 +103,15 @@ soulbot run my_agent
 
 ## Architecture
 
-### AISOP + AIAP
+### AISOP + AIAP + AISP
 
-SoulBot introduces two core concepts:
+SoulBot introduces three core concepts:
 
 | Concept | Description |
 |---------|-------------|
 | **AISOP V1.0.0** | AI Standard Operating Procedure — a JSON-based blueprint protocol that defines agent behavior through **Mermaid flowcharts** |
 | **AIAP Packages** | AI Application Packages — hot-pluggable capability modules (`*_aiap/`) with AISOP entry point (`main.aisop.json`) |
+| **AISP Skills** | AI Skill Protocol — single-file skills (`*_aisp/aisp.aisop.json`) carrying an `aisp_contract` with non-negotiable red lines and human gates |
 
 **The key insight**: flowcharts serve as deterministic execution paths (like circuit diagrams), while prompts provide context and constraints (like component specifications). AISOP uses Mermaid syntax (ideal for visualization). This separation makes agent behavior reproducible and version-controllable.
 
@@ -117,15 +121,19 @@ User Message
 agent.py → _dynamic_instruction()
     ├── _SYSTEM_PROMPT (WHO — runtime identity)
     ├── main.aisop.json (WHAT — routing rules)
-    └── [Available AIAP packages] (capabilities, scanned from aisop_aiap/)
+    └── [Available packages] — AIAP programs + AISP skills
+        (generated registries: aiap_list.json / aisp_list.json from aiap/ & aisp/)
     ↓
 LLM follows flowchart:
-    NLU[Match Intent] → Run[Load & Execute *_aiap/main.aisop.json]
+    NLU[Match Intent] → Run[Load & Execute *_aiap/main.aisop.json
+                            or *_aisp/aisp.aisop.json]
     ↓
-AIAP package's flow executes domain-specific logic
+Package's flow executes domain-specific logic
     ↓
 Response returned to user
 ```
+
+The engine is a **protocol-agnostic AISOP executor**: contract red lines bound via `enforced_by` are hard gates (violation → HARD_FAIL halt, surfaced to the human), and ambiguous multi-candidate routing **stops and asks the user** (Axiom 0) instead of silently picking.
 
 ### Governance Domains
 
@@ -230,6 +238,22 @@ root_agent = ParallelAgent(name="parallel", sub_agents=[search, summarize])
 # Loop: repeat until escalation
 root_agent = LoopAgent(name="refiner", sub_agents=[draft, review], max_iterations=3)
 ```
+
+### AISP Skills & aisp_store
+
+`examples/simple/aisp_store/` ships six ready-made AISP skills (inventory — **delivery ≠ install**):
+
+| Skill | What it shows |
+|---|---|
+| `aisp_creator_evolution_aisp` v1.1.0 | Creates / evolves AISP skills from a chat request (also mounted in `Soul_Agent/aisp/`, routable out of the box) |
+| `webapp_testing_aisp` v1.3.0 | Research-driven evolution chain (v1.0 → v1.3), Playwright web testing |
+| `mcp_builder_aisp` v2.0.0 | MCP server builder — a live SemVer MAJOR (predicate-flip) case |
+| `yijing_aisp` | I-Ching divination — the first AISP skill ever run natively by the engine |
+| `random_draw_aisp` | Unbiased random pick (CSPRNG, offline) — created end-to-end by the creator skill |
+| `redline_breach_test_aisp` | **Hard-gate probe**: deliberately violates its own red line — a conforming runtime MUST halt at `breach.step2`. Clone and verify it yourself |
+
+- **Install** a skill: copy its folder from `aisp_store/` into `Soul_Agent/aisp/` — the registry (`aisp_list.json`) regenerates automatically on the next turn (a missing cache self-heals).
+- **Create** new skills by chatting (e.g. `创建一个 AISP 技能:...`) — if several creators cover the intent and none is named, the router stops and asks you (Axiom 0); products land in `aisp_store/` by default.
 
 ---
 
@@ -425,7 +449,9 @@ AIXP Labs develops and maintains the following core projects:
 | [AIRP](https://airp.dev) | AI RMB Protocol — Mainland China commerce, RMB licensed settlement | airp.dev |
 | [AIBP](https://aibp.dev) | AI Bot Protocol — social communication and trust | aibp.dev |
 | [AIAP](https://aiap.dev) | AI Application Protocol — governance and compliance | aiap.dev |
+| [AISP](https://aisp.dev) | AI Skill Protocol — single-file skills with machine-enforced contract red lines | aisp.dev |
 | [AISOP](https://aisop.dev) | AI Standard Operating Protocol — flow program definition | aisop.dev |
+| [SoulSkill](https://soulskill.dev) | AISP skill reference library & multi-CLI plugin distribution | soulskill.dev |
 | [SoulAgent](https://soulagent.dev) | Drop-in AI agent invoked directly by any CLI / SDK / IDE | soulagent.dev |
 | [SoulBot](https://soulbot.dev) | AI agent runtime & orchestration framework (scheduling, agent-spawn, inter-agent comms) **(this project)** | soulbot.dev |
 | [SoulACP](https://soulacp.dev) | Adapter library — bridging CLI tools and LLM providers | soulacp.dev |

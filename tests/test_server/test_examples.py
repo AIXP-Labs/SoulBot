@@ -1,7 +1,7 @@
 """Tests that example agents can be loaded correctly.
 
 Examples are organized under:
-- simple/  — soul_Agent (AISOP runtime with AIAP package routing)
+- simple/  — Soul_Agent (AISOP runtime with AIAP package routing)
 """
 
 import pytest
@@ -25,10 +25,11 @@ def simple_loader():
 class TestSimpleExample:
     def test_list_agents(self, simple_loader):
         names = simple_loader.list_agents()
-        assert "soul_Agent" in names
+        assert "Soul_Agent" in names
 
     def test_load_soul_Agent(self, simple_loader):
-        agent = simple_loader.load_agent("soul_Agent")
-        assert agent.name == "soul_Agent"
+        # Exact case matters: NTFS tolerates "soul_Agent" but Linux does not.
+        agent = simple_loader.load_agent("Soul_Agent")
+        assert agent.name == "Soul_Agent"
         assert isinstance(agent, LlmAgent)
         assert agent.model is not None

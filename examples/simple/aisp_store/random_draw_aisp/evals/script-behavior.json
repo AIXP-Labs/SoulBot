@@ -1,0 +1,137 @@
+{
+  "skill_id": "random_draw_aisp",
+  "runner": "python",
+  "description": "Deterministic-shape, CSPRNG-fairness, and input-bound behavior evidence for the bundled draw.py random-draw script. These validate that the draw uses secrets (not random), stays offline, stamps rng='secrets', carries a not-serious disclaimer, and rejects illegal option lists / out-of-range draw counts. Release-gate shape: top-level scripts[] keyed by path, each case tagged kind=positive|boundary|failure; case assertions run against stdout only (draw.py writes error JSON to stderr on rejection, so stdout is empty on failure cases).",
+  "scripts": [
+    {
+      "path": "scripts/draw.py",
+      "runner": "python",
+      "cases": [
+        {
+          "name": "positive_single_draw",
+          "kind": "positive",
+          "description": "Default single draw over 3 distinct options returns a valid CSPRNG result of length 1, stamped rng='secrets', with a disclaimer.",
+          "argv": ["python", "scripts/draw.py", "--n", "1", "--options", "苹果,香蕉,橙子"],
+          "expected_exit": 0,
+          "expect_stdout_contains": [
+            "\"rng\": \"secrets\"",
+            "\"n\": 1",
+            "\"picks\":",
+            "\"counts\":",
+            "not advice"
+          ],
+          "forbid_stdout_contains": [
+            "import random",
+            "\"rng\": \"random\"",
+            "\"error\""
+          ]
+        },
+        {
+          "name": "positive_multi_draw",
+          "kind": "positive",
+          "description": "Multi-draw (n=5) over 3 distinct options returns 5 picks and per-option counts, stamped rng='secrets'.",
+          "argv": ["python", "scripts/draw.py", "--n", "5", "--options", "红,绿,蓝"],
+          "expected_exit": 0,
+          "expect_stdout_contains": [
+            "\"rng\": \"secrets\"",
+            "\"n\": 5",
+            "\"picks\":",
+            "\"counts\":"
+          ],
+          "forbid_stdout_contains": [
+            "import random",
+            "\"rng\": \"random\"",
+            "\"error\""
+          ]
+        },
+        {
+          "name": "boundary_max_draws",
+          "kind": "boundary",
+          "description": "n=100 (upper bound) succeeds and returns 100 picks from the CSPRNG, stamped rng='secrets'.",
+          "argv": ["python", "scripts/draw.py", "--n", "100", "--options", "A,B,C,D"],
+          "expected_exit": 0,
+          "expect_stdout_contains": [
+            "\"rng\": \"secrets\"",
+            "\"n\": 100"
+          ],
+          "forbid_stdout_contains": [
+            "import random",
+            "\"rng\": \"random\"",
+            "\"error\""
+          ]
+        },
+        {
+          "name": "boundary_two_options",
+          "kind": "boundary",
+          "description": "Exactly 2 options (lower bound, coin-like) succeeds and returns a pick, stamped rng='secrets'.",
+          "argv": ["python", "scripts/draw.py", "--n", "1", "--options", "正面,反面"],
+          "expected_exit": 0,
+          "expect_stdout_contains": [
+            "\"rng\": \"secrets\"",
+            "\"picks\":"
+          ],
+          "forbid_stdout_contains": [
+            "import random",
+            "\"rng\": \"random\"",
+            "\"error\""
+          ]
+        },
+        {
+          "name": "failure_single_option",
+          "kind": "failure",
+          "description": "A single option is below the >=2 lower bound and must be rejected with a nonzero exit code (NN4). Error JSON goes to stderr; stdout is empty, so it must not contain the secrets stamp.",
+          "argv": ["python", "scripts/draw.py", "--n", "1", "--options", "只有一个"],
+          "expected_exit": 2,
+          "expect_stdout_contains": [],
+          "forbid_stdout_contains": [
+            "\"rng\": \"secrets\""
+          ]
+        },
+        {
+          "name": "failure_duplicate_options",
+          "kind": "failure",
+          "description": "Duplicate options must be rejected (NN4 requires all options distinct). Error JSON goes to stderr; stdout is empty.",
+          "argv": ["python", "scripts/draw.py", "--n", "1", "--options", "苹果,苹果"],
+          "expected_exit": 2,
+          "expect_stdout_contains": [],
+          "forbid_stdout_contains": [
+            "\"rng\": \"secrets\""
+          ]
+        },
+        {
+          "name": "failure_empty_option",
+          "kind": "failure",
+          "description": "An option list that collapses to a single non-empty option after dropping empty fragments (trailing/duplicate delimiters) must be rejected (NN4 needs >=2 non-empty options). Error JSON goes to stderr; stdout is empty.",
+          "argv": ["python", "scripts/draw.py", "--n", "1", "--options", "苹果,,,"],
+          "expected_exit": 2,
+          "expect_stdout_contains": [],
+          "forbid_stdout_contains": [
+            "\"rng\": \"secrets\""
+          ]
+        },
+        {
+          "name": "failure_zero_draws",
+          "kind": "failure",
+          "description": "n=0 is below the lower bound and must be rejected with a nonzero exit code (NN4). Error JSON goes to stderr; stdout is empty.",
+          "argv": ["python", "scripts/draw.py", "--n", "0", "--options", "A,B,C"],
+          "expected_exit": 2,
+          "expect_stdout_contains": [],
+          "forbid_stdout_contains": [
+            "\"rng\": \"secrets\""
+          ]
+        },
+        {
+          "name": "failure_over_max_draws",
+          "kind": "failure",
+          "description": "n=101 is above the upper bound and must be rejected with a nonzero exit code (NN4). Error JSON goes to stderr; stdout is empty.",
+          "argv": ["python", "scripts/draw.py", "--n", "101", "--options", "A,B,C"],
+          "expected_exit": 2,
+          "expect_stdout_contains": [],
+          "forbid_stdout_contains": [
+            "\"rng\": \"secrets\""
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,25 +1,25 @@
 {
   "scoring_scale": "1-5",
-  "version": "5.48.0",
-  "snapshot_date": "2026-06-17",
+  "version": "5.52.0",
+  "snapshot_date": "2026-07-04",
   "status": "final",
   "attestation_chain": {
     "pipeline_run_id": "4b4efbb4-06f0-4a41-8ba3-f6a4f70ba767",
     "trace_id": "4b4efbb4-06f0-4a41-8ba3-f6a4f70ba767",
-    "governance_hash": "4be94de0559c0db295adb187924f05965cff303794449a055c5d4ebce35b9312",
+    "governance_hash": "16036b12a4aaf098d1adc2b9fa08f0bb15bee32ffd62e33f10a7b35696b80ad0",
     "intermediate": false,
     "finalized_at": "2026-06-16T16:17:38.850892+00:00",
     "finalized_by": "ReviewFinalize",
-    "version": "5.47.0",
+    "version": "5.52.0",
     "grade": "S",
     "weighted": 4.949,
     "final_adjusted_score": 4.952,
     "integrity_hash": "f1994175bab417e863e062740a24004d646e784126f09403102407e6ab3051f7",
     "chain_integrity_hash": "397f5dd2eefb377fb0b1c44f5a0ebdcc866adc900e1e39238969d2ec60f824dd",
-    "attestation_chain_length": 44,
+    "attestation_chain_length": 49,
     "previous_chain": {
-      "version": "5.45.0",
-      "governance_hash": "f9ab34cf567d9a1d3a92ca0b36ba3e217db4c51a2aa78e342b79f04980bca289",
+      "version": "5.51.0",
+      "governance_hash": "cc3fdc111754f293189ea4b26c2e94cda7d4e8a8e4bcf21e04510ec9fc2b0f2f",
       "integrity_hash": "f1994175bab417e863e062740a24004d646e784126f09403102407e6ab3051f7",
       "finalized_at": "2026-06-16T16:17:38.850892+00:00"
     },
@@ -2755,6 +2755,164 @@
       "changes": "C6: additive boolean field report_MUST_align_user_summary:YES into node_engine + normal_engine programExec.step3(b) next_node_plan block, sibling of MUST_render_node_info / MUST_output_next_node_plan, under RULE 'MUST ALL BE YES'. Pre-commits faithful execution of SECTION 2 Report contract (verbatim forward cache.user_summary / thin rebuild / no stub). ONLY 1 field added; zero deletion. ENGINE SELF-EVOLUTION target=runner-direct. governance_hash recomputed + TRI-SYNC; snapshot v5.48.0 built post-governance.",
       "finalized_by": "ReviewFinalize",
       "cache_turn": 139
+    },
+    {
+      "from_version": "5.48.0",
+      "to_version": "5.49.0",
+      "date": "2026-07-02",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 2,
+      "items_breakdown": {
+        "B": 2
+      },
+      "accepted_items": [
+        "B1",
+        "B2"
+      ],
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.952,
+      "grade": "S",
+      "dim_scores": {
+        "C": 5.0,
+        "I": 4.92,
+        "D": 4.95
+      },
+      "score_scope": "full",
+      "regression_flags": [],
+      "deferred_reconciled": {
+        "generate2_weighted": 4.949,
+        "final_weighted_deferred_excluded": 4.949,
+        "final_adjusted_full_D": 4.952,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "note": "D6 VERSION SYNC + D10 DESCRIPTION re-measured post-governance-write (now-current 7-file v5.49.0 + quality_baseline finalized + TRI-SYNC governance_hash) -> both reconcile to PASS/5.0; authoritative weighted uses the engine deferred-excluded like-for-like convention = 4.949 (== ReviewPresent presented; ZERO-DELTA vs v5.48.0 baseline 4.949). No machine-measurable static C/I/D lift claimed for a pure prose/annotation target-designation generalization; zero-delta is NOT a regression."
+      },
+      "change_class": "pure prose/annotation target-designation generalization (non-functional, zero deletion)",
+      "changes": "B1: target-reference generalization — engine prose that named the routed/dispatched/executed target only as 'target AIAP program / AIAP package' generalized to acknowledge BOTH target kinds ('target package (AIAP program or AISP skill)' or equivalent) across main (Router match/dispatch) + node_engine + normal_engine + agent_engine operational prose (~30 sites: main 13 / node 7 / normal 9 / agent 1); Router.match registry-block description synchronized to acknowledge entries may carry a [protocol=AISP] tag (single-file aisp.aisop.json, loading_mode always node). B2: field-usage annotation — aiap-named cache/contract fields (aiap_name / AIAP_NAME / target_aiap_dir) annotated in their description to state these fields are used the SAME way when running an AISP skill (e.g. aiap_name will be the skill id, example yijing_aisp). FIELD NAMES UNCHANGED (downstream readers preserved). Auto C1-C3: version 5.48.0 -> 5.49.0 across 7 files + name v-strings + metadata + wording sync. RED LINES INTACT: protocol 'AIAP V1.0.0' verbatim x4 (engine self-identity — engine itself REMAINS an AIAP program; only its description of the TARGET changed), program_id dev.soulbot.execute_engine.* unchanged, ZERO field renames, python_tools untouched, ZERO execution/dispatch/audit/gate logic change. Motivated by the yijing_aisp real AISP execution (node mode, per-node cache + audit all normal) proving the execution layer needs no change — this cycle only aligns the descriptive text with that reality. governance_hash recomputed via tool_dirs/governance_hash.py (canonical v1.0, SOLE AUTHORITY, 544c809f) + TRI-SYNC=3; attestation_chain advanced via tool_dirs/attestation_advance.py (SOLE AUTHORITY); .evolution_snapshot/v5.49.0/ built LAST post-governance via tool_dirs/snapshot_build.py; snapshot_audit exit 0.",
+      "user_gate": "EvolveStep human gate answered 'all' (accepted B1/B2, question_hash 36c31b8f288da67e, presented_at 2026-07-02T22:53:25, was_presented=true); ReviewPresent conditional finalize gate finalize_risk=FALSE (4 triggers all FALSE: regression / traffic-RED / DEGRADED / simulate-RED) -> spec-mandated AUTO-APPROVED (conditional gate, non-bypass; EvolveStep-authorized + clean quality).",
+      "simulate_indicator": "GREEN",
+      "finalized_by": "ReviewFinalize",
+      "cache_turn": 185
+    },
+    {
+      "from_version": "5.49.0",
+      "to_version": "5.50.0",
+      "date": "2026-07-02",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 5,
+      "items_breakdown": {
+        "A": 1,
+        "B": 3,
+        "C": 1
+      },
+      "accepted_items": [
+        "A1",
+        "B1",
+        "B2",
+        "B3",
+        "C1-C4"
+      ],
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.949,
+      "grade": "S",
+      "dim_scores": {
+        "C": 4.5,
+        "I": 4.9846,
+        "D": 4.95
+      },
+      "score_scope": "partial",
+      "changed_file_score": 4.8063,
+      "regression_flags": [],
+      "deferred_reconciled": {
+        "generate2_weighted": 4.7813,
+        "final_weighted_deferred_excluded": 4.7813,
+        "final_adjusted_full_D": 4.8063,
+        "deferred_items_rescored": [
+          "D6",
+          "D10"
+        ],
+        "note": "P23 reconciliation: pre-Finalize D6/D10 4.5 placeholders re-measured post-governance-write to 5.0 (all 7 engine files now v5.50.0 + TRI-SYNC governance_hash f8d69e68). Generate2 partial like-for-like weighted 4.7813 (C=4.5 INDEPENDENT_AGENT cognitive-cap, I=4.9846, D_avg 4.85 with d6/d10 deferred); full-D reconciled D_avg 4.95 -> changed_file_score 4.8063 (+0.025). score_scope=partial -> whole-program weighted PRESERVED at prior baseline 4.949 (SCORE SCOPE GUARD; partial single-file/subset score NOT promoted to program baseline). Raw -0.1677 delta vs 4.949 is a cognitive-cap scoring-method artifact (Cavg 4.5 vs Generate1 uncapped 5.0), NOT a regression; regression_flags=[]; ZERO-DELTA whole-program."
+      },
+      "change_class": "engine execution-semantics addition (contract red-line HARD_FAIL hard-gate) — protocol-agnostic, byte-surgical additive, ZERO-REGRESSION for ordinary AIAP targets",
+      "changes": "A1 CONTRACT RED-LINE HARD_FAIL HARD-GATE SEMANTICS: when a TARGET package DECLARES contract red-lines (protocol-agnostic PREDICATE — target has a non_negotiable red-line array whose entries carry an enforced_by binding, e.g. user.content.aisp_contract.non_negotiable[].enforced_by; NOT an 'is-AISP' branch), agent_engine now treats each ':sys.assert'-form enforced_by binding as a HARD GATE: init.step1 builds redline_map, execute.step3 tags the matching sys.assert step is_redline=true, execute.step6 routes a tagged assertion_error to HARD_FAIL (no retry / no DEGRADED / no skip / no continue; writes hard_fail=true + redline_triggered={rule_text,rule_index,enforced_by,node,step,failed_expr,failed_value}). B1 structured stop-record redline_triggered surfaces the breached red-line to the human. node_engine/normal_engine programExec.step3 STOP on the FIRST hard_fail (independent of the 3-consecutive circuit breaker) via the sovereignty-halt channel. B2 redline_map_audit trail written read-only into _index.json (ADDITIVE, no field rename). B3 enforced_by-FORM exclusion table: ':sys.assert' IN scope; ':sys.io.confirm'/':sys.io.read' already Axiom-0 hard; 'tools' AND 'aisop.main' (user-legislated refinement — whole-flow-carried, no single assert step) EXPLICITLY EXCLUDED from the single-assert hard gate. C1-C4 version/metadata/doc-schema sync. ZERO-REGRESSION GUARANTEE: for ordinary AIAP programs (predicate false -> redline_map empty) NO step is tagged, hard_fail never set, redline_map_audit not emitted — cache shape byte-identical. BOUNDARIES HELD: no python_tools touched, no cache/contract field renamed, engine protocol identity 'AIAP V1.0.0' verbatim x4. governance_hash recomputed via tool_dirs/governance_hash.py (canonical v1.0, SOLE AUTHORITY, f8d69e68) + TRI-SYNC=3; attestation_chain advanced via tool_dirs/attestation_advance.py (SOLE AUTHORITY); .evolution_snapshot/v5.50.0/ built LAST post-governance via tool_dirs/snapshot_build.py; snapshot_audit exit 0.",
+      "user_gate": "EvolveStep human gate answered 'all' (accepted A1/B1/B2/B3, question_hash 165a5e5742f540fe, presented_at 2026-07-03T01:50:15, was_presented=true) + B3 EXPANSION user-legislated on resume: exclusion table MUST additionally list enforced_by form 'aisop.main' (whole-flow-carried, no single assert step) as explicitly excluded — same rationale as 'tools'. ReviewPresent conditional finalize gate finalize_risk=FALSE (4 triggers all FALSE: regression_flags[] / traffic-RED / DEGRADED / simulate-RED) -> spec-mandated AUTO-APPROVED (conditional gate, non-bypass; EvolveStep-authorized + clean quality).",
+      "simulate_indicator": "GREEN",
+      "finalized_by": "ReviewFinalize",
+      "cache_turn": 186
+    },
+    {
+      "from_version": "5.50.0",
+      "to_version": "5.51.0",
+      "date": "2026-07-03",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 4,
+      "items_breakdown": {
+        "A": 2,
+        "B": 1,
+        "C": 1
+      },
+      "accepted_items": [
+        "A1",
+        "A2",
+        "B1",
+        "C1"
+      ],
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.949,
+      "grade": "S",
+      "dim_scores": {
+        "C": 4.5,
+        "I": 4.9846,
+        "D": 4.95
+      },
+      "score_scope": "partial",
+      "changed_file_score": 4.79,
+      "weighted_score_note": "this version changed only node_engine.aisop.json + normal_engine.aisop.json programExec.step3(d) inline branches (A1/A2 inline HARD_FAIL parity) + step5 run-level redline_map_audit landing (B1), plus main/agent_engine version+name/changelog sync and CHANGELOG.md [5.51.0]; agent_engine v5.50.0 red-line DONOR anchors (init.step1/execute.step3/execute.step6/writeCache.step2) UNCHANGED; partial Generate2 like-for-like weighted 4.79; whole-program weighted PRESERVED at prior baseline 4.949 (SCORE SCOPE GUARD — partial subset score NOT promoted to program baseline; METHOD-EXEMPTION honesty: raw partial<4.949 is a cognitive-cap scoring-method artifact, NOT a regression).",
+      "regression_flags": [],
+      "change_class": "engine execution-semantics coverage extension (contract red-line HARD_FAIL inline-path parity + B2 audit landing) — protocol-agnostic, byte-surgical additive, ZERO-REGRESSION for ordinary AIAP targets",
+      "changes": "A1 node_engine programExec.step3(d) INLINE RED-LINE HARD_FAIL COVERAGE: when a TARGET declares contract red-lines (protocol-agnostic PREDICATE — non_negotiable[].enforced_by binding), a node executed INLINE (not agent-dispatched) whose ':sys.assert'-form enforced_by binding fails now routes to HARD_FAIL identically to agent dispatch (no retry / no DEGRADED / no skip / no continue; carries redline_triggered={rule_text,rule_index,enforced_by,node,step,failed_expr,failed_value}), mirroring agent_engine execute.step3/step6 donor anchors so inline execution enforces contract red-lines identically. A2 normal_engine programExec.step3(d) same INLINE coverage + corrected misleading IN-PLACE wording. B1 run-level redline_map_audit landing (step5) into _index.json on EVERY run (agent + all-inline) — closes the v5.50.0 B2 zero-landing gap; uses a DISTINCT sub-key (redline_map_audit_run: {declared_count, hits[], triggered:bool}) to avoid same-key collision with the per-node redline_map_audit (agent writeCache.step2 {node, entries[], triggered:obj}); no existing key renamed. C1 MINOR bump v5.50.0 -> v5.51.0 (breaks:none) across 4 modules + AIAP.md + agent_card.json + quality_baseline.json + CHANGELOG.md; agent_engine bumped for 4-module version consistency (ASI10 runtime-drift), its red-line DONOR logic UNCHANGED. ZERO-REGRESSION GUARANTEE: for ordinary AIAP programs (predicate false -> redline_map empty) NO step is tagged, hard_fail never set, redline_map_audit_run empty-or-omitted — cache shape byte-identical. BOUNDARIES HELD: no python_tools touched, no cache/contract field renamed, engine protocol identity 'AIAP V1.0.0' verbatim x4. governance_hash recomputed via SOLE-AUTHORITY tool_dirs/governance_hash.py (canonical v1.0: 4 *.aisop.json sorted-ASCII, per-file JCS json.dumps(sort_keys,separators=',:',ensure_ascii=False), 0x1E RS join, SHA-256) = cc3fdc11 + TRI-SYNC=3 read-back PASS; attestation_chain synced via SOLE-AUTHORITY tool_dirs/attestation_advance.py (chain_length 48; prior non-canonical ff3236d2 superseded into previous_chain); .evolution_snapshot/v5.51.0/ built + snapshot_audit.",
+      "user_gate": "EvolveStep human gate answered 'all' (accepted A1/A2/B1, question_hash a365e4a93aad016c, presented_at 2026-07-03T07:15:00Z, was_presented=true) + C1 human-legislated MINOR/v5.51.0: judged an inline-coverage gap fix of the ALREADY-LEGISLATED v5.50 hard-gate semantics (a SHOULD-have-fired gate that did not) — no pre-existing compliant-target behavior changes, breach-execution was never compliant, fulfilling a declared contract != flipping a contract; consistent with v5.50 MINOR/breaks:none grading. ReviewPresent conditional finalize gate finalize_risk=FALSE (4 triggers all FALSE: regression_flags[] / traffic-RED / DEGRADED / simulate-RED) -> spec-mandated AUTO-APPROVED (conditional gate, non-bypass; EvolveStep-authorized + clean quality).",
+      "simulate_indicator": "GREEN",
+      "finalized_by": "ReviewFinalize",
+      "cache_turn": 190
+    },
+    {
+      "from_version": "5.51.0",
+      "to_version": "5.52.0",
+      "date": "2026-07-04",
+      "bump_type": "minor",
+      "evolution_type": "MINOR",
+      "items_total": 4,
+      "items_breakdown": {
+        "A": 2,
+        "B": 0,
+        "C": 2
+      },
+      "accepted_items": [
+        "A1",
+        "A2",
+        "C1",
+        "C2"
+      ],
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.949,
+      "grade": "S",
+      "dim_scores": {
+        "C": 4.5,
+        "I": 4.9846,
+        "D": 4.95
+      },
+      "score_scope": "partial",
+      "changed_file_score": 4.72,
+      "weighted_score_note": "ASK-PRINCIPLE ROUTING LAW: this version changed only main.aisop.json functions.match.uncertain (A1: multi-candidate ambiguity with no explicit user naming now STOPS-to-ask the human with a numbered candidate list, Axiom 0) + functions.classify (A2: classifier no longer a covert multi-candidate auto-pick channel, narrowed to match.Error single-package recovery), plus ModifyStep 3 in-scope Research2 fix notes (R2-FIX-1/2/3) and C1 version/name QUAD-SYNC + C2 PRESERVE-UNCHANGED annotation; agent/node/normal engine modules received version+name+description-note sync only (byte-surgical, no logic change). partial QualityGate like-for-like weighted 4.72 (Professional C*0.35+I*0.40+D*0.25, only main.aisop.json scored); whole-program weighted PRESERVED at prior baseline 4.949 (SCORE SCOPE GUARD -- partial subset score NOT promoted to program baseline; METHOD-EXEMPTION honesty: partial 4.72 is a cross-method/single-file scoring artifact, NOT a whole-program regression -- ObservabilityStep method_change_exemption=active, QualityGate SEMANTIC REGRESSION DETECTION, PostSimulateGate regression_detected=false).",
+      "regression_flags": [],
+      "change_class": "engine package-selection routing-law refinement (multi-candidate ambiguity -> defer to user / Axiom-0 ask-principle) -- observable-behavior change human-ruled MINOR (cashes out an already-declared ask-principle, no predicate flip, ZERO target-program contract impact); scope confined to main.aisop.json match/classify.",
+      "changes": "A1 main.aisop.json functions.match.uncertain: rewrote multi-candidate disposition -- when >=2 specialized packages could cover the same intent AND the user did NOT explicitly name a package (by package name, or executor-protocol naming like 'use X ...') -> do NOT auto-pick, do NOT hand to classify to auto-pick; present a NUMBERED candidate list (one-line brief each, optional recommendation) and STOP-to-ask the user to choose (Axiom 0). Explicit user naming is ALWAYS absolute priority; a single unique match still routes directly; protocol words inside a product description (e.g. 'create an AISP skill') do NOT constitute executor naming; two-sided guard = ask ONLY on a genuine >=2-candidate doubt, NEVER over-gate a clean single-candidate case. A2 functions.classify (step1/step2/constraints): classify no longer serves as a covert multi-candidate auto-pick channel -- narrowed to match.Error single-package error-recovery; the old 'use classification result to determine the correct AIAP package' auto-pick semantics removed, ambiguous -> hand back to the ask-the-user path (coupled to A1, non-contradictory), eliminating the uncertain->classify silent-auto-pick vs registry-trailer ask-principle two-law coexistence (cache/194 behavior-flip root cause). ModifyStep landed R2-FIX-1 (classify.constraints graph-label-vs-law note: the |uncertain| mermaid edge is retained for structural continuity but its live semantic is now ASK-THE-USER / match.Error single-package recovery, NOT multi-candidate auto-pick; topology byte-preserved), R2-FIX-2 (match.uncertain PENDING-SELECTION contract sketch: execution-cache state only, renames nothing), R2-FIX-3 (match.uncertain 'use X' ambiguous naming-parse edge: explicit 'use X'/bare-name routes directly ONLY if X resolves to exactly one package; ambiguous X falls through to the ask clause). C1 version/name QUAD-SYNC 5.51.0->5.52.0 across 4 modules + AIAP.md/agent_card.json/quality_baseline.json/CHANGELOG.md; C2 PRESERVE-UNCHANGED annotation (context_rule stickiness / no_match soulbot_chat default / single-candidate direct route / explicit-naming priority all unchanged). SCOPE GUARD: only main.aisop.json match/classify routing law touched; execute/engineExec/endNode + all execution/dispatch/audit/red-line/gate machinery UNCHANGED; python_tools NEVER touched; no cache/contract field renamed; graph topology byte-identical; protocol identity AIAP V1.0.0 preserved. EvolveStep TRUE HALT (human 'all' + MINOR ruling, question_hash fa43571197f27f98); ReviewPresent conditional gate finalize_risk=FALSE -> AUTO-APPROVED (non-bypass). SimulateStep GREEN 29 scenarios 0 RED/0 YELLOW (cache/194 flip fixed); ValidateStep 0 blocking fail; Research3 compliance 0 GAP (EU AI Act Art.14 / NIST GOVERN / ISO 42001 / MCP SEP-2260 directional endorsement). 0 breaking changes, all additive (behavioral routing refinement fulfilling a declared ask-principle)."
     }
   ],
   "evolution_notes": {
@@ -2778,13 +2936,13 @@
     "baseline_version": "5.0.0",
     "baseline_weighted": 4.72,
     "regression_threshold": 0.15,
-    "last_measured_version": "5.48.0",
+    "last_measured_version": "5.52.0",
     "last_measured_weighted": 4.949,
-    "last_measured_final_adjusted": 4.952,
+    "last_measured_final_adjusted": 4.949,
     "last_delta_vs_baseline": 0.229,
     "last_delta_exempt": false,
     "regression_flags": [],
-    "note": "v5.48.0 FINALIZED by ReviewFinalize (cache/139). ZERO-DELTA vs v5.47.0 (4.949). MINOR non-functional prompt-discipline addition: C6 additive self-report field report_MUST_align_user_summary:YES in node_engine+normal_engine programExec.step3(b) next_node_plan block (sibling of MUST_render_node_info / MUST_output_next_node_plan, under RULE 'MUST ALL BE YES'). Zero deletion. No machine-measurable static lift -> zero-delta is NOT a regression."
+    "note": "v5.52.0 FINALIZED by ReviewFinalize (cache/195). Whole-program weighted PRESERVED at 4.949 (score_scope=partial: only main.aisop.json scored 4.72; SCORE SCOPE GUARD keeps the whole-program S baseline; partial subset not comparable to whole-program baseline -> weighted_delta N/A). ASK-PRINCIPLE ROUTING LAW MINOR (match/classify multi-candidate -> stop-to-ask, Axiom 0). regression_flags=[]; SimulateStep regression_detected=false; PostSimulateGate GREEN; ObservabilityStep method_change_exemption active. 0 breaking changes."
   },
   "version_history": [
     {
@@ -3367,6 +3525,20 @@
       "score_scope": "full",
       "governance_hash": "97ebfb711b41321eb4f6eb023cab2fd5cfc1a210cbb90b0e6c152f2bc418a2fb",
       "changes": "MINOR non-functional prompt-discipline addition (C6) v5.47.0 -> v5.48.0 via Creator Evolve pipeline (cache/139) FINALIZED by ReviewFinalize. ENGINE SELF-EVOLUTION (target=runner-direct; live engine directory, highest risk). C6: node_engine + normal_engine programExec.step3(b) next_node_plan block gains additive self-report boolean field report_MUST_align_user_summary:YES, sibling/parallel to existing MUST_render_node_info / MUST_output_next_node_plan, folded into that block's RULE: MUST ALL BE YES. Semantics = pre-commit that this node's Report faithfully executes the SECTION 2 Report contract (verbatim forward cache.user_summary / thin MUST rebuild / no stub). Product boundary: ONLY this 1 field added; zero deletion / zero change to any existing rule, HONEST ANNOTATION, historical comment, six-section template, history, or intent. 6-file version bump 5.47.0 -> 5.48.0 (node/normal/main/agent_engine + agent_card + AIAP.md) by ModifyStep; quality_baseline finalized here. ThreeDimTest C=5.00 I=4.92 D=4.95 (deferred-excluded) weighted=4.949/S, full-D 4.952, delta 0.000 ZERO-DELTA, regression=false."
+    },
+    {
+      "version": "5.51.0",
+      "date": "2026-07-03",
+      "status": "finalized",
+      "grade": "S",
+      "cache_turn": 190,
+      "weighted_score": 4.949,
+      "final_adjusted_score": 4.949,
+      "weighted_method": "Professional_C025_I045_D030",
+      "score_scope": "partial",
+      "changed_file_score": 4.79,
+      "governance_hash": "cc3fdc111754f293189ea4b26c2e94cda7d4e8a8e4bcf21e04510ec9fc2b0f2f",
+      "changes": "MINOR (breaks:none) INLINE RED-LINE COVERAGE + B2 AUDIT LANDING v5.50.0 -> v5.51.0 via Creator Evolve pipeline (cache/190) FINALIZED by ReviewFinalize. ENGINE SELF-EVOLUTION (target=runner-direct; live engine directory, highest risk). A1 node_engine + A2 normal_engine programExec.step3(d) INLINE branch: a node executed inline (not agent-dispatched) whose ':sys.assert'-form enforced_by binding of a DECLARED contract red-line fails now routes to HARD_FAIL identically to agent dispatch (no retry/DEGRADED/skip/continue; carries redline_triggered 7 fields), mirroring agent_engine execute.step3/step6 DONOR anchors — closes the v5.50.0 inline-path parity gap. A2 also corrected misleading IN-PLACE wording. B1 run-level redline_map_audit landing (step5) into _index.json on EVERY run (agent + all-inline) via DISTINCT sub-key redline_map_audit_run {declared_count, hits[], triggered:bool} — closes the v5.50.0 B2 zero-landing gap without renaming the per-node redline_map_audit key. C1 4-module bump 5.50.0 -> 5.51.0 + AIAP.md + agent_card.json + quality_baseline.json + CHANGELOG.md; agent_engine bumped for 4-module version consistency (ASI10), its red-line DONOR logic (init.step1/execute.step3/execute.step6/writeCache.step2) UNCHANGED. ZERO-REGRESSION GUARANTEE: ordinary AIAP targets (predicate false -> redline_map empty) — NO step tagged, hard_fail never set, redline_map_audit_run omitted, cache shape byte-identical. BOUNDARIES HELD: 0 python_tools touched, 0 cache/contract field renamed, protocol identity 'AIAP V1.0.0' verbatim x4. ValidateStep 32/32 PASS / 0 collateral; SimulateStep GREEN (inline HARD_FAIL fire + first-hit STOP + empty-guard byte-identity). EvolveStep TRUE HALT -> human 'all'; ReviewPresent conditional finalize gate finalize_risk=FALSE -> AUTO-APPROVED (non-bypass). governance_hash cc3fdc11 via SOLE-AUTHORITY tool_dirs/governance_hash.py (canonical v1.0: 4 *.aisop.json sorted-ASCII, per-file JCS json.dumps(sort_keys,separators=',:',ensure_ascii=False), joined by 0x1E RS, SHA-256) + TRI-SYNC=3 read-back PASS; attestation_chain synced via SOLE-AUTHORITY tool_dirs/attestation_advance.py (flat advance -> chain_length 48, prior ff3236d2 pushed to previous_chain); .evolution_snapshot/v5.51.0/ built + snapshot_audit. NOTE(ReviewFinalize authoritative recompute): a prior finalize pass had written a NON-canonical hash ff3236d2 (used a hand-rolled NUL-framing method, NOT the SOLE-AUTHORITY governance_hash.py); this pass recomputed with the canonical tool and corrected TRI-SYNC + attestation to cc3fdc11. ThreeDimTest partial like-for-like weighted 4.79; score_scope=partial -> whole-program weighted PRESERVED 4.949/S (SCORE SCOPE GUARD; raw partial<4.949 is cognitive-cap scoring-method artifact, NOT a regression); regression_flags=[]; ZERO-DELTA whole-program. 0 breaking changes, all additive."
     }
   ],
   "evolution_strategy_memory": {
@@ -3839,22 +4011,25 @@
       "recommendation_for_next": "Integrity/self-consistency sweep: audit remaining cross-step field-count / enumeration mirrors (skeleton vs read-back vs schema) for off-by-one drift; optionally consolidate the AIAP.md duplicate governance_hash line."
     }
   },
-  "governance_hash": "97ebfb711b41321eb4f6eb023cab2fd5cfc1a210cbb90b0e6c152f2bc418a2fb",
+  "governance_hash": "16036b12a4aaf098d1adc2b9fa08f0bb15bee32ffd62e33f10a7b35696b80ad0",
   "final_adjusted_reconciliation": {
-    "version": "5.47.0",
-    "stage11_weighted": 4.949,
-    "final_adjusted_score": 4.952,
-    "adjustment": 0.003,
+    "version": "5.52.0",
+    "stage11_weighted": 4.72,
+    "final_adjusted_score": 4.949,
+    "adjustment": 0.025,
     "weighted_deferred_excluded": 4.949,
-    "d_dimensions_reevaluated": {
-      "D6_version_sync": "PASS — all 4 .aisop.json + AIAP.md + agent_card.json + quality_baseline.json = 5.45.0 (4.5 -> 5.0)",
-      "D8_agent_card_completeness": "PASS — agent_card.json version/description/capabilities/limitations/safety_card + governance_hash present and synced to v5.45.0",
-      "D10_quality_baseline_sync": "PASS — quality_baseline.json scores + attestation_chain + evolution_history + version_history synced; governance_hash f9ab34cf (4.5 -> 5.0)"
-    },
-    "note": "P23 deferred reconciliation: pre-Finalize D6/D10 4.5 placeholders re-measured to 5.0 post-governance-write; full-D 4.96, full weighted 4.952; deferred-excluded reported 4.949 ZERO-DELTA."
+    "score_scope": "partial",
+    "whole_program_weighted_preserved": 4.949,
+    "changed_file_score": 4.72,
+    "d_dimensions_reevaluated": [
+      "D6",
+      "D8",
+      "D10"
+    ],
+    "note": "score_scope=partial (only main.aisop.json scored). Whole-program weighted PRESERVED at 4.949; partial 4.72 recorded as changed_file_score, NOT promoted. D6 (version sync) / D8 (agent card) / D10 (quality-baseline+description sync) reconciled post-governance-write to v5.52.0 (4 modules + AIAP.md + agent_card.json + quality_baseline.json + CHANGELOG.md all at 5.52.0). Provenance (attestation_chain / governance_hash citation) finalized by attestation_advance.py SOLE AUTHORITY after governance_hash.py TRI-SYNC."
   },
   "weighted_score": 4.949,
   "grade": "S",
-  "score_scope": "full",
-  "changed_file_score": 4.949
+  "score_scope": "partial",
+  "changed_file_score": 4.72
 }

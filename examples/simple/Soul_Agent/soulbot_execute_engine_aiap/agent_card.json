@@ -1,6 +1,6 @@
 {
   "name": "soulbot_execute_engine",
-  "version": "5.48.0",
+  "version": "5.52.0",
   "program_id": "dev.soulbot.execute_engine",
   "protocol": "AIAP V1.0.0",
   "pattern": "B+",
@@ -49,7 +49,8 @@
       "user_language_anchor",
       "user_language_conflict_detection",
       "engine_self_node_info_rendering",
-      "engine_self_render_claim_audit"
+      "engine_self_render_claim_audit",
+      "contract_redline_hard_fail_hard_gate"
     ],
     "required": [
       "file_system"
@@ -189,6 +190,6 @@
     "note": "Engine baseline scoring convention (weighted = C*0.25 + I*0.45 + D*0.30; Generate2 authoritative; dimensions reported deferred-excluded). Grade S on the long-standing high-quality plateau. Per-version changelog, regression flags, and finalize reconciliation are recorded in version_history / evolution_history, not duplicated here.",
     "status": "final"
   },
-  "governance_hash": "97ebfb711b41321eb4f6eb023cab2fd5cfc1a210cbb90b0e6c152f2bc418a2fb",
+  "governance_hash": "16036b12a4aaf098d1adc2b9fa08f0bb15bee32ffd62e33f10a7b35696b80ad0",
   "hash_algorithm_version": "v1.0"
 }

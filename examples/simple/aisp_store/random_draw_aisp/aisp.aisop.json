@@ -1,0 +1,142 @@
+[
+  {
+    "role": "system",
+    "content": {
+      "protocol": "AISP V1.0.0",
+      "axiom_0": "Human_Sovereignty_and_Wellbeing",
+      "id": "random_draw_aisp",
+      "name": "Random Draw Picker",
+      "version": "1.0.0",
+      "license": "Apache-2.0",
+      "summary": "本地等概率随机抽签, 从用户给定的多个对等选项中无偏随机抽取一个(非严肃决策建议)。",
+      "description": "原生 AISP 技能: 校验输入(>=2 个非空且互异的选项), 通过捆绑的本地脚本 scripts/draw.py 用密码学安全随机(Python secrets)等概率抽取一个选项(1/len(options)), 再输出带免责声明的结果。全程离线、不联网、不加权、不持久化。它是 coin_flip_aisp 从固定两面到用户给定 N 项的泛化。",
+      "flow_format": "mermaid",
+      "loading_mode": "node",
+      "tools": [
+        "filesystem",
+        "shell"
+      ],
+      "params": {
+        "question": "string, optional — 需要抉择的决策问题, 仅用于回显。",
+        "options": "string, REQUIRED — 以逗号或换行分隔的选项列表字符串, 如 \"苹果,香蕉,橙子\"; 去空白后须为 >=2 个非空且互异的选项。",
+        "n": "integer, optional, default 1, bounded 1..100 — 抽取次数。"
+      },
+      "open_world": false,
+      "risk_level": "low",
+      "system_prompt": ""
+    }
+  },
+  {
+    "role": "user",
+    "content": {
+      "instruction": "STRICTLY OBEY aisp_contract; its non_negotiable rules are inviolable; then RUN aisop.main",
+      "user_input": "{user_input}",
+      "aisp_contract": {
+        "profile": "aisp.skill.v1",
+        "invocation": {
+          "mode": "auto_or_manual",
+          "when_to_use": [
+            "在多个对等选项间需要无偏随机抽取一个时",
+            "随机抽签/抓阄/多选一随机抉择",
+            "打破多选(>=2)僵局"
+          ],
+          "when_not_to_use": [
+            "医疗/法律/财务等严肃或高风险决策",
+            "需要按权重/概率不等的加权抽取",
+            "需要可复现的固定结果",
+            "任何需要联网数据的决策"
+          ]
+        },
+        "non_negotiable": [
+          {
+            "id": "NN1_local_csprng",
+            "rule": "抽取必须使用本地密码学安全随机(Python secrets, 如 secrets.randbelow(len(options)) 或 secrets.choice), 绝不使用可预测的 random; 保证等概率 1/len(options)。脚本在 stdout JSON 中标记 rng='secrets', draw 节点断言该标记。",
+            "enforced_by": "draw.step2:sys.assert"
+          },
+          {
+            "id": "NN2_no_network",
+            "rule": "绝不联网: 不声明任何 web 工具, open_world=false, 仅本地计算/脚本(filesystem, shell)。",
+            "enforced_by": "tools"
+          },
+          {
+            "id": "NN3_disclaimer",
+            "rule": "每次输出必须包含免责声明: 结果为随机、非严肃/高风险决策的建议。",
+            "enforced_by": "report.step3:sys.assert"
+          },
+          {
+            "id": "NN4_input_guard",
+            "rule": "options 必须是 >=2 个非空且互异的选项; n 必须为 1..100 的整数; 越界/空/单项/重复即拒。",
+            "enforced_by": "parse_input.step2:sys.assert"
+          }
+        ],
+        "discovery": {
+          "category": "utility",
+          "tags": [
+            "random-draw",
+            "lottery",
+            "random",
+            "decision",
+            "csprng"
+          ],
+          "keywords": [
+            "随机抽签",
+            "抽签",
+            "random draw",
+            "多选一",
+            "随机抽取"
+          ]
+        },
+        "risk_level": "low",
+        "resources": [
+          {
+            "id": "draw_script",
+            "path": "scripts/draw.py",
+            "kind": "script",
+            "mode": "execute_only",
+            "when": "performing the random draw via local CSPRNG",
+            "requires_tools": [
+              "shell"
+            ]
+          },
+          {
+            "id": "script_behavior",
+            "path": "evals/script-behavior.json",
+            "kind": "eval",
+            "mode": "read_only",
+            "when": "release validation of CSPRNG fairness, equal-probability & input bounds"
+          }
+        ]
+      },
+      "aisop": {
+        "main": "graph TD\n    parse_input[Parse & validate options] --> draw[Draw one option via CSPRNG script]\n    draw --> report[Report result + disclaimer]\n    report --> end_node((End))"
+      },
+      "functions": {
+        "parse_input": {
+          "step1": "读取用户输入: 决策问题 question(可选)、选项 options(必填, 逗号或换行分隔的字符串 -> 去空白后拆分为列表 options_list)、抽取次数 n(可选, 默认 1)。",
+          "step2": "sys.assert('isinstance(n,int) and 1<=n<=100 and len(options_list)>=2 and all(o.strip() for o in options_list) and len(set(options_list))==len(options_list)', '输入非法: n 必须为 1..100 整数, 且 options 需为 >=2 个非空且互异的选项') — 越界/空/单项/重复即拒。锁定 NN4。",
+          "output_mapping": "draw_params",
+          "execute_mode": "inline"
+        },
+        "draw": {
+          "step1": "sys.run('python scripts/draw.py --n {n} --options \"{options}\"') -> draw_json (脚本用 secrets.randbelow(len(options)) 等概率抽取, 返回 {rng:'secrets', n, options, picks, counts, disclaimer} — picks 为长度 n 的抽中选项列表)。",
+          "step2": "sys.assert(\"draw_json.get('rng')=='secrets' and len(draw_json['picks'])==n\", '随机源必须为 secrets CSPRNG, 不得为 random') — 锁定 NN1。",
+          "step3": "汇总 n 次抽取的结果(picks), 并按选项统计各自被抽中的计数 counts。",
+          "output_mapping": "draw_result",
+          "execute_mode": "inline"
+        },
+        "report": {
+          "step1": "把 picks 映射回对应的选项文案, 汇总多次抽取的计数, 可回显 question。",
+          "step2": "生成中文结果说明(单次单抽或多次汇总)。",
+          "step3": "sys.assert(\"disclaimer and ('not advice' in disclaimer.lower() or '免责' in output)\", '输出必须包含免责声明') — 附上免责: '本结果由密码学安全随机(secrets)生成, 仅供娱乐/打破僵局, 不作为医疗/法律/财务等严肃决策依据。' 锁定 NN3。",
+          "step4": "以 Markdown 渲染结果。",
+          "output_mapping": "result",
+          "execute_mode": "inline"
+        },
+        "end_node": {
+          "step1": "返回最终的 Markdown 结果。",
+          "execute_mode": "inline"
+        }
+      }
+    }
+  }
+]

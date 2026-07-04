@@ -2,6 +2,77 @@
 
 All notable changes to soulbot_execute_engine are documented in this file.
 
+## [5.52.0] - 2026-07-04
+
+ENGINE SELF-EVOLUTION (target = engine directory itself; only this one copy modified). MINOR, additive, breaks:none. Directed evolution: legislate the Axiom-0 ASK-PRINCIPLE ("multi-candidate routing ambiguity -> defer to the user") into the engine match/classify law, eliminating the two-law coexistence between match.uncertain's silent `route to classify` auto-pick and the registry-block trailer's already-declared ask-principle. That coexistence produced an observable behavior flip: the identical ambiguous input "创建一个 AISP 技能:…" once stopped-to-ask and once silently locked (cache/194). Human ruled MINOR at the EvolveStep gate — this cashes out an ALREADY-declared ask-behavior rather than flipping a contract predicate; zero contract impact on any target program (match/classify is engine-internal package-selection routing). Scope confined to main.aisop.json functions.match.uncertain + functions.classify; the 3 sibling engine modules (agent/node/normal) received version+name+description-note sync only.
+
+### [CHANGE A1] match.uncertain multi-candidate disposition -> STOP-and-ask the user (Axiom 0)
+- When >=2 specialized packages could cover the same intent AND the user did NOT explicitly name a package (by package name, or executor-protocol naming like "use X ...") -> the engine no longer auto-picks and no longer hands the choice to classify to auto-pick. Instead it presents a NUMBERED candidate list (one-line brief each, optional recommendation) and STOPS to ask the user to choose. Explicit user naming is ALWAYS absolute priority; a single unique match still routes directly as before; protocol words inside a product description (e.g. "create an AISP skill") do NOT constitute executor naming. TWO-SIDED GUARD: ask ONLY on a genuine >=2-candidate doubt, NEVER over-gate a clean single-candidate case (mirrors the runner v2.42.0->v2.43.0 sovereignty-gate conditionality arc).
+
+### [CHANGE A2] classify realignment — no longer a covert multi-candidate auto-pick channel
+- functions.classify (step1/step2/constraints) narrowed to match.Error single-package error-recovery. The old "use classification result to determine the correct AIAP package" auto-pick semantics are removed; an ambiguous classifier result hands back to the ask-the-user path (coupled to A1, non-contradictory), so the two laws no longer coexist. This is the cache/194 behavior-flip root fix.
+
+### [ModifyStep FIXES] 3 in-scope Research2 fix candidates (prose/additive only)
+- R2-FIX-1 (classify.constraints graph-label note): the `|uncertain|` mermaid edge is retained for structural continuity but its LIVE semantic is now ASK-THE-USER / match.Error single-package recovery, NOT multi-candidate auto-pick; any real topology change deferred to the human (topology byte-preserved). R2-FIX-2 (match.uncertain PENDING-SELECTION contract sketch): execution-cache state only, renames nothing. R2-FIX-3 (match.uncertain "use X" ambiguous naming-parse edge): explicit "use X"/bare-name routes directly ONLY if X resolves to exactly one package; ambiguous X falls through to the ask clause.
+
+### [SCOPE GUARD / ZERO-REGRESSION]
+- Only main.aisop.json match/classify routing law touched. execute / engineExec / endNode + ALL execution, dispatch, audit, red-line, and gate machinery UNCHANGED. python_tools NEVER touched; no cache/contract field renamed; graph topology byte-identical; protocol identity AIAP V1.0.0 preserved. Preserved-unchanged (C2 annotation): context_rule stickiness, no_match->soulbot_chat default, single-candidate direct route, explicit-naming priority.
+
+### [GOVERNANCE]
+- EvolveStep TRUE HALT — human reply 'all' accepted A1+A2 + semver ruling MINOR (v5.52.0), question_hash fa43571197f27f98. ReviewPresent conditional gate finalize_risk=FALSE (4 triggers all FALSE) -> spec-mandated AUTO-APPROVED (conditional gate, non-bypass). QualityGate GREEN weighted=4.72 Grade S score_scope=partial (only main.aisop.json scored; whole-program S baseline 4.949 PRESERVED per SCORE SCOPE GUARD). SimulateStep GREEN 29 scenarios 0 RED/0 YELLOW (cache/194 flip fixed); ValidateStep 0 blocking fail; NihilDensity ~0.00; Research3 compliance 0 GAP / 0 YELLOW / 0 RED (EU AI Act Art.14 human-oversight + NIST GOVERN decision-rights + ISO 42001 blocking-approval-gate + MCP SEP-2260 in-context elicitation directional endorsement; no new external framework triggered). 4 modules unified to 5.52.0. governance_hash via tool_dirs/governance_hash.py (canonical v1.0, SOLE AUTHORITY) + TRI-SYNC=3; attestation_chain advanced via tool_dirs/attestation_advance.py (SOLE AUTHORITY); .evolution_snapshot/v5.52.0/ via tool_dirs/snapshot_build.py (built LAST, snapshot_audit.py exit 0 mandatory). 0 breaking changes, all additive.
+
+## [5.51.0] - 2026-07-03
+
+ENGINE SELF-EVOLUTION (target = live engine directory; only this one copy modified, highest risk). MINOR, additive, breaks:none. Directed evolution: extend the v5.50.0 CONTRACT RED-LINE HARD_FAIL hard-gate to the INLINE execution path + make the B2 audit trail actually land on disk (empirically both cache/188 mixed and cache/189 all-inline runs had ZERO 'redline' trace — the v5.50.0 build/tag/land logic lived only in the agent-dispatch path). agent_engine v5.50.0 red-line donor anchors (init.step1 map build, execute.step3 tag, execute.step6 HARD_FAIL route, writeCache.step2 per-node audit) are UNCHANGED and remain authoritative; the v5.51.0 change lives entirely in node_engine/normal_engine programExec.step3(d) inline branches + step5, mirroring the donor so inline execution enforces contract red-lines identically to agent dispatch.
+
+### [CHANGE A1] node_engine inline red-line HARD_FAIL parity (programExec.step3(d))
+- The inline execution branch now builds redline_map from the target's declared non_negotiable[] entries (same protocol-agnostic PREDICATE + B3 form-based exclusion table as agent_engine.init.step1), tags the matching ':sys.assert'-form step is_redline=true, and routes a tagged assertion_error to HARD_FAIL (no retry / no DEGRADED / no skip / no continue) writing hard_fail=true + redline_triggered={rule_index,rule_text,enforced_by,node,step,failed_expr,failed_value}. programExec.step3 STOPs on the FIRST hard_fail (independent of the 3-consecutive circuit breaker) via the sovereignty-halt channel. Byte-exact field shape parity with agent_engine execute.step6 + node cache json_schema.
+
+### [CHANGE A2] normal_engine inline red-line HARD_FAIL parity + IN-PLACE wording fix
+- Same inline HARD_FAIL parity as A1 applied to normal_engine (all-inline engine — every node takes the inline path, so this is its ONLY red-line enforcement site). Corrected misleading IN-PLACE wording in the affected step so the inline execution semantics read unambiguously.
+
+### [CHANGE B1] Run-level red-line audit landing (node_engine + normal_engine step5)
+- When the target DECLARED contract red-lines (redline_map NON-EMPTY this run), step5 merges a run-level summary into _index.json under the DISTINCT additive key redline_map_audit_run { declared_count, hits:[{node,step,rule_index,enforced_by}], triggered:bool }. This is a NEW run-level roll-up key, deliberately NOT the same key as the per-node redline_map_audit written by agent_engine.writeCache.step2 (Research2 FIX-1: avoids an _index _deep_merge collision + 'triggered' clobber in mixed agent+inline runs where the two shapes differ). COEXISTENCE CONTRACT: per-node redline_map_audit (agent path) and run-level redline_map_audit_run (this landing) are DISTINCT top-level _index keys with distinct shapes — they coexist without collision and a strict reader parses both cleanly. This guarantees an all-inline run (whose nodes never invoke agent_engine.writeCache.step2 as a spawned sub-agent) STILL records the run-level audit trail, closing the cache/188 + cache/189 zero-trace gap.
+
+### [ZERO-REGRESSION GUARANTEE]
+- EMPTY-GUARD: when redline_map is EMPTY (ordinary AIAP target — no declared contract red-line) NO step is tagged, hard_fail is never set, and redline_map_audit_run is OMITTED entirely (not written as empty {}) — the AIAP-program _index/cache shape stays BYTE-IDENTICAL to prior behavior.
+
+### [LEVEL_C] Automatic Fixes
+- C1: MINOR bump 5.50.0 -> 5.51.0 across all 4 .aisop.json + AIAP.md + agent_card.json + quality_baseline.json. breaks:none rationale (user-legislated at EvolveStep): fulfilling an already-declared hard-gate on the inline path is an application of existing v5.50.0 red-line legislation (an "should-have-fired gate now fires" hardening), NOT a contract flip — no prior compliant AIAP-target behavior changes; a violating execution was never compliant. Same MINOR/breaks:none judgment as the v5.50.0 gate itself.
+
+### [Boundaries held]
+- python_tools NEVER modified; NO cache/contract field renamed (redline_map_audit / hard_fail / redline_triggered keys preserved verbatim — redline_map_audit_run is a purely ADDITIVE new key); engine protocol identity 'AIAP V1.0.0' verbatim x4; program_id dev.soulbot.execute_engine.* unchanged; agent_engine v5.50.0 red-line donor logic byte-identical. No other execution/dispatch/audit/gate logic touched.
+
+### [ReviewFinalize]
+- Grade S; Generate2 partial like-for-like weighted 4.79; score_scope=partial -> whole-program weighted PRESERVED 4.949/S (SCORE SCOPE GUARD; regression_flags=[]; ZERO-DELTA). governance_hash f8d69e68 -> cc3fdc11 (TRI-SYNC=3 AIAP.md/agent_card.json/quality_baseline.json, read-back PASS) computed by SOLE-AUTHORITY tool_dirs/governance_hash.py (canonical v1.0: 4 *.aisop.json sorted-ASCII, per-file JCS json.dumps, 0x1E RS join, SHA-256); attestation_chain synced via SOLE-AUTHORITY tool_dirs/attestation_advance.py to chain_length 48; .evolution_snapshot/v5.51.0/ built + snapshot_audit exit 0; 0 collateral (python_tools byte-clean). NOTE: a prior finalize pass had written a NON-canonical hash ff3236d2 (hand-rolled NUL-framing method, NOT the SOLE-AUTHORITY tool); this pass authoritatively recomputed with governance_hash.py and corrected TRI-SYNC + attestation + version_history/evolution_history citations to cc3fdc11.
+
+## [5.50.0] - 2026-07-02
+
+ENGINE SELF-EVOLUTION (target = live engine directory; only this one copy modified, highest risk). MINOR, additive. FINALIZED by Creator Evolve pipeline (cache/186) ReviewFinalize. CONTRACT RED-LINE HARD_FAIL HARD-GATE SEMANTICS. Grade S; Generate2 partial weighted 4.7813 (C=4.5 cognitive-cap / I=4.9846 / D 4.85 deferred); ReviewFinalize P23 full-D changed_file_score 4.8063; score_scope=partial -> whole-program weighted PRESERVED 4.949; SIMULATE=GREEN; regression_flags=[]. governance_hash 544c809f -> f8d69e68 (TRI-SYNC=3); attestation_chain 45 -> 46; snapshot v5.50.0 audit exit 0.
+
+### [CHANGE A1] Contract red-line HARD_FAIL hard-gate (LEVEL_A)
+- Protocol-agnostic PREDICATE (NOT an 'is-AISP' branch): when a TARGET package declares a non_negotiable red-line array whose entries carry an enforced_by binding (canonical user.content.aisp_contract.non_negotiable[].enforced_by), each ':sys.assert'-form binding is treated as a HARD GATE.
+- agent_engine.init.step1 builds redline_map {rule_index, rule_text, enforced_by, form-based scope}. execute.step3 tags the matching sys.assert step is_redline=true. execute.step6 routes a tagged assertion_error to HARD_FAIL: no retry / no DEGRADED / no skip / no continue.
+
+### [CHANGE B1] Structured stop-record redline_triggered
+- On HARD_FAIL, cache carries hard_fail=true + redline_triggered={rule_text, rule_index, enforced_by, node, step, failed_expr, failed_value} surfacing the breached red-line to the human.
+
+### [CHANGE B2] redline_map_audit trail
+- Read-only diagnostic summary written into _index.json (ADDITIVE key, no field rename); emitted only when redline_map is non-empty.
+
+### [CHANGE B3] enforced_by-FORM exclusion table
+- ':sys.assert' IN scope; ':sys.io.confirm'/':sys.io.read' already Axiom-0 hard; 'tools' AND 'aisop.main' EXPLICITLY EXCLUDED from the single-assert hard gate (aisop.main is whole-flow-carried with no single assert step — user-legislated resume refinement, same rationale as 'tools').
+- node_engine/normal_engine programExec.step3 STOP on the FIRST hard_fail (independent of the 3-consecutive circuit breaker) via the sovereignty-halt channel.
+
+### [ZERO-REGRESSION GUARANTEE]
+- For ordinary AIAP programs (predicate FALSE -> redline_map EMPTY) NO step is tagged, hard_fail is never set, redline_map_audit is not emitted — cache shape byte-identical. Verified end-to-end this run: the executing TARGET (soulbot_creator_evolution_aiap) is an ordinary AIAP program (0 contract red-lines) -> ZERO-REGRESSION path exercised.
+
+### [LEVEL_C] Automatic Fixes
+- C1-C4: version + name sync 5.49.0 -> 5.50.0 (4 .aisop.json + AIAP.md + agent_card.json + quality_baseline.json); embedded doc-schema (hard_fail/redline_triggered) sync; metadata sync.
+
+### [Boundaries held]
+- python_tools NEVER modified; NO cache/contract field renamed; engine protocol identity 'AIAP V1.0.0' verbatim x4; program_id dev.soulbot.execute_engine.* unchanged. No other execution/dispatch/audit/gate logic touched.
+
 ## [5.45.0] - 2026-06-16
 
 ENGINE SELF-EVOLUTION (target=runner=live engine directory; runner-direct, only this one copy modified). MINOR, predetermined, NON-functional NEXT-NODE PLAN discipline-hardening. FINALIZED by Creator Evolve pipeline (cache/133) ReviewFinalize. Grade S, weighted 4.949 (deferred-excluded; full-D reconciled 4.952), ZERO-DELTA vs v5.44.0.

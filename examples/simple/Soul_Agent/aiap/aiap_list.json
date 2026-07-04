@@ -1,0 +1,37 @@
+{
+  "aiap_list_version": "1.0",
+  "packages": [
+    {
+      "id": "soulbot_aisp_creator_evolution_aiap",
+      "name": "soulbot_aisp_creator_evolution v1.0.0",
+      "version": "1.0.0",
+      "summary": "AISP-creator (an AIAP V1.0.0 shell executed by the AIAP engine) — an 18-stage Pattern D pipeline that creates and evolves AISP V1.0.0 single-file skill-packages as its PRODUCT. PRODUCT = aisp.aisop.json (a 2-message array with a real aisp_contract object) + declared resources, landing by default in the aisp_store sibling directory; product conformance is enforced via the embedded read-only AISP suite (aisp_validate.py, M1-M6). Supports Create/Evolve/Modify/Validate/Simulate/Convert workflows.",
+      "path": "aiap/soulbot_aisp_creator_evolution_aiap/main.aisop.json",
+      "loading_mode": "node"
+    },
+    {
+      "id": "soulbot_creator_evolution_aiap",
+      "name": "AIAP Creator v2.47.0",
+      "version": "2.47.0",
+      "summary": "AIAP Creator — 18-stage pipeline for creating, evolving, validating, simulating, and managing AIAP programs. 15 modules, 213 nodes, 1167 scenarios (A-AJ). Pattern D orchestrator with sub_mermaid delegation. Grade S (4.987). Supports Create/Evolve/Modify/Validate/Simulate/Compare/Discover/Deprecate/Export/Import/Explain/Package/Convert workflows. ThreeDimTest quality scoring, governance hash canonical v1.0 with QUAD-SYNC verification. Complete content directory snapshots.",
+      "path": "aiap/soulbot_creator_evolution_aiap/main.aisop.json",
+      "loading_mode": "node"
+    },
+    {
+      "id": "soulbot_stock_analyzer_aiap",
+      "name": "美股分析助手 v2.1.0",
+      "version": "2.1.0",
+      "summary": "美股股票分析助手 v2.0.0。MCP金融数据服务器集成、Pattern C三模块架构(main+analysis+features)、SSE/WebSocket实时流数据、SEC EDGAR XBRL API直连、置信度校准、宏观经济指标、DORA+AI Act双合规。技术指标(MA/RSI/MACD/BB/VWAP)、基本面(PE/EPS/Revenue)、风险(Sharpe/VaR)、情绪(Twitter/Reddit/StockTwits)、同行对比、回测、ETF、期权、趋势对比、分析师评级、内幕交易、财务健康、AI综合评估。10+19+12=41节点。仅供参考学习，不构成投资建议。",
+      "path": "aiap/soulbot_stock_analyzer_aiap/main.aisop.json",
+      "loading_mode": "normal"
+    },
+    {
+      "id": "soulbot_yijing_divination_aiap",
+      "name": "易经占卜助手 v1.20.0",
+      "version": "1.20.0",
+      "summary": "基于易经六十四卦的AI占卜文化学习助手。三枚铜钱法由 Python secrets 工具真随机起卦（密码学安全），提供卦辞、爻辞解读与人生建议。支持起卦、解卦、变卦分析、本卦/变卦/互卦/综卦/错卦五卦联网详解、历史记录、重复占卜防护。综卦（整卦上下颠倒）与错卦（每爻阴阳全反）由确定性算法计算，并可联网检索权威释义详解给用户。会话/情景式多范围记忆层（session 短期会话记忆 + episodic 跨会话情景记忆）提供占卜连续性与跨次上下文衔接。Pattern A 单文件，11 功能节点。仅供传统文化学习与娱乐体验。合规覆盖：COPPA 2026、EU AI Act Art.50、GB 45438-2025、NIST CAISI。",
+      "path": "aiap/soulbot_yijing_divination_aiap/main.aisop.json",
+      "loading_mode": "normal"
+    }
+  ]
+}

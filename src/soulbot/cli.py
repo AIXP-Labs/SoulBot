@@ -523,7 +523,11 @@ def web(agents_dir: str, host: str, port: int, telegram: bool | None):
     # spam INFO lines for every SSE poll / static asset / session query).
     # Server lifecycle (startup/shutdown) and errors/warnings are still
     # logged via the "default" handler on uvicorn / uvicorn.error loggers.
-    uvicorn.run(
+    # Fix (doc 01SoulBot-Support-AISP/03): use the Config/Server form (equivalent to
+    # uvicorn.run) so we can expose `server.should_exit` to the Runner — uvicorn
+    # captures Ctrl+C and defers it; the Runner's ACP_CRASH auto-resume loop checks
+    # this flag and stops resuming immediately instead of fighting the user.
+    _uv_config = uvicorn.Config(
         app,
         host=host,
         port=port,
@@ -531,6 +535,10 @@ def web(agents_dir: str, host: str, port: int, telegram: bool | None):
         log_config=_log_config,
         access_log=False,
     )
+    _uv_server = uvicorn.Server(_uv_config)
+    from .runners import runner as _runner_mod
+    _runner_mod.set_shutdown_check(lambda: _uv_server.should_exit)
+    _uv_server.run()
 
 
 # ---------------------------------------------------------------------------
@@ -554,7 +562,11 @@ def api_server(agents_dir: str, host: str, port: int):
     _init_observability(agents_dir)
     app = create_app(agents_dir=agents_dir, dev_ui=False, cli_name=cli_name)
     click.echo(f"Starting SoulBot API Server at http://{host}:{port}")
-    uvicorn.run(app, host=host, port=port)
+    # Fix (doc 03): same shutdown-aware wiring as web mode (see soulbot_web).
+    _uv_server = uvicorn.Server(uvicorn.Config(app, host=host, port=port))
+    from .runners import runner as _runner_mod
+    _runner_mod.set_shutdown_check(lambda: _uv_server.should_exit)
+    _uv_server.run()
 
 
 # ---------------------------------------------------------------------------
