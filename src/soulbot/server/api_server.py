@@ -68,6 +68,10 @@ class AddFromLibraryRequest(BaseModel):
     group: str
 
 
+class AddAispFromLibraryRequest(BaseModel):
+    skill: str
+
+
 class EnvUpdateRequest(BaseModel):
     content: str
 
@@ -75,12 +79,27 @@ class EnvUpdateRequest(BaseModel):
 class DownloadFromStoreRequest(BaseModel):
     program: str
     repo: str = ""
+    overwrite: bool = False
 
 
 class InstallFromStoreRequest(BaseModel):
     program: str
     agent_name: str
     repo: str = ""
+    overwrite: bool = False
+
+
+class DownloadAispRequest(BaseModel):
+    skill: str
+    repo: str = ""
+    overwrite: bool = False
+
+
+class InstallAispRequest(BaseModel):
+    skill: str
+    agent_name: str
+    repo: str = ""
+    overwrite: bool = False
 
 
 class AddRepoRequest(BaseModel):
@@ -157,7 +176,7 @@ def create_app(
     runners: dict[str, Runner] = {}
 
     # ---- AIAP Store repos & cache ----------------------------------------
-    DEFAULT_REPO = "AIXP-Labs/AIAP-Store"
+    DEFAULT_REPO = "AIXP-Labs/AIAP-AISP-Store"
     CACHE_TTL = 300  # 5 minutes
     # Per-repo cache: {repo: {"data": [...], "expires": float}}
     _store_cache: dict[str, dict] = {}
@@ -187,9 +206,12 @@ def create_app(
         if f:
             f.write_text(json.dumps(repos, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    def _github_urls(repo: str) -> tuple[str, str, str]:
-        """Return (store_api, raw_base, github_tree) for a repo."""
-        store_dir = "aiap_store"
+    def _github_urls(repo: str, store_dir: str = "aiap_store") -> tuple[str, str, str]:
+        """Return (store_api, raw_base, github_tree) for a repo's store dir.
+
+        store_dir defaults to 'aiap_store' so existing AIAP callers are
+        unchanged; pass 'aisp_store' for the AISP skill store.
+        """
         api_base = f"https://api.github.com/repos/{repo}/contents"
         store_api = f"{api_base}/{store_dir}"
         raw_base = f"https://raw.githubusercontent.com/{repo}/main/{store_dir}"
@@ -521,6 +543,76 @@ def create_app(
         shutil.copytree(src, dest)
         return {"group": req.group, "status": "added"}
 
+    # ---- AISP skills (mirrors the aisops endpoints above; doc 06) --------
+    # The registry cache (aisp/aisp_list.json) is deliberately NOT touched
+    # here: agent.py's _get_aisp_registry hash-gate self-heals it on the
+    # agent's next turn (truth model: folders are the source of truth).
+
+    @app.get("/agents/{agent_name}/aisps")
+    async def list_agent_aisps(agent_name: str):
+        if _agents_dir is None:
+            raise HTTPException(400, "Requires agents_dir mode")
+        if agent_name not in runners:
+            raise HTTPException(404, f"Agent '{agent_name}' not found")
+        aisp_dir = _agents_dir / agent_name / "aisp"
+        if not aisp_dir.is_dir():
+            return []
+        return _scan_aisps(aisp_dir)
+
+    @app.post("/agents/{agent_name}/aisps/delete")
+    async def delete_agent_aisp(agent_name: str, req: DeleteAisopRequest):
+        if _agents_dir is None:
+            raise HTTPException(400, "Requires agents_dir mode")
+        if agent_name not in runners:
+            raise HTTPException(404, f"Agent '{agent_name}' not found")
+        p = req.path.replace("\\", "/")
+        if not p.startswith("aisp/"):
+            raise HTTPException(400, "Invalid path")
+        if ".." in p:
+            raise HTTPException(400, "Path traversal not allowed")
+        # An AISP skill is an atomic single-folder unit: only whole *_aisp
+        # directories may be removed (stricter than the aisops variant —
+        # aisp_list.py / _shared/ / README.md are never deletable here).
+        if not p.rstrip("/").endswith("_aisp"):
+            raise HTTPException(400, "Only whole *_aisp skill folders can be deleted")
+        target = (_agents_dir / agent_name / p).resolve()
+        agent_dir = (_agents_dir / agent_name).resolve()
+        if not str(target).startswith(str(agent_dir)):
+            raise HTTPException(400, "Path outside agent directory")
+        if not target.is_dir():
+            raise HTTPException(404, f"AISP skill not found: {req.path}")
+        shutil.rmtree(target, ignore_errors=True)
+        return {"path": req.path, "status": "deleted"}
+
+    @app.get("/aisp-library")
+    async def list_aisp_store():
+        if _agents_dir is None:
+            raise HTTPException(400, "Requires agents_dir mode")
+        lib_dir = _agents_dir / "aisp_store"
+        if not lib_dir.is_dir():
+            return []
+        return _scan_aisps(lib_dir)
+
+    @app.post("/agents/{agent_name}/aisps/add-from-library")
+    async def add_aisp_from_library(agent_name: str, req: AddAispFromLibraryRequest):
+        if _agents_dir is None:
+            raise HTTPException(400, "Requires agents_dir mode")
+        if agent_name not in runners:
+            raise HTTPException(404, f"Agent '{agent_name}' not found")
+        if ".." in req.skill or "/" in req.skill or "\\" in req.skill:
+            raise HTTPException(400, "Invalid skill name")
+        if not req.skill.endswith("_aisp"):
+            raise HTTPException(400, "Skill name must end with '_aisp'")
+        src = _agents_dir / "aisp_store" / req.skill
+        if not src.is_dir():
+            raise HTTPException(404, f"Library skill '{req.skill}' not found")
+        dest = _agents_dir / agent_name / "aisp" / req.skill
+        if dest.exists():
+            raise HTTPException(409, f"'{req.skill}' already exists in this agent")
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(src, dest)
+        return {"skill": req.skill, "status": "added"}
+
     # ---- AIAP Store repo management --------------------------------------
 
     @app.get("/aiap-store/repos")
@@ -590,6 +682,7 @@ def create_app(
             if not name.endswith("_aiap"):
                 continue
             meta = _fetch_aiap_metadata(name, raw_base, gh_repo, store_dir, _log)
+            meta["local_version"] = _local_version("aiap_store", name)
             programs.append(meta)
 
         _store_cache[cache_key] = {"data": programs, "expires": now + CACHE_TTL}
@@ -600,6 +693,9 @@ def create_app(
         import yaml
 
         meta = {
+            # id = directory name (what download/install need); name below may
+            # be overwritten by the AIAP.md frontmatter display name.
+            "id": program_name,
             "name": program_name,
             "version": "",
             "pattern": "",
@@ -686,23 +782,26 @@ def create_app(
         store_api, _, _ = _github_urls(target_repo)
 
         dest = _agents_dir / "aiap_store" / req.program
-        if dest.exists():
-            raise HTTPException(409, f"'{req.program}' already exists in local library")
+        if dest.exists() and not req.overwrite:
+            raise HTTPException(409, {
+                "message": f"'{req.program}' already exists in local library",
+                "local_version": _local_version("aiap_store", req.program),
+            })
 
         try:
-            files_count = _download_github_dir(
-                f"{store_api}/{req.program}", dest, _log
+            files_count = _download_dir_safe(
+                f"{store_api}/{req.program}", dest, req.overwrite, _log
             )
+        except HTTPException:
+            raise
         except Exception as exc:
-            if dest.exists():
-                shutil.rmtree(dest, ignore_errors=True)
             _log.error("Failed to download %s: %s", req.program, exc)
             raise HTTPException(502, f"Failed to download from GitHub: {exc}")
 
         return {
             "program": req.program,
             "files_downloaded": files_count,
-            "status": "downloaded",
+            "status": "updated" if req.overwrite else "downloaded",
         }
 
     @app.post("/aiap-store/install")
@@ -725,18 +824,19 @@ def create_app(
         store_api, _, _ = _github_urls(target_repo)
 
         dest = _agents_dir / req.agent_name / "aiap" / req.program
-        if dest.exists():
-            raise HTTPException(
-                409, f"'{req.program}' already exists in agent '{req.agent_name}'"
-            )
+        if dest.exists() and not req.overwrite:
+            raise HTTPException(409, {
+                "message": f"'{req.program}' already exists in agent '{req.agent_name}'",
+                "local_version": _local_version(f"{req.agent_name}/aiap", req.program),
+            })
 
         try:
-            files_count = _download_github_dir(
-                f"{store_api}/{req.program}", dest, _log
+            files_count = _download_dir_safe(
+                f"{store_api}/{req.program}", dest, req.overwrite, _log
             )
+        except HTTPException:
+            raise
         except Exception as exc:
-            if dest.exists():
-                shutil.rmtree(dest, ignore_errors=True)
             _log.error("Failed to install %s: %s", req.program, exc)
             raise HTTPException(502, f"Failed to download from GitHub: {exc}")
 
@@ -744,8 +844,206 @@ def create_app(
             "program": req.program,
             "agent": req.agent_name,
             "files_installed": files_count,
-            "status": "installed",
+            "status": "updated" if req.overwrite else "installed",
         }
+
+    # ---- AISP Store endpoints (GitHub remote; doc 07) -------------------
+    # Mirror the aiap-store endpoints but target the repo's aisp_store/ dir
+    # and *_aisp skills. Repo list (/aiap-store/repos) is shared — one repo
+    # can host both aiap_store/ and aisp_store/.
+
+    @app.get("/aisp-store/skills")
+    async def list_store_skills(repo: str = ""):
+        """List available AISP skills from a GitHub repo's aisp_store/."""
+        import logging
+        _log = logging.getLogger(__name__)
+
+        target_repo = repo or DEFAULT_REPO
+        cache_key = f"{target_repo}:aisp"
+        store_api, raw_base, gh_repo = _github_urls(target_repo, "aisp_store")
+
+        now = time.time()
+        cached = _store_cache.get(cache_key)
+        if cached and cached["data"] is not None and now < cached["expires"]:
+            return cached["data"]
+
+        try:
+            r = urllib.request.Request(
+                store_api,
+                headers={"Accept": "application/vnd.github.v3+json",
+                         "User-Agent": "SoulBot/1.0"},
+            )
+            with urllib.request.urlopen(r, timeout=10) as resp:
+                contents = json.loads(resp.read().decode())
+        except (urllib.error.URLError, urllib.error.HTTPError) as exc:
+            _log.warning("Failed to fetch AISP Store listing: %s", exc)
+            raise HTTPException(502, f"Failed to reach GitHub API: {exc}")
+
+        skills = []
+        for item in contents:
+            if item.get("type") != "dir":
+                continue
+            name = item["name"]
+            if not name.endswith("_aisp"):
+                continue
+            meta = _fetch_aisp_metadata(name, raw_base, gh_repo, _log)
+            meta["local_version"] = _local_version("aisp_store", name)
+            skills.append(meta)
+
+        _store_cache[cache_key] = {"data": skills, "expires": now + CACHE_TTL}
+        return skills
+
+    def _fetch_aisp_metadata(skill_name: str, raw_base: str, gh_repo: str, _log) -> dict:
+        """Fetch and parse a skill's aisp.aisop.json (JSON, not YAML)."""
+        meta = {
+            "id": skill_name,
+            "name": skill_name,
+            "version": "",
+            "summary": "",
+            "protocol": "",
+            "risk_level": "",
+            "when_to_use": [],
+            "github_url": f"https://github.com/{gh_repo}/tree/main/aisp_store/{skill_name}",
+        }
+        try:
+            url = f"{raw_base}/{skill_name}/aisp.aisop.json"
+            r = urllib.request.Request(url, headers={"User-Agent": "SoulBot/1.0"})
+            with urllib.request.urlopen(r, timeout=10) as resp:
+                data = json.loads(resp.read().decode())
+        except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError):
+            _log.debug("No aisp.aisop.json for %s", skill_name)
+            return meta
+
+        try:
+            sys_content = data[0]["content"] if isinstance(data, list) and data else {}
+            meta["name"] = sys_content.get("name", skill_name)
+            meta["version"] = str(sys_content.get("version", ""))
+            meta["summary"] = str(sys_content.get("summary", ""))
+            meta["protocol"] = str(sys_content.get("protocol", ""))
+            if isinstance(data, list) and len(data) > 1:
+                contract = data[1].get("content", {}).get("aisp_contract", {}) or {}
+                meta["risk_level"] = str(contract.get("risk_level", ""))
+                wtu = (contract.get("invocation", {}) or {}).get("when_to_use", [])
+                if isinstance(wtu, list):
+                    meta["when_to_use"] = wtu
+        except Exception as exc:
+            _log.debug("Failed to parse aisp.aisop.json for %s: %s", skill_name, exc)
+        return meta
+
+    @app.post("/aisp-store/download")
+    async def download_aisp_from_store(req: DownloadAispRequest):
+        """Download an AISP skill from GitHub to local aisp_store/ library."""
+        import logging
+        _log = logging.getLogger(__name__)
+
+        if _agents_dir is None:
+            raise HTTPException(400, "Requires agents_dir mode")
+        if ".." in req.skill or "/" in req.skill or "\\" in req.skill:
+            raise HTTPException(400, "Invalid skill name")
+        if not req.skill.endswith("_aisp"):
+            raise HTTPException(400, "Skill name must end with '_aisp'")
+
+        store_api, _, _ = _github_urls(req.repo or DEFAULT_REPO, "aisp_store")
+        dest = _agents_dir / "aisp_store" / req.skill
+        if dest.exists() and not req.overwrite:
+            raise HTTPException(409, {
+                "message": f"'{req.skill}' already exists in local library",
+                "local_version": _local_version("aisp_store", req.skill),
+            })
+
+        try:
+            files_count = _download_dir_safe(f"{store_api}/{req.skill}", dest, req.overwrite, _log)
+        except HTTPException:
+            raise
+        except Exception as exc:
+            _log.error("Failed to download %s: %s", req.skill, exc)
+            raise HTTPException(502, f"Failed to download from GitHub: {exc}")
+
+        return {"skill": req.skill, "files_downloaded": files_count,
+                "status": "updated" if req.overwrite else "downloaded"}
+
+    @app.post("/aisp-store/install")
+    async def install_aisp_from_store(req: InstallAispRequest):
+        """Download an AISP skill from GitHub and install to agent's aisp/ dir."""
+        import logging
+        _log = logging.getLogger(__name__)
+
+        if _agents_dir is None:
+            raise HTTPException(400, "Requires agents_dir mode")
+        if req.agent_name not in runners:
+            raise HTTPException(404, f"Agent '{req.agent_name}' not found")
+        if ".." in req.skill or "/" in req.skill or "\\" in req.skill:
+            raise HTTPException(400, "Invalid skill name")
+        if not req.skill.endswith("_aisp"):
+            raise HTTPException(400, "Skill name must end with '_aisp'")
+
+        store_api, _, _ = _github_urls(req.repo or DEFAULT_REPO, "aisp_store")
+        dest = _agents_dir / req.agent_name / "aisp" / req.skill
+        if dest.exists() and not req.overwrite:
+            raise HTTPException(409, {
+                "message": f"'{req.skill}' already exists in agent '{req.agent_name}'",
+                "local_version": _local_version(f"{req.agent_name}/aisp", req.skill),
+            })
+
+        try:
+            files_count = _download_dir_safe(f"{store_api}/{req.skill}", dest, req.overwrite, _log)
+        except HTTPException:
+            raise
+        except Exception as exc:
+            _log.error("Failed to install %s: %s", req.skill, exc)
+            raise HTTPException(502, f"Failed to download from GitHub: {exc}")
+
+        return {"skill": req.skill, "agent": req.agent_name,
+                "files_installed": files_count, "status": "updated" if req.overwrite else "installed"}
+
+    def _local_version(store_dir: str, pkg_id: str) -> str:
+        """Version of a package already in the local store library ('' if none).
+
+        AIAP: agent_card.json version (falls back to AIAP.md frontmatter).
+        AISP: aisp.aisop.json [0].content.version.
+        """
+        if _agents_dir is None:
+            return ""
+        d = _agents_dir / store_dir / pkg_id
+        if not d.is_dir():
+            return ""
+        try:
+            if pkg_id.endswith("_aisp"):
+                data = json.loads((d / "aisp.aisop.json").read_text(encoding="utf-8-sig"))
+                return str(data[0]["content"].get("version", "")) if data else ""
+            card = d / "agent_card.json"
+            if card.is_file():
+                return str(json.loads(card.read_text(encoding="utf-8-sig")).get("version", ""))
+        except (OSError, json.JSONDecodeError, KeyError, IndexError):
+            pass
+        return ""
+
+    def _download_dir_safe(api_url: str, dest: Path, overwrite: bool, _log) -> int:
+        """Download a GitHub dir to *dest*. If dest exists and overwrite=True,
+        download to a temp sibling first and atomically swap only on success —
+        so a failed download never destroys the existing local copy.
+
+        On success, invalidates the store-listing cache so the next
+        /programs or /skills call re-scans and reports the fresh
+        local_version (else the button stays 'Download' for 5 min TTL).
+        """
+        if not dest.exists():
+            count = _download_github_dir(api_url, dest, _log)
+            _store_cache.clear()
+            return count
+        # overwrite: temp-then-swap
+        tmp = dest.parent / f".{dest.name}.tmp-download"
+        if tmp.exists():
+            shutil.rmtree(tmp, ignore_errors=True)
+        try:
+            count = _download_github_dir(api_url, tmp, _log)
+        except Exception:
+            shutil.rmtree(tmp, ignore_errors=True)
+            raise
+        shutil.rmtree(dest, ignore_errors=True)
+        tmp.rename(dest)
+        _store_cache.clear()
+        return count
 
     def _download_github_dir(api_url: str, dest: Path, _log) -> int:
         """Recursively download a directory from GitHub API."""
@@ -1275,6 +1573,45 @@ def _session_detail(session) -> dict:
     }
 
 
+def _scan_aisps(root: Path) -> list[dict]:
+    """Scan a directory for AISP skills (*_aisp/aisp.aisop.json, one level).
+
+    Lenient like _scan_aisops (malformed file -> warn + skip) — the UI listing
+    favours availability; strict conformance stays with aisp_list.py (the
+    spec-normative registry generator). ``_shared/`` carries no aisp.aisop.json
+    and is naturally excluded.
+    """
+    import logging
+    _log = logging.getLogger(__name__)
+    results: list[dict] = []
+    for d in sorted(root.iterdir()) if root.is_dir() else []:
+        if not (d.is_dir() and d.name.endswith("_aisp")):
+            continue
+        f = d / "aisp.aisop.json"
+        if not f.is_file():
+            continue
+        try:
+            data = json.loads(f.read_text(encoding="utf-8-sig"))
+            sys_content = data[0]["content"] if isinstance(data, list) and data else {}
+            contract = {}
+            if isinstance(data, list) and len(data) > 1:
+                contract = data[1].get("content", {}).get("aisp_contract", {}) or {}
+        except Exception as exc:
+            _log.warning("Skipping AISP %s: %s", f, exc)
+            continue
+        results.append({
+            "id": d.name,
+            "path": f"{root.name}/{d.name}",
+            "name": sys_content.get("name", d.name),
+            "version": sys_content.get("version", ""),
+            "summary": sys_content.get("summary", ""),
+            "protocol": sys_content.get("protocol", ""),
+            "risk_level": contract.get("risk_level", ""),
+            "when_to_use": (contract.get("invocation", {}) or {}).get("when_to_use", []),
+        })
+    return results
+
+
 def _scan_aisops(aisop_dir: Path, pattern: str = "*.aisop.json") -> list[dict]:
     """Scan a directory for AISOP files and extract summaries.
 
@@ -1305,6 +1642,16 @@ def _scan_aisops(aisop_dir: Path, pattern: str = "*.aisop.json") -> list[dict]:
             _log.warning("Skipping AISOP %s: %s", f, exc)
             continue
 
+        # Normalize tools to a flat list of names. The engine's tools
+        # declaration evolved from ["shell", ...] (strings) to
+        # [{"name": "shell", "annotations": {...}}, ...] (objects); the UI
+        # expects string[]. Accept BOTH shapes so the list never breaks.
+        raw_tools = sys_content.get("tools", []) or []
+        tools = [
+            t.get("name", "") if isinstance(t, dict) else str(t)
+            for t in raw_tools
+        ]
+
         results.append({
             "path": str(rel).replace("\\", "/"),
             "group": group,
@@ -1312,7 +1659,7 @@ def _scan_aisops(aisop_dir: Path, pattern: str = "*.aisop.json") -> list[dict]:
             "version": sys_content.get("version", ""),
             "summary": sys_content.get("summary", ""),
             "protocol": sys_content.get("protocol", ""),
-            "tools": sys_content.get("tools", []),
+            "tools": tools,
         })
 
     return results

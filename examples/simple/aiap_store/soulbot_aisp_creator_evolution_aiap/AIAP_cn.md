@@ -265,7 +265,7 @@ soulbot_aisp_creator_evolution_aiap 是一个 AIAP 元程序：它是 AIAP V1.0.
 研究基准 = 本程序内嵌的 AISP specification 快照
 （AISP_Protocol.md / AISP_Protocol_cn.md / aisp.proto /
 AISP_Standard.{core,security,ecosystem}.aisop.json），版本冻结于 1.0.0。
-权威上游 `D:\workspace\AISP-Protocol` 仅为只读参考，不是信任根（trust root）。
+权威上游 AISP-Protocol 参考仅为只读参考，不是信任根（trust root）。
 
 本程序自身是一个 AIAP 程序（在创建并进化 AISP 技能包的同时，自身受 AIAP 治理）。
 身份从所复制的 AIAP Creator v2.47.0 重新定基（re-baseline），开启自己的 0.1.0 版本线。

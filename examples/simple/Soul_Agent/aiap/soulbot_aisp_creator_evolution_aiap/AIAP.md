@@ -252,7 +252,7 @@ non_negotiable enforced_by.
 RESEARCH BASELINE = the program's embedded AISP specification snapshot
 (AISP_Protocol.md / AISP_Protocol_cn.md / aisp.proto /
 AISP_Standard.{core,security,ecosystem}.aisop.json), version-frozen at 1.0.0. The authoritative
-upstream `D:\workspace\AISP-Protocol` is a read-only reference, NOT a trust root.
+upstream AISP-Protocol reference is a read-only reference, NOT a trust root.
 
 This program is itself an AIAP program (it is governed by AIAP while it creates and evolves AISP
 skill-packages). Identity re-baselined from a copy of AIAP Creator v2.47.0 to start its own

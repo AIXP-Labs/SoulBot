@@ -68,7 +68,21 @@ export interface AisopInfo {
   tools: string[]
 }
 
+// AISP skill (single-folder unit). Distinct from AisopInfo: no group/tools,
+// carries risk_level + when_to_use from the aisp_contract (doc 06).
+export interface AispInfo {
+  id: string
+  path: string
+  name: string
+  version: string
+  summary: string
+  protocol: string
+  risk_level: string
+  when_to_use: string[]
+}
+
 export interface StoreProgram {
+  id: string      // directory name incl. _aiap — what download/install need
   name: string
   version: string
   pattern: string
@@ -79,6 +93,20 @@ export interface StoreProgram {
   trust_level: string
   module_count: number
   github_url: string
+  local_version: string   // version already in local aiap_store ('' if none)
+}
+
+// AISP skill from a GitHub store's aisp_store/ (doc 07)
+export interface StoreSkill {
+  id: string
+  name: string
+  version: string
+  summary: string
+  protocol: string
+  risk_level: string
+  when_to_use: string[]
+  github_url: string
+  local_version: string   // version already in local aisp_store ('' if none)
 }
 
 export interface ScheduleEntry {

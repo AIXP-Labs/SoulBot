@@ -2,7 +2,7 @@
 import { onMounted, ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAgentStore } from '@/stores/agent'
-import type { AisopInfo } from '@/types'
+import type { AisopInfo, AispInfo } from '@/types'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const props = defineProps<{ name: string }>()
@@ -11,6 +11,10 @@ const agentStore = useAgentStore()
 
 const aisops = ref<AisopInfo[]>([])
 const libraryAisops = ref<AisopInfo[]>([])
+const aisps = ref<AispInfo[]>([])
+const libraryAisps = ref<AispInfo[]>([])
+const activeTab = ref<'aiap' | 'aisp'>('aiap')
+const deleteAispTarget = ref<AispInfo | null>(null)
 const loading = ref(true)
 const expandedGroups = ref<Set<string>>(new Set())
 const expandedLibGroups = ref<Set<string>>(new Set())
@@ -91,18 +95,26 @@ async function loadAll() {
   envStatus.value = ''
   aisops.value = []
   libraryAisops.value = []
+  aisps.value = []
+  libraryAisps.value = []
   loading.value = true
 
   try {
-    const [agentAisops, libData] = await Promise.all([
+    const [agentAisops, libData, agentAisps, libAisps] = await Promise.all([
       agentStore.loadAisops(props.name).catch(() => [] as AisopInfo[]),
       agentStore.loadAisopLibrary().catch(() => [] as AisopInfo[]),
+      agentStore.loadAisps(props.name).catch(() => [] as AispInfo[]),
+      agentStore.loadAispLibrary().catch(() => [] as AispInfo[]),
     ])
     aisops.value = agentAisops
     libraryAisops.value = libData
+    aisps.value = agentAisps
+    libraryAisps.value = libAisps
   } catch {
     aisops.value = []
     libraryAisops.value = []
+    aisps.value = []
+    libraryAisps.value = []
   }
   loading.value = false
   await loadEnv()
@@ -243,6 +255,49 @@ async function handleDeleteGroup() {
   }
 }
 
+// --- AISP skills (doc 06) ---
+const aispCount = computed(() => aisps.value.length)
+
+// Library: only skills not already installed (compare by id).
+const availableLibAisps = computed(() => {
+  const installed = new Set(aisps.value.map(s => s.id))
+  return libraryAisps.value.filter(s => !installed.has(s.id))
+})
+
+function riskClass(risk: string): string {
+  return `risk-${(risk || 'unknown').toLowerCase()}`
+}
+
+async function refreshAisps() {
+  const [agentData, libData] = await Promise.all([
+    agentStore.loadAisps(props.name).catch(() => [] as AispInfo[]),
+    agentStore.loadAispLibrary().catch(() => [] as AispInfo[]),
+  ])
+  aisps.value = agentData
+  libraryAisps.value = libData
+}
+
+async function handleAddAisp(skill: string) {
+  try {
+    await agentStore.addAispFromLibrary(props.name, skill)
+    await refreshAisps()
+  } catch (e: unknown) {
+    alert(e instanceof Error ? e.message : String(e))
+  }
+}
+
+async function handleDeleteAisp() {
+  if (!deleteAispTarget.value) return
+  const path = deleteAispTarget.value.path
+  deleteAispTarget.value = null
+  try {
+    await agentStore.deleteAisp(props.name, path)
+    aisps.value = aisps.value.filter(s => s.path !== path)
+  } catch (e: unknown) {
+    alert(e instanceof Error ? e.message : String(e))
+  }
+}
+
 function goBack() {
   router.push({ name: 'agents' })
 }
@@ -263,12 +318,18 @@ function goBack() {
       <div class="settings-left">
       <!-- Tabs -->
       <div class="tabs">
-        <button class="tab active">
+        <button class="tab" :class="{ active: activeTab === 'aiap' }" @click="activeTab = 'aiap'">
           AIAP Applications
           <span class="tab-count">{{ aisopCount }}</span>
         </button>
+        <button class="tab" :class="{ active: activeTab === 'aisp' }" @click="activeTab = 'aisp'">
+          AISP Skills
+          <span class="tab-count">{{ aispCount }}</span>
+        </button>
       </div>
 
+      <!-- ===== AIAP tab ===== -->
+      <template v-if="activeTab === 'aiap'">
       <!-- File List -->
       <div class="section">
         <div class="section-header">
@@ -382,6 +443,62 @@ function goBack() {
           </div>
         </div>
       </div>
+      </template><!-- /AIAP tab -->
+
+      <!-- ===== AISP tab ===== -->
+      <template v-if="activeTab === 'aisp'">
+      <div class="section">
+        <div class="section-header">
+          <h3>Agent AISP Skills</h3>
+          <span class="badge">{{ aisps.length }}</span>
+        </div>
+
+        <div v-if="aisps.length === 0" class="empty-state">
+          No AISP skills installed. Add one from the store below.
+        </div>
+
+        <div v-else class="aisop-list">
+          <div v-for="skill in aisps" :key="skill.path" class="aisop-card">
+            <div class="aisop-header">
+              <div class="aisop-header-left">
+                <span class="aisop-filename">{{ skill.id }}</span>
+                <span class="risk-badge" :class="riskClass(skill.risk_level)">{{ skill.risk_level || 'unknown' }}</span>
+                <button class="btn-text-delete" @click="deleteAispTarget = skill">Uninstall</button>
+              </div>
+              <span v-if="skill.version" class="aisop-version">v{{ skill.version }}</span>
+            </div>
+            <div class="aisop-name">{{ skill.name }}</div>
+            <div v-if="skill.summary" class="aisop-summary">{{ skill.summary }}</div>
+            <ul v-if="skill.when_to_use.length" class="aisp-wtu">
+              <li v-for="(w, i) in skill.when_to_use" :key="i">{{ w }}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="aisp-hint">Registry self-heals on the agent's next turn — no reload needed.</div>
+      </div>
+
+      <!-- AISP store -->
+      <div v-if="availableLibAisps.length > 0" class="section">
+        <div class="section-header">
+          <h3>AISP Store</h3>
+          <span class="badge">{{ availableLibAisps.length }}</span>
+        </div>
+        <div class="aisop-list">
+          <div v-for="skill in availableLibAisps" :key="'lib-' + skill.id" class="aisop-card lib-card">
+            <div class="aisop-header">
+              <div class="aisop-header-left">
+                <span class="aisop-filename">{{ skill.id }}</span>
+                <span class="risk-badge" :class="riskClass(skill.risk_level)">{{ skill.risk_level || 'unknown' }}</span>
+                <button class="btn-text-add" @click="handleAddAisp(skill.id)">Install</button>
+              </div>
+              <span v-if="skill.version" class="aisop-version">v{{ skill.version }}</span>
+            </div>
+            <div class="aisop-name">{{ skill.name }}</div>
+            <div v-if="skill.summary" class="aisop-summary">{{ skill.summary }}</div>
+          </div>
+        </div>
+      </div>
+      </template><!-- /AISP tab -->
       </div><!-- /settings-left -->
 
       <!-- Right column: .env editor -->
@@ -448,6 +565,16 @@ function goBack() {
       confirmVariant="danger"
       @confirm="handleDeleteGroup"
       @cancel="deleteGroupTarget = null"
+    />
+
+    <ConfirmDialog
+      v-if="deleteAispTarget"
+      title="Uninstall AISP Skill"
+      :message="`Uninstall '${deleteAispTarget.id}'? The skill folder is removed from this agent (still available in the store).`"
+      confirmText="Uninstall"
+      confirmVariant="danger"
+      @confirm="handleDeleteAisp"
+      @cancel="deleteAispTarget = null"
     />
   </div>
 </template>
@@ -652,6 +779,35 @@ function goBack() {
   background: var(--tool-bg);
   color: var(--text-muted);
   border-radius: 6px;
+}
+
+/* AISP skill cards (doc 06) */
+.risk-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.risk-low { background: #16351f; color: #6ee7a0; }
+.risk-medium { background: #3a3016; color: #f5c451; }
+.risk-high { background: #3d1a1a; color: #f38b8b; }
+.risk-unknown { background: var(--tool-bg); color: var(--text-muted); }
+
+.aisp-wtu {
+  margin: 6px 0 0;
+  padding-left: 16px;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.aisp-hint {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 .aisop-group {

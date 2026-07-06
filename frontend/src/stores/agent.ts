@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { api, apiPost, apiDelete, apiPut } from '@/composables/useApi'
-import type { AgentInfo, AisopInfo, TemplateInfo } from '@/types'
+import type { AgentInfo, AisopInfo, AispInfo, TemplateInfo } from '@/types'
 
 export const useAgentStore = defineStore('agent', () => {
   const agents = ref<string[]>([])
@@ -76,6 +76,23 @@ export const useAgentStore = defineStore('agent', () => {
     await apiPost(`/agents/${agentName}/aisops/add-from-library`, { group })
   }
 
+  // --- AISP skills (doc 06; mirrors the aisops functions above) ---
+  async function loadAisps(agentName: string): Promise<AispInfo[]> {
+    return api<AispInfo[]>(`/agents/${agentName}/aisps`)
+  }
+
+  async function deleteAisp(agentName: string, path: string) {
+    await apiPost(`/agents/${agentName}/aisps/delete`, { path })
+  }
+
+  async function loadAispLibrary(): Promise<AispInfo[]> {
+    return api<AispInfo[]>('/aisp-library')
+  }
+
+  async function addAispFromLibrary(agentName: string, skill: string) {
+    await apiPost(`/agents/${agentName}/aisps/add-from-library`, { skill })
+  }
+
   async function loadAgentEnv(agentName: string): Promise<{ content: string; exists: boolean }> {
     return api<{ content: string; exists: boolean }>(`/agents/${agentName}/env`)
   }
@@ -116,6 +133,10 @@ export const useAgentStore = defineStore('agent', () => {
     loadAisopLibrary,
     reloadAgent,
     addAisopFromLibrary,
+    loadAisps,
+    deleteAisp,
+    loadAispLibrary,
+    addAispFromLibrary,
     loadAgentEnv,
     saveAgentEnv,
     selectAgent,

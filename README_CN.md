@@ -254,6 +254,7 @@ root_agent = LoopAgent(name="refiner", sub_agents=[draft, review], max_iteration
 
 - **装机**：把技能文件夹从 `aisp_store/` 复制到 `Soul_Agent/aisp/` —— 注册表（`aisp_list.json`）下一轮自动重生成（缺 cache 自愈）。
 - **创建**：直接对话（如 `创建一个 AISP 技能:...`）—— 若多个创建器覆盖同一意图且未点名，路由会停下来问你（公理 0）；产物默认落 `aisp_store/`。
+- **或用 Web UI**：`#/store` 页从 GitHub 浏览/下载/安装（版本感知 —— Up to date / Update / 本地更新时红字警告后才覆盖）；agent 设置页可从本地库一键装/卸技能。
 
 ---
 
@@ -315,7 +316,7 @@ soulbot web --agents-dir examples/simple
 # 浏览器打开 http://127.0.0.1:2026
 ```
 
-功能：Markdown 实时渲染、SSE 流式输出、Agent 切换、Session 管理、暗色主题。
+功能：Markdown 实时渲染、SSE 流式输出、Agent 切换、Session 管理、暗色主题、**Store 页**（从 GitHub 浏览/下载/安装 AIAP 程序**与 AISP 技能**，**版本感知**：Up to date / Update x→y / 本地更新时警告后安全覆盖）、**按 Agent 管理 AISP 技能**（设置页一键装/卸本地库技能；注册表下一轮自愈）。
 
 ### API 端点
 
@@ -326,6 +327,11 @@ soulbot web --agents-dir examples/simple
 | `/apps/{name}` | GET | Agent 详情 |
 | `/run` | POST | 同步执行 |
 | `/run_sse` | POST | SSE 流式执行 |
+| `/aiap-store/programs` | GET | 列出 GitHub 店的 AIAP 程序（带 `local_version`）|
+| `/aisp-store/skills` | GET | 列出 GitHub 店的 AISP 技能（带 `local_version`）|
+| `/aisp-store/download` / `install` | POST | 下载到本地库 / 安装到 agent（`overwrite` = 版本感知更新）|
+| `/agents/{name}/aisps` | GET | agent 已挂载的 AISP 技能 |
+| `/aisp-library` | GET | 本地 `aisp_store/` 库存 |
 
 ---
 

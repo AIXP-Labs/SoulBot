@@ -254,6 +254,7 @@ root_agent = LoopAgent(name="refiner", sub_agents=[draft, review], max_iteration
 
 - **Install** a skill: copy its folder from `aisp_store/` into `Soul_Agent/aisp/` — the registry (`aisp_list.json`) regenerates automatically on the next turn (a missing cache self-heals).
 - **Create** new skills by chatting (e.g. `创建一个 AISP 技能:...`) — if several creators cover the intent and none is named, the router stops and asks you (Axiom 0); products land in `aisp_store/` by default.
+- **Or use the Web UI**: the `#/store` page browses/downloads/installs from GitHub (version-aware — Up to date / Update / Local-newer warning before overwrite); the agent settings page installs/uninstalls from the local store with one click.
 
 ---
 
@@ -315,7 +316,7 @@ soulbot web --agents-dir examples/simple
 # Open http://127.0.0.1:2026
 ```
 
-Features: Markdown rendering, SSE streaming, agent switching, session management, dark theme.
+Features: Markdown rendering, SSE streaming, agent switching, session management, dark theme, **Store page** (browse / download / install AIAP programs **and AISP skills** from GitHub, **version-aware**: Up to date / Update x→y / Local-newer warning with safe overwrite), **per-agent AISP skill management** (settings page: one-click install/uninstall from the local store; registry self-heals on the agent's next turn).
 
 ### API Endpoints
 
@@ -326,6 +327,11 @@ Features: Markdown rendering, SSE streaming, agent switching, session management
 | `/apps/{name}` | GET | Agent details |
 | `/run` | POST | Synchronous execution |
 | `/run_sse` | POST | SSE streaming execution |
+| `/aiap-store/programs` | GET | List AIAP programs from a GitHub store (with `local_version`) |
+| `/aisp-store/skills` | GET | List AISP skills from a GitHub store (with `local_version`) |
+| `/aisp-store/download` / `install` | POST | Download to local store / install to an agent (`overwrite` = version-aware update) |
+| `/agents/{name}/aisps` | GET | Mounted AISP skills of an agent |
+| `/aisp-library` | GET | Local `aisp_store/` inventory |
 
 ---
 

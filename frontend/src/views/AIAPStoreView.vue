@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { api, apiPost } from '@/composables/useApi'
-import type { StoreProgram } from '@/types'
+import type { StoreProgram, StoreSkill } from '@/types'
 
+const activeProtocol = ref<'aiap' | 'aisp'>('aiap')
 const repos = ref<string[]>([])
 const selectedRepo = ref('')
 const newRepoInput = ref('')
 const addingRepo = ref(false)
 const programs = ref<StoreProgram[]>([])
+const skills = ref<StoreSkill[]>([])
 const loading = ref(true)
 const error = ref('')
 const searchQuery = ref('')
@@ -35,6 +37,71 @@ function displayName(name: string) {
   return name.replace(/_aiap$/, '').replace(/_/g, ' ')
 }
 
+// AISP skills (doc 07)
+const filteredSkills = computed(() => {
+  if (!searchQuery.value) return skills.value
+  const q = searchQuery.value.toLowerCase()
+  return skills.value.filter(
+    (s) =>
+      s.id.toLowerCase().includes(q) ||
+      s.summary.toLowerCase().includes(q) ||
+      s.when_to_use.some((w) => w.toLowerCase().includes(q))
+  )
+})
+
+function riskClass(risk: string): string {
+  return `risk-${(risk || 'unknown').toLowerCase()}`
+}
+
+function switchProtocol(p: 'aiap' | 'aisp') {
+  activeProtocol.value = p
+  searchQuery.value = ''
+  if (p === 'aisp' && skills.value.length === 0) loadSkills()
+}
+
+async function loadSkills() {
+  loading.value = true
+  error.value = ''
+  try {
+    const repo = selectedRepo.value || ''
+    skills.value = await api<StoreSkill[]>(`/aisp-store/skills?repo=${encodeURIComponent(repo)}`)
+  } catch (e: unknown) {
+    error.value = e instanceof Error ? e.message : 'Failed to load'
+  } finally {
+    loading.value = false
+  }
+}
+
+async function downloadSkill(skill: string, remoteV: string, localV: string) {
+  const overwrite = !!localV
+  if (overwrite && !confirmOverwrite(skill, localV, remoteV)) return
+  downloadingMap.value[skill] = true
+  try {
+    await apiPost('/aisp-store/download', { skill, repo: selectedRepo.value, overwrite })
+    downloadedMap.value[skill] = true
+    await loadSkills()  // refresh local_version
+    setTimeout(() => { downloadedMap.value[skill] = false }, 3000)
+  } catch (e: unknown) {
+    alert(e instanceof Error ? e.message : 'Download failed')
+  } finally {
+    downloadingMap.value[skill] = false
+  }
+}
+
+async function installSkill(skill: string, agentName: string) {
+  showDropdown.value = null
+  installingMap.value[skill] = true
+  try {
+    await apiPost('/aisp-store/install', { skill, agent_name: agentName, repo: selectedRepo.value })
+    installedMap.value[skill] = true
+    setTimeout(() => { installedMap.value[skill] = false }, 3000)
+  } catch (e: unknown) {
+    alert(e instanceof Error ? e.message : 'Install failed')
+  } finally {
+    installingMap.value[skill] = false
+  }
+}
+
 function repoDisplayName(repo: string) {
   return repo.split('/').pop() || repo
 }
@@ -53,7 +120,8 @@ async function loadRepos() {
 function selectRepo(repo: string) {
   selectedRepo.value = repo
   searchQuery.value = ''
-  loadPrograms()
+  if (activeProtocol.value === 'aisp') loadSkills()
+  else loadPrograms()
 }
 
 async function addRepo() {
@@ -106,14 +174,54 @@ async function loadAgents() {
   }
 }
 
-async function downloadProgram(program: string) {
+// Version compare: -1 (a<b) | 0 (equal) | 1 (a>b) | null (unparseable).
+function cmpVersion(a: string, b: string): number | null {
+  if (!a || !b) return null
+  const pa = a.split('.').map(Number), pb = b.split('.').map(Number)
+  if (pa.some(isNaN) || pb.some(isNaN)) return null
+  const n = Math.max(pa.length, pb.length)
+  for (let i = 0; i < n; i++) {
+    const x = pa[i] ?? 0, y = pb[i] ?? 0
+    if (x !== y) return x < y ? -1 : 1
+  }
+  return 0
+}
+
+// Download-column state for a package (local_version vs remote version).
+type DlState = { kind: 'new' | 'uptodate' | 'update' | 'older' | 'redownload'; label: string }
+function dlState(localV: string, remoteV: string): DlState {
+  if (!localV) return { kind: 'new', label: 'Download' }
+  const c = cmpVersion(localV, remoteV)
+  if (c === 0) return { kind: 'uptodate', label: 'Up to date' }
+  if (c === -1) return { kind: 'update', label: `Update ${localV}→${remoteV}` }
+  if (c === 1) return { kind: 'older', label: 'Local newer' }
+  return { kind: 'redownload', label: 'Re-download' }
+}
+
+// Confirm an overwrite; returns true to proceed. Warns hard when local is newer.
+function confirmOverwrite(id: string, localV: string, remoteV: string): boolean {
+  const st = dlState(localV, remoteV)
+  let msg = `${id}\nLocal: ${localV || '(none)'}  →  Remote: ${remoteV || '(unknown)'}\n\n`
+  if (st.kind === 'older') {
+    msg += '⚠️ Your local version is NEWER — it may contain local evolution.\n'
+      + 'Overwriting will PERMANENTLY replace it with the remote copy. Continue?'
+  } else if (st.kind === 'redownload') {
+    msg += 'Versions cannot be compared. Overwrite local with the remote copy?'
+  } else {
+    msg += 'Overwrite the local copy with the remote version?'
+  }
+  return confirm(msg)
+}
+
+async function downloadProgram(program: string, remoteV: string, localV: string) {
+  const overwrite = !!localV
+  if (overwrite && !confirmOverwrite(program, localV, remoteV)) return
   downloadingMap.value[program] = true
   try {
-    await apiPost('/aiap-store/download', { program, repo: selectedRepo.value })
+    await apiPost('/aiap-store/download', { program, repo: selectedRepo.value, overwrite })
     downloadedMap.value[program] = true
-    setTimeout(() => {
-      downloadedMap.value[program] = false
-    }, 3000)
+    await loadPrograms()  // refresh local_version so the button restates
+    setTimeout(() => { downloadedMap.value[program] = false }, 3000)
   } catch (e: unknown) {
     alert(e instanceof Error ? e.message : 'Download failed')
   } finally {
@@ -189,25 +297,36 @@ onMounted(async () => {
       </div>
     </aside>
 
-    <!-- Right content: Programs -->
+    <!-- Right content: Programs / Skills -->
     <div class="store-page">
+      <div class="store-tabs">
+        <button class="store-tab" :class="{ active: activeProtocol === 'aiap' }" @click="switchProtocol('aiap')">AIAP Programs</button>
+        <button class="store-tab" :class="{ active: activeProtocol === 'aisp' }" @click="switchProtocol('aisp')">AISP Skills</button>
+      </div>
+
       <div class="page-header">
         <div class="header-left">
-          <h2>AIAP Store</h2>
-          <span class="badge">{{ filteredPrograms.length }}</span>
+          <h2>{{ activeProtocol === 'aisp' ? 'AISP Store' : 'AIAP Store' }}</h2>
+          <span class="badge">{{ activeProtocol === 'aisp' ? filteredSkills.length : filteredPrograms.length }}</span>
         </div>
         <div class="search-box">
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search programs..."
+            :placeholder="activeProtocol === 'aisp' ? 'Search skills...' : 'Search programs...'"
             class="search-input"
           />
         </div>
       </div>
 
-      <p class="page-subtitle">Browse and install AIAP programs from the community</p>
+      <p class="page-subtitle">
+        {{ activeProtocol === 'aisp'
+          ? 'Browse and install single-file AISP skills (contract red lines enforced)'
+          : 'Browse and install AIAP programs from the community' }}
+      </p>
 
+      <!-- ===== AIAP Programs ===== -->
+      <template v-if="activeProtocol === 'aiap'">
       <!-- Programs list -->
 
       <div v-if="loading" class="loading">Loading programs from AIAP Store...</div>
@@ -240,7 +359,7 @@ onMounted(async () => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="prog in filteredPrograms" :key="prog.name">
+            <tr v-for="prog in filteredPrograms" :key="prog.id">
               <td class="col-name">
                 <a
                   :href="prog.github_url"
@@ -276,39 +395,49 @@ onMounted(async () => {
               </td>
               <td class="col-actions" @click.stop>
                 <div class="action-cell">
-                  <!-- Download -->
+                  <!-- Download / version-aware update -->
                   <button
-                    v-if="downloadingMap[prog.name]"
+                    v-if="downloadingMap[prog.id]"
                     class="btn-sm btn-download" disabled
                   >Downloading...</button>
                   <button
-                    v-else-if="downloadedMap[prog.name]"
+                    v-else-if="downloadedMap[prog.id]"
                     class="btn-sm btn-downloaded" disabled
-                  >Downloaded</button>
+                  >Done</button>
+                  <button
+                    v-else-if="dlState(prog.local_version, prog.version).kind === 'uptodate'"
+                    class="btn-sm btn-uptodate" disabled
+                  >Up to date</button>
                   <button
                     v-else
-                    class="btn-sm btn-download"
-                    @click="downloadProgram(prog.name)"
-                  >Download</button>
+                    class="btn-sm"
+                    :class="{
+                      'btn-download': dlState(prog.local_version, prog.version).kind === 'new',
+                      'btn-update': dlState(prog.local_version, prog.version).kind === 'update',
+                      'btn-older': dlState(prog.local_version, prog.version).kind === 'older',
+                      'btn-download': dlState(prog.local_version, prog.version).kind === 'redownload',
+                    }"
+                    @click="downloadProgram(prog.id, prog.version, prog.local_version)"
+                  >{{ dlState(prog.local_version, prog.version).label }}</button>
 
                   <!-- Install -->
                   <div class="install-wrapper">
                     <button
-                      v-if="installingMap[prog.name]"
+                      v-if="installingMap[prog.id]"
                       class="btn-sm btn-install" disabled
                     >Installing...</button>
                     <button
-                      v-else-if="installedMap[prog.name]"
+                      v-else-if="installedMap[prog.id]"
                       class="btn-sm btn-installed" disabled
                     >Installed</button>
                     <button
                       v-else
                       class="btn-sm btn-install"
-                      @click="toggleDropdown(prog.name)"
+                      @click="toggleDropdown(prog.id)"
                     >Install</button>
 
                     <div
-                      v-if="showDropdown === prog.name"
+                      v-if="showDropdown === prog.id"
                       class="agent-dropdown"
                     >
                       <div class="dropdown-title">Select Agent:</div>
@@ -316,7 +445,7 @@ onMounted(async () => {
                         v-for="agent in agents"
                         :key="agent"
                         class="dropdown-item"
-                        @click="installProgram(prog.name, agent)"
+                        @click="installProgram(prog.id, agent)"
                       >{{ agent }}</div>
                       <div v-if="agents.length === 0" class="dropdown-empty">
                         No agents available
@@ -329,6 +458,82 @@ onMounted(async () => {
           </tbody>
         </table>
       </div>
+      </template><!-- /AIAP -->
+
+      <!-- ===== AISP Skills ===== -->
+      <template v-if="activeProtocol === 'aisp'">
+      <div v-if="loading" class="loading">Loading skills from AISP Store...</div>
+      <div v-else-if="error" class="error-state">
+        <p>{{ error }}</p>
+        <button class="btn-retry" @click="loadSkills">Retry</button>
+      </div>
+      <div v-else-if="skills.length === 0" class="empty-state">
+        <p>No AISP skills available in this repository yet.</p>
+      </div>
+      <div v-else-if="filteredSkills.length === 0" class="empty-state">
+        <p>No skills match "{{ searchQuery }}"</p>
+      </div>
+      <div v-else class="table-wrapper">
+        <table class="store-table">
+          <thead>
+            <tr>
+              <th class="col-name">Skill</th>
+              <th class="col-trust">Risk</th>
+              <th class="col-version">Version</th>
+              <th class="col-summary">Summary</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="sk in filteredSkills" :key="sk.id">
+              <td class="col-name">
+                <a :href="sk.github_url" target="_blank" rel="noopener" class="program-link">{{ sk.id }}</a>
+              </td>
+              <td class="col-trust">
+                <span v-if="sk.risk_level" class="tag risk-badge" :class="riskClass(sk.risk_level)">{{ sk.risk_level }}</span>
+                <span v-else class="text-muted">-</span>
+              </td>
+              <td class="col-version">
+                <span v-if="sk.version">{{ sk.version }}</span>
+                <span v-else class="text-muted">-</span>
+              </td>
+              <td class="col-summary">
+                <span class="summary-text">{{ sk.summary || '-' }}</span>
+              </td>
+              <td class="col-actions" @click.stop>
+                <div class="action-cell">
+                  <button v-if="downloadingMap[sk.id]" class="btn-sm btn-download" disabled>Downloading...</button>
+                  <button v-else-if="downloadedMap[sk.id]" class="btn-sm btn-downloaded" disabled>Done</button>
+                  <button v-else-if="dlState(sk.local_version, sk.version).kind === 'uptodate'" class="btn-sm btn-uptodate" disabled>Up to date</button>
+                  <button
+                    v-else
+                    class="btn-sm"
+                    :class="{
+                      'btn-download': dlState(sk.local_version, sk.version).kind === 'new' || dlState(sk.local_version, sk.version).kind === 'redownload',
+                      'btn-update': dlState(sk.local_version, sk.version).kind === 'update',
+                      'btn-older': dlState(sk.local_version, sk.version).kind === 'older',
+                    }"
+                    @click="downloadSkill(sk.id, sk.version, sk.local_version)"
+                  >{{ dlState(sk.local_version, sk.version).label }}</button>
+
+                  <div class="install-wrapper">
+                    <button v-if="installingMap[sk.id]" class="btn-sm btn-install" disabled>Installing...</button>
+                    <button v-else-if="installedMap[sk.id]" class="btn-sm btn-installed" disabled>Installed</button>
+                    <button v-else class="btn-sm btn-install" @click="toggleDropdown(sk.id)">Install</button>
+
+                    <div v-if="showDropdown === sk.id" class="agent-dropdown">
+                      <div class="dropdown-title">Select Agent:</div>
+                      <div v-for="agent in agents" :key="agent" class="dropdown-item" @click="installSkill(sk.id, agent)">{{ agent }}</div>
+                      <div v-if="agents.length === 0" class="dropdown-empty">No agents available</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </template><!-- /AISP -->
     </div>
   </div>
 </template>
@@ -555,48 +760,53 @@ onMounted(async () => {
   font-size: 14px;
 }
 
-/* Table */
+/* Table — fixed layout with percentage columns: the table can never grow
+   wider than its container, so no bottom horizontal scrollbar (doc 07). */
 .table-wrapper {
-  overflow-x: auto;
+  overflow-x: visible;
 }
 
 .store-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 13px;
 }
 
 .store-table th {
   text-align: left;
-  padding: 10px 12px;
+  padding: 10px 8px;
   color: var(--text-muted);
   font-weight: 600;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-bottom: 2px solid var(--border);
-  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .store-table td {
-  padding: 12px;
+  padding: 10px 8px;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .store-table tbody tr:hover {
   background: var(--accent-bg);
 }
 
-/* Column widths */
-.col-name { min-width: 140px; }
-.col-pattern { width: 70px; }
-.col-version { width: 70px; }
-.col-trust { width: 60px; }
-.col-quality { width: 80px; }
-.col-modules { width: 70px; text-align: center; }
-.col-summary { min-width: 180px; }
-.col-actions { width: 190px; white-space: nowrap; }
+/* Column widths (percentages — sum with Actions fits 100%) */
+.col-name { width: 17%; }
+.col-pattern { width: 7%; }
+.col-version { width: 8%; }
+.col-trust { width: 6%; }
+.col-quality { width: 9%; }
+.col-modules { width: 7%; text-align: center; }
+.col-summary { width: auto; }
+.col-actions { width: 185px; }
 
 .store-table th.col-modules { text-align: center; }
 
@@ -698,6 +908,26 @@ onMounted(async () => {
   cursor: default;
 }
 
+/* Version-aware download states (doc 08) */
+.btn-uptodate {
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  cursor: default;
+}
+.btn-update {
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+}
+.btn-update:hover { background: var(--accent-hover); }
+.btn-older {
+  background: rgba(255, 167, 38, 0.15);
+  color: var(--warning);
+  border: 1px solid var(--warning);
+}
+.btn-older:hover { background: rgba(255, 167, 38, 0.25); }
+
 .btn-install {
   background: var(--accent);
   color: var(--bg);
@@ -757,4 +987,33 @@ onMounted(async () => {
   color: var(--text-muted);
   text-align: center;
 }
+
+/* AISP store tabs + risk badge (doc 07) */
+.store-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.store-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.store-tab:hover { color: var(--text); }
+.store-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.risk-badge { text-transform: uppercase; letter-spacing: 0.3px; }
+.risk-low { background: rgba(102, 187, 106, 0.12); color: var(--success); }
+.risk-medium { background: rgba(255, 167, 38, 0.12); color: var(--warning); }
+.risk-high { background: rgba(239, 83, 80, 0.12); color: var(--error); }
+.risk-unknown { background: var(--bg-card); color: var(--text-muted); }
 </style>

@@ -370,3 +370,133 @@ class TestAddFromLibrary:
         resp = client.post("/agents/existing_agent/aisops/add-from-library",
                            json={"group": "../etc"})
         assert resp.status_code == 400
+
+
+# --- AISP skills (doc 06) --------------------------------------------------
+
+def _write_aisp_skill(root: Path, skill_id: str = "demo_aisp",
+                      risk: str = "low", wtu=None):
+    """Create a minimal conformant-shaped AISP skill folder under *root*."""
+    import json
+    d = root / skill_id
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "aisp.aisop.json").write_text(json.dumps([
+        {"role": "system", "content": {
+            "protocol": "AISP V1.0.0", "id": skill_id,
+            "name": skill_id.replace("_", " ").title(),
+            "version": "1.0.0", "summary": f"{skill_id} summary",
+        }},
+        {"role": "user", "content": {"aisp_contract": {
+            "risk_level": risk,
+            "invocation": {"when_to_use": wtu or ["when X", "when Y"]},
+        }}},
+    ]), encoding="utf-8")
+    return d
+
+
+class TestListAisps:
+    def test_no_aisp_dir(self, client: TestClient):
+        resp = client.get("/agents/existing_agent/aisps")
+        assert resp.status_code == 200
+        assert resp.json() == []
+
+    def test_not_found_agent(self, client: TestClient):
+        resp = client.get("/agents/nonexistent/aisps")
+        assert resp.status_code == 404
+
+    def test_with_aisp_skill(self, client: TestClient, agents_dir: Path):
+        _write_aisp_skill(agents_dir / "existing_agent" / "aisp",
+                          "lucky_aisp", risk="medium", wtu=["a", "b", "c"])
+        resp = client.get("/agents/existing_agent/aisps")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert len(data) == 1
+        s = data[0]
+        assert s["id"] == "lucky_aisp"
+        assert s["version"] == "1.0.0"
+        assert s["protocol"] == "AISP V1.0.0"
+        assert s["risk_level"] == "medium"
+        assert s["when_to_use"] == ["a", "b", "c"]
+        assert s["path"] == "aisp/lucky_aisp"
+
+    def test_shared_dir_excluded(self, client: TestClient, agents_dir: Path):
+        aisp_dir = agents_dir / "existing_agent" / "aisp"
+        _write_aisp_skill(aisp_dir, "real_aisp")
+        (aisp_dir / "_shared").mkdir(parents=True)
+        (aisp_dir / "_shared" / "README.md").write_text("shared", encoding="utf-8")
+        (aisp_dir / "aisp_list.py").write_text("# generator", encoding="utf-8")
+        resp = client.get("/agents/existing_agent/aisps")
+        ids = {s["id"] for s in resp.json()}
+        assert ids == {"real_aisp"}  # _shared / aisp_list.py never listed
+
+
+class TestDeleteAisp:
+    def test_delete_success(self, client: TestClient, agents_dir: Path):
+        d = _write_aisp_skill(agents_dir / "existing_agent" / "aisp", "gone_aisp")
+        resp = client.post("/agents/existing_agent/aisps/delete",
+                           json={"path": "aisp/gone_aisp"})
+        assert resp.status_code == 200
+        assert not d.exists()
+
+    def test_delete_bad_prefix(self, client: TestClient):
+        resp = client.post("/agents/existing_agent/aisps/delete",
+                           json={"path": "aiap/foo_aisp"})
+        assert resp.status_code == 400
+
+    def test_delete_non_aisp_folder(self, client: TestClient, agents_dir: Path):
+        (agents_dir / "existing_agent" / "aisp" / "_shared").mkdir(parents=True)
+        resp = client.post("/agents/existing_agent/aisps/delete",
+                           json={"path": "aisp/_shared"})
+        assert resp.status_code == 400  # not a *_aisp folder
+
+    def test_delete_traversal(self, client: TestClient):
+        resp = client.post("/agents/existing_agent/aisps/delete",
+                           json={"path": "aisp/../../etc_aisp"})
+        assert resp.status_code == 400
+
+    def test_delete_not_found(self, client: TestClient):
+        resp = client.post("/agents/existing_agent/aisps/delete",
+                           json={"path": "aisp/missing_aisp"})
+        assert resp.status_code == 404
+
+
+class TestAddAispFromLibrary:
+    def test_add_success(self, client: TestClient, agents_dir: Path):
+        _write_aisp_skill(agents_dir / "aisp_store", "shop_aisp")
+        resp = client.post("/agents/existing_agent/aisps/add-from-library",
+                           json={"skill": "shop_aisp"})
+        assert resp.status_code == 200
+        assert resp.json()["status"] == "added"
+        assert (agents_dir / "existing_agent" / "aisp" / "shop_aisp"
+                / "aisp.aisop.json").is_file()
+
+    def test_add_shows_in_agent(self, client: TestClient, agents_dir: Path):
+        _write_aisp_skill(agents_dir / "aisp_store", "shop_aisp")
+        client.post("/agents/existing_agent/aisps/add-from-library",
+                    json={"skill": "shop_aisp"})
+        resp = client.get("/agents/existing_agent/aisps")
+        assert "shop_aisp" in {s["id"] for s in resp.json()}
+
+    def test_add_duplicate(self, client: TestClient, agents_dir: Path):
+        _write_aisp_skill(agents_dir / "aisp_store", "shop_aisp")
+        client.post("/agents/existing_agent/aisps/add-from-library",
+                    json={"skill": "shop_aisp"})
+        resp = client.post("/agents/existing_agent/aisps/add-from-library",
+                           json={"skill": "shop_aisp"})
+        assert resp.status_code == 409
+
+    def test_add_bad_suffix(self, client: TestClient, agents_dir: Path):
+        (agents_dir / "aisp_store" / "notaskill").mkdir(parents=True)
+        resp = client.post("/agents/existing_agent/aisps/add-from-library",
+                           json={"skill": "notaskill"})
+        assert resp.status_code == 400  # must end with _aisp
+
+    def test_add_not_found(self, client: TestClient):
+        resp = client.post("/agents/existing_agent/aisps/add-from-library",
+                           json={"skill": "ghost_aisp"})
+        assert resp.status_code == 404
+
+    def test_add_traversal(self, client: TestClient):
+        resp = client.post("/agents/existing_agent/aisps/add-from-library",
+                           json={"skill": "../etc_aisp"})
+        assert resp.status_code == 400
